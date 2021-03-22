@@ -55,6 +55,8 @@ L  [{Lu}{Ll}]    /*     any letter   */
 Hex [{D}a-f]     /*   any hex digit  */
 // E [\\0\\"\\'\\\\]   /* escape sequences */
 
+%option noyywrap
+
 %%
 
 "and"       { return T_and;     }
