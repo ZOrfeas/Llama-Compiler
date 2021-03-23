@@ -1,4 +1,6 @@
-.PHONY: default clean
+# Standalone makefile
+# Will be obsolete when integrated with bison
+.PHONY: default clean distclean
 
 CXX=c++
 CXXFLAGS=-Wall -std=c++11
