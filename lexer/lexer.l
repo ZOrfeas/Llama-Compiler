@@ -1,61 +1,85 @@
 %{
 // token definitions, possibly omissible later on
 #define T_eof 0
-#define T_and ...
-#define T_array ...
-#define T_begin ...
-#define T_bool ...
-#define T_char ...
-#define T_delete ...
-#define T_dim ...
-#define T_do ...
-#define T_done ...
-#define T_downto ...
-#define T_else ...
-#define T_end ...
-#define T_false ...
-#define T_float ...
-#define T_for ...
-#define T_if ...
-#define T_in ...
-#define T_int ...
-#define T_let ...
-#define T_match ...
-#define T_mod ...
-#define T_mutable ...
-#define T_new ...
-#define T_not ...
-#define T_of ...
-#define T_rec ...
-#define T_ref ...
-#define T_then ...
-#define T_to ...
-#define T_true ...
-#define T_type ...
-#define T_unit ...
-#define T_while ...
-#define T_with ...
+#define T_and 1000
+#define T_array 1001
+#define T_begin 1002
+#define T_bool 1003
+#define T_char 1004
+#define T_delete 1005
+#define T_dim 1006
+#define T_do 1007
+#define T_done 1008
+#define T_downto 1009
+#define T_else 1010
+#define T_end 1011
+#define T_false 1012
+#define T_float 1013
+#define T_for 1014
+#define T_if 1015
+#define T_in 1016
+#define T_int 1017
+#define T_let 1018
+#define T_match 1019
+#define T_mod 1020
+#define T_mutable 1021
+#define T_new 1022
+#define T_not 1023
+#define T_of 1024
+#define T_rec 1025
+#define T_ref 1026
+#define T_then 1027
+#define T_to 1028
+#define T_true 1029
+#define T_type 1030
+#define T_unit 1031
+#define T_while 1032
+#define T_with 1033
 
-#define T_idlower ...
-#define T_idupper ...
+#define T_idlower 1034
+#define T_idupper 1035
 
-#define T_intconst ...
-#define T_floatconst ...
-#define T_charconst ...
+#define T_intconst 1036
+#define T_floatconst 1037
+#define T_charconst 1038
+#define T_string 1039
 
-int lineno = 1;
+#define T_dashgreater 1040
+#define T_plusdot 1041
+#define T_minusdot 1042
+#define T_stardot 1043
+#define T_slashdot 1044
+#define T_dblstar 1045
+#define T_dblampersand 1046
+#define T_dblbar 1047
+#define T_lessgreater 1048
+#define T_leq 1049
+#define T_geq 1050
+#define T_dbleq 1051
+#define T_slasheq 1052
+#define T_coloneq 1053
+
+#include <cstdio>
+#include <cstdlib>
+
+// int yylineno = 1;
+int comment_cnt = 0;
+void lex_error(const char *msg);
 %}
 
-// W [ \t\n\r]     /*    white space   */
-
-D  [0-9]         /*       digit      */
-Ll [a-z]         /* lowercase letter */
-Lu [A-Z]         /* uppercase letter */
-L  [{Lu}{Ll}]    /*     any letter   */
-Hex [{D}a-f]     /*   any hex digit  */
-// E [\\0\\"\\'\\\\]   /* escape sequences */
+W [ \t\n\r]  
+D  [0-9]     
+Ll [a-z]     
+Lu [A-Z]     
+L  [A-Za-z]
+Hex [0-9a-f] 
 
 %option noyywrap
+
+/* use variable yylineno to get current input line number */
+%option yylineno 
+
+%x IN_COMMENT
 
 %%
 
@@ -98,9 +122,52 @@ Hex [{D}a-f]     /*   any hex digit  */
 {Lu}({L}|{D}|_)*    { return T_idupper; }
 
 {D}+                        { return T_intconst;   }
-({D}+\.{D}+(e[+-]?{D}+)?)   { return T_floatconst; }
+({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }
 
-'([^'"\\\n\r]|((\\([ntr0\\'"])|(x{Hex}{Hex}))))'    { return T_charconst; }
+\'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { return T_charconst; }
+\"((\\.|[^"\\])?)*\"    { return T_string; }
 
+[=\|+\-\*/!;<>]    { return yytext[0]; }
+[\(\)\[\],:]        { return yytext[0]; }
+
+"−>" { return T_dashgreater;  }
+"+." { return T_plusdot;      }
+"−." { return T_minusdot;     }
+"*." { return T_stardot;      }
+"/." { return T_slashdot;     }
+"**" { return T_dblstar;      }
+"&&" { return T_dblampersand; }
+"||" { return T_dblbar;       }
+"<>" { return T_lessgreater;  }
+"<=" { return T_leq;          }
+">=" { return T_geq;          }
+"==" { return T_dbleq;        }
+"!=" { return T_slasheq;      }
+":=" { return T_coloneq;      }
+
+--.*\n  { /* nothing */ }
+
+"(*"                { comment_cnt++; BEGIN(IN_COMMENT); }
+<IN_COMMENT>"*)"    { comment_cnt--; if (comment_cnt==0) BEGIN(INITIAL); }    
+<IN_COMMENT>"*"     { /* nothing */ }
+<IN_COMMENT>[^*]+   { /* nothing */ }
+
+{W}+                { /* nothing */ } 
+
+.   { lex_error("Illegal character"); }
 
 %%
+
+void lex_error(const char *msg) {
+    fprintf(stderr, "Error at line %d, token %c (ASCII: %d): %s  \n",
+        yylineno, yytext[0], yytext[0], msg);
+    exit(1);
+}
+
+int main() {
+    int token;
+    do {
+        token = yylex();
+        printf("token=%d, lexeme=\"%s\"\n", token, yytext);
+    } while (token != T_eof);
+}
