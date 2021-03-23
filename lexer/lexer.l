@@ -147,10 +147,12 @@ Hex [0-9a-f]
 
 --.*\n  { /* nothing */ }
 
-"(*"                { comment_cnt++; BEGIN(IN_COMMENT); }
-<IN_COMMENT>"*)"    { comment_cnt--; if (comment_cnt==0) BEGIN(INITIAL); }    
+"(*"                { comment_cnt++; BEGIN(IN_COMMENT); /*printf("comment_cnt is %d",comment_cnt);*/}
+<IN_COMMENT>"(*"    { comment_cnt++; /*printf("comment_cnt is %d",comment_cnt);*/}
+<IN_COMMENT>"*)"    { comment_cnt--; if (comment_cnt==0) {/*printf("comment_cnt is %d",comment_cnt);*/BEGIN(INITIAL);} }    
 <IN_COMMENT>"*"     { /* nothing */ }
-<IN_COMMENT>[^*]+   { /* nothing */ }
+<IN_COMMENT>[^(*]*  { /* nothing */ }
+<IN_COMMENT>"("     { /* nothing */ }
 
 {W}+                { /* nothing */ } 
 
