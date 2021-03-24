@@ -78,6 +78,7 @@ Hex [0-9a-f]
 
 /* use variable yylineno to get current input line number */
 %option yylineno 
+%option nounput
 
 %x IN_COMMENT
 
