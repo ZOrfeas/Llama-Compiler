@@ -17,3 +17,4 @@ let main =
     print_string "Please, give the number of rings: ";
     let n = read_int () in
     hanoi n "left" "right" "middle"
+

@@ -125,7 +125,7 @@ Hex [0-9a-f]
 ({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }
 
 \'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { return T_charconst; }
-\"((\\.|[^"\\])?)*\"    { return T_string; }
+\"((\\.|[^"\\\n])?)*\"    { return T_string; }
 
 [=\|+\-\*/!;<>]    { return yytext[0]; }
 [\(\)\[\],:]        { return yytext[0]; }
