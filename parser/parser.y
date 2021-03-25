@@ -56,7 +56,144 @@
 %token T_exclameq "!="
 %token T_coloneq ":="
 
+/* 
+ * Associativity is explicitly declared
+ * Precedence increases top to bottom 
+ *
+ * ?? PREFIXES ARE COMMENTED OUT ??
+*/
+
+//%left "let" "in"
+
+%left ';'
+
+// if - then - else
+%right "then" "else"
+
+%nonassoc ":="
+
+%left "||"
+%left "&&"
+%nonassoc '=' "<>" '>' '<' "<=" ">=" "==" "!="
+
+%left '+' '-' "+." "-."
+%left '*' '/' "*." "/." "mod"
+%right "**"
+
+%left PSIGN //"not" "delete"
+
+%nonassoc PFUNCALL
+
+//%left "!"
+
+%nonassoc '[' ']'
+
+%nonassoc "new" 
 
 %%
 
+program: 
+    /* nothing */
+|   program definition
+;
+
+definition:
+    letdef 
+|   typedef
+;
+
+letdef:
+    "let" def def_list
+|   "let" rec def def_list
+;
+
+def_list:
+    /* nothing */
+|   def_list "and" def 
+;
+
+def: 
+    T_idlower par_list type_opt '=' expr
+|   "mutable" id expr_list_opt type_opt
+;
+
+type_opt:
+    /* nothing */
+|   ':' type
+;
+
+epr_list_opt:
+    /* nothing */
+|   '[' expr expr_list ']'
+;
+
+expr_list:
+    /* nothing */
+|   expr_list expr 
+;
+
+typedef: 
+    "type" tdef tdef_list
+;
+
+tdef_list:
+    /* nothing */
+|   tdef_list "and" tdef 
+;
+
+tdef: 
+    T_idlower '=' constr constr_list
+;
+
+constr_list: 
+    /* nothing */
+|   constr_list '|' constr
+;
+
+constr:
+    T_idupper  type_list_opt
+;
+
+type_list_opt:
+    /* nothing */
+|   "of" type type_list
+;
+
+type_list:
+    /* nothing */
+|   type_list type
+;
+
+par:
+    T_idlower 
+|   '(' T_idlower ':' type ')'
+;
+
+type:
+    "unit" 
+|   "int" 
+|   "char" 
+|   "bool" 
+|   "float"
+|   '(' type ')' 
+|   type "->" type
+|   type "ref" 
+|   "array" smth_opt "of" type 
+|   T_idlower
+;
+
+smth_opt:
+    /* nothing */
+|   '[' '*' comma_star_list ']' 
+;
+
+comma_star_list:
+    /* nothing */
+|   comma_star_list "," "*"
+;
+
+// ?? EXPR ??
+
 %%
+
+// Run yyparse in main
