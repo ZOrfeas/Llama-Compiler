@@ -10,3 +10,4 @@ lexer.*
 parser.*
 !parser.y
 #----------------
+llamac
