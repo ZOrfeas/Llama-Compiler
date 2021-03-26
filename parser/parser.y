@@ -1,3 +1,9 @@
+%{
+#include <cstdio>
+#include <cstdlib>
+#include "lexer.hpp"
+%}
+
 %token T_and "and"
 %token T_array "array"
 %token T_begin "begin"
@@ -94,42 +100,47 @@
 
 program: 
     /* nothing */
-|   program definition
+    |   program definition
 ;
 
 definition:
     letdef 
-|   typedef
+    |   typedef
 ;
 
 letdef:
-    "let" def def_list
-|   "let" rec def def_list
+        "let" def def_list
+    |   "let" "rec" def def_list
 ;
 
 def_list:
-    /* nothing */
-|   def_list "and" def 
+        /* nothing */
+    |   def_list "and" def 
 ;
 
 def: 
-    T_idlower par_list type_opt '=' expr
-|   "mutable" id expr_list_opt type_opt
+        T_idlower par_list type_opt '=' expr
+    |   "mutable" T_idlower expr_list_opt type_opt
+;
+
+par_list:
+        /* nothing */
+    |   par_list par
 ;
 
 type_opt:
-    /* nothing */
-|   ':' type
+        /* nothing */
+    |   ':' type
 ;
 
-epr_list_opt:
-    /* nothing */
-|   '[' expr expr_list ']'
+expr_list_opt:
+        /* nothing */
+    |   '[' expr expr_list ']'
 ;
 
 expr_list:
-    /* nothing */
-|   expr_list expr 
+        /* nothing */
+    |   expr_list expr 
 ;
 
 typedef: 
@@ -137,8 +148,8 @@ typedef:
 ;
 
 tdef_list:
-    /* nothing */
-|   tdef_list "and" tdef 
+        /* nothing */
+    |   tdef_list "and" tdef 
 ;
 
 tdef: 
@@ -146,8 +157,8 @@ tdef:
 ;
 
 constr_list: 
-    /* nothing */
-|   constr_list '|' constr
+        /* nothing */
+    |   constr_list '|' constr
 ;
 
 constr:
@@ -155,45 +166,129 @@ constr:
 ;
 
 type_list_opt:
-    /* nothing */
-|   "of" type type_list
+        /* nothing */
+    |   "of" type type_list
 ;
 
 type_list:
-    /* nothing */
-|   type_list type
+        /* nothing */
+    |   type_list type
 ;
 
 par:
-    T_idlower 
-|   '(' T_idlower ':' type ')'
+        T_idlower 
+    |   '(' T_idlower ':' type ')'
 ;
 
 type:
-    "unit" 
-|   "int" 
-|   "char" 
-|   "bool" 
-|   "float"
-|   '(' type ')' 
-|   type "->" type
-|   type "ref" 
-|   "array" smth_opt "of" type 
-|   T_idlower
+        "unit" 
+    |   "int" 
+    |   "char" 
+    |   "bool" 
+    |   "float"
+    |   '(' type ')' 
+    |   type "->" type
+    |   type "ref" 
+    |   "array" smth_opt "of" type 
+    |   T_idlower
 ;
 
 smth_opt:
-    /* nothing */
-|   '[' '*' comma_star_list ']' 
+        /* nothing */
+    |   '[' '*' comma_star_list ']' 
 ;
 
 comma_star_list:
-    /* nothing */
-|   comma_star_list "," "*"
+        /* nothing */
+    |   comma_star_list "," "*"
 ;
 
-// ?? EXPR ??
+expr: 
+        T_intconst
+    |   T_floatconst
+    |   T_charconst
+    |   T_string 
+    |   "true"   | "false"
+    |   '(' ')'  | '(' expr ')'
+    |   unop expr    | expr binop expr 
+    |   T_idlower expr_list  | T_idupper expr_list 
+    |   T_idlower '[' expr comma_expr_list ']'
+    |   "dim" intconst_opt T_idlower
+    |   "new" type   | "delete" expr 
+    |   letdef "in" expr
+    |   "begin" expr "end"
+    |   "if" expr "then" expr else_expr_opt 
+    |   "while" expr "do" expr "done"
+    |   "for" T_idlower "=" expr to_alternatives expr "do" expr "done"
+    |   "match" expr "with" clause clause_list "end"
+;
+
+comma_expr_list:
+        /* nothing */
+    |   comma_expr_list ',' expr
+;
+
+intconst_opt:
+        /* nothing */
+    |   T_intconst
+;
+
+else_expr_opt:
+        /* nothing */
+    |   "else" expr
+;
+
+to_alternatives:
+        "to" 
+    |   "downto"
+;
+
+clause_list:
+        /* nothing */
+    |   '|' clause
+;
+
+unop: 
+        '+' | '-' | "+." | "-." | '!' | "not"
+;
+
+binop: 
+        '+' | '-' | '*' | '/' | "+." | "-." | "*." | "/." 
+    |   "mod" | "**" | '=' | "<>" | '<' | '>' | "<=" | ">=" 
+    |   "==" | "!=" | "&&" | "||" | ';' | ":="
+;
+
+clause: 
+    pattern "->" expr
+;
+
+pattern:
+        '+' T_intconst %prec PSIGN 
+    |   '-' T_intconst %prec PSIGN 
+    |   "+." T_floatconst %prec PSIGN 
+    |   "-." T_floatconst %prec PSIGN 
+    |   T_charconst
+    |   "true" | "false"
+    |   T_idlower 
+    |   '(' pattern ')'
+    |   T_idupper pattern_list
+;
+
+pattern_list:
+        /* nothing */
+    |   pattern_list pattern 
+;
 
 %%
 
+void yyerror(const char *msg){
+    fprintf(stderr, "Error: %s\n", msg);
+    exit(1);
+}
+
 // Run yyparse in main
+int main() {
+    int result = yyparse();
+    if(result == 0) printf("Success\n");
+    return result;
+}

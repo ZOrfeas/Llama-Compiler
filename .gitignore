@@ -2,3 +2,11 @@
 *.o
 tmp_*
 llexer*
+#----------------
+lexer.*
+!lexer.l
+!lexer.hpp
+#----------------
+parser.*
+!parser.y
+#----------------

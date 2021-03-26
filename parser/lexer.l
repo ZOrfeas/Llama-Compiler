@@ -2,6 +2,8 @@
 // token definitions, possibly omissible later on
 #define T_eof 0
 
+#include "lexer.hpp"
+#include "parser.hpp"
 #include <cstdio>
 #include <cstdlib>
 
@@ -100,13 +102,14 @@ Hex [0-9a-f]
 
 {W}+                { /* nothing */ } 
 
-.   { lex_error("Illegal character"); }
+. { yyerror("Illegal character"); }
 
 %%
 
+/*
 void lex_error(const char *msg) {
     fprintf(stderr, "Error at line %d, token %c (ASCII: %d): %s  \n",
         yylineno, yytext[0], yytext[0], msg);
     exit(1);
 }
-
+*/
