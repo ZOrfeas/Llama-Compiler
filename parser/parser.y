@@ -200,7 +200,7 @@ smth_opt:
 
 comma_star_list:
         /* nothing */
-    |   comma_star_list "," "*"
+    |   comma_star_list ',' '*'
 ;
 
 expr: 
@@ -219,7 +219,7 @@ expr:
     |   "begin" expr "end"
     |   "if" expr "then" expr else_expr_opt 
     |   "while" expr "do" expr "done"
-    |   "for" T_idlower "=" expr to_alternatives expr "do" expr "done"
+    |   "for" T_idlower '=' expr to_alternatives expr "do" expr "done"
     |   "match" expr "with" clause clause_list "end"
 ;
 
