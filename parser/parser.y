@@ -86,7 +86,7 @@
 %left '*' '/' "*." "/." "mod"
 %right "**"
 
-%left PSIGN //"not" "delete"
+%nonassoc PSIGN "not" "delete"
 
 %nonassoc PFUNCALL
 
@@ -120,7 +120,7 @@ def_list:
 
 def: 
         T_idlower par_list type_opt '=' expr
-    |   "mutable" T_idlower expr_list_opt type_opt
+    |   "mutable" T_idlower comma_expr_list_opt type_opt
 ;
 
 par_list:
@@ -133,9 +133,9 @@ type_opt:
     |   ':' type
 ;
 
-expr_list_opt:
+comma_expr_list_opt:
         /* nothing */
-    |   '[' expr expr_list ']'
+    |   '[' expr comma_expr_list ']'
 ;
 
 expr_list:
@@ -210,11 +210,19 @@ expr:
     |   T_string 
     |   "true"   | "false"
     |   '(' ')'  | '(' expr ')'
-    |   unop expr    | expr binop expr 
-    |   T_idlower expr_list  | T_idupper expr_list 
+    |   unop expr           %prec PSIGN
+    |   expr "**" expr 
+    |   expr mulop expr     %prec '*'
+    |   expr addop expr     %prec '+'
+    |   expr compop expr    %prec '='
+    |   expr "&&" expr 
+    |   expr "||" expr 
+    |   expr ":=" expr 
+//    |   T_idlower expr_list  | T_idupper expr_list 
     |   T_idlower '[' expr comma_expr_list ']'
     |   "dim" intconst_opt T_idlower
-    |   "new" type   | "delete" expr 
+    |   "new" type   
+    |   "delete" expr 
     |   letdef "in" expr
     |   "begin" expr "end"
     |   "if" expr "then" expr else_expr_opt 
@@ -249,13 +257,41 @@ clause_list:
 ;
 
 unop: 
-        '+' | '-' | "+." | "-." | '!' | "not"
+        '+' | '-' | "+." | "-." | '!' |  "not"
 ;
 
+/*
 binop: 
         '+' | '-' | '*' | '/' | "+." | "-." | "*." | "/." 
     |   "mod" | "**" | '=' | "<>" | '<' | '>' | "<=" | ">=" 
     |   "==" | "!=" | "&&" | "||" | ';' | ":="
+;
+*/
+
+mulop
+    : '*' 
+    | '/' 
+    | "*." 
+    | "/." 
+    | "mod"
+;
+
+addop
+    : '+'
+    | '-'
+    | "+."
+    | "-."
+;
+
+compop 
+    : '='
+    | "<>"
+    | '<'
+    | '>'
+    | "<="
+    | ">="
+    | "=="
+    | "!="
 ;
 
 clause: 
