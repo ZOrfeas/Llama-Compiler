@@ -210,11 +210,6 @@ expr:
     |   T_string 
     |   "true"   | "false"
     |   '(' ')'  | '(' expr ')'
-<<<<<<< HEAD
-    |   unop expr                                   %prec PSIGN 
-    |   expr binop expr 
-    |   T_idlower expr_list  | T_idupper expr_list // %prec PFUNCALL
-=======
     |   unop expr           %prec PSIGN
     |   expr "**" expr 
     |   expr mulop expr     %prec '*'
@@ -224,7 +219,6 @@ expr:
     |   expr "||" expr 
     |   expr ":=" expr 
 //    |   T_idlower expr_list  | T_idupper expr_list 
->>>>>>> 775a667bc79da905ab8fbda0d428ee0b79aab980
     |   T_idlower '[' expr comma_expr_list ']'
     |   "dim" intconst_opt T_idlower
     |   "new" type   
