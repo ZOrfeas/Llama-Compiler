@@ -210,12 +210,25 @@ expr:
     |   T_string 
     |   "true"   | "false"
     |   '(' ')'  | '(' expr ')'
+<<<<<<< HEAD
     |   unop expr                                   %prec PSIGN 
     |   expr binop expr 
     |   T_idlower expr_list  | T_idupper expr_list // %prec PFUNCALL
+=======
+    |   unop expr           %prec PSIGN
+    |   expr "**" expr 
+    |   expr mulop expr     %prec '*'
+    |   expr addop expr     %prec '+'
+    |   expr compop expr    %prec '='
+    |   expr "&&" expr 
+    |   expr "||" expr 
+    |   expr ":=" expr 
+//    |   T_idlower expr_list  | T_idupper expr_list 
+>>>>>>> 775a667bc79da905ab8fbda0d428ee0b79aab980
     |   T_idlower '[' expr comma_expr_list ']'
     |   "dim" intconst_opt T_idlower
-    |   "new" type   | "delete" expr 
+    |   "new" type   
+    |   "delete" expr 
     |   letdef "in" expr
     |   "begin" expr "end"
     |   "if" expr "then" expr else_expr_opt 
@@ -250,13 +263,41 @@ clause_list:
 ;
 
 unop: 
-        '+' | '-' | "+." | "-." | '!' | "not"
+        '+' | '-' | "+." | "-." | '!' |  "not"
 ;
 
+/*
 binop: 
         '+' | '-' | '*' | '/' | "+." | "-." | "*." | "/." 
     |   "mod" | "**" | '=' | "<>" | '<' | '>' | "<=" | ">=" 
     |   "==" | "!=" | "&&" | "||" | ';' | ":="
+;
+*/
+
+mulop
+    : '*' 
+    | '/' 
+    | "*." 
+    | "/." 
+    | "mod"
+;
+
+addop
+    : '+'
+    | '-'
+    | "+."
+    | "-."
+;
+
+compop 
+    : '='
+    | "<>"
+    | '<'
+    | '>'
+    | "<="
+    | ">="
+    | "=="
+    | "!="
 ;
 
 clause: 
