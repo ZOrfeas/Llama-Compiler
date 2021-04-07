@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "lexer.hpp"
-#define YYDEBUG 1
+#define YYDEBUG 1 // comment out to disable debug feature compilation
 %}
 /* %define parse.trace */
 
