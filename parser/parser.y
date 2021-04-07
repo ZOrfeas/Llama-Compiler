@@ -2,9 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include "lexer.hpp"
-// #define YYDEBUG 1
+#define YYDEBUG 1
 %}
-%define parse.trace
+/* %define parse.trace */
 
 %token T_and "and"
 %token T_array "array"
@@ -80,9 +80,9 @@
 %nonassoc ":="
 %left "||"
 %left "&&"
-%nonassoc '=' "<>" '>' '<' "<=" ">=" "==" "!="
-%left '+' '-' "+." "-."
-%left '*' '/' "*." "/." "mod"
+%nonassoc '=' "<>" '>' '<' "<=" ">=" "==" "!=" COMPOP
+%left '+' '-' "+." "-." ADDOP
+%left '*' '/' "*." "/." "mod" MULTOP
 %right "**"
 %precedence UNOPS
 
@@ -196,9 +196,12 @@ expr
 | expr "||" expr
 | expr "&&" expr
 // remember to sometime check if you can group them before doing the ASTs
-| expr '=' expr | expr "<>" expr | expr '>' expr | expr '<' expr | expr "<=" expr | expr ">=" expr | expr "==" expr | expr "!=" expr 
-| expr '+' expr | expr '-' expr | expr "+." expr | expr "-." expr 
-| expr '*' expr | expr '/' expr | expr "*." expr | expr "/." expr | expr "mod" expr 
+//| expr '=' expr | expr "<>" expr | expr '>' expr | expr '<' expr | expr "<=" expr | expr ">=" expr | expr "==" expr | expr "!=" expr 
+| expr comp_operator expr %prec COMPOP
+//| expr '+' expr | expr '-' expr | expr "+." expr | expr "-." expr 
+| expr add_operator expr %prec ADDOP
+/* | expr '*' expr | expr '/' expr | expr "*." expr | expr "/." expr | expr "mod" expr  */
+| expr mult_operator expr %prec MULTOP
 | expr "**" expr
 | unop expr %prec UNOPS
 | "while" expr "do" expr "done"
@@ -232,6 +235,18 @@ expr_2_opt_list
 
 unop
 : '+' | '-' | "+." | "-." | "not" | "delete"
+
+comp_operator
+: '=' | "<>" | '>' | '<' | "<=" | ">=" | "==" | "!="
+;
+
+add_operator
+: '+' | '-' | "+." | "-."
+;
+
+mult_operator
+: '*' | '/' | "*." | "/." | "mod"
+;
 
 to_or_downto
 : "to" | "downto"
@@ -269,7 +284,7 @@ void yyerror(const char *msg) {
 }
 
 int main() {
-    // yydebug = 1;
+    // yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
     if (result == 0) printf("Success\n");
     return result;
