@@ -138,6 +138,7 @@ tdef
 bar_constr_opt_list
 : %empty
 | bar_constr_opt_list '|' constr
+;
 
 and_def_opt_list
 : %empty
@@ -235,6 +236,7 @@ expr_2_opt_list
 
 unop
 : '+' | '-' | "+." | "-." | "not" | "delete"
+;
 
 comp_operator
 : '=' | "<>" | '>' | '<' | "<=" | ">=" | "==" | "!="
