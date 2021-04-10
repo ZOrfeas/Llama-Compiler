@@ -219,7 +219,7 @@ expr_2
 | "true" | "false" | '(' ')'
 | '!' expr_2
 | T_idlower '[' expr_2 comma_expr_2_opt_list ']'
-| "new" expr_2
+| "new" type
 | '(' expr ')'
 | "begin" expr "end"
 ;
