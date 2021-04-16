@@ -210,6 +210,7 @@ expr
 | "match" expr "with" clause bar_clause_opt_list "end"
 | "dim" T_intconst T_idlower | "dim" T_idlower
 | T_idlower expr_2_opt_list
+| T_idupper expr_2_opt_list
 | expr_2
 ;
 
