@@ -9,7 +9,7 @@ lexer.cpp: lexer.l
 	flex -s -o lexer.cpp lexer.l
 
 parser.hpp parser.cpp: parser.y
-	bison -dv -o parser.cpp parser.y
+	bison -dv --debug -Wall -o parser.cpp parser.y
 
 # Add your dependencies here, e.g.
 # parser.o: parser.cpp lexer.hpp symbol.hpp

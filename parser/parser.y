@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include "lexer.hpp"
+#define YYDEBUG 1 // comment out to disable debug feature compilation
 %}
+/* %define parse.trace */
 
 %token T_and "and"
 %token T_array "array"
@@ -45,7 +47,7 @@
 %token T_intconst 
 %token T_floatconst 
 %token T_charconst 
-%token T_string 
+%token T_stringliteral
 
 %token T_dashgreater "->"
 %token T_plusdot "+."
@@ -62,269 +64,230 @@
 %token T_exclameq "!="
 %token T_coloneq ":="
 
-/* 
- * Associativity is explicitly declared
- * Precedence increases top to bottom 
- *
- * ?? PREFIXES ARE COMMENTED OUT ??
-*/
+/**
+ * Associativity and precedence information 
+ */
 
-//%left "let" "in"
+// Type definition necessary precedences
+%precedence ARRAYOF
+%precedence "ref"
+%left "->"
 
+// Operator precedences
+%precedence LETIN
 %left ';'
-
-// if - then - else
 %right "then" "else"
-
 %nonassoc ":="
-
 %left "||"
 %left "&&"
-%nonassoc '=' "<>" '>' '<' "<=" ">=" "==" "!="
-
-%left '+' '-' "+." "-."
-%left '*' '/' "*." "/." "mod"
+%nonassoc '=' "<>" '>' '<' "<=" ">=" "==" "!=" COMPOP
+%left '+' '-' "+." "-." ADDOP
+%left '*' '/' "*." "/." "mod" MULTOP
 %right "**"
-
-%nonassoc PSIGN "not" "delete"
-
-%nonassoc PFUNCALL
-
-//%left "!"
-
-%nonassoc '[' ']'
-
-%nonassoc "new" 
+%precedence UNOPS
 
 %%
 
-program: 
-    /* nothing */
-    |   program definition
+program
+: %empty
+| program definition_choice
 ;
 
-definition:
-    letdef 
-    |   typedef
+definition_choice
+: letdef | typedef
 ;
 
-letdef:
-        "let" def def_list
-    |   "let" "rec" def def_list
+letdef
+: "let" def and_def_opt_list
+| "let" "rec" def and_def_opt_list
 ;
 
-def_list:
-        /* nothing */
-    |   def_list "and" def 
+typedef
+: "type" tdef and_tdef_opt_list
 ;
 
-def: 
-        T_idlower par_list type_opt '=' expr
-    |   "mutable" T_idlower comma_expr_list_opt type_opt
+def
+: T_idlower par_opt_list colon_type_opt '=' expr
+| "mutable" T_idlower bracket_comma_expr_opt colon_type_opt
 ;
 
-par_list:
-        /* nothing */
-    |   par_list par
+par_opt_list
+: %empty
+| par_opt_list par
 ;
 
-type_opt:
-        /* nothing */
-    |   ':' type
+colon_type_opt
+: %empty
+| ':' type
 ;
 
-comma_expr_list_opt:
-        /* nothing */
-    |   '[' expr comma_expr_list ']'
+bracket_comma_expr_opt
+: %empty
+| '[' expr comma_expr_opt_list ']'
 ;
 
-expr_list:
-        /* nothing */
-    |   expr_list expr 
+comma_expr_opt_list
+: %empty
+| comma_expr_opt_list ',' expr
 ;
 
-typedef: 
-    "type" tdef tdef_list
+tdef
+: T_idlower '=' constr bar_constr_opt_list
 ;
 
-tdef_list:
-        /* nothing */
-    |   tdef_list "and" tdef 
+bar_constr_opt_list
+: %empty
+| bar_constr_opt_list '|' constr
 ;
 
-tdef: 
-    T_idlower '=' constr constr_list
+and_def_opt_list
+: %empty
+| and_def_opt_list "and" def
 ;
 
-constr_list: 
-        /* nothing */
-    |   constr_list '|' constr
+and_tdef_opt_list
+: %empty
+| and_tdef_opt_list "and" tdef
 ;
 
-constr:
-    T_idupper  type_list_opt
+constr
+: T_idupper of_type_opt_list
 ;
 
-type_list_opt:
-        /* nothing */
-    |   "of" type type_list
+of_type_opt_list
+: %empty
+| "of" at_least_one_type
 ;
 
-type_list:
-        /* nothing */
-    |   type_list type
+at_least_one_type
+: type
+| at_least_one_type type
 ;
 
-par:
-        T_idlower 
-    |   '(' T_idlower ':' type ')'
+par
+: T_idlower
+| '(' T_idlower ':' type ')'
 ;
 
-type:
-        "unit" 
-    |   "int" 
-    |   "char" 
-    |   "bool" 
-    |   "float"
-    |   '(' type ')' 
-    |   type "->" type
-    |   type "ref" 
-    |   "array" smth_opt "of" type 
-    |   T_idlower
+type
+: "unit" | "int" | "char" | "bool" | "float"
+| '(' type ')' 
+| type "->" type 
+| type "ref"
+| "array" bracket_star_opt "of" type %prec ARRAYOF
+| T_idlower
 ;
 
-smth_opt:
-        /* nothing */
-    |   '[' '*' comma_star_list ']' 
+bracket_star_opt
+: %empty
+| '[' '*' comma_star_opt_list ']'
 ;
 
-comma_star_list:
-        /* nothing */
-    |   comma_star_list ',' '*'
+comma_star_opt_list
+: %empty
+| comma_star_opt_list ',' '*'
 ;
 
-expr: 
-        T_intconst
-    |   T_floatconst
-    |   T_charconst
-    |   T_string 
-    |   "true"   | "false"
-    |   '(' ')'  | '(' expr ')'
-    |   unop expr           %prec PSIGN
-    |   expr "**" expr 
-    |   expr mulop expr     %prec '*'
-    |   expr addop expr     %prec '+'
-    |   expr compop expr    %prec '='
-    |   expr "&&" expr 
-    |   expr "||" expr 
-    |   expr ":=" expr 
-//    |   T_idlower expr_list  | T_idupper expr_list 
-    |   T_idlower '[' expr comma_expr_list ']'
-    |   "dim" intconst_opt T_idlower
-    |   "new" type   
-    |   "delete" expr 
-    |   letdef "in" expr
-    |   "begin" expr "end"
-    |   "if" expr "then" expr else_expr_opt 
-    |   "while" expr "do" expr "done"
-    |   "for" T_idlower '=' expr to_alternatives expr "do" expr "done"
-    |   "match" expr "with" clause clause_list "end"
+expr
+: letdef "in" expr %prec LETIN
+| expr ';' expr
+| "if" expr "then" expr "else" expr 
+| "if" expr "then" expr
+| expr ":=" expr
+| expr "||" expr
+| expr "&&" expr
+// remember to sometime check if you can group them before doing the ASTs
+//| expr '=' expr | expr "<>" expr | expr '>' expr | expr '<' expr | expr "<=" expr | expr ">=" expr | expr "==" expr | expr "!=" expr 
+| expr comp_operator expr %prec COMPOP
+//| expr '+' expr | expr '-' expr | expr "+." expr | expr "-." expr 
+| expr add_operator expr %prec ADDOP
+/* | expr '*' expr | expr '/' expr | expr "*." expr | expr "/." expr | expr "mod" expr  */
+| expr mult_operator expr %prec MULTOP
+| expr "**" expr
+| unop expr %prec UNOPS
+| "while" expr "do" expr "done"
+| "for" T_idlower '=' expr to_or_downto expr "do" expr "done"
+| "match" expr "with" clause bar_clause_opt_list "end"
+| "dim" T_intconst T_idlower | "dim" T_idlower
+| T_idlower expr_2_opt_list
+| expr_2
 ;
 
-comma_expr_list:
-        /* nothing */
-    |   comma_expr_list ',' expr
+expr_2
+: T_intconst | T_floatconst | T_charconst | T_stringliteral
+| T_idlower | T_idupper
+| "true" | "false" | '(' ')'
+| '!' expr_2
+| T_idlower '[' expr_2 comma_expr_2_opt_list ']'
+| "new" type
+| '(' expr ')'
+| "begin" expr "end"
 ;
 
-intconst_opt:
-        /* nothing */
-    |   T_intconst
+comma_expr_2_opt_list
+: %empty
+| comma_expr_2_opt_list ',' expr_2
 ;
 
-else_expr_opt:
-        /* nothing */
-    |   "else" expr
+expr_2_opt_list
+: expr_2
+| expr_2_opt_list expr_2
 ;
 
-to_alternatives:
-        "to" 
-    |   "downto"
+unop
+: '+' | '-' | "+." | "-." | "not" | "delete"
 ;
 
-clause_list:
-        /* nothing */
-    |   '|' clause
+comp_operator
+: '=' | "<>" | '>' | '<' | "<=" | ">=" | "==" | "!="
 ;
 
-unop: 
-        '+' | '-' | "+." | "-." | '!' |  "not"
+add_operator
+: '+' | '-' | "+." | "-."
 ;
 
-/*
-binop: 
-        '+' | '-' | '*' | '/' | "+." | "-." | "*." | "/." 
-    |   "mod" | "**" | '=' | "<>" | '<' | '>' | "<=" | ">=" 
-    |   "==" | "!=" | "&&" | "||" | ';' | ":="
-;
-*/
-
-mulop
-    : '*' 
-    | '/' 
-    | "*." 
-    | "/." 
-    | "mod"
+mult_operator
+: '*' | '/' | "*." | "/." | "mod"
 ;
 
-addop
-    : '+'
-    | '-'
-    | "+."
-    | "-."
+to_or_downto
+: "to" | "downto"
 ;
 
-compop 
-    : '='
-    | "<>"
-    | '<'
-    | '>'
-    | "<="
-    | ">="
-    | "=="
-    | "!="
+bar_clause_opt_list
+: %empty
+| bar_clause_opt_list '|' clause
 ;
 
-clause: 
-    pattern "->" expr
+clause
+: pattern "->" expr
 ;
 
-pattern:
-        '+' T_intconst %prec PSIGN 
-    |   '-' T_intconst %prec PSIGN 
-    |   "+." T_floatconst %prec PSIGN 
-    |   "-." T_floatconst %prec PSIGN 
-    |   T_charconst
-    |   "true" | "false"
-    |   T_idlower 
-    |   '(' pattern ')'
-    |   T_idupper pattern_list
+pattern
+: '+' T_intconst | '-' T_intconst
+| "+." T_floatconst | "-." T_floatconst
+| T_charconst 
+| "true" | "false"
+| T_idlower
+| '(' pattern ')'
+| '(' T_idupper pattern_opt_list ')'
 ;
 
-pattern_list:
-        /* nothing */
-    |   pattern_list pattern 
+pattern_opt_list
+: %empty
+| pattern_opt_list pattern
 ;
 
 %%
 
-void yyerror(const char *msg){
+void yyerror(const char *msg) {
     fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
     exit(1);
 }
 
-// Run yyparse in main
 int main() {
+    // yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
-    if(result == 0) printf("Success\n");
+    if (result == 0) printf("Success\n");
     return result;
 }
