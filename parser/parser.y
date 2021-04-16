@@ -270,7 +270,7 @@ pattern
 | "true" | "false"
 | T_idlower
 | '(' pattern ')'
-| T_idupper pattern_opt_list
+| '(' T_idupper pattern_opt_list ')'
 ;
 
 pattern_opt_list
