@@ -70,6 +70,7 @@
 */
 
 //%left "let" "in"
+%nonassoc LETDEF
 
 %left ';'
 
@@ -90,7 +91,7 @@
 
 %nonassoc PFUNCALL
 
-//%left "!"
+%nonassoc '!'
 
 %nonassoc '[' ']'
 
@@ -211,6 +212,7 @@ expr:
     |   "true"   | "false"
     |   '(' ')'  | '(' expr ')'
     |   unop expr           %prec PSIGN
+    |   '!' expr
     |   expr "**" expr 
     |   expr mulop expr     %prec '*'
     |   expr addop expr     %prec '+'
@@ -218,14 +220,16 @@ expr:
     |   expr "&&" expr 
     |   expr "||" expr 
     |   expr ":=" expr 
-//    |   T_idlower expr_list  | T_idupper expr_list 
+    |   expr ';' expr
+//    |   T_idlower expr_list  | T_idupper expr_list    %prec PFUNCALL
     |   T_idlower '[' expr comma_expr_list ']'
     |   "dim" intconst_opt T_idlower
     |   "new" type   
     |   "delete" expr 
-    |   letdef "in" expr
+    |   letdef "in" expr    %prec LETDEF
     |   "begin" expr "end"
-    |   "if" expr "then" expr else_expr_opt 
+    |   "if" expr "then" expr 
+    |   "if" expr "then" expr "else" expr
     |   "while" expr "do" expr "done"
     |   "for" T_idlower '=' expr to_alternatives expr "do" expr "done"
     |   "match" expr "with" clause clause_list "end"
@@ -241,11 +245,6 @@ intconst_opt:
     |   T_intconst
 ;
 
-else_expr_opt:
-        /* nothing */
-    |   "else" expr
-;
-
 to_alternatives:
         "to" 
     |   "downto"
@@ -257,7 +256,7 @@ clause_list:
 ;
 
 unop: 
-        '+' | '-' | "+." | "-." | '!' |  "not"
+        '+' | '-' | "+." | "-." | "not"
 ;
 
 /*
