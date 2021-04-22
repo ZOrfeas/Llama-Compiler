@@ -64,17 +64,17 @@ Hex [0-9a-f]
 "while"     { return T_while;   }
 "with"      { return T_with;    }
 
-{Ll}({L}|{D}|_)*    { return T_idlower; }
-{Lu}({L}|{D}|_)*    { return T_idupper; }
+{Ll}({L}|{D}|_)*    { yylval.id = std::string(yytext); return T_idlower; }
+{Lu}({L}|{D}|_)*    { yylval.id = std::string(yytext); return T_idupper; }
 
-{D}+                        { return T_intconst;   }
+{D}+                        { yylval.num = atoi(yytext); return T_intconst;   }
 ({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }
 
 \'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { return T_charconst; }
 \"((\\.|[^"\\\n])?)*\"    { return T_stringliteral; }
 
-[=\|+\-\*/!;<>]    { return yytext[0]; }
-[\(\)\[\],:]        { return yytext[0]; }
+[=\|+\-\*/!;<>]    { yylval.op = yytext[0]; return yytext[0]; }
+[\(\)\[\],:]        { yylval.op = yytext[0]; return yytext[0]; }
 
 "−>" { return T_dashgreater;  }
 "+." { return T_plusdot;      }

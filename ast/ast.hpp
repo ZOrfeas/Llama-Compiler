@@ -3,6 +3,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include "symbol.hpp"
+//#include "parser.hpp"
 
 void yyerror(const char *msg);
 
@@ -42,13 +44,9 @@ private:
     Identifier *id;
     Type type;
 public:
-    Par(Identifier *id, Type t = nullptr): id(id), type(t) {}
+    Par(Identifier *id, Type t = TYPE_unknown): id(id), type(t) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Par(" << *id;
-
-        if(type) out << ", " << type;
-
-        out << ")";
+        out << "Par(" << *id << ", " << type << ")";
     }
 };
 
@@ -87,14 +85,10 @@ private:
     Type type;
     Expr *expr;
 public:
-    Function(Identifier *id, std::vector<Par *> &p, Expr *e, Type t /* = nullptr */): id(id), par_list(p), type(t), expr(e) {}
+    Function(Identifier *id, std::vector<Par *> &p, Expr *e, Type t = TYPE_unknown): id(id), par_list(p), type(t), expr(e) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Def(" << *id;
-
-        for(Par *p: par_list){
-            out << ", " << *p;
-        }
-
+        for(Par *p: par_list){ out << ", " << *p; }
         out << ", " << type << ", " << expr << ")";
     }
 };
@@ -105,10 +99,9 @@ private:
     std::vector<Expr *> expr_list;
     Type type;
 public:
-    Mutable(Identifier *id, std::vector<Expr *> &e, Type t /* = nullptr */): id(id), expr_list(e), type(t) {}
+    Mutable(Identifier *id, std::vector<Expr *> &e, Type t = TYPE_unknown): id(id), expr_list(e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Def(" << *id;
-
         if(!expr_list.empty()) {
             out << "[";
 
@@ -120,7 +113,6 @@ public:
                 out << *e;
             }
         }
-
         out << ", " << type << ")";
     }
 };
@@ -291,11 +283,19 @@ public:
 };
 
 class BinOp: public Expr {
-
+private:
+    Expr *lhs, *rhs;
+    int op;
+public:
+    BinOp(Expr *e1, int op, Expr *e2): lhs(e1), op(op), rhs(e2) {}
 };
 
 class UnOp: public Expr {
-
+private:
+    Expr *expr;
+    int op;
+public:
+    UnOp(int op, Expr *e): op(op), expr(e) {}
 };
 
 class While: public Expr {
