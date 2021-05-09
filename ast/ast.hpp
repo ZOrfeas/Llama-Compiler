@@ -3,11 +3,13 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
 #include "symbol.hpp"
 //#include "parser.hpp"
 
 void yyerror(const char *msg);
 
+//--------------------------------------------------------------------
 class AST {
 public:
     virtual ~AST() {}
@@ -19,6 +21,21 @@ inline std::ostream& operator<< (std::ostream &out, const AST &t) {
   t.printOn(out);
   return out;
 }
+
+class Expr: public AST {
+protected:
+    Type type;
+public:
+    void type_check(Type t) {
+        sem();
+        if (type != t) yyerror("Type mismatch");
+    }
+};
+
+class Identifier: public Expr {
+protected:
+    std::string name;
+};
 
 //--------------------------------------------------------------------
 class Constr: public AST {
@@ -189,20 +206,9 @@ public:
 };
 
 //--------------------------------------------------------------------
-class Expr: public AST {
-protected:
-    Type type;
-public:
-    void type_check(Type t) {
-        sem();
-        if (type != t) yyerror("Type mismatch");
-    }
-};
+// class Expr: public AST (used to be here)
 
-class Identifier: public Expr {
-protected:
-    std::string name;
-};
+// class Identifier: public Expr (used to be here)
 
 class Id_upper: public Identifier {
 public:
@@ -287,7 +293,7 @@ private:
     Expr *lhs, *rhs;
     int op;
 public:
-    BinOp(Expr *e1, int op, Expr *e2): lhs(e1), op(op), rhs(e2) {}
+    BinOp(Expr *e1, int op, Expr *e2): lhs(e1), rhs(e2), op(op) {}
 };
 
 class UnOp: public Expr {
@@ -295,7 +301,7 @@ private:
     Expr *expr;
     int op;
 public:
-    UnOp(int op, Expr *e): op(op), expr(e) {}
+    UnOp(int op, Expr *e): expr(e), op(op) {}
 };
 
 class While: public Expr {
@@ -311,11 +317,12 @@ public:
 class For: public Expr {
 private:
     Identifier *id;
+    std::string step;
     Expr *start, *finish, *body;
 public:
-    For(Identifier *id, Expr *e1, Expr *e2, Expr *e3): id(id), start(e1), finish(e2), body(e3) { type = TYPE_unit; }
+    For(Identifier *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(id), step(s), start(e1), finish(e2), body(e3) { type = TYPE_unit; }
     virtual void printOn(std::ostream &out){
-        out << "For(" << *id << ", " << *start << ", " << *finish << ", " << *body << ")";
+        out << "For(" << *id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
 };
 

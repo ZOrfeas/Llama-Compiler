@@ -2,10 +2,13 @@
 // token definitions, possibly omissible later on
 #define T_eof 0
 
-#include "lexer.hpp"
-#include "parser.hpp"
+#include <string>
 #include <cstdio>
 #include <cstdlib>
+
+#include "ast.hpp"
+#include "lexer.hpp"
+#include "parser.hpp"
 
 // int yylineno = 1;
 int comment_cnt = 0;

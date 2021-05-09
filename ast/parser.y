@@ -1,6 +1,8 @@
 %{
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
+
 #include "lexer.hpp"
 #include "ast.hpp"
 //#define YYDEBUG 1 // comment out to disable debug feature compilation
@@ -24,6 +26,9 @@
     std::string id;
     int op;     // This will store the lexical code of the operator
     int num;
+    char character;
+    float dec;
+    std::string str;
 }
 
 %token T_and "and"
@@ -31,7 +36,7 @@
 %token T_begin "begin"
 %token T_bool "bool"
 %token T_char "char"
-%token T_delete "delete"
+%token<op> T_delete "delete"
 %token T_dim "dim"
 %token T_do "do"
 %token T_done "done"
@@ -49,7 +54,7 @@
 %token T_mod "mod"
 %token T_mutable "mutable"
 %token T_new "new"
-%token T_not "not"
+%token<op> T_not "not"
 %token T_of "of"
 %token T_rec "rec"
 %token T_ref "ref"
@@ -64,10 +69,10 @@
 %token<id> T_idlower 
 %token<id> T_idupper 
 
-%token T_intconst 
-%token T_floatconst 
-%token T_charconst 
-%token T_stringliteral
+%token<num> T_intconst 
+%token<dec> T_floatconst 
+%token<character> T_charconst 
+%token<str> T_stringliteral
 
 %token T_dashgreater "->"
 %token T_plusdot "+."
@@ -111,7 +116,7 @@
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_opt_list
-%type<expr_vect> bracket_comma_expr_opt comma_expr_opt_list 
+%type<expr_vect> bracket_comma_expr_opt comma_expr_opt_list comma_expr_2_list expr_2_opt_list
 %type<constr_vect> bar_constr_opt_list
 %type<def_vect> and_def_opt_list
 %type<tdef_vect> and_tdef_opt_list
@@ -120,7 +125,7 @@
 %type<par> par
 %type<type> type
 %type<op> unop comp_operator add_operator mult_operator
-%type<expr> expr
+%type<expr> expr expr_2
 %type<num> comma_star_opt_list bracket_star_opt
 
 
@@ -149,7 +154,7 @@ def
 : T_idlower par_opt_list '=' expr                       { $$ = new Function($1, $2, $3); }
 | T_idlower par_opt_list ':' type '=' expr              { $$ = new Function($1, $2, $6, $4); }
 | "mutable" T_idlower bracket_comma_expr_opt            { $$ = new Mutable($2, $3); }
-| "mutable" T_idlower bracket_comma_expr_opt ':' type   { $$ = new Mutable($2, $3, $4); }
+| "mutable" T_idlower bracket_comma_expr_opt ':' type   { $$ = new Mutable($2, $3, $5); }
 ;
 
 par_opt_list
@@ -253,34 +258,41 @@ expr
 | expr "**" expr                        { $$ = new BinOp($1, $2, $3); }
 | unop expr %prec UNOPS                 { $$ = new UnOp($1, $2); }
 | "while" expr "do" expr "done"         { $$ = new While($2, $4); }
-| "for" T_idlower '=' expr "to" expr "do" expr "done"   { $$ = new For($2, $4, $5, $6, $8); } 
-| "for" T_idlower '=' expr "downto" expr "do" expr "done"   { $$ = new For($2, $4, $5, $6, $8); }  
+| "for" T_idlower '=' expr "to" expr "do" expr "done"   { $$ = new For($2, $4, "to", $6, $8); } 
+| "for" T_idlower '=' expr "downto" expr "do" expr "done"   { $$ = new For($2, $4, "downto", $6, $8); }  
 | "match" expr "with" clause bar_clause_opt_list "end"  { ; }
-| "dim" T_intconst T_idlower | "dim" T_idlower
-| T_idlower expr_2_opt_list
-| T_idupper expr_2_opt_list
-| expr_2
+| "dim" T_intconst T_idlower            { ; }
+| "dim" T_idlower                       { ; }
+| T_idlower expr_2_opt_list             { ; }
+| T_idupper expr_2_opt_list             { ; }
+| expr_2                                { $$ = $1; }            
 ;
 
 expr_2
-: T_intconst | T_floatconst | T_charconst | T_stringliteral
-| T_idlower | T_idupper
-| "true" | "false" | '(' ')'
-| '!' expr_2
-| T_idlower '[' expr_2 comma_expr_2_opt_list ']'
-| "new" type
-| '(' expr ')'
-| "begin" expr "end"
+: T_intconst        { $$ = new Int_literal($1); } 
+| T_floatconst      { $$ = new Float_literal($1); }
+| T_charconst       { $$ = new Char_literal($1); }
+| T_stringliteral   { $$ = new String_literal($1); }
+| T_idlower         { /* LOOKUP */; }
+| T_idupper         { /* LOOKUP */; }
+| "true"            { $$ = new Char_literal(true); }
+| "false"           { $$ = new Bool_literal(false); }
+| '(' ')'           { $$ = new Unit(); }
+| '!' expr_2        { /* DEREFERENCE */; }
+| T_idlower '[' comma_expr_2_list ']'    { ; }
+| "new" type        { ; }
+| '(' expr ')'      { $$ = $2; }
+| "begin" expr "end"    { $$ = $2; }
 ;
 
-comma_expr_2_opt_list
-: %empty
-| comma_expr_2_opt_list ',' expr_2
+comma_expr_2_list
+: expr_2                            { $$ = std::vector<Expr *>(); $$->push_back($1); }
+| comma_expr_2_list ',' expr_2      { $1->push_back($3); $$ = $1; }
 ;
 
 expr_2_opt_list
-: expr_2
-| expr_2_opt_list expr_2
+: expr_2                    { $$ = std::vector<Expr *>(); $$->push_back($1) }
+| expr_2_opt_list expr_2    { $1->push_back($2); $$ = $1; }
 ;
 
 unop
@@ -335,15 +347,15 @@ clause
 ;
 
 pattern
-: '+' T_intconst                    { ; }
-| '-' T_intconst                    { ; }
-| "+." T_floatconst                 { ; }
-| "-." T_floatconst                 { ; }
-| T_charconst                       { ; }
-| "true"                            { ; }
-| "false"                           { ; }
-| T_idlower                         { ; }
-| '(' pattern ')'                   { ; }
+: '+' T_intconst                        { ; }
+| '-' T_intconst                        { ; }
+| "+." T_floatconst                     { ; }
+| "-." T_floatconst                     { ; }
+| T_charconst                           { ; }
+| "true"                                { ; }
+| "false"                               { ; }
+| T_idlower                             { ; }
+| '(' pattern ')'                       { ; }
 | '(' T_idupper pattern_opt_list ')'    { ; }
 ;
 
