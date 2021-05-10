@@ -67,8 +67,8 @@ Hex [0-9a-f]
 "while"     { return T_while;   }
 "with"      { return T_with;    }
 
-{Ll}({L}|{D}|_)*    { yylval.id = std::string(yytext); return T_idlower; }
-{Lu}({L}|{D}|_)*    { yylval.id = std::string(yytext); return T_idupper; }
+{Ll}({L}|{D}|_)*    { yylval.id = new std::string(yytext); return T_idlower; }
+{Lu}({L}|{D}|_)*    { yylval.id = new std::string(yytext); return T_idupper; }
 
 {D}+                        { yylval.num = atoi(yytext); return T_intconst;   }
 ({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }

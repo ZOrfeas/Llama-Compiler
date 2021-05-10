@@ -40,12 +40,12 @@ protected:
 //--------------------------------------------------------------------
 class Constr: public AST {
 private:
-    Identifier *Id;
+    std::string Id;
     std::vector<Type> type_list;
 public:
-    Constr(Identifier *Id, std::vector<Type> &t): Id(Id), type_list(t) {}
+    Constr(std::string *Id, std::vector<Type> *t): Id(*Id), type_list(*t) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Constr(" << *Id;
+        out << "Constr(" << Id;
 
         for(Type t: type_list){
             out << ", " << t;
@@ -58,12 +58,12 @@ public:
 //--------------------------------------------------------------------
 class Par: public AST {
 private:
-    Identifier *id;
+    std::string id;
     Type type;
 public:
-    Par(Identifier *id, Type t = TYPE_unknown): id(id), type(t) {}
+    Par(std::string *id, Type t = TYPE_unknown): id(*id), type(t) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Par(" << *id << ", " << type << ")";
+        out << "Par(" << id << ", " << type << ")";
     }
 };
 
@@ -73,12 +73,12 @@ class DefStmt: public AST {
 
 class Tdef: public DefStmt {
 private:
-    Identifier *id;
+    std::string id;
     std::vector<Constr *> constr_list;
 public:
-    Tdef(Identifier *id, std::vector<Constr *> &c): id(id), constr_list(c) {}
+    Tdef(std::string *id, std::vector<Constr *> *c): id(*id), constr_list(*c) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Tdef(" << *id << ", ";
+        out << "Tdef(" << id << ", ";
 
         bool first = true;
         for(Constr *c: constr_list){
@@ -97,14 +97,14 @@ class Def: public DefStmt {
 
 class Function: public Def {
 private:
-    Identifier *id;
+    std::string id;
     std::vector<Par *> par_list;
     Type type;
     Expr *expr;
 public:
-    Function(Identifier *id, std::vector<Par *> &p, Expr *e, Type t = TYPE_unknown): id(id), par_list(p), type(t), expr(e) {}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type t = TYPE_unknown): id(*id), par_list(*p), type(t), expr(e) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Def(" << *id;
+        out << "Def(" << id;
         for(Par *p: par_list){ out << ", " << *p; }
         out << ", " << type << ", " << expr << ")";
     }
@@ -112,13 +112,13 @@ public:
 
 class Mutable: public Def {
 private:
-    Identifier *id;
+    std::string id;
     std::vector<Expr *> expr_list;
     Type type;
 public:
-    Mutable(Identifier *id, std::vector<Expr *> &e, Type t = TYPE_unknown): id(id), expr_list(e), type(t) {}
+    Mutable(std::string *id, std::vector<Expr *> *e, Type t = TYPE_unknown): id(*id), expr_list(*e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Def(" << *id;
+        out << "Def(" << id;
         if(!expr_list.empty()) {
             out << "[";
 
@@ -144,7 +144,7 @@ private:
     bool recursive;
     std::vector<DefStmt *> def_list;
 public:
-    Letdef(std::vector<DefStmt *> &d, bool rec = false): recursive(rec), def_list(d) {}
+    Letdef(std::vector<DefStmt *> *d, bool rec = false): recursive(rec), def_list(*d) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Let(";
         if(recursive) out << "rec ";
@@ -165,7 +165,7 @@ class Typedef: public Definition {
 private:
     std::vector<DefStmt *> tdef_list;
 public:
-    Typedef(std::vector<DefStmt *> &t): tdef_list(t) {}
+    Typedef(std::vector<DefStmt *> *t): tdef_list(*t) {}
     virtual void printOn(std::ostream &out) const override{
         out << "Type(";
 
@@ -234,7 +234,7 @@ class String_literal: public Const {
 private:
     std::string s;
 public:
-    String_literal(std::string s): s(s) { type = TYPE_string; }
+    String_literal(std::string *s): s(*s) { type = TYPE_string; }
     virtual void printOn(std::ostream &out) const override {
         out << "String(" << s << ")";
     }
@@ -245,7 +245,7 @@ private:
     char c;
 public:
     Char_literal(char c): c(c) { type = TYPE_char; }
-    virtual void printOn(std::ostream &out) {
+    virtual void printOn(std::ostream &out) const override {
         out << "Char(" << c << ")";
     }
 };
@@ -265,7 +265,7 @@ private:
     double d;
 public:
     Float_literal(double d): d(d) { type = TYPE_float; }
-    virtual void printOn(std::ostream &out) {
+    virtual void printOn(std::ostream &out) const override {
         out << "Float(" << d << ")";
     }
 };
@@ -275,7 +275,7 @@ private:
     int n;
 public:
     Int_literal(int n): n(n) { type = TYPE_int; }
-    virtual void printOn(std::ostream &out){
+    virtual void printOn(std::ostream &out) const override {
         out << "Int(" << n << ")";
     }
 };
@@ -283,8 +283,8 @@ public:
 class Unit: public Const {
 public:
     Unit() { type = TYPE_unit; }
-    virtual void printOn(std::ostream &out) {
-        out << "unit";
+    virtual void printOn(std::ostream &out) const override {
+        out << "Unit";
     }
 };
 
@@ -294,6 +294,9 @@ private:
     int op;
 public:
     BinOp(Expr *e1, int op, Expr *e2): lhs(e1), rhs(e2), op(op) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "BinOp(" << *lhs << ", " << op << ", " << rhs << ")";
+    }
 };
 
 class UnOp: public Expr {
@@ -302,6 +305,9 @@ private:
     int op;
 public:
     UnOp(int op, Expr *e): expr(e), op(op) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "UnOp(" << op << ", " << *expr << ")";
+    }
 };
 
 class While: public Expr {
@@ -309,20 +315,20 @@ private:
     Expr *cond, *body;
 public:
     While(Expr *e1, Expr *e2): cond(e1), body(e2) { type = TYPE_unit; }
-    virtual void printOn(std::ostream &out){
+    virtual void printOn(std::ostream &out) const override {
         out << "While(" << *cond << ", " << *body << ")";
     }
 };
 
 class For: public Expr {
 private:
-    Identifier *id;
+    std::string id;
     std::string step;
     Expr *start, *finish, *body;
 public:
-    For(Identifier *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(id), step(s), start(e1), finish(e2), body(e3) { type = TYPE_unit; }
-    virtual void printOn(std::ostream &out){
-        out << "For(" << *id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
+    For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = TYPE_unit; }
+    virtual void printOn(std::ostream &out) const override {
+        out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
 };
 
@@ -331,7 +337,7 @@ private:
     Expr *cond, *body, *else_body;
 public:
     If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) { type = TYPE_unit; }
-    virtual void printOn(std::ostream &out) {
+    virtual void printOn(std::ostream &out) const override {
         out << "If(" << *cond << ", " << *body;
         
         if(else_body) out << ", " << *else_body;
@@ -343,14 +349,14 @@ public:
 class Dim: public Expr {
 private:
     Int_literal *i;
-    Identifier *id;
+    std::string id;
 public:
-    Dim(Identifier *id, Int_literal *i = nullptr): i(i), id(id) {}
-    virtual void printOn(std::ostream &out) {
+    Dim(std::string *id, Int_literal *i = nullptr): i(i), id(*id) {}
+    virtual void printOn(std::ostream &out) const override {
         out << "Dim(";
         
         if(i) out << *i << ", ";
 
-        out << *id << ")";
+        out << id << ")";
     }
 };

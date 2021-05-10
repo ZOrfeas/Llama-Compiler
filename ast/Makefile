@@ -15,6 +15,7 @@ parser.hpp parser.cpp: parser.y
 # parser.o: parser.cpp lexer.hpp symbol.hpp
 lexer.o: lexer.cpp lexer.hpp parser.hpp
 parser.o: parser.cpp lexer.hpp symbol.hpp
+symbol.o: symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
 compiler: lexer.o parser.o symbol.o

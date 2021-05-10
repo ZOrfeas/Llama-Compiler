@@ -17,18 +17,19 @@
     Program *program;
     Expr *expr;
     Type type;
-    std::vector<Par *> par_vect;
-    std::vector<Expr *> expr_vect;
-    std::vector<Constr *> constr_vect;
-    std::vector<Def *> def_vect;
-    std::vector<Tdef *> tdef_vect;
-    std::vector<Type> type_vect;
-    std::string id;
+    std::vector<Par *> *par_vect;
+    std::vector<Expr *> *expr_vect;
+    std::vector<Constr *> *constr_vect;
+    //std::vector<Def *> *def_vect;
+    //std::vector<Tdef *> *tdef_vect;
+    std::vector<DefStmt *> *defstmt_vect;
+    std::vector<Type> *type_vect;
+    std::string *id;
     int op;     // This will store the lexical code of the operator
     int num;
     char character;
     float dec;
-    std::string str;
+    std::string *str;
 }
 
 %token T_and "and"
@@ -118,8 +119,9 @@
 %type<par_vect> par_opt_list
 %type<expr_vect> bracket_comma_expr_opt comma_expr_opt_list comma_expr_2_list expr_2_opt_list
 %type<constr_vect> bar_constr_opt_list
-%type<def_vect> and_def_opt_list
-%type<tdef_vect> and_tdef_opt_list
+//%type<def_vect> and_def_opt_list
+//%type<tdef_vect> and_tdef_opt_list
+%type<defstmt_vect> and_def_opt_list and_tdef_opt_list
 %type<constr> constr
 %type<type_vect> of_type_opt_list at_least_one_type
 %type<par> par
@@ -132,7 +134,7 @@
 %%
 
 program
-: %empty                        { $$ = new Program(); }
+: %empty                        { $$ = new Program(); std::cout << "AST: " << *$$; }
 | program definition_choice     { $1->append($2); $$ = $1; }
 ;
 
@@ -151,14 +153,15 @@ typedef
 ;
 
 def
-: T_idlower par_opt_list '=' expr                       { $$ = new Function($1, $2, $3); }
+: T_idlower par_opt_list '=' expr                       { $$ = new Function($1, $2, $4); }
+// | T_idlower '=' expr                                 { $$ = new Variable(); }
 | T_idlower par_opt_list ':' type '=' expr              { $$ = new Function($1, $2, $6, $4); }
 | "mutable" T_idlower bracket_comma_expr_opt            { $$ = new Mutable($2, $3); }
 | "mutable" T_idlower bracket_comma_expr_opt ':' type   { $$ = new Mutable($2, $3, $5); }
 ;
 
 par_opt_list
-: %empty            { $$ = std::vector<Par *>(); }
+: %empty            { $$ = new std::vector<Par *>(); }
 | par_opt_list par  { $1->push_back($2); $$ = $1; }
 ;
 
@@ -170,31 +173,31 @@ colon_type_opt
 */
 
 bracket_comma_expr_opt
-: %empty                            { $$ = std::vector<Expr *>(); }
+: %empty                            { $$ = new std::vector<Expr *>(); }
 | '[' expr comma_expr_opt_list ']'  { $3->push_back($2); $$ = $3; }
 ;
 
 comma_expr_opt_list
-: %empty                            { $$ = std::vector<Expr *>(); }
+: %empty                            { $$ = new std::vector<Expr *>(); }
 | comma_expr_opt_list ',' expr      { $1->push_back($3); $$ = $1; }
 ;
 
 tdef
-: T_idlower '=' constr bar_constr_opt_list  { $$ = new Tdef($1, $3); }
+: T_idlower '=' constr bar_constr_opt_list  { $4->insert($4->begin(), $3); $$ = new Tdef($1, $4); }
 ;
 
 bar_constr_opt_list
-: %empty                            { $$ = std::vector<Constr *>(); }
+: %empty                            { $$ = new std::vector<Constr *>(); }
 | bar_constr_opt_list '|' constr    { $1->push_back($3); $$ = $1; }
 ;
 
 and_def_opt_list
-: %empty                            { $$ = std::vector<Def *>(); }
+: %empty                            { $$ = new std::vector<DefStmt *>(); }
 | and_def_opt_list "and" def        { $1->push_back($3); $$ = $1; }
 ;
 
 and_tdef_opt_list
-: %empty                            { $$ = std::vector<Tdef *>(); }
+: %empty                            { $$ = new std::vector<DefStmt *>(); }
 | and_tdef_opt_list "and" tdef      { $1->push_back($3); $$ = $1; }
 ;
 
@@ -203,12 +206,12 @@ constr
 ;
 
 of_type_opt_list
-: %empty                            { $$ = std::vector<Type>(); }
+: %empty                            { $$ = new std::vector<Type>(); }
 | "of" at_least_one_type            { $$ = $2; }
 ;
 
 at_least_one_type
-: type                              { $$ = std::vector<Type>(); $$->push_back($1); }
+: type                              { $$ = new std::vector<Type>(); $$->push_back($1); }
 | at_least_one_type type            { $1->push_back($2); $$ = $1; }
 ;
 
@@ -286,12 +289,12 @@ expr_2
 ;
 
 comma_expr_2_list
-: expr_2                            { $$ = std::vector<Expr *>(); $$->push_back($1); }
+: expr_2                            { $$ = new std::vector<Expr *>(); $$->push_back($1); }
 | comma_expr_2_list ',' expr_2      { $1->push_back($3); $$ = $1; }
 ;
 
 expr_2_opt_list
-: expr_2                    { $$ = std::vector<Expr *>(); $$->push_back($1) }
+: expr_2                    { $$ = new std::vector<Expr *>(); $$->push_back($1); }
 | expr_2_opt_list expr_2    { $1->push_back($2); $$ = $1; }
 ;
 
