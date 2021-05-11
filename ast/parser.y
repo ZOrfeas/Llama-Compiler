@@ -16,18 +16,18 @@
     Definition *definition;
     Program *program;
     Expr *expr;
-    Type type;
+    Type *type;
     std::vector<Par *> *par_vect;
     std::vector<Expr *> *expr_vect;
     std::vector<Constr *> *constr_vect;
     //std::vector<Def *> *def_vect;
     //std::vector<Tdef *> *tdef_vect;
     std::vector<DefStmt *> *defstmt_vect;
-    std::vector<Type> *type_vect;
+    std::vector<Type *> *type_vect;
     std::string *id;
     int op;     // This will store the lexical code of the operator
     int num;
-    char character;
+    // char character ! No need cause we need the string !
     float dec;
     std::string *str;
 }
@@ -72,7 +72,7 @@
 
 %token<num> T_intconst 
 %token<dec> T_floatconst 
-%token<character> T_charconst 
+%token<str> T_charconst 
 %token<str> T_stringliteral
 
 %token T_dashgreater "->"
@@ -113,7 +113,7 @@
 %precedence UNOPS
 
 
-%type<program> program
+%type<program> program program_list
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_opt_list
@@ -132,10 +132,13 @@
 
 
 %%
+program 
+: program_list  { $$ = $1; std::cout << *$$ << std::endl; } 
+;
 
-program
-: %empty                        { $$ = new Program(); std::cout << "AST: " << *$$; }
-| program definition_choice     { $1->append($2); $$ = $1; }
+program_list
+: %empty                            { $$ = new Program(); }
+| program_list definition_choice    { $1->append($2); $$ = $1; }
 ;
 
 definition_choice               
@@ -144,12 +147,12 @@ definition_choice
 ;
 
 letdef
-: "let" def and_def_opt_list        { $3->push_back($2); $$ = new Letdef($3); }
-| "let" "rec" def and_def_opt_list  { $4->push_back($3); $$ = new Letdef($4, true); }
+: "let" def and_def_opt_list        { $3->insert($3->begin(), $2); $$ = new Letdef($3); }
+| "let" "rec" def and_def_opt_list  { $4->insert($4->begin(), $3); $$ = new Letdef($4, true); }
 ;
 
 typedef
-: "type" tdef and_tdef_opt_list     { $3->push_back($2); $$ = new Typedef($3); }
+: "type" tdef and_tdef_opt_list     { $3->insert($3->begin(), $2); $$ = new Typedef($3); }
 ;
 
 def
@@ -174,7 +177,7 @@ colon_type_opt
 
 bracket_comma_expr_opt
 : %empty                            { $$ = new std::vector<Expr *>(); }
-| '[' expr comma_expr_opt_list ']'  { $3->push_back($2); $$ = $3; }
+| '[' expr comma_expr_opt_list ']'  { $3->insert($3->begin(), $2); $$ = $3; }
 ;
 
 comma_expr_opt_list
@@ -206,12 +209,12 @@ constr
 ;
 
 of_type_opt_list
-: %empty                            { $$ = new std::vector<Type>(); }
+: %empty                            { $$ = new std::vector<Type *>(); }
 | "of" at_least_one_type            { $$ = $2; }
 ;
 
 at_least_one_type
-: type                              { $$ = new std::vector<Type>(); $$->push_back($1); }
+: type                              { $$ = new std::vector<Type *>(); $$->push_back($1); }
 | at_least_one_type type            { $1->push_back($2); $$ = $1; }
 ;
 
@@ -221,11 +224,11 @@ par
 ;
 
 type
-: "unit"            { $$ = TYPE_unit; }     
-| "int"             { $$ = TYPE_int; }
-| "char"            { $$ = TYPE_char; }
-| "bool"            { $$ = TYPE_bool; }
-| "float"           { $$ = TYPE_float; }
+: "unit"            { $$ = new Type(TYPE_unit); }     
+| "int"             { $$ = new Type(TYPE_int); }
+| "char"            { $$ = new Type(TYPE_char); }
+| "bool"            { $$ = new Type(TYPE_bool); }
+| "float"           { $$ = new Type(TYPE_float); }
 | '(' type ')'      { $$ = $2; }
 | type "->" type    { ; }
 | type "ref"        { ; }
@@ -278,7 +281,7 @@ expr_2
 | T_stringliteral   { $$ = new String_literal($1); }
 | T_idlower         { /* LOOKUP */; }
 | T_idupper         { /* LOOKUP */; }
-| "true"            { $$ = new Char_literal(true); }
+| "true"            { $$ = new Bool_literal(true); }
 | "false"           { $$ = new Bool_literal(false); }
 | '(' ')'           { $$ = new Unit(); }
 | '!' expr_2        { /* DEREFERENCE */; }

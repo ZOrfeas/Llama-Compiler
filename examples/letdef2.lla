@@ -1,0 +1,2 @@
+let inc x : int = 1
+let x : char = '\x00'

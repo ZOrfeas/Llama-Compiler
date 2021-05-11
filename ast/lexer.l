@@ -13,6 +13,7 @@
 // int yylineno = 1;
 int comment_cnt = 0;
 void lex_error(const char *msg);
+
 %}
 
 W [ \t\n\r]  
@@ -73,8 +74,8 @@ Hex [0-9a-f]
 {D}+                        { yylval.num = atoi(yytext); return T_intconst;   }
 ({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }
 
-\'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { return T_charconst; }
-\"((\\.|[^"\\\n])?)*\"    { return T_stringliteral; }
+\'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { yylval.str = new std::string(yytext); return T_charconst; }
+\"((\\.|[^"\\\n])?)*\"    { yylval.str = new std::string(yytext); return T_stringliteral; }
 
 [=\|+\-\*/!;<>]    { yylval.op = yytext[0]; return yytext[0]; }
 [\(\)\[\],:]        { yylval.op = yytext[0]; return yytext[0]; }
