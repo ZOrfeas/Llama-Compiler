@@ -25,16 +25,54 @@ inline std::ostream& operator<< (std::ostream &out, const AST &t) {
   return out;
 }
 
-class Type: public AST {
+// Type classes ------------------------------------------------------
+class Type: public AST {};
+
+class BasicType: public Type {
 private:
     type t;
 public:
-    Type(type t): t(t) {}
+    BasicType(type t): t(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << type_string[t];
     }
 };
 
+class FunctionType: public Type {
+private:
+    Type *lhtype, *rhtype;
+public:
+    FunctionType(Type *lhtype, Type *rhtype): lhtype(lhtype), rhtype(rhtype) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << *lhtype << "->" << *rhtype;
+    }
+};
+
+class ArrayType: public Type {
+private:
+    int dimensions;
+    Type *type;
+public:
+    ArrayType(int dimensions, Type *type): dimensions(dimensions), type(type) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "TYPE_array(" << dimensions << ", " << *type << ")";
+    }
+};
+
+/* NOTE: MUST NOT BE ArrayType !! */
+class RefType: public Type {
+private:
+    Type *type;
+public:
+    RefType(Type *type): type(type) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "TYPE_ref(" << *type << ")";
+    }
+};
+
+class CustomType: public Type {};
+
+// Basic abstract classes --------------------------------------------
 class Expr: public AST {
 protected:
     Type *type;
@@ -74,7 +112,7 @@ private:
     std::string id;
     Type *type;
 public:
-    Par(std::string *id, Type *t = new Type(TYPE_unknown)): id(*id), type(t) {}
+    Par(std::string *id, Type *t = new BasicType(TYPE_unknown)): id(*id), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Par(" << id << ", " << *type << ")";
     }
@@ -115,7 +153,7 @@ private:
     Type *type;
     Expr *expr;
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new Type(TYPE_unknown)): id(*id), par_list(*p), type(t), expr(e) {}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(TYPE_unknown)): id(*id), par_list(*p), type(t), expr(e) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
         for(Par *p: par_list){ out << ", " << *p; }
@@ -129,7 +167,7 @@ private:
     std::vector<Expr *> expr_list;
     Type *type;
 public:
-    Mutable(std::string *id, std::vector<Expr *> *e, Type *t = new Type(TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
+    Mutable(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Mutable(" << id;
         if(!expr_list.empty()) {
@@ -146,7 +184,19 @@ public:
         out << ", " << *type << ")";
     }
 };
-  
+
+class Variable: public Def {
+private:
+    std::string id;
+    Expr *expr;
+    Type *type;
+public:
+    Variable(std::string *id, Expr *expr, Type *type = new BasicType(TYPE_unknown)): id(*id), expr(expr), type(type) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "Variable(" << id << ", " << *type << ", " << *expr << ")";
+    }
+};
+
 //--------------------------------------------------------------------
 class Definition: public AST {
     // virtual void append(DefStmt *d) = 0;
@@ -223,6 +273,17 @@ public:
 
 // class Identifier: public Expr (used to be here)
 
+class LetIn: public Expr {
+private:
+    Definition *letdef;
+    Expr *expr;
+public:
+    LetIn(Definition *letdef, Expr *expr): letdef(letdef), expr(expr) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "LetIN(" << *letdef << ", " << *expr << ")";
+    }
+};
+
 class Id_upper: public Identifier {
 public:
     Id_upper(std::string *s) { name = *s; }
@@ -247,7 +308,7 @@ class String_literal: public Const {
 private:
     std::string s;
 public:
-    String_literal(std::string *s): s(*s) { type = new Type(TYPE_string); }
+    String_literal(std::string *s): s(*s) { type = new BasicType(TYPE_string); }
     virtual void printOn(std::ostream &out) const override {
         out << "String(" << s << ")";
     }
@@ -259,7 +320,7 @@ private:
     char c;
 public:
     Char_literal(std::string *c_string): c_string(*c_string) { 
-        type = new Type(TYPE_char); 
+        type = new BasicType(TYPE_char); 
         c = getChar(*c_string);
     }
     
@@ -302,7 +363,7 @@ class Bool_literal: public Const {
 private:
     bool b;
 public:
-    Bool_literal(bool b): b(b) { type = new Type(TYPE_bool); }
+    Bool_literal(bool b): b(b) { type = new BasicType(TYPE_bool); }
     virtual void printOn(std::ostream &out) const override {
         out << "Bool(" << b << ")";
     }
@@ -312,7 +373,7 @@ class Float_literal: public Const {
 private:
     double d;
 public:
-    Float_literal(double d): d(d) { type = new Type(TYPE_float); }
+    Float_literal(double d): d(d) { type = new BasicType(TYPE_float); }
     virtual void printOn(std::ostream &out) const override {
         out << "Float(" << d << ")";
     }
@@ -322,7 +383,7 @@ class Int_literal: public Const {
 private:
     int n;
 public:
-    Int_literal(int n): n(n) { type = new Type(TYPE_int); }
+    Int_literal(int n): n(n) { type = new BasicType(TYPE_int); }
     virtual void printOn(std::ostream &out) const override {
         out << "Int(" << n << ")";
     }
@@ -330,7 +391,7 @@ public:
 
 class Unit: public Const {
 public:
-    Unit() { type = new Type(TYPE_unit); }
+    Unit() { type = new BasicType(TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "Unit";
     }
@@ -362,7 +423,7 @@ class While: public Expr {
 private:
     Expr *cond, *body;
 public:
-    While(Expr *e1, Expr *e2): cond(e1), body(e2) { type = new Type(TYPE_unit); }
+    While(Expr *e1, Expr *e2): cond(e1), body(e2) { type = new BasicType(TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "While(" << *cond << ", " << *body << ")";
     }
@@ -374,7 +435,7 @@ private:
     std::string step;
     Expr *start, *finish, *body;
 public:
-    For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = new Type(TYPE_unit); }
+    For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = new BasicType(TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
@@ -384,7 +445,7 @@ class If: public Expr{
 private:
     Expr *cond, *body, *else_body;
 public:
-    If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) { type = new Type(TYPE_unit); }
+    If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) { type = new BasicType(TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "If(" << *cond << ", " << *body;
         

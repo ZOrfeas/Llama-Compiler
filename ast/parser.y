@@ -116,7 +116,7 @@
 %type<program> program program_list
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
-%type<par_vect> par_opt_list
+%type<par_vect> par_list
 %type<expr_vect> bracket_comma_expr_opt comma_expr_opt_list comma_expr_2_list expr_2_opt_list
 %type<constr_vect> bar_constr_opt_list
 //%type<def_vect> and_def_opt_list
@@ -133,7 +133,7 @@
 
 %%
 program 
-: program_list  { $$ = $1; std::cout << *$$ << std::endl; } 
+: program_list                      { $$ = $1; std::cout << *$$ << std::endl; } 
 ;
 
 program_list
@@ -142,8 +142,8 @@ program_list
 ;
 
 definition_choice               
-: letdef                        { $$ = $1; }
-| typedef                       { $$ = $1; }
+: letdef                            { $$ = $1; }
+| typedef                           { $$ = $1; }
 ;
 
 letdef
@@ -156,16 +156,17 @@ typedef
 ;
 
 def
-: T_idlower par_opt_list '=' expr                       { $$ = new Function($1, $2, $4); }
-// | T_idlower '=' expr                                 { $$ = new Variable(); }
-| T_idlower par_opt_list ':' type '=' expr              { $$ = new Function($1, $2, $6, $4); }
+: T_idlower '=' expr                                    { $$ = new Variable($1, $3); }
+| T_idlower ':' type '=' expr                           { $$ = new Variable($1, $5, $3); }
+| T_idlower par_list '=' expr                           { $$ = new Function($1, $2, $4); }
+| T_idlower par_list ':' type '=' expr                  { $$ = new Function($1, $2, $6, $4); }
 | "mutable" T_idlower bracket_comma_expr_opt            { $$ = new Mutable($2, $3); }
 | "mutable" T_idlower bracket_comma_expr_opt ':' type   { $$ = new Mutable($2, $3, $5); }
 ;
 
-par_opt_list
-: %empty            { $$ = new std::vector<Par *>(); }
-| par_opt_list par  { $1->push_back($2); $$ = $1; }
+par_list
+: par                               { $$ = new std::vector<Par *>(); $$->push_back($1);}
+| par_list par                      { $1->push_back($2); $$ = $1; }
 ;
 
 /*
@@ -224,16 +225,16 @@ par
 ;
 
 type
-: "unit"            { $$ = new Type(TYPE_unit); }     
-| "int"             { $$ = new Type(TYPE_int); }
-| "char"            { $$ = new Type(TYPE_char); }
-| "bool"            { $$ = new Type(TYPE_bool); }
-| "float"           { $$ = new Type(TYPE_float); }
-| '(' type ')'      { $$ = $2; }
-| type "->" type    { ; }
-| type "ref"        { ; }
-| "array" bracket_star_opt "of" type %prec ARRAYOF  { ; }
-| T_idlower         { ; }
+: "unit"                            { $$ = new BasicType(TYPE_unit); }     
+| "int"                             { $$ = new BasicType(TYPE_int); }
+| "char"                            { $$ = new BasicType(TYPE_char); }
+| "bool"                            { $$ = new BasicType(TYPE_bool); }
+| "float"                           { $$ = new BasicType(TYPE_float); }
+| '(' type ')'                      { $$ = $2; }
+| type "->" type                    { $$ = new FunctionType($1, $3); }
+| type "ref"                        { $$ = new RefType($1); }
+| "array" bracket_star_opt "of" type %prec ARRAYOF  { $$ = new ArrayType($2, $4); }
+| T_idlower                         { /* LOOKUP CUSTOM TYPE*/; }
 ;
 
 bracket_star_opt
@@ -247,7 +248,7 @@ comma_star_opt_list
 ;
 
 expr
-: letdef "in" expr %prec LETIN          { ; }
+: letdef "in" expr %prec LETIN          { $$ = new LetIn($1, $3); }
 | expr ';' expr                         { $$ = new BinOp($1, $2, $3); }
 | "if" expr "then" expr "else" expr     { $$ = new If($2, $4, $6); }
 | "if" expr "then" expr                 { $$ = new If($2, $4); }
@@ -264,31 +265,31 @@ expr
 | expr "**" expr                        { $$ = new BinOp($1, $2, $3); }
 | unop expr %prec UNOPS                 { $$ = new UnOp($1, $2); }
 | "while" expr "do" expr "done"         { $$ = new While($2, $4); }
-| "for" T_idlower '=' expr "to" expr "do" expr "done"   { $$ = new For($2, $4, "to", $6, $8); } 
+| "for" T_idlower '=' expr "to" expr "do" expr "done"       { $$ = new For($2, $4, "to", $6, $8); } 
 | "for" T_idlower '=' expr "downto" expr "do" expr "done"   { $$ = new For($2, $4, "downto", $6, $8); }  
-| "match" expr "with" clause bar_clause_opt_list "end"  { ; }
-| "dim" T_intconst T_idlower            { ; }
-| "dim" T_idlower                       { ; }
-| T_idlower expr_2_opt_list             { ; }
-| T_idupper expr_2_opt_list             { ; }
+| "match" expr "with" clause bar_clause_opt_list "end"      { ; }
+| "dim" T_intconst T_idlower            { /* SIZE OF SPECIFIED DIMENSION */; }
+| "dim" T_idlower                       { /* SIZE OF ARRAY */; }
+| T_idlower expr_2_opt_list             { /* FUNCTION CALL */; }
+| T_idupper expr_2_opt_list             { /* CONSTRUCTOR CALL */; }
 | expr_2                                { $$ = $1; }            
 ;
 
 expr_2
-: T_intconst        { $$ = new Int_literal($1); } 
-| T_floatconst      { $$ = new Float_literal($1); }
-| T_charconst       { $$ = new Char_literal($1); }
-| T_stringliteral   { $$ = new String_literal($1); }
-| T_idlower         { /* LOOKUP */ $$ = new Id_lower($1); }
-| T_idupper         { /* LOOKUP */ $$ = new Id_upper($1); }
-| "true"            { $$ = new Bool_literal(true); }
-| "false"           { $$ = new Bool_literal(false); }
-| '(' ')'           { $$ = new Unit(); }
-| '!' expr_2        { /* DEREFERENCE */; }
-| T_idlower '[' comma_expr_2_list ']'    { ; }
-| "new" type        { ; }
-| '(' expr ')'      { $$ = $2; }
-| "begin" expr "end"    { $$ = $2; }
+: T_intconst                        { $$ = new Int_literal($1); } 
+| T_floatconst                      { $$ = new Float_literal($1); }
+| T_charconst                       { $$ = new Char_literal($1); }
+| T_stringliteral                   { $$ = new String_literal($1); }
+| T_idlower                         { $$ = new Id_lower($1); /* LOOKUP */ }
+| T_idupper                         { $$ = new Id_upper($1); /* LOOKUP */ }
+| "true"                            { $$ = new Bool_literal(true); }
+| "false"                           { $$ = new Bool_literal(false); }
+| '(' ')'                           { $$ = new Unit(); }
+| '!' expr_2                        { /* DEREFERENCE */; }
+| T_idlower '[' comma_expr_2_list ']'    { /* ARRAY ACCESS */; }
+| "new" type                        { /* DYNAMIC ALLOCATION */; }
+| '(' expr ')'                      { $$ = $2; }
+| "begin" expr "end"                { $$ = $2; }
 ;
 
 comma_expr_2_list
@@ -297,8 +298,8 @@ comma_expr_2_list
 ;
 
 expr_2_opt_list
-: expr_2                    { $$ = new std::vector<Expr *>(); $$->push_back($1); }
-| expr_2_opt_list expr_2    { $1->push_back($2); $$ = $1; }
+: expr_2                            { $$ = new std::vector<Expr *>(); $$->push_back($1); }
+| expr_2_opt_list expr_2            { $1->push_back($2); $$ = $1; }
 ;
 
 unop
