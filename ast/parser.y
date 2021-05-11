@@ -279,8 +279,8 @@ expr_2
 | T_floatconst      { $$ = new Float_literal($1); }
 | T_charconst       { $$ = new Char_literal($1); }
 | T_stringliteral   { $$ = new String_literal($1); }
-| T_idlower         { /* LOOKUP */; }
-| T_idupper         { /* LOOKUP */; }
+| T_idlower         { /* LOOKUP */ $$ = new Id_lower($1); }
+| T_idupper         { /* LOOKUP */ $$ = new Id_upper($1); }
 | "true"            { $$ = new Bool_literal(true); }
 | "false"           { $$ = new Bool_literal(false); }
 | '(' ')'           { $$ = new Unit(); }

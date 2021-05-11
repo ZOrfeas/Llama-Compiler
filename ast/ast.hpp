@@ -225,7 +225,7 @@ public:
 
 class Id_upper: public Identifier {
 public:
-    Id_upper(std::string s) { name = s; }
+    Id_upper(std::string *s) { name = *s; }
     virtual void printOn(std::ostream &out) const override {
         out << "Id(" << name << ")";
     }
@@ -233,7 +233,7 @@ public:
 
 class Id_lower: public Identifier {
 public:
-    Id_lower(std::string s) { name = s; }
+    Id_lower(std::string *s) { name = *s; }
     virtual void printOn(std::ostream &out) const override {
         out << "id(" << name << ")";
     }
@@ -343,7 +343,7 @@ private:
 public:
     BinOp(Expr *e1, int op, Expr *e2): lhs(e1), rhs(e2), op(op) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "BinOp(" << *lhs << ", " << op << ", " << rhs << ")";
+        out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
     }
 };
 
