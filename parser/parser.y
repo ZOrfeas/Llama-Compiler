@@ -270,12 +270,13 @@ pattern
 | T_charconst 
 | "true" | "false"
 | T_idlower
+| T_idupper
 | '(' pattern ')'
 | '(' T_idupper pattern_opt_list ')'
 ;
 
 pattern_opt_list
-: %empty
+: pattern
 | pattern_opt_list pattern
 ;
 
@@ -287,7 +288,7 @@ void yyerror(const char *msg) {
 }
 
 int main() {
-    // yydebug = 1; // default val is zero so just comment this to disable
+    yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
     if (result == 0) printf("Success\n");
     return result;

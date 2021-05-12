@@ -131,9 +131,9 @@ Hex [0-9a-f]
 [=\|+\-\*/!;<>]    { return yytext[0]; }
 [\(\)\[\],:]        { return yytext[0]; }
 
-"−>" { return T_dashgreater;  }
+"->" { return T_dashgreater;  }
 "+." { return T_plusdot;      }
-"−." { return T_minusdot;     }
+"-." { return T_minusdot;     }
 "*." { return T_stardot;      }
 "/." { return T_slashdot;     }
 "**" { return T_dblstar;      }
@@ -148,12 +148,13 @@ Hex [0-9a-f]
 
 --.*\n  { /* nothing */ }
 
-"(*"                { comment_cnt++; BEGIN(IN_COMMENT); /*printf("comment_cnt is %d",comment_cnt);*/}
-<IN_COMMENT>"(*"    { comment_cnt++; /*printf("comment_cnt is %d",comment_cnt);*/}
-<IN_COMMENT>"*)"    { comment_cnt--; if (comment_cnt==0) {/*printf("comment_cnt is %d",comment_cnt);*/BEGIN(INITIAL);} }    
-<IN_COMMENT>"*"     { /* nothing */ }
-<IN_COMMENT>[^(*]*  { /* nothing */ }
-<IN_COMMENT>"("     { /* nothing */ }
+"(*"                        { comment_cnt++; BEGIN(IN_COMMENT); /*printf("comment_cnt is %d",comment_cnt);*/}
+<IN_COMMENT>"(*"            { comment_cnt++; /*printf("comment_cnt is %d",comment_cnt);*/}
+<IN_COMMENT>"*)"            { comment_cnt--; if (comment_cnt==0) {/*printf("comment_cnt is %d",comment_cnt);*/BEGIN(INITIAL);} }    
+<IN_COMMENT>"*"             { /* nothing */ }
+<IN_COMMENT>[^(*<<EOF>>]*   { /* nothing */ }
+<IN_COMMENT>"("             { /* nothing */ }
+<IN_COMMENT>.               { lex_error("EOF file in comment"); }
 
 {W}+                { /* nothing */ } 
 
