@@ -268,10 +268,10 @@ expr
 | "for" T_idlower '=' expr "to" expr "do" expr "done"       { $$ = new For($2, $4, "to", $6, $8); } 
 | "for" T_idlower '=' expr "downto" expr "do" expr "done"   { $$ = new For($2, $4, "downto", $6, $8); }  
 | "match" expr "with" clause bar_clause_opt_list "end"      { ; }
-| "dim" T_intconst T_idlower            { /* SIZE OF SPECIFIED DIMENSION */; }
-| "dim" T_idlower                       { /* SIZE OF ARRAY */; }
-| T_idlower expr_2_opt_list             { /* FUNCTION CALL */; }
-| T_idupper expr_2_opt_list             { /* CONSTRUCTOR CALL */; }
+| "dim" T_intconst T_idlower            { Int_literal *dim = new Int_literal($2); $$ = new Dim($3, dim); }
+| "dim" T_idlower                       { $$ = new Dim($2); }
+| T_idlower expr_2_opt_list             { $$ = new FunctionCall($1, $2); /* LOOKUP id */; }
+| T_idupper expr_2_opt_list             { $$ = new ConstructorCall($1, $2); /* LOOKUP Id */ }
 | expr_2                                { $$ = $1; }            
 ;
 

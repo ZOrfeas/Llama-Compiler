@@ -268,7 +268,7 @@ public:
     }
 };
 
-//--------------------------------------------------------------------
+// Exresssions -------------------------------------------------------
 // class Expr: public AST (used to be here)
 
 // class Identifier: public Expr (used to be here)
@@ -457,15 +457,43 @@ public:
 
 class Dim: public Expr {
 private:
-    Int_literal *i;
+    Int_literal *dim;
     std::string id;
 public:
-    Dim(std::string *id, Int_literal *i = nullptr): i(i), id(*id) {}
+    Dim(std::string *id, Int_literal *dim = new Int_literal(1)): dim(dim), id(*id) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Dim(";
-        
-        if(i) out << *i << ", ";
-
+        if(dim) out << *dim << ", ";
         out << id << ")";
+    }
+};
+
+class FunctionCall: public Expr {
+private:
+    std::string id;
+    std::vector<Expr *> expr_list;
+public:
+    FunctionCall(std::string *id, std::vector<Expr *> *expr_list): id(*id), expr_list(*expr_list) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "FunctionCall(" << id;
+        for(Expr *e: expr_list) {
+            out << ", " << *e;
+        }
+        out << ")";
+    }
+};
+
+class ConstructorCall: public Expr {
+private:
+    std::string Id;
+    std::vector<Expr *> expr_list;
+public:
+    ConstructorCall(std::string *Id, std::vector<Expr *> *expr_list): Id(*Id), expr_list(*expr_list) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "ConstructorCall(" << Id;
+        for(Expr *e: expr_list) {
+            out << ", " << *e;
+        }
+        out << ")";
     }
 };
