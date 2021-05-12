@@ -146,14 +146,23 @@ public:
 class Def: public DefStmt {
 };
 
-class Function: public Def {
-private:
+class Constant: public Def {
+protected:
     std::string id;
-    std::vector<Par *> par_list;
-    Type *type;
     Expr *expr;
+    Type *type;
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(TYPE_unknown)): id(*id), par_list(*p), type(t), expr(e) {}
+    Constant(std::string *id, Expr *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr(e), type(t) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "Constant(" << id << ", " << *type << ", " << *expr << ")";
+    }
+};
+
+class Function: public Constant {
+private:
+    std::vector<Par *> par_list;
+public:
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(TYPE_unknown)): Constant(id, e, t), par_list(*p){}
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
         for(Par *p: par_list){ out << ", " << *p; }
@@ -162,14 +171,17 @@ public:
 };
 
 class Mutable: public Def {
+};
+
+class Array: public Mutable {
 private:
     std::string id;
     std::vector<Expr *> expr_list;
     Type *type;
 public:
-    Mutable(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
+    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Mutable(" << id;
+        out << "Array(" << id;
         if(!expr_list.empty()) {
             out << "[";
 
@@ -185,15 +197,14 @@ public:
     }
 };
 
-class Variable: public Def {
+class Variable: public Mutable {
 private:
     std::string id;
-    Expr *expr;
     Type *type;
 public:
-    Variable(std::string *id, Expr *expr, Type *type = new BasicType(TYPE_unknown)): id(*id), expr(expr), type(type) {}
+    Variable(std::string *id, Type *type = new BasicType(TYPE_unknown)): id(*id), type(type) {}
     virtual void printOn(std::ostream &out) const override {
-        out << "Variable(" << id << ", " << *type << ", " << *expr << ")";
+        out << "Variable(" << id << ", " << *type << ", " << ")";
     }
 };
 
@@ -300,11 +311,11 @@ public:
     }
 };
 
-class Const: public Expr {
+class Literal: public Expr {
 
 };
 
-class String_literal: public Const {
+class String_literal: public Literal {
 private:
     std::string s;
 public:
@@ -314,7 +325,7 @@ public:
     }
 };
 
-class Char_literal: public Const {
+class Char_literal: public Literal {
 private:
     std::string c_string;
     char c;
@@ -359,7 +370,7 @@ public:
     }
 };
 
-class Bool_literal: public Const {
+class Bool_literal: public Literal {
 private:
     bool b;
 public:
@@ -369,7 +380,7 @@ public:
     }
 };
 
-class Float_literal: public Const {
+class Float_literal: public Literal {
 private:
     double d;
 public:
@@ -379,7 +390,7 @@ public:
     }
 };
 
-class Int_literal: public Const {
+class Int_literal: public Literal {
 private:
     int n;
 public:
@@ -389,7 +400,7 @@ public:
     }
 };
 
-class Unit: public Const {
+class Unit: public Literal {
 public:
     Unit() { type = new BasicType(TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
@@ -468,12 +479,21 @@ public:
     }
 };
 
-class FunctionCall: public Expr {
-private:
+class ConstantCall: public Expr {
+protected:
     std::string id;
+public:
+    ConstantCall(std::string *id): id(*id) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "ConstantCall(" << id << ")";
+    }
+};
+
+class FunctionCall: public ConstantCall {
+private:
     std::vector<Expr *> expr_list;
 public:
-    FunctionCall(std::string *id, std::vector<Expr *> *expr_list): id(*id), expr_list(*expr_list) {}
+    FunctionCall(std::string *id, std::vector<Expr *> *expr_list): ConstantCall(id), expr_list(*expr_list) {}
     virtual void printOn(std::ostream &out) const override {
         out << "FunctionCall(" << id;
         for(Expr *e: expr_list) {
@@ -488,7 +508,7 @@ private:
     std::string Id;
     std::vector<Expr *> expr_list;
 public:
-    ConstructorCall(std::string *Id, std::vector<Expr *> *expr_list): Id(*Id), expr_list(*expr_list) {}
+    ConstructorCall(std::string *Id, std::vector<Expr *> *expr_list = new std::vector<Expr *>()): Id(*Id), expr_list(*expr_list) {}
     virtual void printOn(std::ostream &out) const override {
         out << "ConstructorCall(" << Id;
         for(Expr *e: expr_list) {

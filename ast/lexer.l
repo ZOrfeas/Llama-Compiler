@@ -38,7 +38,7 @@ Hex [0-9a-f]
 "begin"     { return T_begin;   }
 "bool"      { return T_bool;    }
 "char"      { return T_char;    }
-"delete"    { return T_delete;  }
+"delete"    { yylval.op = T_delete; return T_delete;  }
 "dim"       { return T_dim;     }
 "do"        { return T_do;      }
 "done"      { return T_done;    }
@@ -53,10 +53,10 @@ Hex [0-9a-f]
 "int"       { return T_int;     }
 "let"       { return T_let;     }
 "match"     { return T_match;   }
-"mod"       { return T_mod;     }
+"mod"       { yylval.op = T_mod; return T_mod;     }
 "mutable"   { return T_mutable; }
 "new"       { return T_new;     }
-"not"       { return T_not;     }
+"not"       { yylval.op = T_not; return T_not;     }
 "of"        { return T_of;      }
 "rec"       { return T_rec;     }
 "ref"       { return T_ref;     }
@@ -80,20 +80,20 @@ Hex [0-9a-f]
 [=\|+\-\*/!;<>]    { yylval.op = yytext[0]; return yytext[0]; }
 [\(\)\[\],:]        { yylval.op = yytext[0]; return yytext[0]; }
 
-"−>" { return T_dashgreater;  }
-"+." { return T_plusdot;      }
-"−." { return T_minusdot;     }
-"*." { return T_stardot;      }
-"/." { return T_slashdot;     }
-"**" { return T_dblstar;      }
-"&&" { return T_dblampersand; }
-"||" { return T_dblbar;       }
-"<>" { return T_lessgreater;  }
-"<=" { return T_leq;          }
-">=" { return T_geq;          }
-"==" { return T_dbleq;        }
-"!=" { return T_exclameq;     }
-":=" { return T_coloneq;      }
+"−>" { yylval.op = T_dashgreater; return T_dashgreater;  }
+"+." { yylval.op = T_plusdot; return T_plusdot;      }
+"−." { yylval.op = T_minusdot;     return T_minusdot;     }
+"*." { yylval.op = T_stardot;      return T_stardot;      }
+"/." { yylval.op = T_slashdot;     return T_slashdot;     }
+"**" { yylval.op = T_dblstar;      return T_dblstar;      }
+"&&" { yylval.op = T_dblampersand; return T_dblampersand; }
+"||" { yylval.op = T_dblbar;       return T_dblbar;       }
+"<>" { yylval.op = T_lessgreater;  return T_lessgreater;  }
+"<=" { yylval.op = T_leq;          return T_leq;          }
+">=" { yylval.op = T_geq;          return T_geq;          }
+"==" { yylval.op = T_dbleq;        return T_dbleq;        }
+"!=" { yylval.op = T_exclameq;     return T_exclameq;     }
+":=" { yylval.op = T_coloneq;      return T_coloneq;      }
 
 --.*\n  { /* nothing */ }
 

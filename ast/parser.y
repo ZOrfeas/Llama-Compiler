@@ -102,7 +102,7 @@
 // Operator precedences
 %precedence LETIN
 %left<op> ';'
-%right<op> "then" "else"
+%right "then" "else"
 %nonassoc<op> ":="
 %left<op> "||"
 %left<op> "&&"
@@ -117,7 +117,7 @@
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_list
-%type<expr_vect> bracket_comma_expr_opt comma_expr_opt_list comma_expr_2_list expr_2_opt_list
+%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list comma_expr_2_list expr_2_list
 %type<constr_vect> bar_constr_opt_list
 //%type<def_vect> and_def_opt_list
 //%type<tdef_vect> and_tdef_opt_list
@@ -156,17 +156,19 @@ typedef
 ;
 
 def
-: T_idlower '=' expr                                    { $$ = new Variable($1, $3); }
-| T_idlower ':' type '=' expr                           { $$ = new Variable($1, $5, $3); }
+: T_idlower '=' expr                                    { $$ = new Constant($1, $3); }
+| T_idlower ':' type '=' expr                           { $$ = new Constant($1, $5, $3); }
 | T_idlower par_list '=' expr                           { $$ = new Function($1, $2, $4); }
 | T_idlower par_list ':' type '=' expr                  { $$ = new Function($1, $2, $6, $4); }
-| "mutable" T_idlower bracket_comma_expr_opt            { $$ = new Mutable($2, $3); }
-| "mutable" T_idlower bracket_comma_expr_opt ':' type   { $$ = new Mutable($2, $3, $5); }
+| "mutable" T_idlower bracket_comma_expr_list           { $$ = new Array($2, $3); }
+| "mutable" T_idlower bracket_comma_expr_list ':' type  { $$ = new Array($2, $3, $5); }
+| "mutable" T_idlower                                   { $$ = new Variable($2); }
+| "mutable" T_idlower ':' type                          { $$ = new Variable($2, $4); }
 ;
 
 par_list
-: par                               { $$ = new std::vector<Par *>(); $$->push_back($1);}
-| par_list par                      { $1->push_back($2); $$ = $1; }
+: par                           { $$ = new std::vector<Par *>(); $$->push_back($1); }
+| par_list par                  { $1->push_back($2); $$ = $1; }
 ;
 
 /*
@@ -176,9 +178,9 @@ colon_type_opt
 ;
 */
 
-bracket_comma_expr_opt
-: %empty                            { $$ = new std::vector<Expr *>(); }
-| '[' expr comma_expr_opt_list ']'  { $3->insert($3->begin(), $2); $$ = $3; }
+bracket_comma_expr_list
+: '[' expr comma_expr_opt_list ']'  { $3->insert($3->begin(), $2); $$ = $3; }
+// : '[' expr ']'                      { $$ = new std::vector<Expr *>(); }
 ;
 
 comma_expr_opt_list
@@ -270,8 +272,8 @@ expr
 | "match" expr "with" clause bar_clause_opt_list "end"      { ; }
 | "dim" T_intconst T_idlower            { Int_literal *dim = new Int_literal($2); $$ = new Dim($3, dim); }
 | "dim" T_idlower                       { $$ = new Dim($2); }
-| T_idlower expr_2_opt_list             { $$ = new FunctionCall($1, $2); /* LOOKUP id */; }
-| T_idupper expr_2_opt_list             { $$ = new ConstructorCall($1, $2); /* LOOKUP Id */ }
+| T_idlower expr_2_list                 { $$ = new FunctionCall($1, $2); /* LOOKUP id */; }
+| T_idupper expr_2_list                 { $$ = new ConstructorCall($1, $2); /* LOOKUP Id */ }
 | expr_2                                { $$ = $1; }            
 ;
 
@@ -280,12 +282,12 @@ expr_2
 | T_floatconst                      { $$ = new Float_literal($1); }
 | T_charconst                       { $$ = new Char_literal($1); }
 | T_stringliteral                   { $$ = new String_literal($1); }
-| T_idlower                         { $$ = new Id_lower($1); /* LOOKUP */ }
-| T_idupper                         { $$ = new Id_upper($1); /* LOOKUP */ }
+| T_idlower                         { $$ = new ConstantCall($1); /* LOOKUP */ }
+| T_idupper                         { $$ = new ConstructorCall($1); /* LOOKUP */ }
 | "true"                            { $$ = new Bool_literal(true); }
 | "false"                           { $$ = new Bool_literal(false); }
 | '(' ')'                           { $$ = new Unit(); }
-| '!' expr_2                        { /* DEREFERENCE */; }
+| '!' expr_2                        { $$ = new UnOp('!', $2); }
 | T_idlower '[' comma_expr_2_list ']'    { /* ARRAY ACCESS */; }
 | "new" type                        { /* DYNAMIC ALLOCATION */; }
 | '(' expr ')'                      { $$ = $2; }
@@ -297,9 +299,9 @@ comma_expr_2_list
 | comma_expr_2_list ',' expr_2      { $1->push_back($3); $$ = $1; }
 ;
 
-expr_2_opt_list
-: expr_2                            { $$ = new std::vector<Expr *>(); $$->push_back($1); }
-| expr_2_opt_list expr_2            { $1->push_back($2); $$ = $1; }
+expr_2_list
+: expr_2                        { $$ = new std::vector<Expr *>(); $$->push_back($1); }
+| expr_2_list expr_2            { $1->push_back($2); $$ = $1; }
 ;
 
 unop
