@@ -32,7 +32,7 @@ class BasicType: public Type {
 private:
     type t;
 public:
-    BasicType(type t): t(t) {}
+    BasicType(type t): t(t) { /* std::cout << type_string[t]; */ }
     virtual void printOn(std::ostream &out) const override {
         out << type_string[t];
     }
@@ -70,7 +70,15 @@ public:
     }
 };
 
-class CustomType: public Type {};
+class CustomType: public Type {
+private: 
+    std::string Id;
+public:
+    CustomType(std::string *Id): Id(*Id) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "CustomType(" << Id << ")";
+    }
+};
 
 // Basic abstract classes --------------------------------------------
 class Expr: public AST {
@@ -82,7 +90,6 @@ public:
         if (type != t) yyerror("Type mismatch");
     }
 };
-
 
 class Clause: public AST {
 private:
@@ -111,7 +118,7 @@ public:
         out << "Constr(" << Id;
 
         for(Type *t: type_list){
-            out << ", " << t;
+            out << ", " << *t;
         }
 
         out << ")";
@@ -525,6 +532,37 @@ public:
             out << ", " << *e;
         }
         out << ")";
+    }
+};
+
+class ArrayAccess: public Expr {
+private:
+    std::string id;
+    std::vector<Expr *> expr_list;
+public:
+    ArrayAccess(std::string *id, std::vector<Expr *> *expr_list): id(*id), expr_list(*expr_list) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "ArrayAccess(" << id << "[";
+        
+        bool first = true;
+        for(Expr *e: expr_list){
+            if(!first) out << ", ";
+            else first = false;
+
+            out << *e;
+        }
+
+        out << "])";
+    }
+};
+
+class New: public Expr {
+private:
+    Type *type;
+public:
+    New(Type *type): type(type) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "New(" << *type << ")";
     }
 };
 

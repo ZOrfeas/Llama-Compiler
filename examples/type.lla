@@ -1,0 +1,5 @@
+type b = B | Nil | Tree
+
+type g = Nil of char char (float) ref float ref
+
+type d = Empty of char

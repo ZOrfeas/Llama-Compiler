@@ -4,10 +4,14 @@
 #include <vector>
 
 #include "lexer.hpp"
+#include "symbol.hpp"
 #include "ast.hpp"
+
+// #define YYERROR_VERBOSE 1 // comment out to disable verbose error report
 // #define YYDEBUG 1 // comment out to disable debug feature compilation
 %}
 /* %define parse.trace */
+%define parse.error verbose
 
 %union {
     Par *par;
@@ -240,7 +244,7 @@ type
 | type "->" type                    { $$ = new FunctionType($1, $3); }
 | type "ref"                        { $$ = new RefType($1); }
 | "array" bracket_star_opt "of" type %prec ARRAYOF  { $$ = new ArrayType($2, $4); }
-| T_idlower                         { /* LOOKUP CUSTOM TYPE*/; }
+| T_idlower                         { $$ = new CustomType($1); /* LOOKUP CUSTOM TYPE*/; }
 ;
 
 bracket_star_opt
@@ -292,8 +296,8 @@ expr_2
 | "false"                           { $$ = new Bool_literal(false); }
 | '(' ')'                           { $$ = new Unit(); }
 | '!' expr_2                        { $$ = new UnOp('!', $2); }
-| T_idlower '[' comma_expr_2_list ']'    { /* ARRAY ACCESS */; }
-| "new" type                        { /* DYNAMIC ALLOCATION */; }
+| T_idlower bracket_comma_expr_list { $$ = new ArrayAccess($1, $2); /* ARRAY ACCESS */; }
+| "new" type                        { $$ = new New($2); /* DYNAMIC ALLOCATION */; }
 | '(' expr ')'                      { $$ = $2; }
 | "begin" expr "end"                { $$ = $2; }
 ;
@@ -383,7 +387,7 @@ pattern_list
 %%
 
 void yyerror(const char *msg) {
-    fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
+    printf("Error at line %d: %s\n", yylineno, msg);
     exit(1);
 }
 
