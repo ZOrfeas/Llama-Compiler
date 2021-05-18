@@ -83,6 +83,18 @@ public:
     }
 };
 
+
+class Clause: public AST {
+private:
+    Expr *pattern;
+    Expr *expr;
+public:
+    Clause(Expr *p, Expr *e): pattern(p), expr(e) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "Clause(" << *pattern << ", " << *expr << ")";
+    }
+};
+
 class Identifier: public Expr {
 protected:
     std::string name;
@@ -311,9 +323,7 @@ public:
     }
 };
 
-class Literal: public Expr {
-
-};
+class Literal: public Expr {};
 
 class String_literal: public Literal {
 private:
@@ -513,6 +523,21 @@ public:
         out << "ConstructorCall(" << Id;
         for(Expr *e: expr_list) {
             out << ", " << *e;
+        }
+        out << ")";
+    }
+};
+
+class Match: public Expr {
+private:
+    Expr *toMatch;
+    std::vector<Clause *> clause_list;
+public:
+    Match(Expr *e, std::vector<Clause *> *c): toMatch(e), clause_list(*c) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "Match(" << *toMatch;
+        for (Clause *c: clause_list) {
+            out << ", " << *c;
         }
         out << ")";
     }

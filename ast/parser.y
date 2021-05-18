@@ -5,7 +5,7 @@
 
 #include "lexer.hpp"
 #include "ast.hpp"
-//#define YYDEBUG 1 // comment out to disable debug feature compilation
+// #define YYDEBUG 1 // comment out to disable debug feature compilation
 %}
 /* %define parse.trace */
 
@@ -17,6 +17,7 @@
     Program *program;
     Expr *expr;
     Type *type;
+    Clause *clause;
     std::vector<Par *> *par_vect;
     std::vector<Expr *> *expr_vect;
     std::vector<Constr *> *constr_vect;
@@ -24,12 +25,14 @@
     //std::vector<Tdef *> *tdef_vect;
     std::vector<DefStmt *> *defstmt_vect;
     std::vector<Type *> *type_vect;
+    std::vector<Clause *> *clause_vect;
     std::string *id;
     int op;     // This will store the lexical code of the operator
     int num;
     // char character ! No need cause we need the string !
     float dec;
     std::string *str;
+    
 }
 
 %token T_and "and"
@@ -117,7 +120,7 @@
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_list
-%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list comma_expr_2_list expr_2_list
+%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list comma_expr_2_list expr_2_list pattern_list
 %type<constr_vect> bar_constr_opt_list
 //%type<def_vect> and_def_opt_list
 //%type<tdef_vect> and_tdef_opt_list
@@ -127,9 +130,10 @@
 %type<par> par
 %type<type> type
 %type<op> unop comp_operator add_operator mult_operator
-%type<expr> expr expr_2
+%type<expr> expr expr_2 pattern
 %type<num> comma_star_opt_list bracket_star_opt
-
+%type<clause_vect> bar_clause_opt_list
+%type<clause> clause
 
 %%
 program 
@@ -269,7 +273,7 @@ expr
 | "while" expr "do" expr "done"         { $$ = new While($2, $4); }
 | "for" T_idlower '=' expr "to" expr "do" expr "done"       { $$ = new For($2, $4, "to", $6, $8); } 
 | "for" T_idlower '=' expr "downto" expr "do" expr "done"   { $$ = new For($2, $4, "downto", $6, $8); }  
-| "match" expr "with" clause bar_clause_opt_list "end"      { ; }
+| "match" expr "with" clause bar_clause_opt_list "end"      { $5->insert($5->begin(), $4); $$ = new Match($2, $5); }
 | "dim" T_intconst T_idlower            { Int_literal *dim = new Int_literal($2); $$ = new Dim($3, dim); }
 | "dim" T_idlower                       { $$ = new Dim($2); }
 | T_idlower expr_2_list                 { $$ = new FunctionCall($1, $2); /* LOOKUP id */; }
@@ -347,30 +351,33 @@ to_or_downto
 */
 
 bar_clause_opt_list
-: %empty                            { ; }
-| bar_clause_opt_list '|' clause    { ; }
+: %empty                            { $$ = new std::vector<Clause *>(); }
+| bar_clause_opt_list '|' clause    { $1->push_back($3); $$ = $1; }
 ;
 
 clause
-: pattern "->" expr                 { ; }
+: pattern "->" expr                 { $$ = new Clause($1, $3); }
 ;
 
 pattern
-: '+' T_intconst                        { ; }
-| '-' T_intconst                        { ; }
-| "+." T_floatconst                     { ; }
-| "-." T_floatconst                     { ; }
-| T_charconst                           { ; }
-| "true"                                { ; }
-| "false"                               { ; }
-| T_idlower                             { ; }
-| '(' pattern ')'                       { ; }
-| '(' T_idupper pattern_opt_list ')'    { ; }
+: '+' T_intconst                        { $$ = new Int_literal($2);         }
+| '-' T_intconst                        { $$ = new Int_literal(-$2);        }
+| T_intconst                            { $$ = new Int_literal($1);         }
+| "+." T_floatconst                     { $$ = new Float_literal($2);       }
+| "-." T_floatconst                     { $$ = new Float_literal(-$2);      }
+| T_floatconst                          { $$ = new Float_literal($1);       }
+| T_charconst                           { $$ = new Char_literal($1);        }
+| "true"                                { $$ = new Bool_literal(true);      }
+| "false"                               { $$ = new Bool_literal(false);     }
+| T_idlower                             { $$ = new ConstantCall($1);        }
+| T_idupper                             { $$ = new ConstructorCall($1);     }
+| '(' pattern ')'                       { $$ = $2;                          }
+| '(' T_idupper pattern_list ')'        { $$ = new ConstructorCall($2, $3); }
 ;
 
-pattern_opt_list
-: %empty                            { ; }
-| pattern_opt_list pattern          { ; }
+pattern_list
+: pattern                           { $$ = new std::vector<Expr *>(); $$->push_back($1); }
+| pattern_list pattern              { $1->push_back($2); $$ = $1; }
 ;
 
 %%

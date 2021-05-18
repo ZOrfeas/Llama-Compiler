@@ -1,0 +1,6 @@
+let print_pile pile =
+    match pile with
+    Left -> print_string "left"
+    | Middle -> print_string "middle"
+    | Right -> print_string "right"
+    end

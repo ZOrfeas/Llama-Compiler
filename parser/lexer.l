@@ -76,9 +76,9 @@ Hex [0-9a-f]
 [=\|+\-\*/!;<>]    { return yytext[0]; }
 [\(\)\[\],:]        { return yytext[0]; }
 
-"−>" { return T_dashgreater;  }
+"->" { return T_dashgreater;  }
 "+." { return T_plusdot;      }
-"−." { return T_minusdot;     }
+"-." { return T_minusdot;     }
 "*." { return T_stardot;      }
 "/." { return T_slashdot;     }
 "**" { return T_dblstar;      }

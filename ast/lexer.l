@@ -80,9 +80,9 @@ Hex [0-9a-f]
 [=\|+\-\*/!;<>]    { yylval.op = yytext[0]; return yytext[0]; }
 [\(\)\[\],:]        { yylval.op = yytext[0]; return yytext[0]; }
 
-"−>" { yylval.op = T_dashgreater;  return T_dashgreater;  }
-"+." { yylval.op = T_plusdot;      return T_plusdot;      }
-"−." { yylval.op = T_minusdot;     return T_minusdot;     }
+"->" { yylval.op = T_dashgreater; return T_dashgreater;  }
+"+." { yylval.op = T_plusdot; return T_plusdot;      }
+"-." { yylval.op = T_minusdot;     return T_minusdot;     }
 "*." { yylval.op = T_stardot;      return T_stardot;      }
 "/." { yylval.op = T_slashdot;     return T_slashdot;     }
 "**" { yylval.op = T_dblstar;      return T_dblstar;      }
