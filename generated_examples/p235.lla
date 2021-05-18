@@ -1,0 +1,33 @@
+type a = Nil of (bool) ref | Nil
+
+type c = Nil | D
+ and c = Tree | D
+
+type foo = Cons | Empty of int ref float | C of ((float) ref) int int
+
+type main = B | C
+
+type c = A of unit -> (f) -> float char unit -> float array [*] of unit ref | Tree of float ref | Cons of unit -> bool | Empty of array [*,*] of foo char bar int -> float -> bool
+
+let b foo d foo = dim 2 d
+and e (a : bool -> bool) a a e = (f[new a])
+and bar = let mutable f
+and bar foo foo b : array of unit = 42.0
+and mutable b : bool in (let b : (d) ref ref ref = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and f : (int) = ()
+and bar = false
+and g a = true
+and g e (foo : a -> float ref) bar g = () in true)
+and mutable d[Nil,match a["Route66"] with
+  (-11) -> (() > ())
+end
+]
+and mutable bar[while A false () do (22) done]
+
+let g d a = C (begin while true do "bar" done end) ((not (('a' +. "Name:\t\"DouglasAdams\"\nValue:\t42\n"))))
+and foo (bar : float) : float = match if 3.14 then "Route66" else false with
+  (-.2.56) -> if 6 then false
+end
+
+and main c f a = dim 2 f
+

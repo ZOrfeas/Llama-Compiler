@@ -1,0 +1,8 @@
+let a = match new float ref with
+  42.0 -> dim 1 c
+| b -> if "bar" then 27 else "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+
+and foo c (a : (float)) main : array [*,*] of e -> bool = (Cons -. (bar["Route66"]))
+and c g (e : array of char) bar b = d[dim 2 g]
+

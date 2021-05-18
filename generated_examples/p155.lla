@@ -1,0 +1,17 @@
+let a = for c = 42.0 downto 32 do for g = 6 to false do "bar" done done
+and c (foo : char ref) f c b = for foo = '7' to () do let main bar e = true in 9 done
+
+let e foo (main : char) = let c (bar : array of array of char) (foo : int) (a : int) = ()
+and f (foo : unit -> unit) e f = '7'
+and g (d : bar) = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and e d main = 42.0
+and f : e -> unit = "foo" in (C "foo")
+and a = foo[g (new int) (while '\'' do "bar" done) (match () with
+  (true) -> 'a'
+end
+),for main = "foo" to 42.0 do delete '7' done]
+and mutable c[delete (delete (+ (while '7' do '7' done))),new array [*] of char -> array of bar -> float]
+
+let foo bar e f b = while a[42.0] do if false then () else 'a' done
+and foo (b : e) = let e (g : foo) (bar : (char)) g bar = true in (dim 2 main)
+

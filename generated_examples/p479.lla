@@ -1,0 +1,21 @@
+let f e bar bar foo = dim 1 c
+and d bar f = match for main = 26 to () do 3.14 done with
+  (+23) -> bar 42.0
+| 38 -> begin false end
+| '\n' -> delete 3.14
+end
+
+and e (bar : int) (c : float) = ((if true then "foo"))
+
+let rec bar foo = + (while foo true 2 do while true do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done done)
+and bar (d : unit -> array [*] of e -> (int)) b (c : int) g = (match 36 with
+  0.0 -> true
+end
+ -. (new char))
+and f = ((3.14) ++ (('a')))
+and foo e = for c = 20 downto true do match 12 with
+  true -> ()
+| true -> '\''
+end
+ done
+

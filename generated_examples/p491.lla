@@ -1,0 +1,10 @@
+let foo d (bar : main) = match (true <> '\'') with
+  '\n' -> begin "foo" end
+| '7' -> for c = 0.0 downto 0.0 do true done
+| (+.0.0) -> delete true
+end
+
+and mutable g
+and bar (b : int) a foo d = dim a
+and foo b = foo[for c = () downto "bar" do g "foo" 2.56 4 done]
+

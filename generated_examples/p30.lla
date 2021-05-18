@@ -1,0 +1,8 @@
+let bar = while dim 2 g do match false with
+  (D false) -> ()
+end
+ done
+and d f g = delete (dim 2 a)
+and mutable c
+and a e bar g (e : (int)) = (g[5,"bar"] <> (for c = 42.0 to 0.0 do '\n' done))
+

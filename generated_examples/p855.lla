@@ -1,0 +1,2 @@
+let main a f d (a : (bool)) = while begin false end do if "foo" then '7' done
+

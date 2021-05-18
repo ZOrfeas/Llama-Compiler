@@ -1,0 +1,33 @@
+let g (g : char) bar : array [*,*] of array of unit = Cons (match for g = 3.14 downto 0.0 do "foo" done with
+  true -> d '7'
+| '7' -> new unit
+| B -> ! ()
+end
+) (let rec e b bar = 42.0
+and bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and main b a g = '\'' in (match 4 with
+  Nil (-26) 14 -> "foo"
+| ((-30)) -> ()
+end
+))
+and foo g d (e : unit -> (int ref) ref ref) = dim e
+and bar = let c a f = 28
+and f : f = 30
+and mutable d in (b 2.56 42.0)
+and d (foo : (bool)) (bar : char) a = (dim 1 foo >= (for bar = '\n' to 28 do "foo" done))
+
+let a = if 30 then (match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  (+31) -> 3.14
+| main -> 16
+| c -> false
+end
+) else for foo = '7' downto 'a' do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+and bar f main = while (true) do (() := '\'') done
+and c = -. (delete (match true with
+  false -> 40
+| (+.42.0) -> ()
+end
+))
+and b f b f : int -> bool -> int = while while 9 do '\n' done do D done
+and mutable bar[begin if () then new (char) end,while (0.0) do if () then () else 14 done]
+

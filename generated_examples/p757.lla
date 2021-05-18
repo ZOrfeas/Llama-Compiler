@@ -1,0 +1,5 @@
+let foo = let bar d (foo : array of char) (main : a ref) = '\n'
+and main (a : char) a g c = 17 in (begin false end)
+and c g b = while begin 1 end do (() >= true) done
+and mutable main[if 'a' then ((())) else new (array [*,*] of int),- ((! ((false))))]
+

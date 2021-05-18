@@ -1,0 +1,28 @@
+let mutable e[begin dim d end,begin if 3 then if 3.14 then 15 else false end]
+and a (b : (int)) d c = (- 2.56 && (while true do true done))
+and g = begin ((0.0) / (dim d)) end
+and main = +. (delete (g (match 42.0 with
+  ((false)) -> ()
+| true -> 14
+end
+) (- 37) (for b = 42.0 to "bar" do "bar" done)))
+and bar = new int
+
+let f foo g e : unit = while while 42.0 do 'a' done do ! () done
+and foo = dim 2 e
+and mutable g[bar[begin (if '\'' then 0.0) end]]
+
+let bar c : c = bar (if false then (match () with
+  '\n' -> 11
+| true -> '\n'
+| 2 -> ()
+end
+) else f["Route66"]) (delete (for foo = () downto 0.0 do true done))
+and f (b : unit) d a g = (not "foo" > (delete 'a'))
+and g a e e = main[(for b = 28 to false do true done ; (if "Route66" then 42.0 else '\n')),+ (new bool)]
+and a c d (c : float) bar : float ref ref = while ("foo" <> "Name:\t\"DouglasAdams\"\nValue:\t42\n") do if "Route66" then () done
+and e = match b["Name:\t\"DouglasAdams\"\nValue:\t42\n"] with
+  a -> dim 2 e
+end
+
+

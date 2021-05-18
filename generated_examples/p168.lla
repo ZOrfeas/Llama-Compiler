@@ -1,0 +1,16 @@
+type foo = C | Nil of a -> unit | B of bool char array of d -> int
+
+let a main = new unit
+and main foo g (c : unit) = let f bar g g g = 0.0
+and e c main (g : bool) = true
+and e f foo (b : int) : float ref = 21
+and d = '7'
+and c f = true in (match "Route66" with
+  (+14) -> 2
+| false -> 3.14
+end
+)
+and d e foo : int = (+ (a ((false))))
+
+type f = B
+

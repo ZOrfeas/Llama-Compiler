@@ -1,0 +1,16 @@
+type foo = A
+
+let main bar b a (f : int) = if 3.14 then if "foo" then 1
+and e g c b d = not (match match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  (Cons false false true) -> true
+end
+ with
+  0.0 -> + true
+| (-.42.0) -> (2.56)
+end
+)
+
+type main = A | Empty | Tree | D
+ and a = Tree | Nil | D | Tree of d -> unit
+ and f = Nil | Tree | A of int -> int | D
+

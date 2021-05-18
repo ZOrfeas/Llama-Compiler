@@ -1,0 +1,5 @@
+let b d (bar : array [*,*] of int) (g : float) c = b[if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (delete ()) else match () with
+  (-15) -> 42.0
+end
+]
+

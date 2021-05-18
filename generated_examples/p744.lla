@@ -1,0 +1,7 @@
+type main = A of (array [*,*] of int -> array [*,*] of int -> char -> float -> ((unit)) -> float ref) array of bool -> int | Cons
+ and f = C of int float | D | Cons | D
+
+let b = dim f
+
+type g = Cons of char char int int | Nil of char -> (float) | Empty
+

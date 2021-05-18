@@ -1,0 +1,14 @@
+let e = ((true) - (while "bar" do '\n' done))
+and d b (f : bar) d f = dim 2 main
+
+let mutable b
+and g e main : unit = - (delete (for d = "bar" to true do 40 done))
+and c d (d : int) : unit = main (begin +. (match 5 with
+  0.0 -> true
+| main -> '7'
+end
+) end)
+and mutable c[while ('7' + 0) do (false) done]
+
+type main = Tree
+

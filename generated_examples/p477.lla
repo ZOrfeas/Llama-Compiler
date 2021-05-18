@@ -1,0 +1,6 @@
+type e = D | Empty of unit (char) -> int ref | Cons | C
+
+type e = C | C of (float) float float unit | B
+
+type c = Cons | Cons of array [*] of bool | D | A
+

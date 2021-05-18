@@ -1,0 +1,7 @@
+let bar foo g main = if () then (match true with
+  ((+.2.56)) -> "foo"
+| '7' -> "Route66"
+end
+) else if 2.56 then () else "bar"
+and e d = if "bar" then (begin 42.0 end) else dim main
+

@@ -1,0 +1,13 @@
+let main g (f : array [*] of int ref) (e : float) : f = dim 1 b
+and d main g bar f = e ((foo))
+and e e b = b ((match 21 with
+  (f) -> false
+end
+ mod (bar[3.14,true]))) (bar[b[(false),while true do 3.14 done],main[e () '\'']])
+and mutable foo
+and g a b : int = Empty
+
+type c = Cons | C | Cons
+
+type g = Tree of float ref | Nil of int ref bool | Empty
+

@@ -1,0 +1,6 @@
+type g = B | C of int array of (char)
+
+type foo = Nil
+
+type e = D | Tree | Empty | A
+

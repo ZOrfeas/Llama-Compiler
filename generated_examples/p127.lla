@@ -1,0 +1,9 @@
+let main a (g : char) a : (g) = c (while let bar e (a : int) d (a : array [*,*] of char) = 'a' in true do let b bar g f b : int = 13 in 36 done)
+and mutable f[- (begin A (f ()) (dim 1 b) end)]
+and c (g : int) b f bar = if false then (new char) else delete '\''
+and b foo (bar : array of unit ref) (foo : int) (e : float) = delete (begin delete (match 42.0 with
+  (false) -> true
+end
+) end)
+and f c g c = begin d[for g = 42.0 downto "bar" do 32 done,dim 2 a] end
+

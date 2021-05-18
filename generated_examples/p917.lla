@@ -1,0 +1,16 @@
+let f = delete (delete (match "bar" with
+  2 -> true
+| D (+.42.0) false -> 16
+| 'a' -> 0.0
+end
+))
+
+let f (f : char) (f : int) f g = if '\n' then (for c = () downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do "Route66" done) else (())
+and bar = for g = 42.0 to true do if "Route66" then 'a' else '7' done
+and c bar (d : char) foo = match ! 3.14 with
+  (-2) -> for main = 15 downto "Route66" do 0.0 done
+end
+
+
+type b = Nil of array [*,*] of (int) unit -> bool array [*,*] of array of unit ref (char) ref ref
+

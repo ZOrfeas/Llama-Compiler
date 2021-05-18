@@ -1,0 +1,14 @@
+let c (a : array [*,*] of bool ref -> float) : bar = for d = 0.0 to '7' do match "bar" with
+  18 -> ()
+| (Cons true) -> ()
+end
+ done
+and g foo (main : int) f = match dim main with
+  42.0 -> while 4 do "bar" done
+| 0.0 -> ! "foo"
+| 28 -> let f bar g = '\''
+and main d g g f : c = 16
+and a a = '7' in ()
+end
+
+

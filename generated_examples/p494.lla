@@ -1,0 +1,5 @@
+let b = (foo[false] +. (begin 0.0 end))
+and e (g : int) (c : array of bool) e main = for b = () to 42.0 do -. "bar" done
+and c (e : foo) c f : bool = - (if 17 then for f = '7' downto 18 do 2.56 done)
+and e c f c bar = delete (dim c)
+

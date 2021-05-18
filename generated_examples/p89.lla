@@ -1,0 +1,9 @@
+let e g b d = dim d
+and mutable e[delete (dim c)] : array [*,*] of array of bool
+and mutable f[! (let rec b = ()
+and c b foo a c = "foo"
+and d a (g : int) g : char ref = '7' in (let b (e : (int)) = "foo" in 35)),(match dim 1 foo with
+  0.0 -> Nil
+end
+)]
+

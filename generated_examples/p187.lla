@@ -1,0 +1,13 @@
+let d a a : unit = if false then (begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end) else new unit
+and a b bar b (e : int ref) = match begin 8 end with
+  e -> let f f g : int = '\n'
+and bar = "bar"
+and main c main d = "Route66"
+and bar c (f : int) (bar : char) g = false
+and g = true in 26
+| Nil 'a' -> while 2.56 do () done
+| '7' -> + false
+end
+
+and f c d a = (- (B (if 42.0 then '\'') (Tree 37 ())))
+

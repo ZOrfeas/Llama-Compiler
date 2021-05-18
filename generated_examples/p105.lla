@@ -1,0 +1,9 @@
+let a (e : main -> g) = B (if () then (42.0 > ()))
+and b : unit = (delete () + (if true then false else 'a'))
+and mutable c[for c = true downto "bar" do new unit done,for c = true to () do not 3.14 done]
+and b c f = for main = 13 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do delete true done
+
+type main = C | B of a (array of float)
+
+let d main g bar = while delete "foo" do while 0.0 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done done
+

@@ -1,0 +1,3 @@
+let a bar (c : array [*,*] of f -> (array [*,*] of char ref -> (bool) -> (int)) ref) main = Nil
+and mutable b[dim 2 e,if 'a' then while 16 do true done]
+

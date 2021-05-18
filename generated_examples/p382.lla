@@ -1,0 +1,15 @@
+let b d main = foo (begin new int end)
+and d c = delete (dim 2 bar)
+and a f g f f : (f) = while (27) do if 42.0 then '\n' done
+
+let a (e : array of unit) g foo b = let rec g c foo b g = true
+and b g (b : char) = '\n'
+and a b = 42.0
+and f a b (g : unit) = true in (new bool ref)
+and bar b = (while '7' do 'a' done + (e ()))
+and f f = e[(for foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to 0.0 do false done = (delete 22))]
+
+let d foo b = dim foo
+and e foo = B (dim 2 foo) (for bar = () downto false do if '\'' then "bar" else '7' done) (if true then ("foo" / '\''))
+and d (bar : bool) (c : char) (e : bool) (foo : char -> char -> ((b))) : g -> bar ref = if 2.56 then (f["Name:\t\"DouglasAdams\"\nValue:\t42\n","Route66"]) else (0.0 ; false)
+

@@ -1,0 +1,7 @@
+let e = if 'a' then (if '7' then "foo" else 2.56) else while 0.0 do '7' done
+and bar g a = for foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to () do (3.14 <> 0.0) done
+
+type a = Cons | D | B | Nil
+
+type d = Tree | Empty of float
+

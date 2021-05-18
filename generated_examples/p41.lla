@@ -1,0 +1,13 @@
+type foo = Nil | B | A of bool | D of bool
+
+let c = dim main
+and c (main : g) c g = A (let foo : float = ()
+and foo d (foo : b ref) : (float) = '\n'
+and mutable d['7']
+and d foo a c : char = '\''
+and mutable e['a'] in (('a'))) ((while true do () done <> (while false do '\'' done)))
+
+type f = Nil | Nil of bool f ref float | Nil
+ and bar = B
+ and bar = Cons | Tree
+

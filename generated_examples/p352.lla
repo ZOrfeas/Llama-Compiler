@@ -1,0 +1,12 @@
+type f = Tree
+
+let foo e g b foo = while let f = 0
+and b = 23 in 2.56 do while "bar" do () done done
+
+let rec f c (main : array of unit) = begin match begin '\'' end with
+  A -> ('\'')
+| 3.14 -> (3.14)
+end
+ end
+and g (a : foo) d bar = for g = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to 42.0 do new array [*,*] of int done
+

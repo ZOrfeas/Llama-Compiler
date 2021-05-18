@@ -1,0 +1,12 @@
+let e = match begin '7' end with
+  Tree B c (+.3.14) (-.2.56) -> for b = "Route66" downto false do 4 done
+end
+
+and a foo a = new f
+and g = (while () do 31 done || (while 42.0 do true done))
+
+type c = Cons
+
+let f e = (main 40 false / (for foo = 10 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 'a' done))
+and d : (array of unit -> unit ref) = dim e
+

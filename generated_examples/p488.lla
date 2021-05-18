@@ -1,0 +1,6 @@
+let f = let bar = '\''
+and b d = 42.0
+and c bar bar = 8
+and mutable d[(),'a'] : unit
+and main g c = 42.0 in (dim c)
+

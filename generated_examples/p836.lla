@@ -1,0 +1,8 @@
+let main = match dim a with
+  f -> while '\'' do () done
+| (false) -> if () then () else 19
+end
+
+
+let e g a (b : unit) (b : char -> main -> char -> unit -> char) : foo = dim 2 g
+

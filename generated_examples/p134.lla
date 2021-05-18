@@ -1,0 +1,61 @@
+let f main bar = (while () do false done -. (delete true))
+
+let d (main : bool) g : f ref = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (new unit) else begin false end
+and d foo bar c : b -> int = (e[30] + (c false))
+and f bar g bar c = for g = 3.14 downto false do for f = false to true do () done done
+and b (f : bool) (c : char) = let b f = '\n'
+and main (e : array [*] of array [*,*] of (float)) bar = false
+and mutable c["foo"]
+and foo f (g : a -> array of array of (main) ref ref) e = '7' in (let d (g : main) g : bool = '\n'
+and bar f f f (c : array of unit) = 28
+and bar = '\''
+and d c main (g : int) = 15 in '7')
+
+let main : bool = dim 2 d
+and f f (bar : char) (e : int) g : unit = if 25 then begin false end
+
+let a (b : unit ref) a d = for bar = () downto "Route66" do if '7' then '\n' done
+and bar a e : unit = for a = 'a' downto "foo" do dim a done
+and main c e = dim 1 b
+
+let rec b : char = let mutable d["foo"]
+and main bar bar = 22
+and bar (f : int) e = "bar"
+and mutable foo[38] : int
+and g b bar c = false in (match "foo" with
+  main -> "Route66"
+end
+)
+and d a e g = -. (let a foo = 20 in (match false with
+  26 -> true
+| (26) -> '\''
+end
+))
+and mutable e
+and e e (b : float ref ref) main : array of char = match if "foo" then 'a' with
+  b -> if () then 22 else 32
+| D (-11) 10 0.0 -> if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+
+
+let foo f b = let b b g g f = false in ((38 * ()))
+and c = for foo = 42 downto 37 do delete 'a' done
+and bar (c : char) (bar : (unit)) = begin dim b end
+and g (g : array of unit -> char) = dim 2 f
+and f = match let main b : e = true
+and bar d b = '\n'
+and mutable main["Name:\t\"DouglasAdams\"\nValue:\t42\n",()]
+and e b = '\'' in '\'' with
+  '\'' -> match 35 with
+  Nil false false false -> ()
+end
+
+| ('\n') -> not "Route66"
+end
+
+
+type c = A | Nil of char char foo f
+
+type main = A | B | Empty of (bool) c float
+ and main = B | D of unit float ref foo array of float | Tree of char ((int -> float)) | D of unit bool bar -> (int)
+

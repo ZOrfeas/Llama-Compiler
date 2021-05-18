@@ -1,0 +1,7 @@
+let e = while (false) do if false then false done
+and f c a c = dim 2 main
+and f (d : int) f main g = dim c
+
+let c main bar (d : array of (char) ref -> float ref) = for c = 3.14 to '\n' do for g = 0.0 downto () do 42.0 done done
+and main b foo c main = (new b || (+. "Name:\t\"DouglasAdams\"\nValue:\t42\n"))
+

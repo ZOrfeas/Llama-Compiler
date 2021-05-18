@@ -1,0 +1,5 @@
+let b c g = dim b
+and e (e : c) f e c = let b : (unit) = 4 in (delete ())
+and f (g : bool ref) b bar : main ref ref = let rec a = 2 in (for a = 30 downto 25 do 'a' done)
+and a g c (main : char) (b : float) = (if false then (new array of (float)) else while () do () done)
+

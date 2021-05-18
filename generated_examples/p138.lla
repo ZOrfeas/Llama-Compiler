@@ -1,0 +1,6 @@
+let e d (e : (float)) (bar : (b)) foo : char = while ('7') do delete "foo" done
+and bar d a d = begin while new unit do (() / false) done end
+
+let rec main bar = Cons (new array of unit)
+and b d = main[delete (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 0.0)]
+

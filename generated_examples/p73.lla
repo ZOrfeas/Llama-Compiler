@@ -1,0 +1,28 @@
+type d = Empty | Tree
+
+let rec f b a a e : float -> foo = begin c[new foo -> (float ref) ref] end
+and g c (c : bool) : float ref ref = match for b = '\n' to () do "bar" done with
+  ((+8)) -> (true -. ())
+| (-20) -> match 32 with
+  (-.3.14) -> "bar"
+| (-.0.0) -> false
+| (+.3.14) -> false
+end
+
+end
+
+and f a d d = for g = "Route66" downto 0.0 do c () done
+and e foo main (c : char) = (for bar = "foo" to '\n' do () done - (delete '7'))
+and main = (begin true end mod (match () with
+  (-14) -> true
+| (-28) -> "bar"
+end
+))
+
+let bar bar f bar foo = match new float ref with
+  (+.0.0) -> begin "bar" end
+end
+
+and foo a = not (for d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to false do + "foo" done)
+and foo = new unit ref
+

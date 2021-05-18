@@ -1,0 +1,5 @@
+let a = begin (dim main ; (b['7'])) end
+
+let e f (d : char -> float) main d = new int
+and mutable f[begin dim a end,- (f (while 42.0 do "Route66" done) (+. (delete '\n')) (while 25 do '7' done))] : (float -> char)
+

@@ -1,0 +1,23 @@
+type d = Tree | C
+
+let d = begin for foo = true downto () do new float done end
+and foo b = (delete (new (float)))
+and b g : int = let mutable f[false,14]
+and mutable a["Name:\t\"DouglasAdams\"\nValue:\t42\n","bar"] : char
+and f foo (f : float -> float) d (b : bool) = () in (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else false)
+
+let a = new foo
+and d bar (f : int) = Tree (delete (e (while true do "bar" done) (new float) (begin 22 end)))
+and bar g = dim 1 e
+and f d foo = if "bar" then (('\n' *. "bar")) else (6)
+and a f = + (match let g foo (c : int -> bool) = ()
+and a : unit -> unit -> int = 24
+and f b a (f : unit) (f : char -> int -> float -> array of int ref ref) : (float) = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and b = 2.56
+and b (foo : bool) = true in '\'' with
+  (-.42.0) -> if '\n' then 0.0
+| (-15) -> for c = true downto "bar" do '7' done
+| (+15) -> begin '\n' end
+end
+)
+

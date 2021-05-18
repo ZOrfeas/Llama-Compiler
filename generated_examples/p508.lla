@@ -1,0 +1,7 @@
+type d = Nil | Nil | B | D
+
+type a = Nil of unit array [*] of array [*] of array [*,*] of char ref
+ and a = Empty | Cons of bool | Cons
+
+type main = B of array [*,*] of char char char | B | Tree of char array [*,*] of float char float
+

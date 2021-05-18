@@ -1,0 +1,7 @@
+type e = C | Empty
+
+let rec main (bar : array of unit) = (+. ((29 - 'a')))
+
+type main = C
+ and g = C | D | Cons of int array [*] of float -> ((bool ref))
+

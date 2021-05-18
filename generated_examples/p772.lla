@@ -1,0 +1,3 @@
+let bar (a : int) e = (new array [*,*] of unit)
+and a (main : float) : (bool -> bool) ref -> array of bool = let bar : array of float ref ref = 42.0 in (new bool)
+

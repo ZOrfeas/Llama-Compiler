@@ -1,0 +1,10 @@
+let bar bar (bar : bar) a e = (delete "Name:\t\"DouglasAdams\"\nValue:\t42\n" < (delete '\n'))
+and main = new array [*,*] of int
+and mutable g[match new char with
+  A (-9) -> new (float) -> array of unit ref ref
+| (+33) -> e[17]
+end
+,- (begin (a "Name:\t\"DouglasAdams\"\nValue:\t42\n" () true) end)]
+
+let foo bar = for c = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do (false) done
+

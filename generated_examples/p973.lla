@@ -1,0 +1,22 @@
+let rec main (a : float -> char ref) a = begin let g = "Route66" in (while "foo" do "bar" done) end
+and f (bar : unit) main g = - (match while 25 do 42.0 done with
+  true -> (2.56 > "Route66")
+| C false D Empty Empty e '\n' (c) (-6) -> for e = 3.14 downto 35 do 'a' done
+| '\'' -> ("foo")
+end
+)
+and mutable b[(let c (foo : bool) : char = 42.0
+and e = () in '7' <> (match false with
+  d -> '\n'
+| (+.2.56) -> ()
+end
+)),new float]
+and d a main foo = let g c bar a = 'a'
+and a (g : int) foo c = "Route66"
+and b (d : g) bar = ()
+and f = () in (while 'a' do 6 done)
+
+type g = Tree | Tree | Tree | Cons
+
+type e = Nil of array of unit (f) float | Tree of main -> bool int -> bool int bool | C | Tree
+

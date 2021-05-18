@@ -1,0 +1,11 @@
+let rec b main f = delete (begin match () with
+  Cons 42.0 ((-36)) foo -> '7'
+| (A 7 C false) -> false
+end
+ end)
+and c c = delete (delete (for main = () downto "foo" do 20 done))
+and a c (foo : (e)) b = delete (match dim 2 bar with
+  ((+.42.0)) -> delete 'a'
+end
+)
+

@@ -1,0 +1,7 @@
+type b = B | Nil | Tree
+
+type g = Nil of char char (float) ref float ref
+
+type d = Empty of array of (g -> unit ref ref) array of float -> int unit float | B | Empty
+ and e = Nil | Nil of main unit unit char | C of (bool) char
+

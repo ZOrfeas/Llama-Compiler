@@ -1,0 +1,18 @@
+type f = Cons | Cons
+
+type a = Empty of (bool -> bool) bool | C
+
+let c (a : char) main (g : array [*] of float) (c : float -> float) = for bar = () downto "foo" do match 'a' with
+  false -> true
+end
+ done
+and c g = while c () 2.56 1 do begin "foo" end done
+and b f (a : (int) -> char -> int -> unit) (g : array [*,*] of (c)) main = if true then (("bar" <> true)) else ("Name:\t\"DouglasAdams\"\nValue:\t42\n" && 24)
+and bar = dim bar
+and f e main d : float = delete (match e['7'] with
+  42.0 -> let a c a g c = 24
+and b a = ()
+and mutable f['7',()] in 2.56
+end
+)
+

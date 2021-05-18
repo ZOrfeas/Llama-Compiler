@@ -1,0 +1,15 @@
+let foo g foo : (int) = if () then Cons () 0.0 31
+and a main g d = new (foo)
+and g e foo d = if "Route66" then (- ()) else while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 32 done
+and main (d : unit -> char ref) = d
+and mutable g
+
+let d f e b : array [*,*] of unit = begin match b[14] with
+  (-25) -> new int
+| (+24) -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n")
+end
+ end
+and d (foo : char) (b : (unit)) = new unit
+
+type b = A | D of (bool) -> bool | D of array of (bool) array of d -> float array of float unit
+

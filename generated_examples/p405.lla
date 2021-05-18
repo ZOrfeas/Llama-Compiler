@@ -1,0 +1,11 @@
+let c g e = d (begin begin begin () end end end)
+and e b = dim 1 d
+
+type bar = B | B
+
+let d g bar = ((match '\'' with
+  d -> 0.0
+end
+ -. (while () do 0.0 done)))
+and bar = +. (-. (if 42.0 then '\''))
+

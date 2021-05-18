@@ -1,0 +1,8 @@
+let f b = delete (delete (if true then "bar"))
+and main b e (bar : (array [*] of array [*,*] of bool)) main = match new array [*] of array [*,*] of (unit) with
+  false -> new (float) -> char
+end
+
+and b = - (dim 2 g)
+and d d foo = dim bar
+

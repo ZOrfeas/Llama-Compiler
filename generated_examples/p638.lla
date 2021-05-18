@@ -1,0 +1,14 @@
+type a = Tree of (char -> unit) | B | Cons
+
+let d b (e : array [*] of d ref ref) = (match for a = "bar" to false do "bar" done with
+  ((-42)) -> B 'a'
+end
+)
+
+let mutable foo[(dim 2 f + (+. 42)),while new f do + "Route66" done]
+and foo = for main = 30 to () do let foo b (bar : bool) = 31
+and b e e = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and f a foo = '7'
+and d a d (c : float) g = 18 in () done
+and f foo main (bar : float) main = (dim 1 bar == (for c = "bar" to () do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done))
+

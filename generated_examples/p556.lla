@@ -1,0 +1,17 @@
+type foo = Empty of d unit ref bool float ref | A of bool unit
+
+type b = B | Cons
+
+let rec mutable main[match ('\'') with
+  Empty 'a' true -> delete 2.56
+| a -> dim bar
+end
+]
+and g e = match + '7' with
+  22 -> ('7')
+end
+
+and main (e : (char) -> array [*,*] of char ref) : unit = begin begin new char end end
+and b = delete ((dim 2 c))
+and b d = delete (not (new unit))
+

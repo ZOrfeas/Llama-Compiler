@@ -1,0 +1,8 @@
+type g = D | Tree of float foo array [*,*] of float
+
+type a = A of array [*,*] of (array of (int -> char) -> bool) ref array [*] of b ref | B | D | A
+ and c = D of bool (unit) unit (unit)
+ and b = A of bool | Cons | Tree
+
+type e = A of float | Tree
+

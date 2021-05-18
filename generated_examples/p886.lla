@@ -1,0 +1,29 @@
+type b = Cons | A of char unit | Nil
+ and f = D | Tree of bool g int | C | Tree
+
+let foo e a bar a = dim 1 f
+and main d = if true then (while "Route66" do 42.0 done) else match 3.14 with
+  foo -> false
+| true -> '\n'
+| Empty (+.42.0) -> true
+end
+
+and a g d foo foo = c[dim 2 bar,f (a[f[false],let b (c : bool) bar main e = 3.14
+and e main (d : char) (a : char) (d : ((array [*,*] of int) ref ref ref)) : char = 19 in 42.0])]
+and b f main : unit = while dim e do for foo = "Route66" downto () do () done done
+
+let c (e : array [*] of float) = delete (let f c (g : bool) foo d = 2.56
+and e (main : (int -> char)) = "Route66" in (while 9 do 0 done))
+and d main b d (f : char) = while delete "foo" do begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end done
+and c = match dim main with
+  'a' -> + 38
+end
+
+and foo main (bar : char) foo = Tree
+and foo b = match e 2.56 with
+  D (-1) -> dim 2 b
+| 42.0 -> ! false
+| Tree main 25 (-35) -> if 42.0 then ()
+end
+
+

@@ -1,0 +1,6 @@
+let a : bool = (while match 3.14 with
+  '\n' -> "foo"
+end
+ do ("Route66") done)
+and bar = (if 0.0 then () else false ++ (delete 30))
+

@@ -1,0 +1,16 @@
+let g bar : unit = match match 42.0 with
+  false -> ()
+| 2.56 -> 2.56
+| (-.3.14) -> ()
+end
+ with
+  a -> dim main
+| ('7') -> (true)
+| (-26) -> g['\'']
+end
+
+
+type main = Nil of int float array [*] of f bool | C | B of array of (unit) ref | Tree
+
+type bar = A of array of (int) -> char | D | D
+

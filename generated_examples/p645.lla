@@ -1,0 +1,12 @@
+let bar g = delete (new float)
+and foo foo = match begin '\'' end with
+  (+.3.14) -> for d = 37 downto 3.14 do () done
+| false -> e false 2.56
+end
+
+and a bar c e = let f d e main = 4
+and foo f main g bar = '\''
+and mutable g[14] in (g 0 42.0 2.56)
+and a d bar a : unit = while (()) do dim d done
+and d = B ((delete (for g = "foo" downto true do () done))) (if 5 then (('\n')) else ('a')) (while foo[false,()] do delete 'a' done)
+

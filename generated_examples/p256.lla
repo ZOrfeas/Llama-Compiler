@@ -1,0 +1,7 @@
+type bar = A
+
+type c = D
+
+let foo main (e : array of array [*] of int ref) = (for c = () to () do 2.56 done ; ((false)))
+and e f d a : unit ref -> array of char = D (delete (begin for main = 42.0 downto () do '7' done end))
+

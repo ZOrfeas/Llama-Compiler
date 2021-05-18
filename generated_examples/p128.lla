@@ -1,0 +1,15 @@
+let bar (bar : (int)) = (let foo = false in '\n' * (B 3.14))
+and mutable bar
+and c bar main (foo : array of int) g = (delete "foo" ; (-. "Name:\t\"DouglasAdams\"\nValue:\t42\n"))
+
+let g d main = d[new array of a -> bool,match while 2.56 do 42.0 done with
+  (-.42.0) -> delete false
+| Tree (-31) -> ("bar" = 6)
+| ((((+4)))) -> new int
+end
+]
+and g = delete (bar[new bool,match "bar" with
+  (+16) -> '7'
+end
+])
+

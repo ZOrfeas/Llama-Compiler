@@ -1,0 +1,13 @@
+type g = Cons | A
+
+type e = C of char | C | Tree | Nil
+ and main = Nil of int array [*] of float -> unit | Cons | B | Cons of (int) foo
+
+let foo = e[for b = () downto () do match '\n' with
+  true -> "bar"
+| A d (+26) f -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| e -> '\''
+end
+ done]
+and d = new int
+

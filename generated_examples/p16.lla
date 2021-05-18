@@ -1,0 +1,7 @@
+let c e = -. (begin if 'a' then () else '7' end)
+and a b foo : bool = let e (e : (char) -> char ref) = "foo"
+and main = 42.0 in (dim foo)
+and main bar a e a : bool = if 2.56 then (foo[6]) else (3.14 * 'a')
+
+let e foo main = d[delete (d (- ()))]
+

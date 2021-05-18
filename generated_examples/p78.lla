@@ -1,0 +1,17 @@
+type a = Empty
+ and f = B | B | A | C
+
+let f f main = new char -> array of a -> array of array [*] of float ref ref
+and f b f (g : array of array of b ref) (f : array of array [*] of array [*] of array [*,*] of (array of bool) -> unit -> g ref ref) = g[((2.56) && (match 29 with
+  'a' -> 2.56
+| (true) -> 42.0
+| 42 -> 40
+end
+))]
+and main (b : int) c (e : e) = if '\n' then for g = () downto 11 do "foo" done
+and d e = dim 2 d
+
+type c = Tree of float | Cons | C of bool ref bool
+ and c = Nil | D
+ and main = D | B of ((array [*] of d)) array of bar float ref bar | A of int (bool) unit c | D
+

@@ -1,0 +1,4 @@
+let b = if 30 then new bool
+and d (d : float) = if '\n' then ((())) else (42.0 >= false)
+and d foo = c[for a = 3.14 downto 7 do begin '\n' end done,(if 42.0 then () else 42.0 + (('\n' && '7')))]
+

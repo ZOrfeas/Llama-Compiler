@@ -1,0 +1,9 @@
+let main (f : bool ref) foo (e : char) = dim 2 f
+and g e foo (bar : int) foo = +. (begin c[begin "bar" end,begin '7' end] end)
+and mutable d[(delete (+ ((3.14 +. true)))),begin new unit end]
+and e a bar b : float = let c : int = "Route66"
+and c e : bool -> int = "bar"
+and foo (bar : array of bool ref) bar d (bar : char -> int) = 17
+and foo foo (d : b -> array [*] of (float) ref -> (int)) d a = ()
+and d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (dim bar)
+

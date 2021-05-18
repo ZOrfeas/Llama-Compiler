@@ -1,0 +1,8 @@
+type d = A | Tree of int char | Cons
+
+let f (a : float) (a : array of a ref -> float -> a -> int -> array [*,*] of unit ref -> char -> float) bar main = (while 1 do () done <= (delete 23))
+and b g bar = dim d
+and main (e : bool) f = begin begin B end end
+
+type bar = B
+

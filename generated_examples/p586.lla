@@ -1,0 +1,9 @@
+let c a d foo = Cons (e[new bool,if '\'' then 31 else 42.0]) (b[not (while 10 do 0.0 done)]) (Cons (begin + 28 end) (begin dim 1 bar end) (B))
+and b = delete (bar[let bar (e : bool) d g a : bool = true in 42.0])
+
+type b = A of int ref | Cons
+ and foo = A of (char -> char -> bool) ref array [*] of array of array of (unit) -> float ref int unit | Empty | D
+ and d = Tree of char ref | B | B | A
+
+type main = Cons | D | Nil | C of array [*] of char ref -> unit
+

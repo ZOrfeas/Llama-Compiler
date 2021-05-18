@@ -1,0 +1,8 @@
+type bar = Empty | Nil of array of array [*] of array of bool -> foo ref -> int -> unit ref int unit | Tree of char bool bool bool | B
+
+type main = Cons | C | Nil | Cons
+ and main = B | Nil | Empty | D
+
+type e = A | D | D | A of unit
+ and c = B of unit char float char | C | Tree of bool | D
+

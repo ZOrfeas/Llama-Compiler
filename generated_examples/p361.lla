@@ -1,0 +1,7 @@
+type e = B | Nil
+ and d = Nil
+
+type g = A | B of bool
+
+type b = C of array [*,*] of array [*] of foo -> bool char char | A of unit int float -> unit | B of int float float | A of (float)
+

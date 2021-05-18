@@ -1,0 +1,9 @@
+type d = C | C of (unit ref) float int | Cons | B
+
+type b = Tree | Empty | Nil
+ and b = Cons | A of (bool) | Tree
+
+let c (a : (main)) d bar : unit = let foo (g : float) : (bool) = 0.0
+and b = false
+and foo (a : float -> float) main main d : int = "Route66" in (for c = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to 42.0 do () done)
+

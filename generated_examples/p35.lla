@@ -1,0 +1,19 @@
+let mutable g[begin d[new (array of char -> c ref),if true then true else "Name:\t\"DouglasAdams\"\nValue:\t42\n"] end] : float ref -> char ref
+and c : int ref = while match 34 with
+  C (-27) (C f (-.0.0) (+.0.0)) (-0) -> '\''
+| false -> 17
+end
+ do dim main done
+and b : bool = for g = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to () do c done
+and b = +. (match match "Route66" with
+  3.14 -> false
+| (false) -> 3.14
+end
+ with
+  'a' -> new int
+| ((-42)) -> a[(),17]
+| '\'' -> new bool -> unit ref
+end
+)
+and main = new float ref ref
+

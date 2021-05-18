@@ -1,0 +1,15 @@
+let d = if () then not '\n'
+and f (f : bool ref) = for g = "Route66" to "bar" do while false do "foo" done done
+
+let c a = for e = 0.0 to () do while "bar" do 42 done done
+and mutable d[(foo[for a = false to () do '7' done,match '\n' with
+  D -> true
+| (+29) -> ()
+end
+]),if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (! '7') else f[0.0,18]]
+and a = begin if '\n' then (for a = () to 42.0 do 1 done) else delete () end
+and d : char = -. ((delete (if false then false)))
+and g = delete (while foo["foo",'a'] do ! '7' done)
+
+type foo = Nil of (float ref -> bool) bool -> unit e | D | Nil of float unit -> unit array of array of array of (bool) -> float -> b -> a | Nil
+

@@ -1,0 +1,8 @@
+let foo (d : int) = begin while b["foo",29] do begin 42.0 end done end
+and e b g (d : array of f ref ref) a : char = while g["bar","Name:\t\"DouglasAdams\"\nValue:\t42\n"] do foo[false,'\n'] done
+and e : int = while match "foo" with
+  (Tree (f)) -> 10
+| (-.2.56) -> ()
+end
+ do ("Route66" - ()) done
+

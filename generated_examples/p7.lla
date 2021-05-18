@@ -1,0 +1,6 @@
+let foo (main : (array of float ref) ref) = new e
+and c f a (foo : array [*] of array of float -> array of (bool) -> unit ref) b : int = new bool
+and g d g (d : int) : array of unit = (delete (begin while "bar" do "foo" done end))
+and main (g : (int)) main = begin dim 2 g end
+and e e foo e main = (("foo" / 42) ++ (delete 23))
+

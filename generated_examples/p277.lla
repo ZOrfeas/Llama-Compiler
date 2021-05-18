@@ -1,0 +1,55 @@
+type f = A of f -> foo
+ and bar = Tree | Tree of e (int) | D | Cons
+
+type c = Cons of bool (char) (int)
+
+type g = Nil of float | Nil | B
+
+type b = C of (unit) unit unit
+
+let e c (main : (unit)) c (f : ((bar) -> (char))) = let rec e b a g = '\''
+and d g b (a : f) (main : c) = 37 in (if 'a' then "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+and mutable f[a[new bool,(for a = () to "foo" do 2.56 done)]]
+and bar c d = if () then (- 3) else Empty
+
+type f = A | Tree of (bool) -> int | Cons
+
+let bar e b = +. (dim 1 foo)
+
+let d = (match (() || "bar") with
+  false -> new b
+end
+)
+and e = (dim 1 bar < (while false do 25 done))
+and e (g : ((array [*] of bool ref))) g (main : array [*] of (char)) bar = dim d
+
+let e e c foo = delete (match delete 33 with
+  true -> ("Route66" ; 3.14)
+| e -> begin 21 end
+end
+)
+and main g c g = d[while (() * '7') do while 2.56 do 42.0 done done,(for b = 22 to 0.0 do '\'' done == (match 5 with
+  17 -> 24
+| 0.0 -> false
+| (a) -> 42.0
+end
+))]
+and d main g e bar = (match 42.0 with
+  ((((-28)))) -> "Route66"
+| (+.42.0) -> "foo"
+end
+ <= ((true <= true)))
+and a = match delete "Route66" with
+  a -> A
+| '\n' -> match () with
+  true -> 42.0
+end
+
+| '\n' -> match true with
+  'a' -> ()
+| (19) -> '\''
+end
+
+end
+
+

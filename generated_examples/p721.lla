@@ -1,0 +1,7 @@
+type main = Nil of (float -> unit ref ref ref ref) ref unit
+ and a = Empty | Nil of int ((f -> unit ref) -> char) | Cons
+
+type e = A | Cons | Nil
+
+type c = Empty | C
+

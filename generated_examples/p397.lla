@@ -1,0 +1,12 @@
+let e : int = match new char -> (int) with
+  C ((+27)) false -> begin 42.0 end
+end
+
+and e d : unit = for a = () to true do + '\'' done
+and f bar = (if 9 then false >= (dim foo))
+and foo : float = d[let rec e main = ()
+and foo (main : char) = "bar"
+and g d (c : unit) (e : unit) c = 2.56
+and main b d c = 'a'
+and foo bar e (g : float) (a : unit) = false in ((0.0 + true))]
+

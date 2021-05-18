@@ -1,0 +1,13 @@
+let rec b c d a c = for d = '\'' downto () do while 'a' do 42.0 done done
+and main (a : bool) f c = begin for main = 27 downto true do while "foo" do '\'' done done end
+
+let a g (bar : a) = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (dim a) else dim 2 d
+and d d b a = g[c[f[bar 0.0 "Route66"]]]
+and f = ((begin '7' end /. (match false with
+  (-34) -> ()
+| Tree (-41) -> 'a'
+| (-39) -> false
+end
+)))
+and e main b = g (f[delete (for foo = true downto "foo" do false done),a (e) (g["Name:\t\"DouglasAdams\"\nValue:\t42\n",()])])
+

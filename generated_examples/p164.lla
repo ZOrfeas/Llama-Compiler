@@ -1,0 +1,19 @@
+type e = Empty of e -> int unit array of bool
+ and e = C of f
+ and main = A of array of array [*,*] of char float ref bool | Nil of unit int -> (unit) | D
+
+let b f main b = for main = true to 0.0 do delete "Route66" done
+and f d f foo (foo : float) = Nil (dim g)
+and e bar = for c = 30 downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do begin () end done
+and f foo foo = new float
+and foo = (! 0.0 -. (let rec d (a : float) = () in "foo"))
+
+let mutable foo[+. (b[match '\'' with
+  true -> ()
+end
+]),not (+. (for c = 11 downto "bar" do 'a' done))]
+and e bar bar = delete (delete (begin (7) end))
+and b : float = c[delete (delete (let d g (e : int) = true
+and a c b main a = 0.0 in 42.0))]
+and b (f : bool ref ref) (foo : int) d (d : bar ref ref) = (new unit > (for b = () downto 21 do () done))
+

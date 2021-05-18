@@ -1,0 +1,11 @@
+let f e (bar : float) g = dim foo
+and foo g c (b : array of int) = match begin '7' end with
+  (-.42.0) -> ! ()
+end
+
+and bar e f b = begin new a end
+
+type b = Empty | C of float float
+
+let f : g = (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (begin 42.0 end) else ('a' <> ()))
+

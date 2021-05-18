@@ -1,0 +1,13 @@
+let bar e e = begin while delete () do while () do "bar" done done end
+and f f : float = for bar = 2.56 downto 13 do match "foo" with
+  true -> 19
+| bar -> 2.56
+end
+ done
+and g f (e : float) d bar = new (bool)
+and foo main (f : float) foo a = match (41) with
+  (-0) -> -. "Route66"
+| 42.0 -> new foo
+end
+
+

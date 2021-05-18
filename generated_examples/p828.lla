@@ -1,0 +1,11 @@
+type c = Empty | C | Tree
+ and b = Tree | Empty of float | C of main | D
+ and b = Nil
+
+let rec bar bar b b foo = begin (delete (new unit)) end
+and b = let rec bar (e : int) a = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and main bar f g b = 3.14 in (new char)
+
+let rec bar foo b f e = begin main[if () then 6,if '\n' then 10] end
+and bar = (if '\'' then 3.14 mod (while '7' do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done))
+

@@ -1,0 +1,49 @@
+type f = D of bool d
+ and c = B | C of char int unit b | D | Nil
+
+let f main e : unit = delete (new unit)
+and main = (if 42 then true else 32 <> (+. ()))
+and d e foo foo = while let a bar (e : unit ref) = ()
+and bar (bar : array of bool) = "foo"
+and f (d : float) a (c : a) = true in 42.0 do for f = 0.0 to false do true done done
+and b = for d = false downto () do c[42.0,false] done
+and mutable main[bar[match match true with
+  'a' -> false
+| a -> true
+| false -> "Route66"
+end
+ with
+  a -> if 2.56 then '7' else 3.14
+| (-35) -> B true true
+| true -> begin () end
+end
+]]
+
+let e e e = begin + (for b = true to 38 do false done) end
+and foo (c : array of array of int) bar : float = (let b (bar : bool) (foo : char) main : bool -> d = 5
+and f c (bar : float) = '7'
+and f b main bar = '\n' in "Route66" <> (while '7' do "foo" done))
+and c : array [*,*] of c ref = dim 2 g
+
+let rec bar f (e : (bar)) foo = while (() +. 16) do if () then () else 'a' done
+and e (b : int) g = not (for g = () downto '7' do let rec mutable f : array [*,*] of (unit -> char) in "foo" done)
+and mutable a[new unit,e[delete (if '7' then false),+. (if false then false)]]
+
+let bar (b : (float -> bool)) g (e : array of bool) b = while (true) do begin 19 end done
+and a f (c : float -> float) = let b = 2.56
+and a b b : array of (unit) = 4 in (let b main a d = 38 in false)
+and d a e foo (b : float) : f -> char = if false then match true with
+  ('\'') -> 16
+end
+
+and bar g f = dim f
+
+type main = Nil | Cons | Empty | B
+
+type c = B | Empty of char
+ and a = Nil of int float float unit | D of float | B of bool
+
+type c = B | Tree of bool ref | Empty of char | Tree
+ and main = D
+ and g = Nil | D of array [*] of (array of main) (array of unit) f | D of float ref float bar
+

@@ -1,0 +1,5 @@
+let mutable f : unit -> int
+and bar b main = delete (new float)
+and main = g[g[begin new int end,begin new (unit) end]]
+and mutable b
+

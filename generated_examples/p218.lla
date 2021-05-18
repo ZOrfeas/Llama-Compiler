@@ -1,0 +1,26 @@
+let b main (main : array [*,*] of (char)) a (main : array [*] of int -> array [*] of ((float)) -> bool ref) = begin while match 2 with
+  (Empty) -> '\''
+end
+ do while () do 22 done done end
+and bar = Nil (let f main e = '\''
+and main foo : int = "bar"
+and bar g d f f = 0
+and a b = "Route66" in (delete ())) (if false then ((())) else let g g : unit = "Route66"
+and mutable c
+and a bar main foo = 12
+and f c main = ()
+and f (a : float) f = 2 in 0.0) ((let bar a c main = 42.0
+and f = ()
+and e (foo : float) = ()
+and foo : char = 'a' in 2.56))
+
+let g g (g : int) = dim d
+
+let f g = new int
+and foo main = match - () with
+  g -> while () do 3.14 done
+| b -> (() * ())
+| true -> delete ()
+end
+
+

@@ -1,0 +1,14 @@
+let f foo (foo : (char)) d a = d
+and g f = delete (a[- (dim d)])
+and e (foo : array of float -> bool) (f : char) = while while 2.56 do '\n' done do if '\'' then '\'' done
+and d = (delete ((dim foo)))
+and foo = (begin 29 end /. (('\n' && false)))
+
+type foo = Empty
+
+let d bar bar = for a = 24 downto '7' do (true) done
+and main foo = (c 41 true 23 / (begin 2.56 end))
+and b bar = while not false do -. "Route66" done
+
+type b = D | B | D
+

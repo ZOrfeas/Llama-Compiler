@@ -1,0 +1,11 @@
+let main c c f (f : bool) = for a = () to 1 do Cons done
+and c foo (a : (unit)) d b = let foo f d a b = ()
+and bar = 42.0
+and main = '7'
+and d (bar : b) (e : bar) b : float = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and foo c bar main : array [*] of unit = 2.56 in (match false with
+  '\'' -> ()
+| (-6) -> 34
+end
+)
+

@@ -1,0 +1,22 @@
+let e main (f : bool) f g = for e = true to "foo" do match () with
+  (b) -> ()
+| ('\'') -> 3.14
+end
+ done
+
+let rec foo b bar d g : array [*,*] of unit = if 42.0 then (for g = true downto false do 5 done) else begin false end
+and foo b = for c = 42.0 downto "foo" do match 18 with
+  (D Cons false true '7') -> 25
+end
+ done
+and e a b (c : bool) = for c = false downto 0.0 do match "bar" with
+  (true) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| 42.0 -> 10
+| ('\n') -> ()
+end
+ done
+and foo = for a = 42.0 downto '\n' do - () done
+and e a f = begin dim a end
+
+type d = Empty | A | B
+

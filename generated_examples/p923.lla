@@ -1,0 +1,28 @@
+let c g bar : bool = match match () with
+  '7' -> 'a'
+| (-18) -> 42.0
+| e -> 3.14
+end
+ with
+  (-29) -> bar[3.14,()]
+| '\n' -> begin 3.14 end
+| '\n' -> let main g b = 3.14
+and b g a f = 42.0
+and e = ()
+and e b b = 42.0 in 42.0
+end
+
+and foo main = (delete (begin D () end))
+and g a (foo : char) a = +. (Cons (delete (dim b)))
+and a c a g = let f f g = 38
+and main d (b : array of bool) c b = ()
+and e bar (d : array of bool) : unit = true
+and a main d (main : int) = 30 in (('\n' < 30))
+
+let b b a a : unit ref = while match () with
+  31 -> ()
+end
+ do new float done
+and mutable b
+and bar d = for a = true downto '\'' do dim 2 e done
+

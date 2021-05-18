@@ -1,0 +1,9 @@
+type bar = D | A | Cons of char | Tree
+
+type a = Tree | A | B of g foo ref array of float
+
+let main g foo = (if () then for c = '\'' downto () do () done)
+and e = D (let e bar (a : bool) bar (c : bool -> int ref) = "Route66"
+and main d = true
+and g f g = true in (begin true end)) (e[while 42.0 do 22 done])
+

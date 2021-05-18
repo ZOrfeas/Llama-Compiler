@@ -1,0 +1,19 @@
+let e (b : unit) (bar : (b)) c : unit = match for f = 3.14 downto 42.0 do "foo" done with
+  B (-.2.56) true -> (7 == false)
+| '7' -> D
+end
+
+
+let bar = for f = 42.0 downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do ('\'') done
+and a (f : char ref) (a : int) (d : char) : unit ref = (match if "foo" then true with
+  false -> (33)
+| (-.3.14) -> D '7' () "bar"
+end
+)
+and f foo a = match begin 11 end with
+  main -> dim 2 b
+| 2.56 -> not '\''
+| false -> dim g
+end
+
+

@@ -1,0 +1,22 @@
+let e b bar = (bar['\'','\''] == (delete 'a'))
+and main (foo : int) b (foo : array [*,*] of bool) = new array of float
+and b f d c (g : char ref) = delete (match delete true with
+  (-37) -> match false with
+  '7' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| '\'' -> false
+end
+
+| (-.42.0) -> new ((unit))
+end
+)
+and b (c : float) (g : unit) f = f (+ (begin match true with
+  '\n' -> "foo"
+| 0.0 -> '7'
+end
+ end))
+and e (bar : float) = for d = () downto "foo" do f[false,7] done
+
+let rec mutable g[if 3.14 then (20),dim 2 g]
+
+type e = Nil of char ref array of float | D
+

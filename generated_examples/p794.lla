@@ -1,0 +1,9 @@
+let main bar = for foo = '\n' downto 0.0 do begin true end done
+and bar e c bar e = while Empty 38 do +. "Route66" done
+
+type main = D of a float int | Cons of unit float unit | A
+
+type d = Tree | Tree
+ and main = Nil | D | C
+ and f = Empty | B of float array of b | Cons
+

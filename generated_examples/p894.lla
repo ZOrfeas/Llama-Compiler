@@ -1,0 +1,8 @@
+let mutable e[A (dim 2 main),match not '\n' with
+  false -> let c (b : main) (bar : char) = false in 38
+| '7' -> begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+| foo -> let a main = false
+and a = () in 'a'
+end
+]
+

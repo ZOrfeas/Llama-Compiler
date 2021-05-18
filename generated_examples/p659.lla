@@ -1,0 +1,7 @@
+type main = Nil | Empty
+
+let f = Cons
+and a g : int = dim bar
+
+let mutable a
+

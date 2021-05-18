@@ -1,0 +1,11 @@
+let bar c = (delete 23 /. (match 3.14 with
+  'a' -> '\''
+| g -> 42.0
+| A '\n' -> true
+end
+))
+and f a : float = begin new char end
+and e (d : bool) foo = if 2.56 then delete 0.0
+and g g : int = Nil (D ((f '\n' "Route66" '7')) (((())))) ((if () then true else "Name:\t\"DouglasAdams\"\nValue:\t42\n" < (dim c)))
+and g (g : int) (a : array of int) b = (foo[23,true] == (for c = "bar" to 20 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done))
+

@@ -1,0 +1,6 @@
+let bar = while delete () do not '\n' done
+
+type foo = B
+
+type g = Tree of (array of float) bool | Cons
+

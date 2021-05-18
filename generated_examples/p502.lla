@@ -1,0 +1,11 @@
+let bar = delete (delete (if 0.0 then 'a'))
+and mutable main
+and mutable bar[(for main = true to 28 do if "bar" then 3.14 else true done),delete (while (9) do ('7') done)]
+and c f (foo : char -> array [*,*] of float) g = let e a foo e = () in (if 0.0 then true)
+
+let c d a f d = (while bar[29,false] do f["foo",()] done)
+and main b main foo = dim f
+and g = not (while dim b do not '\n' done)
+and bar main bar = if '\n' then a["Route66",23]
+and a f foo bar (foo : unit) = begin for c = false to 0.0 do + '\'' done end
+

@@ -1,0 +1,18 @@
+let a = match delete '\n' with
+  c -> for f = 29 downto "foo" do () done
+end
+
+and f a main = f[while (()) do Cons 42.0 '7' done,(new bool <= (("foo")))]
+and main d b (bar : unit ref -> (unit ref -> (unit -> (unit)))) bar = match begin "bar" end with
+  D f '\'' g -> let a = '\n'
+and g f d b = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and e e (b : float) g : bar = "bar"
+and bar = "foo"
+and main (foo : int) = 41 in ()
+| '7' -> delete '\''
+| 42.0 -> let rec bar = "foo" in '\''
+end
+
+and c = delete (dim 2 g)
+and main d bar e = main[begin for g = '7' to false do 27 done end,if () then (for d = '7' downto 22 do 3 done) else if 42.0 then ()]
+

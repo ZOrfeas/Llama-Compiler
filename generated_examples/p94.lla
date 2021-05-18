@@ -1,0 +1,10 @@
+type d = Nil | Cons | D | C of unit
+
+type b = Tree of bool float | Cons of unit unit int ref | A of int ((array of bool -> float))
+ and c = Tree | Empty | Empty
+ and d = D | C | Tree of int float array [*,*] of float ref -> float -> float -> b ref -> int bool
+
+let bar b g e = if 2.56 then for bar = false downto 0 do () done
+and main = (bar[dim foo,(42.0 >= 'a')])
+and f = for b = '\n' to 8 do delete true done
+

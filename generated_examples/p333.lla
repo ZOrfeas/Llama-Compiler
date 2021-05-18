@@ -1,0 +1,25 @@
+type c = C
+
+let c f = g
+and d (foo : (int) ref) b c a : char = Cons (if true then (if false then 2.56 else '7') else while 21 do false done) (-. (match true with
+  true -> 13
+end
+))
+and foo foo = (dim f - (while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do '\'' done))
+
+let mutable b[match match 4 with
+  '\'' -> true
+| 'a' -> 16
+end
+ with
+  (16) -> -. 34
+end
+]
+and main : char = new (float ref) -> unit
+and main main f (c : array of unit) b = while Cons do new unit done
+and bar = delete (begin + (match 'a' with
+  ('\'') -> ()
+| 37 -> ()
+end
+) end)
+

@@ -1,0 +1,14 @@
+let b : (array of bool) = a
+and mutable b
+
+let rec c f bar d bar = for b = '\'' to '7' do match '\'' with
+  3 -> 3.14
+| 17 -> true
+end
+ done
+and a = new bool ref
+and main c : bool = ((new bool))
+and main a = for e = () downto '7' do ('\'' < false) done
+
+type main = D | C
+

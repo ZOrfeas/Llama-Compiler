@@ -1,0 +1,39 @@
+type bar = A | A
+
+type bar = Cons | A of char | A | Empty of bool ref
+
+let d (d : int -> float -> (bool ref) -> bar ref) d = delete (dim e)
+and mutable foo[let rec main a (main : unit) = 42.0
+and f b bar : (unit -> int -> unit ref) = "foo"
+and g e c bar foo = 41
+and c = 0.0 in (foo[false,()])]
+and f = for d = false downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do new foo done
+and g d g foo = a[dim e,(main false () / (delete 'a'))]
+and c g f bar foo = (begin for c = "foo" to 42.0 do true done end)
+
+type f = B of foo char ref -> bool | B
+
+let foo = (main[new e -> float -> bool -> int])
+and f : char = let b d (g : char) foo bar = 2.56
+and f b (a : (array [*] of unit ref -> int)) c = false
+and foo = 3.14
+and a (f : array [*] of array of float ref ref) a foo : array of unit -> char = 0.0 in (if 22 then 2 else true)
+and main d f a e = ((0.0) <= (delete 28))
+
+type e = C | D of e ref d array of bool float
+
+let main foo (f : bool) = bar (foo (("foo" + false)) (for main = '7' downto true do '\n' done) (match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  31 -> 9
+| ((+37)) -> false
+end
+))
+
+type b = Nil
+ and foo = Tree | D | Tree
+
+type c = B of c bool float bool | B of (array [*] of float) int | Nil of unit int f ref ref char
+ and g = C | A of f -> bool -> unit -> g -> char | D
+
+type d = Empty
+ and foo = Tree of unit int ref | Tree | C
+

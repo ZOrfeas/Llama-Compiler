@@ -1,0 +1,10 @@
+let f f a bar = (- 27 * (begin 27 end))
+and c (c : bool) (d : array [*] of bool) e (a : (char)) = delete (d ((() <= "foo")) (! (-. '7')) (Cons (("Route66" /. "foo")) (if 'a' then false else 40)))
+and e = let f = 3.14
+and bar b = 21
+and d (bar : float ref) = true
+and b a = "Route66"
+and g c = "bar" in (for e = () downto false do "Route66" done)
+and b c : array of unit ref = d[delete ((while "bar" do '\n' done))]
+and main a a = for g = 13 to false do begin () end done
+

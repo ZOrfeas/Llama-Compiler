@@ -1,0 +1,6 @@
+type a = B of bool ref (array [*] of int) char char
+
+type f = Nil
+
+type g = D | D | Nil
+

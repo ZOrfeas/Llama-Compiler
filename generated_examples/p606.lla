@@ -1,0 +1,11 @@
+type b = C | Nil | D
+
+let f e c = match new float with
+  a -> let rec a d = 3.14 in ()
+end
+
+and b c (d : float) : float = new (bar) ref
+
+type b = D
+ and g = Cons
+

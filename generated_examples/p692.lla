@@ -1,0 +1,45 @@
+type g = D of float ref array [*,*] of bool -> array of ((bar)) (bool) ref char | Cons
+ and f = Cons | Empty | A of float array [*] of (float) -> array [*] of e unit | Tree of unit float main
+
+type foo = D | Empty | Nil
+ and a = Cons of bool a
+ and c = D | Tree | Empty | C
+
+let rec d g = (let bar = true
+and c a = ()
+and a a = true
+and mutable d[()] : char in 42.0 / (begin '7' end))
+and foo f c = (begin if false then '7' end)
+and d g main (c : unit) d : char ref = c[delete ((let f = 41
+and b f : float = 15 in false))]
+and a d f = (match begin '\'' end with
+  (e) -> for foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto 42.0 do "Route66" done
+end
+)
+
+type d = B | B of bool (float) char b | D
+
+type e = B | A of array [*] of array [*] of char char -> array of char | D
+
+let rec f b b (foo : float) d = for g = () downto "Route66" do while "Route66" do false done done
+
+let g : char = while match () with
+  '\'' -> '\n'
+| ((-38)) -> '7'
+end
+ do (() == '7') done
+and b (foo : ((char ref ref))) bar = new bool
+and foo : c -> float -> int = begin let g e (d : g) = true
+and e bar b (c : bool -> float) = 19
+and b c = true
+and b e d g = "bar" in (while () do '7' done) end
+
+let main d = for b = true downto 'a' do new (float) done
+and b b e = new unit
+
+type bar = D | A | C
+ and bar = A | Nil
+
+let e main foo : int = for g = () to '7' do b[18] done
+and main a = (dim 1 d / (-. true))
+

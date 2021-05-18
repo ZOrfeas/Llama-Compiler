@@ -1,0 +1,21 @@
+let e (f : unit ref) d a bar = dim bar
+and c = for b = () to 3.14 do delete 0.0 done
+
+let g = let g f = 3.14 in (match 2.56 with
+  false -> true
+end
+)
+and a d = if 42.0 then (bar['\'',()]) else (27 || 19)
+and mutable foo[let c f = true
+and g = false
+and mutable d[()]
+and bar c = 42.0
+and f c foo = false in (new char ref -> foo ref ref)]
+and bar e = ((('\'') <= (dim b)))
+and g foo = match delete () with
+  (+34) -> ("foo")
+| false -> (17 > true)
+| (-2) -> new bool ref
+end
+
+

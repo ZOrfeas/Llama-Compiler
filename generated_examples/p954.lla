@@ -1,0 +1,16 @@
+let d b bar bar a : float = for d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to 0.0 do ('a' -. "Name:\t\"DouglasAdams\"\nValue:\t42\n") done
+and e foo b : array [*] of char = foo[f[dim 1 a,f[dim 2 main,-. 42.0]]]
+and a f e e = (delete 2.56 > (d))
+and mutable a
+and f = begin match dim bar with
+  ('\n') -> new g
+| false -> begin "bar" end
+| (-.0.0) -> (())
+end
+ end
+
+let c e d g = delete (a[(if true then 24)])
+and b (b : char) a a e = new bool
+and d = while let rec g a d = 'a'
+and main bar (a : float) f (main : unit) = 3.14 in true do (42.0 ++ 2.56) done
+

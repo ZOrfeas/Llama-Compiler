@@ -1,0 +1,7 @@
+type e = A | C | Empty | A of (unit) -> char unit
+ and main = Empty | Nil | Cons | Cons
+
+type foo = B | Nil | C of char -> bool ref ref -> array [*] of bool bool | C of char
+
+type b = Empty | Nil | A | D
+

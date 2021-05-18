@@ -1,0 +1,12 @@
+let mutable main
+and g g = let mutable g["bar",false]
+and a = '\'' in (let e g = '7'
+and b = true
+and e b (foo : int) (c : int) = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and a a main = ()
+and c bar : bool ref ref ref = 0 in '7')
+and c c a d = (match if () then "foo" with
+  (-22) -> for c = true to 24 do '7' done
+end
+)
+

@@ -1,0 +1,16 @@
+type f = Cons | D of unit g | A
+
+let main g e = new e
+and foo (d : array [*] of unit) e d : (char) = while (42) do ('\n' <> ()) done
+and foo f (a : int) = begin while begin 38 end do +. false done end
+
+let foo c main : bool = (match (42.0) with
+  true -> new char ref
+| (-23) -> let rec main b (f : array of int) : d = () in 11
+| (-6) -> new bool
+end
+)
+and mutable c
+and main (d : float) d = ((while true do true done))
+and a foo e a (c : bool) : unit -> unit = if 16 then ("Route66" <= 6)
+

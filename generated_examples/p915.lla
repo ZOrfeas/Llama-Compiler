@@ -1,0 +1,8 @@
+type f = Tree | Empty | Nil
+
+type b = B | Cons of foo | A
+ and f = B of float int float float | B of (int) unit c -> unit unit -> c -> (f)
+
+type a = B of (float) | A | B | B of float
+ and f = C | D | D | Tree of (array of array [*,*] of (char) ref -> bool) int
+

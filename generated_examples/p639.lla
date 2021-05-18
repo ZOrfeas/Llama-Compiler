@@ -1,0 +1,10 @@
+type d = A
+ and c = Empty | D of bool array of (unit) | A of unit char
+ and main = Tree | Tree | B | Nil of float
+
+let b g (e : char) = for c = 'a' downto 2.56 do (2.56) done
+and f bar (bar : (foo)) = + (+. (('\n' <= true)))
+
+type b = Nil | Nil of unit unit (unit) bar | Empty | Empty
+ and g = A of a char int
+

@@ -1,0 +1,10 @@
+let b = while A 2.56 () do a[42.0,()] done
+and main foo d e : array [*] of int -> bool = delete (+. (('\'' != 42.0)))
+and f c e main g = a[main[D (match () with
+  false -> false
+| (+.42.0) -> true
+| d -> ()
+end
+) (delete 18),if "Route66" then "foo" else true],begin g[for e = '7' to '\n' do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done,(false)] end]
+and f = delete (dim b)
+

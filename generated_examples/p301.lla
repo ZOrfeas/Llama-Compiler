@@ -1,0 +1,8 @@
+let rec e = if "foo" then (while '7' do false done) else e[2]
+and foo main = e[delete (foo[if 42.0 then 2,dim 2 g])]
+and b = delete (match new (g -> float) with
+  (('7')) -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n" ; '7')
+| main -> new (unit)
+end
+)
+

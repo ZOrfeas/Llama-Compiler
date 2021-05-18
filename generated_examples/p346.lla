@@ -1,0 +1,2 @@
+let e (a : array of (array [*,*] of foo)) = delete (main[if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then ()])
+

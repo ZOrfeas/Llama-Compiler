@@ -1,0 +1,6 @@
+type e = B of array of bool bool float int | C | C | B
+
+type b = Empty | A
+
+type c = Cons of int unit int ref int | Tree
+

@@ -1,0 +1,6 @@
+let g : array [*,*] of bool = not ((('\'') = (while 29 do 'a' done)))
+and a (e : int) = foo[foo[if true then 2.56,for b = '\n' to () do () done],(begin delete 12 end)]
+and d d (c : array of float) = delete (if '\'' then if () then false else 'a')
+and b foo e c = while e[0.0,'a'] do delete "foo" done
+and c b f (e : char) = (delete (+ (begin () end)))
+

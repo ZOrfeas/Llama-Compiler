@@ -1,0 +1,16 @@
+let main = delete (match -. 3 with
+  'a' -> ("foo" <> 'a')
+end
+)
+and a b main (foo : float) e = Tree (if 42.0 then (begin 35 end) else for bar = 18 to 42.0 do '7' done)
+and bar bar : unit = let a = 'a'
+and a d main (bar : (int)) main = 12
+and e bar e = true in (('\''))
+and a (a : unit -> ((unit))) a f = delete (for foo = '\n' to "bar" do (4) done)
+
+type bar = Empty of int int | B | Nil of bool char ref
+ and a = Tree | C | Empty
+ and d = C
+
+type main = Tree | Nil
+

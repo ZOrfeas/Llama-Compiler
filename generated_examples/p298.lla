@@ -1,0 +1,16 @@
+let rec d = dim a
+and bar (a : (unit)) = dim 2 c
+
+let e main = begin main[match "foo" with
+  D B (((true))) d e (+15) (-.3.14) -> true
+end
+,c[bar true,match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  (-37) -> true
+| f -> '\n'
+end
+]] end
+and e = not (new char ref)
+and bar foo b : int = new float
+
+type d = Tree of char unit char | Tree of unit
+

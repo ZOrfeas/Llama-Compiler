@@ -1,0 +1,10 @@
+let bar (foo : unit) = if () then (if 0.0 then '\n') else ("foo")
+and d b = let f bar bar bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (while "bar" do 15 done)
+and f b e c = A (main (match "foo" with
+  (+.2.56) -> false
+end
+)) (bar (main[foo[0.0,true]]) (a[for b = false to 2 do "Route66" done]))
+
+let e = new (array of int)
+and bar c main c bar : a = while new float do (false) done
+

@@ -1,0 +1,7 @@
+type f = D | C of char (float) ref unit char | Nil | B
+
+type a = B | Nil
+ and b = Empty
+
+let mutable foo[let e : float = 3.14 in (while () do '7' done)]
+

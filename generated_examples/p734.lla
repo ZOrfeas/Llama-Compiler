@@ -1,0 +1,14 @@
+let rec b = while (() < ()) do (true /. 42.0) done
+and f main g b f = + (dim 2 f)
+and b (e : (int)) g b (c : bool -> e -> e -> (int)) = if 10 then (match "foo" with
+  Empty (+.42.0) -> ()
+end
+) else +. "foo"
+and d f (c : bool) bar f = if 34 then begin true end
+
+type a = Cons of char int bool | Cons of float ref e array [*,*] of bool -> unit ref | D of int
+ and f = Empty | Empty | C
+ and main = Nil | C of char ref ref bool array of unit -> (int) -> float ref ref d -> g ref | D
+
+type e = Nil | Empty | Tree
+

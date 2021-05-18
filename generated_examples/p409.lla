@@ -1,0 +1,8 @@
+let d g = A (new char)
+
+let rec a e = while delete () do new (unit) done
+and foo b e = +. (dim g)
+and mutable foo[while bar[3.14] do dim a done]
+and f (c : array [*] of unit) g b = dim 2 b
+and e a bar : unit = delete (delete (begin new (g) -> unit end))
+

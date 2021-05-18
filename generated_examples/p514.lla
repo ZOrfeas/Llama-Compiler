@@ -1,0 +1,17 @@
+type main = Nil of (bool) | Cons | D
+
+type b = A | Empty
+
+let rec bar main main main c = match while "Route66" do () done with
+  ('\n') -> new float ref
+end
+
+and f g a = for a = 3.14 downto 20 do match "bar" with
+  '7' -> '\''
+| (-16) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ done
+and d g b (f : int) bar = (new unit != ((true)))
+and mutable c : int
+and a : bool = c[let b e = () in (+. 17)]
+

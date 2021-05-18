@@ -1,0 +1,7 @@
+let bar a (a : bool) e a = B ((match () with
+  '7' -> 34
+| true -> 17
+| 10 -> "foo"
+end
+)) (delete (b (d['7',42.0]) ((() = '\n'))))
+

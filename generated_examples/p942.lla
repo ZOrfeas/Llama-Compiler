@@ -1,0 +1,16 @@
+let foo g main = let f (a : array [*] of unit) (bar : bar) e = false
+and foo foo = 'a'
+and c g (b : int) e = 17 in (match true with
+  42.0 -> 26
+| true -> true
+| (+32) -> "Route66"
+end
+)
+and c a foo bar = while dim 1 bar do f[0.0,false] done
+
+type d = Nil | A | Nil | Empty
+
+type a = Empty
+ and bar = C
+ and f = Empty | Empty | Nil | Nil of array of array [*,*] of bool -> unit char (float) (float)
+

@@ -1,0 +1,11 @@
+let rec f e : float = for a = () to 10 do + 5 done
+
+type foo = D of char int | Cons | Nil | C
+
+let bar g g bar = for g = () downto 1 do Tree "Route66" "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+and d (foo : char) : char = delete (for c = 8 downto '\'' do for c = () to true do "foo" done done)
+and f (e : int) b : float ref = (a (foo[(() + 'a'),while "Route66" do 42.0 done]) (match () with
+  (A (-.2.56) (+.42.0) 21) -> '\n'
+end
+))
+

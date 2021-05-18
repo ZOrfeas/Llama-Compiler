@@ -1,0 +1,27 @@
+let foo bar = match let b f (c : foo) a = 'a'
+and e c main = false
+and g = "foo"
+and f = "foo" in false with
+  bar -> begin 42.0 end
+end
+
+and main a : int = new f
+and bar c : ((bool)) = (for d = 3.14 downto 17 do true done -. ((42.0 && false)))
+and foo = match bar with
+  '\'' -> let c a : bool -> int = true in ()
+| ((+23)) -> (0.0)
+end
+
+
+let d = for f = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto 22 do match () with
+  (Nil) -> 26
+| (d) -> 26
+end
+ done
+and c = ((match 0.0 with
+  false -> ()
+| 24 -> 41
+| e -> 42.0
+end
+))
+

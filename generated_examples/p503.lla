@@ -1,0 +1,34 @@
+let d (foo : array of char) bar (foo : b -> array [*,*] of b) (d : bool) : array of unit ref = begin dim 2 c end
+and e b g = begin match - 2.56 with
+  (+40) -> begin true end
+end
+ end
+and main d e (bar : c) foo = delete (b[match 2.56 with
+  (true) -> 2.56
+| e -> false
+| c -> ()
+end
+,b[match 3.14 with
+  c -> 42.0
+end
+,new f]])
+and g (f : int) e (g : char) g = d[while b['7'] do for bar = true to () do () done done]
+
+type foo = Empty
+
+let bar (d : bar) foo bar : int = for g = 'a' downto 18 do begin () end done
+and bar b (main : char) c f = let b c (f : char) a : unit = 3.14
+and b : float = 0.0
+and mutable b
+and f bar g = 19
+and e b = 34 in (dim 2 a)
+and c foo c (c : char) f = C (((false <= true) != (begin '\'' end))) ((let f = false
+and c = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in "Name:\t\"DouglasAdams\"\nValue:\t42\n" *. (+ false)))
+and c c : unit = (match '7' with
+  false -> 42.0
+| g -> "Route66"
+| false -> '\n'
+end
+ && ((() <= false)))
+and f foo (a : int) foo c : float = begin (delete (("Name:\t\"DouglasAdams\"\nValue:\t42\n"))) end
+

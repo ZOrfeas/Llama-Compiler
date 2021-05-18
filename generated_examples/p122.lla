@@ -1,0 +1,10 @@
+let c : unit = for f = () downto 21 do + 42 done
+and foo (f : float ref -> char -> (char)) = delete (while -. 15 do dim d done)
+and b main = f[while dim a do let b a g a (a : (bool)) = 'a'
+and bar g a foo main : array [*,*] of int = ()
+and bar main a = '7'
+and a = 42.0
+and mutable a[17] : unit in 3.14 done,Nil (dim 1 c)]
+and g (g : (bool) -> unit) d e : int -> float -> d = (for f = 42.0 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do while 'a' do () done done)
+and f (foo : e) f : char = for g = '\'' to 35 do begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end done
+

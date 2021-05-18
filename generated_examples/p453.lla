@@ -1,0 +1,6 @@
+let main a f : int = for d = true to "Route66" do if true then () else false done
+and main = while +. 3.14 do let c foo a = false
+and bar c = 3.14 in 32 done
+and f f (b : main) = while let a = "foo" in 0.0 do (0.0) done
+and e = while not false do if () then 'a' done
+

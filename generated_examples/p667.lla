@@ -1,0 +1,31 @@
+type a = Empty of bool float ref float float | C | Tree
+ and f = D | Tree | C | Empty
+ and b = Nil | Nil | Tree
+
+type e = D of c -> char bool ref unit -> array [*] of (int) ref -> foo | Tree
+
+let rec a d : bool = if true then ((false mod 12)) else while 18 do () done
+and c f : (char) ref = if () then delete false
+and d bar d bar c = match Cons with
+  (-22) -> match false with
+  (true) -> ()
+| f -> 42.0
+| B (+14) (((+7))) -> "Route66"
+end
+
+| (+39) -> let b d e d (f : array [*] of array of (int)) = false
+and main main = false
+and a (b : int -> unit) main bar g = () in 32
+| Tree -> dim b
+end
+
+and g (e : unit) (foo : bool ref -> unit) = match ("foo") with
+  false -> new bool
+| false -> match 5 with
+  (+6) -> 42.0
+end
+
+end
+
+and f f a : float = delete (let a d f c f = false in (begin 42.0 end))
+

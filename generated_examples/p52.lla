@@ -1,0 +1,12 @@
+let e = foo (a[+. (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then () else 3.14),Tree (delete 32) (for d = false downto 0.0 do false done)]) (main[main[let foo main b = 'a' in true,begin 42.0 end],match 18 with
+  false -> ()
+| 42.0 -> "Route66"
+end
+]) (a[if 42.0 then "Name:\t\"DouglasAdams\"\nValue:\t42\n"])
+and d main g = for a = 2.56 to '7' do main[false,'7'] done
+and c = new char
+and e (main : int ref) f = a[delete (dim g),dim foo]
+
+let f c = delete (delete (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then false))
+and foo f bar : float = while begin 3.14 end do dim 1 a done
+

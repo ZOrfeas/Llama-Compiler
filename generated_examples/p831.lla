@@ -1,0 +1,7 @@
+type d = Tree of array of bool ref
+
+type e = Nil | C of char float ref char char
+ and g = A | D of bool int
+
+type b = B | B of bool bool | A | A
+

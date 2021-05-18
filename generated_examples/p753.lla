@@ -1,0 +1,7 @@
+type foo = Cons | Tree of array [*,*] of bool -> bool char char ref | Empty of array [*,*] of float unit -> array of int -> bool ref | B
+
+let mutable c
+and e f e : bool = begin if 2.56 then ((() +. false)) else c end
+
+type b = B of (main) (float) b -> array of array [*] of bool ref -> char int | B
+

@@ -1,0 +1,27 @@
+let rec bar a foo d b = match match 0.0 with
+  false -> '7'
+| (+2) -> true
+| ((+.2.56)) -> ()
+end
+ with
+  (-.2.56) -> ('7' /. "foo")
+| 42.0 -> match () with
+  0.0 -> ()
+end
+
+| Nil false -> new unit
+end
+
+and b b = delete (delete (let rec d g = "foo" in 14))
+and mutable c
+
+type bar = Cons | Empty | Tree | A of char int -> main float int
+
+let f foo = + (- (b[for a = false downto 14 do '\'' done,- "foo"]))
+and d (d : array [*] of g) (foo : int) (d : unit ref) = let f (c : char ref) main = 'a'
+and main bar = 42.0
+and a b main b = () in (while true do 0.0 done)
+and a (g : char ref) d e = new (int)
+and foo g (c : ((float))) = (new unit -> unit := (new int))
+and a = (dim 1 main / ((28 <= ())))
+

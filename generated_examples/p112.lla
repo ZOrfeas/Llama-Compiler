@@ -1,0 +1,10 @@
+type e = C | Tree | A | Tree
+
+let mutable foo[while (24) do begin 39 end done,delete (not (while true do 42.0 done))]
+
+let d (c : unit) (f : float) g (d : e -> float) = (("Route66" + 3.14) ; (match 25 with
+  e -> 36
+end
+))
+and a e = new (float -> g ref)
+

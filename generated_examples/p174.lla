@@ -1,0 +1,20 @@
+type g = B of char | D | Cons
+ and b = A | B | D of array of a
+
+let bar (bar : a) foo a foo = (delete 'a' || (new b))
+and a (g : array of (array of (unit ref -> bool)) ref) main a (b : array [*,*] of array of float -> char ref) = while match "bar" with
+  ((((false)))) -> false
+end
+ do B done
+and foo e b e foo = (new foo -> array of (b -> float -> float) -> char -> (a) := (if "Route66" then '7'))
+
+let d main = b[(delete "Route66" ; (let c foo d c = () in ()))]
+and d = let b c f e = 2
+and f (d : bool) a = "bar"
+and b g (d : array of c ref) : float = true in (delete ())
+and main : unit = -. (let c b bar g = '\n'
+and e bar e (foo : (bool)) b = 42.0
+and c bar foo main = 2.56
+and f f (foo : (array of char)) (f : int) = 35
+and e e = false in (-. ()))
+

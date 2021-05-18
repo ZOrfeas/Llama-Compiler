@@ -1,0 +1,9 @@
+let foo c e (g : bool) = new (int)
+and foo foo foo : char = new (bool) ref ref -> (float)
+and f g : char = Cons ((while false do 6 done +. (foo[20]))) (not (if '7' then false else 'a')) ((begin 13 end == (new (unit))))
+and b bar = while begin 0.0 end do if 14 then 0.0 done
+and main bar f = let rec f = "bar"
+and d e foo = 42.0
+and f = true
+and main foo foo e f = "bar" in (dim 2 bar)
+

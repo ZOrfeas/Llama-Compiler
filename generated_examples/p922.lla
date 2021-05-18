@@ -1,0 +1,22 @@
+let main = c[if 42.0 then ! (),not (while () do "Route66" done)]
+and f = f[delete (B (if false then ()) (match () with
+  Nil -> ()
+| A -> 0
+end
+)),match if '\n' then 42.0 with
+  (-.3.14) -> main false
+end
+]
+and a e f (main : char) = match b '\'' () '7' with
+  ((-21)) -> begin 3.14 end
+end
+
+
+type main = Nil of float | B
+
+let rec b e = new bool -> char
+and g d f = delete ((dim 2 c ++ (+. 26)))
+and f bar c c = while dim 2 a do delete () done
+and mutable c[(a[false,42.0] +. (g[true,'\'']))]
+and mutable a[new f]
+

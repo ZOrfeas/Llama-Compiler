@@ -1,0 +1,6 @@
+type foo = A
+
+type c = Nil | Cons
+
+type main = Cons | Cons | Empty of char | C
+

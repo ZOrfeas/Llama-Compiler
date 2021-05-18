@@ -1,0 +1,15 @@
+let foo (main : char) main : foo -> unit = -. (f[for f = 42 downto 32 do '7' done])
+and foo c g a : float = if 42.0 then (while 7 do 3.14 done) else match () with
+  g -> 0.0
+| Nil (+32) '\n' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+
+
+type f = Tree
+
+let d d (g : int ref) b = d (((2.56 == 3.14))) (foo[g[for c = "foo" downto () do () done,if "bar" then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else 42.0],a[let b (foo : float) : float = 19 in (),(())]])
+and main d a bar = - (match (() != 16) with
+  (-9) -> if true then "bar" else false
+end
+)
+

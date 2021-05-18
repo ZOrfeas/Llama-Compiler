@@ -1,0 +1,12 @@
+let main main (g : float) = delete (while if 22 then '\'' do foo['a',"Name:\t\"DouglasAdams\"\nValue:\t42\n"] done)
+and main c g d = let bar f foo (g : bar) = true
+and foo f (main : array of unit) main g = 32
+and d a a d (c : unit) = 32
+and e b = 39 in (+ '\'')
+and d main = while if 20 then '\n' do begin 2.56 end done
+and foo a e (bar : (array [*,*] of float -> (bool) -> unit) ref) a = bar[+ (new int)]
+
+type c = Cons of char | Nil of (bool) ref unit | Cons | C
+
+let e (foo : unit) bar g = ! (begin for a = true downto '\'' do () done end)
+

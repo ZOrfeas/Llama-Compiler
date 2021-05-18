@@ -1,0 +1,15 @@
+let g = delete (for main = 'a' downto '7' do new float ref done)
+and mutable main
+and d = new (float) -> char
+and g = dim main
+
+let bar foo a bar = dim 2 g
+and c b bar (c : int) f = if false then ((true * 33)) else let c foo f : float = "Route66"
+and main e main = ()
+and c f = true
+and c b e = () in 'a'
+and main f c = for d = '\'' to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do let d c = "Route66"
+and g g a = 9
+and c f c = true
+and c b d f e = () in '7' done
+

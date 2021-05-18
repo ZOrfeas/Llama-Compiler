@@ -1,0 +1,11 @@
+type foo = Cons of (((unit ref))) float ref | Nil of unit (char -> int ref)
+ and c = B of (d) | Nil | Tree
+ and g = Empty of array of (float) ref (float) -> bool float ref array of b | Empty of bar -> int -> char ref -> unit | D | Nil
+
+type bar = Tree | Empty of float e (unit ref) foo | B
+ and g = Cons | B of float | Nil of unit unit bool unit
+
+type c = Empty
+ and d = Empty | B of int unit int
+ and b = B | Cons of int
+

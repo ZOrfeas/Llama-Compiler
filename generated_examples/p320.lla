@@ -1,0 +1,6 @@
+let e foo = delete (main[let mutable a[(),"foo"] in ()])
+and a = dim 2 g
+and c bar g = g[(begin true end = (delete "Route66")),delete (D (+. '\n'))]
+and main a c (b : (foo)) : bool ref = if 2.56 then (new float) else if 18 then ()
+and e d f = delete (for d = 39 to 42 do begin true end done)
+

@@ -1,0 +1,7 @@
+let g g = if true then (0.0 ; "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+
+type b = Tree | C of float -> float ref -> (((int))) -> (array of a) float | Nil of float array of char | Nil of float ref
+ and c = D of int main int
+
+type b = A of unit b ref | D
+

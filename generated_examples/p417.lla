@@ -1,0 +1,6 @@
+type main = C | D | Cons | Nil of array [*] of array [*] of float ref
+
+let rec foo main bar = while (33) do main[19,()] done
+
+type d = A | Empty of (array of array [*,*] of (array of g -> array [*,*] of float) -> unit) | A
+

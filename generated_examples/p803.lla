@@ -1,0 +1,13 @@
+let e (d : array [*] of f ref) a = dim b
+and c c d (f : char) g = bar[b[for e = 31 downto false do () done]]
+and foo (foo : char) d : unit = delete (b[dim 2 g])
+
+let foo main b f = begin new (char) end
+and c d c = for b = false to "foo" do match false with
+  true -> 3.14
+| '\'' -> '\''
+end
+ done
+and g (f : char) : bool -> float -> (array [*,*] of int -> bool) = delete (if 0.0 then (delete ()) else begin '\n' end)
+and g g g foo foo = while d true do (false) done
+

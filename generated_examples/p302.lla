@@ -1,0 +1,58 @@
+type bar = Cons of d d bool ref array [*,*] of float | Nil | D | D
+ and g = Nil | Empty | Cons
+
+type b = Cons of bool ref ref -> unit | Nil | D
+
+let mutable b[(new a = (match 42.0 with
+  3.14 -> 5
+| (main) -> '7'
+end
+))]
+and c foo (bar : bool ref) a bar = delete (bar (delete (delete 22)) ((- 'a')) (main[('\n' = true)]))
+and foo d = begin dim bar end
+
+type foo = C of int -> c int array [*] of bool (array of unit -> unit) ref -> (char) | Nil | D of array [*] of float ref bool | C
+
+type c = Cons | Empty of bool ref bool char ref | Tree of char int (unit) | Cons
+ and foo = B of int b -> char (array [*,*] of int) | C | D | Cons
+ and foo = Tree | Tree | A | Tree of int char
+
+type g = D of int (unit) bool
+
+let f f bar f e = delete ((begin foo[0,()] end))
+and foo (g : array [*,*] of bool ref) foo = for c = 2.56 downto true do (()) done
+and a foo b : char = f[for b = '\n' to 42.0 do match 5 with
+  '7' -> 12
+| b -> ()
+| (g) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ done]
+and mutable main[let c a = 33
+and a = "bar"
+and b = 2.56
+and mutable main['\n','7']
+and mutable a in (if '7' then "Route66"),new b] : int
+
+let g d (f : array of unit ref) a (a : a) = + (new array [*,*] of bar)
+and main (g : bool ref ref) main = (new ((array of unit) -> bool) >= (while 14 do 2.56 done))
+and g g d (e : float -> unit) = while let a main f a = false
+and c b c (b : bool) (bar : d) : unit = 42.0
+and f (e : array [*,*] of float) b (f : array [*,*] of float ref) b = 10
+and d (f : unit) c = 3.14
+and main (a : bar) d = false in 'a' do while true do false done done
+and c (foo : b) (b : e) b b = foo (let g = true
+and g d f = true
+and mutable b : int ref
+and e : char = 42.0 in (delete 26)) (match (false /. 39) with
+  (-31) -> ! 42.0
+| false -> new array of int -> int ref
+end
+) (b (! (match 42.0 with
+  (+.42.0) -> 21
+| (+.3.14) -> 0.0
+end
+)) (('7' || "Route66")) (begin g[()] end))
+and bar main main (c : array of unit) = not (main[begin while 15 do () done end])
+
+type e = B of float (bool) float
+

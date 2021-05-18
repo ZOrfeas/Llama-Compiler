@@ -1,0 +1,43 @@
+let foo a bar g bar = while new float do match () with
+  (-25) -> 33
+| false -> 25
+end
+ done
+and mutable main[(match for e = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto () do () done with
+  42.0 -> delete 'a'
+| 2 -> e['a',"Route66"]
+| 34 -> begin 42.0 end
+end
+)] : char
+and c = + (new unit)
+
+type main = D | A | Cons | Tree
+
+type b = B | Empty | B
+ and c = C
+ and c = A
+
+let d = match (0.0 - 40) with
+  true -> Nil 25
+| (+.2.56) -> (0.0 == ())
+| false -> ('7')
+end
+
+and b e = begin for foo = '\'' to () do while "foo" do true done done end
+and foo (main : bool) b = delete (begin d[dim 1 c] end)
+
+type bar = Tree | A
+
+type f = Tree | Cons
+
+let main = let rec a d (d : unit) (e : char) main = "Route66" in (main[1,17])
+and bar = let rec foo (g : unit) (e : array of int) e c = "foo"
+and bar g = false
+and g e c g = true in (- "Route66")
+
+type bar = A | Tree | Nil | B
+
+type b = B of unit bool | Tree of bool float float bar | Tree
+ and bar = Cons of float | Nil | Empty of float -> main (d) unit int ref
+ and main = D
+

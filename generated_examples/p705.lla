@@ -1,0 +1,24 @@
+type d = D | D of d -> bool bool char char | D
+
+type f = Cons | D of (array of array of array of int) a | D
+ and b = C | Cons
+
+let e main = Empty (let rec a g bar e = 42.0
+and foo main b f = true
+and bar g a = 16
+and e foo (b : bool ref) bar d = () in (for b = () to false do 42.0 done))
+
+let f c (c : char) d = if "bar" then main ()
+and bar e (f : char) = match ('a') with
+  d -> if 1 then '\'' else 34
+| (-.3.14) -> begin () end
+end
+
+and main e = (('a') +. (("foo")))
+
+let rec e b g bar (e : unit ref) = begin (dim foo + (bar 41 22 '\n')) end
+
+type b = C of int unit bar e -> unit -> f
+ and f = A of (char ref) ref (unit) (float) -> float | A | A
+ and b = Empty | C of char -> unit a bool ref | Tree | C
+

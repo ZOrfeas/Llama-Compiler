@@ -1,0 +1,14 @@
+let main : char = main (main[match '\'' with
+  '\n' -> 25
+| (+.42.0) -> 37
+end
+,(42.0 ++ 0.0)]) (+. ((begin '\n' end)))
+
+let a foo e d (main : char) = dim e
+and c a (bar : char) : float = main[if false then (delete ()) else ('\'' / 3.14)]
+and c b = let mutable e["Name:\t\"DouglasAdams\"\nValue:\t42\n"] : unit ref
+and d f foo = "foo"
+and bar = "foo" in (let d : foo = '\n'
+and g (e : ((bool ref))) = "foo"
+and d g = true in true)
+

@@ -1,0 +1,7 @@
+let b main foo e g : char = new foo
+and main = for e = 2.56 downto () do delete () done
+and b foo d (b : bool ref) = if () then ((true -. "Route66")) else begin false end
+and c d b = (let a = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and mutable d["Route66"]
+and f = 34 in 2.56 != ((true)))
+

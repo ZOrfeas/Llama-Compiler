@@ -1,0 +1,13 @@
+let b g e f (bar : array [*] of array [*,*] of array [*] of array of char) = while match '\'' with
+  'a' -> ()
+| (true) -> '7'
+| (+32) -> 42.0
+end
+ do a done
+and d (f : unit) d c (g : int ref) = +. (new int)
+and c d e = dim 1 a
+and g e = for e = 21 to 2.56 do begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end done
+and foo f d : char = main (+ (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then true else "Route66")) (while new (int) do let b a c g = '\''
+and bar = 15
+and main foo foo b (a : (int)) = true in 42.0 done)
+

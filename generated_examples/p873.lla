@@ -1,0 +1,7 @@
+let main (bar : int) = B
+and main bar d foo = new float
+and c = delete (begin (() - ()) end)
+and f main foo g = for a = 3.14 downto 0.0 do begin 42.0 end done
+
+let e b (bar : bar) (main : unit ref) = (new array of float /. ((3.14 / '\'')))
+

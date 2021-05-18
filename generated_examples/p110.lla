@@ -1,0 +1,8 @@
+let foo main g = delete (if false then for main = true downto () do () done)
+and g g foo g bar = if "foo" then (+ ()) else ! 13
+
+let c (main : int) = (for c = 3.14 to () do 41 done * (while 19 do '\n' done))
+and e = delete (for a = "bar" downto () do if false then () done)
+
+type foo = C | Tree
+

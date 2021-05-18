@@ -1,0 +1,18 @@
+let a foo b = b[delete (Cons (while true do true done))]
+
+let f (a : d) (f : bool) (a : float) b = c[begin for a = false downto 8 do () done end]
+and e f d bar (a : char) = delete (match dim 2 foo with
+  A -> if "foo" then ()
+| false -> new char
+| (Empty (true)) -> for b = "foo" to true do 11 done
+end
+)
+and f e bar a (foo : float) = delete (Nil (-. (match 19 with
+  'a' -> 42.0
+end
+)) (match false with
+  Nil (-15) 'a' -> ()
+| 0.0 -> ()
+end
+) (foo[while 21 do 3.14 done,while () do () done]))
+

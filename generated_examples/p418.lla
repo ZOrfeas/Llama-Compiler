@@ -1,0 +1,43 @@
+type c = Cons | Empty
+ and b = D | D | C of int int | C
+
+let rec f = dim 1 e
+
+let f (foo : int ref) = c[while begin () end do (() *. 0.0) done,delete ((Empty))]
+and b b foo = for main = 7 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do - () done
+and foo bar main e d = for f = 42.0 to '\'' do if 7 then 'a' done
+and bar = delete (dim foo)
+
+type bar = A | B | C | Empty
+
+let a d : float = c
+and c foo a : int ref = Cons (if false then a[38])
+and main main c = delete ((dim 1 a))
+
+let b e g c (f : (int)) = -. ((delete (for main = "bar" downto "Route66" do true done)))
+and foo = - (match D 42.0 with
+  b -> new (g -> d)
+end
+)
+and foo main foo = let a (g : (int)) (b : (int) ref) main = "Route66"
+and d (c : b) (d : array of char ref) foo b = 15
+and main b = '7' in (for foo = "Route66" to true do 31 done)
+and b = begin (begin begin 21 end end) end
+and e e main main = (while false do false done - (e['a','7']))
+
+let f g bar main = delete (for d = () to true do dim c done)
+and b g (bar : array of char) (bar : bool ref) g = if 12 then main[false,"foo"]
+and bar = d[((() || "Name:\t\"DouglasAdams\"\nValue:\t42\n"))]
+and mutable main
+and a a = match dim 1 main with
+  Empty -> new int
+| '7' -> while 2 do 'a' done
+end
+
+
+let f bar (b : bool) (d : char) = a[match begin "foo" end with
+  '\n' -> while true do false done
+end
+,(delete (foo[()]))]
+and e = (for e = "foo" to 17 do if '\'' then '\'' done)
+

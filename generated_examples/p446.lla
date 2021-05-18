@@ -1,0 +1,16 @@
+type foo = Nil | C | Cons | Cons
+
+let e = match let b bar c = 7
+and main g g = "bar"
+and mutable f in "bar" with
+  ((-.42.0)) -> f["Name:\t\"DouglasAdams\"\nValue:\t42\n"]
+| '7' -> delete false
+end
+
+and foo (b : int) = if true then begin () end
+and mutable a
+
+let f foo f : int = while let foo a foo f a : char -> char = 42.0
+and foo a = 0.0 in false do while () do '\'' done done
+and mutable f[new a,while while "foo" do () done do ("Route66" > true) done] : foo
+

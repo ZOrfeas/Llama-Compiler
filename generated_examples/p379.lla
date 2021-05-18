@@ -1,0 +1,18 @@
+type g = D | B | Empty of float int -> array of char -> array [*] of float char array of bool | D
+ and bar = B
+
+let c g = (if '\'' then 6 else 'a' + (let d e d bar foo = "bar"
+and a f main d bar = false in '7'))
+and d bar main = let bar bar bar main = 2.56
+and a c a bar f = 42.0 in (let rec foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+
+let b a (g : array of float) (g : unit) (bar : (unit)) = match if true then () with
+  true -> D
+| 0.0 -> b[3.14,false]
+| false -> ('7' ++ 42.0)
+end
+
+and bar (c : unit) g = if () then (begin 'a' end) else delete ()
+and e (c : main) b (g : unit) : int = new int -> char
+and mutable foo[g]
+

@@ -1,0 +1,16 @@
+let a = (while '\n' do "foo" done * ((false)))
+and a e a = if 42.0 then dim g
+and mutable a[if 5 then (let bar (f : unit -> main) a f (a : bool) = "foo"
+and mutable foo[3.14,'7'] : (unit)
+and bar a a = "foo" in true) else (()),+. ((begin e end))]
+and g f foo bar main = (for b = "Route66" downto 34 do new float done)
+
+let d main : array [*] of char = c[begin while () do 2.56 done end]
+and foo d e = let rec mutable g[40,'\'']
+and c a = true
+and bar b main c = "foo" in (let d = "bar"
+and bar a d c = '7'
+and a (main : unit) foo = 8
+and bar c bar (e : (int ref)) b : bool = false
+and a (e : array of array of unit ref -> int) (b : bool) main = 29 in ())
+

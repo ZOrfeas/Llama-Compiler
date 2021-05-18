@@ -1,0 +1,20 @@
+let f (e : f -> float) c b a = let foo b b : d = "foo"
+and b bar b a = '7' in (delete 3.14)
+and bar b = match new bool with
+  false -> dim 2 d
+| (+.42.0) -> match () with
+  (+.42.0) -> '7'
+| (-38) -> 33
+end
+
+| 42.0 -> begin '\n' end
+end
+
+and e f = delete (dim 2 e)
+and e = new bool
+and f bar c = if "foo" then match 42.0 with
+  a -> "bar"
+| '\n' -> 3.14
+end
+
+

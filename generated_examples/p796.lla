@@ -1,0 +1,7 @@
+let d (bar : unit) : float = (let foo = ()
+and e foo f c = false in () ; (b[42.0,'7']))
+and g (e : float ref) e = d[for g = 19 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do + '7' done]
+and d main c b = (begin false end < (e['7',()]))
+and mutable g
+and c : (((array [*] of int))) = (if 2.56 then ("foo"))
+

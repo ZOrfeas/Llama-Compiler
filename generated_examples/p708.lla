@@ -1,0 +1,6 @@
+let e f foo b = for e = '\n' downto 'a' do new unit done
+and g bar main = begin for foo = 42.0 to () do dim 1 c done end
+and mutable c
+and foo : float = begin delete (dim 1 bar) end
+and main a = new array [*] of char -> b
+

@@ -1,0 +1,9 @@
+type c = B
+ and main = A of (a) | C | B of array [*,*] of unit char | D
+
+type e = Cons of bool | A of unit (((array of bool))) int c | C
+
+type foo = Tree of (bool) float
+ and c = Cons | Nil of g array [*,*] of bool ref char | D | Cons
+ and d = D of (bool ref -> unit)
+

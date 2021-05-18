@@ -1,0 +1,36 @@
+let bar g main e = bar (while delete 33 do ('\n') done) (new unit)
+and bar c = C
+and bar = begin let mutable a[17,()] in (dim a) end
+and foo = match match 3.14 with
+  (+35) -> 19
+| Tree '\n' true 42.0 -> 11
+end
+ with
+  (+27) -> if "Route66" then () else "Route66"
+end
+
+
+type bar = Empty of a bar array of (float ref) unit | Nil | B
+
+let rec mutable e
+
+type d = Tree of bar char (array [*,*] of bool ref) | B
+
+type foo = Tree | Empty | Tree
+
+let e = + (! (if false then "Route66" else 36))
+and f c f = let main b f : b = false
+and c b foo g bar : int = ()
+and d = '7'
+and d (a : (float)) g b : array [*,*] of float = "Route66"
+and main (bar : float) main = () in (delete "Route66")
+and b d (foo : float) e f = dim 2 a
+and foo c g d d = while for e = "Route66" downto "foo" do "Route66" done do if () then 42.0 else 17 done
+and d = while for d = 2.56 to 0.0 do 39 done do begin '\'' end done
+
+let mutable b[(while g["bar"] do c[39,42.0] done)]
+and b = (delete '\'' ; (dim 2 b))
+and a a b c c = (dim 1 g + (if true then 37))
+and f c : int -> b = if false then (('a')) else let a f f b = true
+and a f a = 40 in "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+

@@ -1,0 +1,26 @@
+type bar = C
+ and bar = Empty of bool | Empty
+ and bar = B of int
+
+type f = Cons of char | C | Empty | A of char bool array of unit float -> unit
+ and a = B | Cons of unit bool int | Empty | Empty
+
+let e e (f : int) = for f = false downto "foo" do match 0.0 with
+  (-.3.14) -> 29
+| 'a' -> ()
+end
+ done
+and e foo (main : (foo)) main d = dim main
+and g a : int = for bar = "foo" to "foo" do let g (f : unit) g : bar = ()
+and d c (main : char ref) d = ()
+and bar a foo c bar : array [*,*] of (float) ref = 42.0
+and c bar c e : char = 5 in () done
+and mutable c[delete ((begin '7' end / (('\'' /. ()))))]
+and g f (bar : unit) bar bar = if true then for a = () downto false do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+
+let d f b e = while delete 0.0 do for foo = 23 downto true do 34 done done
+and main = match a[false] with
+  ('a') -> Cons "foo"
+end
+
+

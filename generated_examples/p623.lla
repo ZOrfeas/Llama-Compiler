@@ -1,0 +1,11 @@
+type main = Tree
+ and d = C | Empty | A | D
+ and c = Tree | Empty | Tree
+
+let main e main a = begin new float end
+and b d b = while ("foo") do if "bar" then () else "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+
+let rec e d (bar : unit) g = Empty (delete (b (dim d) (let f foo d : foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in 2.56) (delete ())))
+and g f e : int = (delete (for b = 42.0 to '7' do 2.56 done))
+and bar a g d (g : e) : int ref ref -> int = (for d = () downto () do if 42.0 then 3.14 else 30 done)
+

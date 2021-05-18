@@ -1,0 +1,24 @@
+let rec e b = Cons (let f c = 'a'
+and a main bar bar : bar = 10
+and c g = true in (! 'a')) ((let b = ()
+and f e g c = true
+and e g (g : a) g g = false
+and e g a foo c : array [*,*] of bar = 2.56
+and d bar a d d = '\'' in false)) (begin let e main = 42.0
+and e = ()
+and bar (a : char -> bool) = 'a'
+and c (d : bool ref) b foo = "Route66"
+and e = () in '\n' end)
+and d b b e = delete (dim 1 b)
+and g foo main (f : ((int) ref)) = foo[while if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then () else true do for g = 40 downto false do 2.56 done done,let bar e f g = 18 in (match true with
+  a -> true
+| false -> '\n'
+end
+)]
+
+type e = Nil | Nil of char array of float float ref
+ and d = B of unit ref bool -> unit array of bool -> (e) -> unit | C of char int array of unit ref | C of char | Tree of int -> int -> b -> char ref
+ and g = C
+
+type main = Empty of array [*,*] of array of (unit -> char) char float -> (bool)
+

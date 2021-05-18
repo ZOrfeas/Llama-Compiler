@@ -1,0 +1,25 @@
+let rec main = Cons (match if 0.0 then 11 with
+  '7' -> if 3.14 then '\n' else 0.0
+| '\n' -> ('\n' == true)
+end
+) (a[- (while '7' do 16 done)])
+and bar main (d : float) b d = delete (match - () with
+  d -> bar[false,42.0]
+| (-16) -> while "bar" do '7' done
+end
+)
+and b foo a = begin if 0.0 then (new (char -> float)) else for e = 35 downto "Route66" do 2.56 done end
+and a (foo : char -> main) a = - (while dim 1 d do let d (a : ((int))) g = 28 in '\n' done)
+and foo (a : unit ref) bar c = a (if true then (2.56)) (begin (B 2 ()) end)
+
+let rec b (e : bool) (b : char) = begin bar[if false then 2.56 else 1,let main (e : char) foo foo = "foo"
+and f main e g = true in ()] end
+and g d : (bool) = b[delete (C (let g : unit = '7'
+and foo a : char = () in "Name:\t\"DouglasAdams\"\nValue:\t42\n") (B 2.56 () 23) (match '7' with
+  true -> 3.14
+end
+))]
+
+let a (d : char) = while + true do for d = () to '\'' do () done done
+and e b bar (a : float) a = if () then (dim 2 b) else b () () "bar"
+

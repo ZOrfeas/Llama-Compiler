@@ -1,0 +1,9 @@
+type a = C of b char | A of char array [*] of (int) array of (float) -> (int) float | Empty | Tree of float bool
+ and f = Nil
+ and g = Nil of int array of (char) | Nil
+
+type b = A of bool
+
+let rec c c (main : array [*,*] of d) (c : bool) g = (new float ; (let foo foo e = 3.14
+and f d : char = true in 27))
+

@@ -1,0 +1,20 @@
+type bar = B | Tree | D | Tree of bool array of int (float) unit ref
+
+type c = A | Empty
+ and b = Tree of ((float) ref) foo int ref | Empty
+
+let rec g e a = if 0.0 then (match 2 with
+  24 -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| b -> false
+end
+) else match 2.56 with
+  (Empty true (+.42.0)) -> true
+| false -> 2
+end
+
+and a f g : bool = delete (dim 2 a)
+and a c bar f = d[dim 2 main,let bar main a foo = 9
+and d c = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and g e main = 7 in ((() - true))]
+and d c = for e = 24 downto () do -. '\'' done
+

@@ -1,0 +1,14 @@
+let a = c[begin while true do () done end,dim d]
+
+let bar f = dim 1 d
+and e = match match () with
+  '\n' -> 5
+| true -> 2.56
+end
+ with
+  (+16) -> if 32 then 24
+| (-42) -> dim g
+| true -> delete "Route66"
+end
+
+

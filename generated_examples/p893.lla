@@ -1,0 +1,5 @@
+let b (bar : unit) (foo : float ref ref) g = new bool
+and g (foo : e -> float) = + (begin (new (main ref) ref) end)
+and main d f : int = for main = 42.0 to 15 do ("bar" ++ "Name:\t\"DouglasAdams\"\nValue:\t42\n") done
+and bar c foo (d : bool) a = (delete "Name:\t\"DouglasAdams\"\nValue:\t42\n" ++ (delete 16))
+

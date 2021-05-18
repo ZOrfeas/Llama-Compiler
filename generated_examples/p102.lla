@@ -1,0 +1,9 @@
+type b = Nil of (c -> char) bool unit
+ and e = D | C of char int float | Cons | B
+
+let mutable c[dim g,dim 1 bar]
+and main = (delete 17 *. (dim e))
+and main = for a = true to () do while 26 do "Route66" done done
+
+type b = B | A | B | B
+

@@ -1,0 +1,8 @@
+type c = Nil of char unit char array [*,*] of array of ((char)) ref
+ and a = Tree
+
+type b = Cons of char ref ((float)) -> bool -> array of d int
+ and f = B | D | Cons
+
+type foo = D | Empty | B
+

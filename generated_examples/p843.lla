@@ -1,0 +1,14 @@
+let rec c f g f = a[if '\'' then while 34 do false done]
+
+type d = Cons of (b) array [*] of float -> int -> int ref | D of int float -> int bool | B of float ref d
+
+type main = Empty of b bool float ref int | A | A | Empty
+
+type d = Cons | Empty | A | C
+
+type a = Cons
+ and b = Tree | Empty | Nil | A
+
+type foo = D | D
+ and foo = Nil | Tree | Nil | C
+

@@ -1,0 +1,5 @@
+let foo main main main = if 7 then begin '\n' end
+and foo = c[begin delete (for foo = 18 to 0.0 do '7' done) end]
+and bar = new int ref ref
+and g (main : bool -> float ref ref ref -> int) bar = new bool
+

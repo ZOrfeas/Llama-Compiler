@@ -1,0 +1,9 @@
+let f bar = begin dim a end
+
+let rec mutable foo[f[match new array [*] of bool ref ref with
+  f -> begin () end
+end
+]]
+and g g = for g = '\n' to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do dim bar done
+and main foo foo foo = (begin 15 end ++ (for g = () to 21 do 3.14 done))
+

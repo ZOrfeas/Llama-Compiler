@@ -1,0 +1,8 @@
+type d = A | B
+
+type b = Nil
+
+type d = D | D | Empty of b ref char bool a ref
+ and d = Nil of char int ref unit foo | B
+ and b = Nil | Tree | Tree of float float
+

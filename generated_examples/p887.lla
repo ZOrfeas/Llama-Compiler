@@ -1,0 +1,15 @@
+let a f f = (let a f = 37
+and g e g c c = ()
+and a (b : char) c a : int = true
+and mutable e[()] in () -. (delete ()))
+and d d (bar : unit) foo = match begin false end with
+  a -> bar['7']
+| c -> ! "foo"
+| C -> while '7' do () done
+end
+
+
+type bar = Cons of bar ref | C | Tree
+
+type a = D of b array [*] of unit bool bool -> char | Nil of bool int (unit -> char) char ref -> f ref | B of b ref -> a float
+

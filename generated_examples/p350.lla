@@ -1,0 +1,12 @@
+type f = Cons | D
+
+let a e = new ((int ref))
+and foo main = let rec mutable g[5,'a']
+and c (main : array of (bool)) f (e : bar) = ()
+and a foo (main : bool) c = 36
+and b = false
+and e = () in (bar[42,true])
+
+type foo = Empty | C of float
+ and a = Empty | D
+

@@ -1,0 +1,13 @@
+type g = Nil of bool array [*,*] of array of d float
+
+let mutable foo[D (delete (new int)) (e[(if 39 then "foo"),while '7' do false done]) (A (while "foo" do 2.56 done)),dim 2 foo]
+and main = while new unit do new unit ref -> bar done
+and foo = while let e : int -> int -> array [*,*] of int ref -> int = ()
+and main b e : float = 26
+and d (f : b ref) foo (main : array of float ref) : char = () in false do for e = "Route66" to () do '\'' done done
+and g foo = new (char)
+
+type main = Nil | D | B of array of array of float ref ref char ref unit
+ and c = Empty | Nil of float unit char float | D | D
+ and bar = Empty of unit float | C
+

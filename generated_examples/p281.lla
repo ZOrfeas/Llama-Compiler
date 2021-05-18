@@ -1,0 +1,21 @@
+let d (main : (unit -> bar)) (bar : bar) foo = begin let main = '\'' in (while 11 do '\n' done) end
+and bar g main bar (c : int) = delete ((delete 28 ++ (while 2.56 do 0.0 done)))
+and g g g main = bar[match match "bar" with
+  ((Nil)) -> 18
+| ('7') -> ()
+| 42 -> false
+end
+ with
+  g -> new (int)
+end
+,delete ((() +. ()))]
+and d (foo : unit) = A ((f[2.56,'7'] *. (for b = 41 downto true do "foo" done))) (while begin "foo" end do delete 17 done)
+
+let b main = new float ref -> (unit) -> int
+and e (b : int) c e = +. (dim 2 b)
+and g f (foo : c -> a -> array [*,*] of unit ref ref -> float) d = let c f foo a b = 27
+and main c a : array [*] of bar = '\''
+and g d (bar : ((unit) ref)) = 2.56 in ((18))
+and bar foo f = foo[f[while false do 2.56 done],begin (! "foo") end]
+and e g bar = if 32 then (delete 12) else dim a
+

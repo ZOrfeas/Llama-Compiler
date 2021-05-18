@@ -1,0 +1,6 @@
+let rec bar d (d : array [*] of unit ref) (g : char) a = (begin new int end)
+and e main : bool ref = new bool
+and foo e f g g = g[if 10 then dim f,let mutable a["foo"]
+and bar a = 33 in (for foo = 4 downto 11 do false done)]
+and a = for bar = 42.0 downto 42.0 do new (char) ref done
+

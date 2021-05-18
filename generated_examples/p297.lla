@@ -1,0 +1,4 @@
+let main (a : float) (d : bool) (a : g) b = if 42.0 then (new char) else (42.0)
+and foo = dim f
+and foo b (foo : (char) ref) (foo : array of g -> char ref) : b = begin d[(true > 34),dim a] end
+

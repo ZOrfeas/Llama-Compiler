@@ -1,0 +1,24 @@
+let a (d : unit) foo f main = match for b = true downto false do 3.14 done with
+  main -> f["Name:\t\"DouglasAdams\"\nValue:\t42\n"]
+end
+
+and foo d bar f main = (for c = 29 downto () do true done <> (C "foo"))
+and b (main : (e)) foo bar = ! (dim 2 b)
+and a bar e e = if '\n' then if 'a' then 14
+
+let bar (bar : float) (f : bool) (bar : array [*] of int) f = if '\'' then a 0 2.56 "bar"
+and a = match f[42.0,12] with
+  true -> (() != "bar")
+end
+
+and main d = (let d c g : (bool) = 19
+and e a (main : array of c) main = 0.0
+and e b c (f : char) = 32
+and mutable b : array of float in () + (while '\'' do '7' done))
+and f (e : char) e = match bar[25,12] with
+  (+.2.56) -> +. 5
+| (-30) -> Empty 3.14 '7'
+end
+
+and g (f : (unit ref) -> int) : float ref -> float -> char = delete (new int)
+

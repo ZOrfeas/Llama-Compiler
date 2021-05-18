@@ -1,0 +1,8 @@
+let d bar f bar = begin (new int := (new int)) end
+and g = begin delete (new unit) end
+and d (g : unit) foo : (g) = (begin for e = 0.0 downto '\'' do '\n' done end)
+
+type e = C | B | C | Empty of e float ref
+
+let b e main f : array [*,*] of char -> bool = +. (while +. true do ("foo" -. 'a') done)
+

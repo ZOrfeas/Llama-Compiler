@@ -1,0 +1,9 @@
+let f (e : float) d : int ref = (! (let rec e b = '\n'
+and g (main : int) c bar : float = () in 34))
+and b bar e = (if () then (match 38 with
+  '\n' -> 31
+end
+) else ("Name:\t\"DouglasAdams\"\nValue:\t42\n"))
+and c d = if () then ((false mod "foo")) else (31 ; '\'')
+and f = (dim 2 g = (- 16))
+

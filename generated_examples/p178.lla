@@ -1,0 +1,18 @@
+let rec mutable c[delete (not (if false then 2.56)),b[for d = 30 to false do begin 3.14 end done,(for main = '7' downto true do 14 done)]] : unit
+and b = if 42.0 then for b = false to 21 do 42.0 done
+and e b : float = - (match match () with
+  A -> 42.0
+| 0.0 -> "foo"
+end
+ with
+  true -> new a
+| (+36) -> if "foo" then ()
+| main -> while 42.0 do () done
+end
+)
+and bar b b main : int = while A () do for c = 25 downto () do 29 done done
+
+type main = Nil | A | D
+
+type c = C | Empty of d float int (char) | Tree of array of float (f) ref -> char bool char -> float
+

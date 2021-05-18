@@ -1,0 +1,6 @@
+let mutable foo : array [*,*] of float ref
+and d g a c = (if "bar" then (dim 1 f) else if "Route66" then true)
+and d (bar : char -> ((float)) ref) f = for b = 3.14 to 3.14 do C 2.56 done
+and main e foo = new array [*] of int ref
+and c a d g (f : bool) = if 0.0 then dim b
+

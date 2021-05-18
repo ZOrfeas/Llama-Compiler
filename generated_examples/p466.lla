@@ -1,0 +1,10 @@
+let a foo = ((false *. '7') <= (if () then false else '\n'))
+and mutable b[if 16 then (for e = true to 29 do false done) else (23 < 4),+ ((match false with
+  '\n' -> '\n'
+| 'a' -> true
+end
+))] : unit
+
+let e = (delete 16 / (while 35 do "Route66" done))
+and b d = if true then if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then '\n'
+

@@ -1,0 +1,14 @@
+let f main a b = for c = 0.0 to true do while 12 do '\n' done done
+and g : unit ref = (match 42.0 with
+  ((+11)) -> true
+| false -> true
+end
+ +. (+ ()))
+
+let rec g main = g[Tree (begin -. 0.0 end) (("bar" ++ 2.56)) (+ (-. "bar")),for d = 42.0 downto "Route66" do new ((float)) done]
+
+let rec f = bar[for foo = () to 7 do new int done,(if "Route66" then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else 33)]
+and c a = (for a = 0.0 to 3.14 do "foo" done +. ((() && ())))
+and foo e foo : float = let main a f (f : array of int) (foo : char ref) = 6
+and d f foo d a = 26 in (main[40,"Route66"])
+

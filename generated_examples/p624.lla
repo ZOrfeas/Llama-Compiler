@@ -1,0 +1,8 @@
+type e = A | Tree
+
+type bar = Tree of char | C
+ and main = Nil of int -> unit | Nil of (((int) ref)) int float | Empty | A of char float (array of bool) ref
+ and bar = Nil | Nil of array [*,*] of float unit c | Nil
+
+type bar = D | D of (f) | B
+

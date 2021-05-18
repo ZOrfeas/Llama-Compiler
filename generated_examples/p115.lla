@@ -1,0 +1,8 @@
+let c = g (dim g)
+and f (c : array [*,*] of char -> array [*] of unit ref) b (g : (unit)) = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (delete false) else begin () end
+and bar d e (foo : char) f = match dim 1 f with
+  false -> for e = false downto 2.56 do 39 done
+end
+
+and f = d ((if 42.0 then ()))
+

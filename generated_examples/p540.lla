@@ -1,0 +1,13 @@
+let f foo = not ((match 'a' with
+  C 42.0 -> false
+end
+ == (new unit)))
+and main = new float
+and g (bar : bool) (foo : bool) = for c = '7' to () do (42.0 <> 3.14) done
+and b d bar : float = dim 1 foo
+
+let rec main c f : bool = let g (e : unit) bar = true in (let g : float ref = 31 in ())
+and c b (d : unit) a = let foo g = 0.0
+and main (a : ((char))) main a : int = "bar"
+and g foo b a main = () in (new bar ref)
+

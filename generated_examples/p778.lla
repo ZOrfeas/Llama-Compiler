@@ -1,0 +1,9 @@
+type g = A | D of float | Nil | B
+
+let e d (foo : (bool)) = dim 1 foo
+and c b (b : (bar)) = (dim main)
+and d bar (g : unit) = (begin 2.56 end mod (('7' <= '\'')))
+
+type b = Tree
+ and bar = Tree of int bool int | Nil of bool float array [*,*] of (char) ref ref ref | Empty | Tree of bool ref -> ((bool ref)) float -> (float)
+

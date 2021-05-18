@@ -1,0 +1,14 @@
+let bar d e main = (if true then 11 else "Route66" - ((42.0 > "foo")))
+and bar main foo (e : bool -> float -> int) main = for f = 3.14 to '\'' do (3) done
+and bar (f : float ref) b a d = (if true then false <= (while 'a' do "bar" done))
+and f (b : (bool ref)) (d : unit) b e = match (17 := 42.0) with
+  ('7') -> ('7')
+| '\'' -> foo[35,true]
+end
+
+
+let c (b : char) c d d = begin let a foo = 0.0 in (while () do false done) end
+
+let a bar foo main : char = while for e = 2 downto 11 do '7' done do let rec c e : (int) = 3.14
+and b c bar f : int = () in true done
+

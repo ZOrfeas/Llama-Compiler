@@ -1,0 +1,7 @@
+type d = Nil of float ref ref bool bool
+
+type g = Nil
+ and c = A | Empty | Nil | Cons of (main -> float -> (float)) -> float ref ref (float -> array [*,*] of ((char))) bool float
+
+type d = A of array [*] of float int | Tree | B | D
+

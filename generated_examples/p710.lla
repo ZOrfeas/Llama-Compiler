@@ -1,0 +1,7 @@
+let b (b : bool ref) d = f
+and e d d (c : char ref ref) (bar : char) = new float
+and main (a : d ref) = g[begin (for e = "Route66" to 3.14 do false done) end]
+
+let b f = if 15 then dim 1 main
+and b (g : int) foo (f : int) e = if 11 then (delete true) else (22 + ())
+

@@ -1,0 +1,9 @@
+let f = for d = 'a' downto "Route66" do ("Name:\t\"DouglasAdams\"\nValue:\t42\n") done
+and f = let b f (b : g -> (bool) -> float) (c : array of unit) a : array of bool = 27
+and foo : int -> float = false
+and mutable foo : float ref
+and foo = '\n' in (new (char))
+and c main c = delete (dim 2 foo)
+
+let c b (main : array of a) = while while "Route66" do 0 done do ("Name:\t\"DouglasAdams\"\nValue:\t42\n") done
+

@@ -1,0 +1,11 @@
+type bar = Tree | Nil | Nil
+
+type main = Empty | Nil
+ and foo = Cons | A
+
+let foo bar e = let mutable e
+and b bar : char = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and mutable main['\n',26]
+and mutable d in (for b = 3 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do "Route66" done)
+and foo f e (c : a) = c (bar (if "foo" then () else '\n')) (- (c (begin true end) (new array of unit -> int -> (array of float) -> int)))
+

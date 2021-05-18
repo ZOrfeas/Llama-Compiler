@@ -1,0 +1,8 @@
+type g = C of (float)
+
+type foo = Cons | Empty | A
+ and f = D | C of bool | Nil
+ and c = Tree | B
+
+type d = Nil | A of int array [*,*] of bar int
+

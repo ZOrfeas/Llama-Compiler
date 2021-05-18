@@ -1,0 +1,7 @@
+let e : float = ((42.0 <> 42.0) >= (begin () end))
+and f a = dim a
+and f d = for e = 42.0 to "Route66" do b '\'' done
+and g c = Empty (+ (not (if () then '\n'))) ((new float ref))
+
+let rec foo (a : int) = c[begin a (for e = () downto 42.0 do '7' done) (-. '\'') (a[3.14,true]) end,(new f)]
+

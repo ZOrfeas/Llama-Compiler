@@ -1,0 +1,16 @@
+type bar = Tree | Tree | A | C of int -> float (unit -> unit -> char ref) (char) bool
+ and a = Empty | A | Empty
+
+type foo = A | Empty of char
+ and g = Cons of int ref bool | Nil | C
+
+type d = Tree of (char) main a bool
+
+type b = Tree of array [*] of int char
+
+type a = Nil | B
+ and f = Cons
+ and e = A | Nil | B of ((array of int)) bool float array of int | D
+
+type g = Empty | A
+

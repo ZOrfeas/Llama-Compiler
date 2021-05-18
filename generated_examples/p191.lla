@@ -1,0 +1,26 @@
+let main c = delete (a[while 23 do 0.0 done])
+and main b d = D (bar[b[delete 6],- (("Route66"))]) (while (22 <> 6) do for c = '7' to 42.0 do true done done) (match match 3.14 with
+  e -> ()
+| '\n' -> 27
+| b -> 35
+end
+ with
+  g -> dim 2 d
+| A -> (())
+| ((+19)) -> not "foo"
+end
+)
+and a (f : float -> bool) main d = b (dim foo) (-. (bar[match 0.0 with
+  1 -> 32
+| false -> false
+| (-.42.0) -> "Route66"
+end
+,Nil])) (let g e d (f : int) = '7' in (B false false "Route66"))
+and bar = (new d)
+and foo e d (b : bool) foo = delete (A (begin match 6 with
+  0.0 -> 3.14
+| foo -> "bar"
+| main -> '7'
+end
+ end) (delete ((true mod "Route66"))) (new ((foo ref))))
+

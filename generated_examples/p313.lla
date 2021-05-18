@@ -1,0 +1,14 @@
+let bar (e : (float) ref) c f = begin for c = () to () do delete () done end
+and f g main a : float -> int = bar[! (new bool)]
+
+let mutable d[- (while dim b do for bar = 42.0 downto 42.0 do false done done)]
+and a main b (d : g -> unit) = for g = 2.56 downto 27 do let g main (main : float) : unit ref ref = "Route66"
+and e (c : char) : char = "Route66"
+and e = 8 in false done
+and g = g[delete (match true with
+  '\n' -> 11
+| false -> true
+end
+),let a : int = true in (('\'' != ()))]
+and bar = (begin '7' end - (new bool))
+

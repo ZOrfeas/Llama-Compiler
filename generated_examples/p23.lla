@@ -1,0 +1,28 @@
+let d foo d a = for f = 42.0 to "bar" do begin 0.0 end done
+and mutable a
+and foo : unit = dim main
+
+let f foo c bar a = (+. '7' /. (match 42.0 with
+  C Tree 42.0 2.56 (+.2.56) -> '7'
+| false -> "foo"
+| 'a' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+))
+and main = while match '\'' with
+  (+5) -> "foo"
+| (+.0.0) -> 3.14
+| 0 -> ()
+end
+ do dim 2 c done
+and f = begin a[+ (f[38,"Name:\t\"DouglasAdams\"\nValue:\t42\n"])] end
+and c f foo c g = delete (if "foo" then (delete 3.14) else for foo = "bar" to () do '\n' done)
+
+let g d d : float = let f b bar = '\n'
+and bar main a main c = 16
+and foo a (c : int) a = 42.0 in (while "bar" do true done)
+and a b g e = let d (a : bool) a main = '7'
+and b bar a c b : bool = false in (b[true,()])
+and c main g : unit = dim foo
+and foo foo : array of array [*] of (unit) ref ref ref = let bar main b e e : a = ()
+and g = "bar" in (+. true)
+

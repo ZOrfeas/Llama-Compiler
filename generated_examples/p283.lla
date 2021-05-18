@@ -1,0 +1,21 @@
+let e c d = match dim 2 d with
+  d -> (29 +. 42.0)
+end
+
+and g (f : char) (f : array of bool) b = (match delete () with
+  ('\n') -> for b = 'a' to false do 42.0 done
+| C d (-.42.0) 30 -> (() -. ())
+end
+)
+and b = for d = 9 downto true do ('a' || true) done
+
+let d (e : int) = for e = () to () do begin true end done
+and g c main e : array of float = for b = 42.0 downto false do let mutable foo['7',true]
+and bar (g : (c -> (char) -> e -> (float))) a : unit -> char = '\n'
+and mutable main['\n'] in "Route66" done
+and bar g foo f b = new bool -> (float)
+
+type b = Empty | B
+ and b = Tree
+ and g = Nil of float float
+

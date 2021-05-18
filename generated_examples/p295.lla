@@ -1,0 +1,8 @@
+let a (f : bool ref) a bar (c : char) : char = delete (for f = '\n' to false do (()) done)
+and mutable a[for main = '\'' to true do while () do 7 done done,dim main]
+and bar main g = new float
+and e f f : float = B (let f = 8
+and d main d bar : char = 'a'
+and bar e bar = "Route66"
+and b g main : array [*] of (bool) -> ((e)) = false in (bar[0.0,19]))
+

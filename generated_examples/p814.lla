@@ -1,0 +1,24 @@
+let foo main foo = let e b g f c = ()
+and e (b : char) e g : foo = '\n' in (match "foo" with
+  '7' -> ()
+end
+)
+and c g bar = foo[dim 1 main,delete (for e = 17 to 30 do true done)]
+
+let b = b
+and foo foo = match not "foo" with
+  (f) -> new bool
+| Tree 32 true -> match true with
+  Empty 42 -> 13
+end
+
+end
+
+and b f bar bar : unit = match while 42.0 do 0.0 done with
+  f -> (0.0 <> '7')
+| '\'' -> delete 'a'
+end
+
+and bar (b : char) : bar = Empty (let rec c g d b g = 8 in (d[()]))
+and b (e : int) g (b : (array [*] of int)) = for b = () downto () do while "bar" do false done done
+

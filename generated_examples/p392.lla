@@ -1,0 +1,19 @@
+let a c f foo e = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then dim 2 d
+and d bar d b : char = (c[delete ((42.0)),match 3.14 with
+  Empty A '7' (-33) -> "Route66"
+end
+])
+
+type foo = A of (char ref) | Tree
+
+let g (f : (int)) f bar = (delete (dim foo))
+and a (b : array of (int)) e a c = while match 'a' with
+  (+22) -> 'a'
+end
+ do dim 2 d done
+and b d : (int) = if 'a' then (match "foo" with
+  c -> true
+| false -> true
+end
+) else delete "Route66"
+

@@ -1,0 +1,3 @@
+let g foo foo = if "Route66" then not 10
+and f (bar : d -> foo) e = delete (new unit)
+

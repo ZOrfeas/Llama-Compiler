@@ -1,0 +1,15 @@
+type main = B | Tree | B
+
+type bar = Nil
+
+let c g = match begin '\n' end with
+  (-34) -> match '\'' with
+  (a) -> 24
+end
+
+end
+
+and d c = let foo (a : int) c = true
+and d = true
+and main a bar c d = "bar" in (dim d)
+

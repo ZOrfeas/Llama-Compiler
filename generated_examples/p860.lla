@@ -1,0 +1,11 @@
+let rec main c bar (a : (unit)) = if 1 then (f['\n',()]) else Nil
+and d (d : bool) (f : int) f d : unit = new (int)
+and c g foo : char ref = while match () with
+  a -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| (+21) -> '\n'
+| (+39) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ do new int done
+and main c = for c = () to 4 do delete 3.14 done
+and g d c g a : array [*] of char = while if 18 then "bar" do for f = '\n' downto () do "Route66" done done
+

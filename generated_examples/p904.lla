@@ -1,0 +1,8 @@
+type foo = B
+
+let mutable e
+
+type bar = A
+ and c = D | Tree | B
+ and f = Tree
+

@@ -1,0 +1,6 @@
+type e = Nil
+
+type d = C | Tree of unit ref
+
+let mutable main[begin dim 1 a end,for f = "bar" to "foo" do for main = true to true do false done done]
+

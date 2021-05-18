@@ -1,0 +1,18 @@
+let rec g c d (f : ((int ref))) = new unit
+
+let b foo f = let mutable bar : char -> unit ref -> float ref
+and bar f = true
+and d bar (f : int) = true in ((()))
+and b d c (f : (foo)) = d[new array [*,*] of int]
+and d g b = dim 1 d
+
+let main c main foo a = delete (let bar (bar : int) b g (bar : array [*,*] of bool) = 0.0
+and d (bar : bool) (foo : char ref) (a : int ref) b = 15 in (dim 1 b))
+and e (e : bool ref) = if '7' then (let main f : (bool) ref = 31
+and d foo : float -> float ref = 42.0
+and bar g f c a = "Route66"
+and a f a e foo = "bar"
+and mutable main in 15) else delete ()
+and a a = for d = 3.14 to "foo" do Tree false done
+and c a = not (if 42.0 then for a = 25 to 0.0 do 'a' done)
+

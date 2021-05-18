@@ -1,0 +1,11 @@
+let main bar : int = Nil (Empty (for d = () to '\'' do 40 done) (if 26 then () else 3.14) ((0.0 && 34)))
+and b bar main = ! ((foo[5] && (while '7' do '7' done)))
+and main : bool = for bar = 31 to 11 do + true done
+and d : array of char = while new ((array [*,*] of bool)) do begin 32 end done
+and main e (b : char) : (int) = delete (if 40 then if 3.14 then 28)
+
+let b f a main = new unit
+
+type e = Nil | Empty | Cons
+ and e = Tree | Cons
+

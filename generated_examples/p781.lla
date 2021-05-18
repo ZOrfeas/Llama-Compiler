@@ -1,0 +1,4 @@
+let foo main g = if true then (14 +. '\'')
+and main c (d : char) bar = let c = ()
+and g = 9 in (while () do 3.14 done)
+

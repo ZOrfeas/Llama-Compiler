@@ -1,0 +1,12 @@
+type bar = D of array [*,*] of b d | B | Nil of char
+
+type bar = Tree | B
+
+let d d bar = main[for g = true to "bar" do dim 2 main done,new float]
+and mutable g[e (not ((delete "Name:\t\"DouglasAdams\"\nValue:\t42\n")))]
+and e = while begin 0.0 end do + () done
+and bar (main : bool) (c : d) (f : int) (f : char ref) = for f = 0 to '\n' do let main (foo : bool -> char) = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and g bar (g : bool) = "foo"
+and g c (d : unit) : float = '\''
+and b = false in true done
+

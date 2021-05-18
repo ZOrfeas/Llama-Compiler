@@ -1,0 +1,10 @@
+let mutable e[if () then match () with
+  (Nil '7') -> 2.56
+| (true) -> 5
+| (-1) -> ()
+end
+,+. ((new char -> main))]
+
+let mutable f : char
+and main a = new int
+

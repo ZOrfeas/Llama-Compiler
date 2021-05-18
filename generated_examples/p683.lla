@@ -1,0 +1,9 @@
+let b bar : unit = new (float -> unit)
+and f c f e = new float
+and main c (b : float) = + (Nil)
+and c a : g = let bar foo (f : unit ref) a = () in (("bar" <> '\''))
+
+type bar = B | Nil of array of bool bool int float | D
+
+type b = B of (char -> int) char bar | Empty of char unit f | Empty
+

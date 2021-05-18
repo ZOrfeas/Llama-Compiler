@@ -1,0 +1,10 @@
+type e = Cons of float float -> bool bool bool ref
+
+type g = C | Cons of float array of int g unit ref | Cons
+
+let rec mutable f[-. (if '7' then match 23 with
+  c -> '\''
+| Empty Nil -> 2.56
+end
+)]
+

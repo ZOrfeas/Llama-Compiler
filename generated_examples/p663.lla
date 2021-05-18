@@ -1,0 +1,8 @@
+type e = D of float array of int -> array [*,*] of float -> bool -> int ref ref char array [*] of bool ref | Cons | Tree
+
+type f = Nil of (char) -> (char) ref int int
+
+let d (d : char) (a : int) = ((let a main (d : int) f f = 16
+and b b a = 27
+and bar f bar = () in '\n' := (if () then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else "foo")))
+

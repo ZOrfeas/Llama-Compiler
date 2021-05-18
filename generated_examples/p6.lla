@@ -1,0 +1,25 @@
+let e = let c b = 12 in (if true then 37)
+and main f e : bool = for b = 2.56 downto 15 do match 3.14 with
+  foo -> 42.0
+end
+ done
+and bar bar (a : unit) f = f[delete (if "bar" then false),new float]
+and main f foo foo main = (match "foo" with
+  (+.0.0) -> 35
+end
+ * (A))
+and d e f (foo : (main)) bar = match b true true () with
+  false -> match 28 with
+  c -> "Route66"
+| (+.42.0) -> ()
+end
+
+| ((-26)) -> a[3.14,5]
+| (-.0.0) -> new unit ref
+end
+
+
+type a = Nil | Tree
+
+type main = C of array of int char (char) -> int
+

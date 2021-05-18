@@ -1,0 +1,19 @@
+let c e f (c : char) = match - false with
+  g -> new (unit)
+end
+
+and a = while + '\'' do for bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to 33 do 42.0 done done
+
+let a (g : unit) d c e = while ("bar") do new char done
+and main e b g = if 42.0 then (a["Name:\t\"DouglasAdams\"\nValue:\t42\n"]) else match '\'' with
+  30 -> 2.56
+| B -> true
+end
+
+and d foo e (g : b) d = begin begin dim f end end
+and e = match for c = 42.0 downto 4 do '\n' done with
+  (foo) -> b[true,()]
+| 2.56 -> new bool
+end
+
+

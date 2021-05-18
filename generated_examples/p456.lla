@@ -1,0 +1,5 @@
+let f = (not (- (b[false])))
+and b = for d = "bar" downto true do dim 1 bar done
+
+let b (d : array of array [*,*] of array [*,*] of array of int ref -> float) : float ref = begin begin if false then "bar" end end
+

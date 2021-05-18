@@ -1,0 +1,11 @@
+type f = Cons | Empty | Empty
+ and c = B | Nil of unit | Tree
+ and main = Empty | D | Nil of float int bool | B
+
+let f = match begin '7' end with
+  '7' -> e 42.0
+end
+
+
+let d = dim 2 d
+

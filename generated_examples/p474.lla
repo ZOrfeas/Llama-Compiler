@@ -1,0 +1,10 @@
+let f = ((3.14) == (-. "bar"))
+and mutable b[while e '\n' do if () then () done,new f] : unit
+and bar foo = if 42.0 then main 7 2.56
+and bar b = (-. ((for c = 3.14 downto () do 3.14 done)))
+and mutable main
+
+type foo = D
+
+type b = Nil of unit bool | A
+

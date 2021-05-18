@@ -1,0 +1,19 @@
+type main = B | C
+
+let foo b bar a = delete (dim c)
+and c (f : array [*] of array of unit) a = delete (! (b[for e = () downto '\n' do () done,for d = () downto 'a' do "bar" done]))
+and g d foo c main = let d f b = 0.0
+and main c = 2
+and bar e a = 7
+and foo (d : c) (b : (bool ref)) f c = "foo" in (let e a (bar : array [*] of bool) = "bar"
+and b bar (g : g) = 0.0
+and g f bar a bar = "bar"
+and e = () in true)
+
+let a g d = (begin a (begin 42.0 end) (if "Route66" then 31 else true) end)
+and foo f (e : char) = match for foo = 0.0 to 2.56 do true done with
+  false -> dim 1 b
+end
+
+and bar e d (g : int) : int ref = while if 12 then () do not 3.14 done
+

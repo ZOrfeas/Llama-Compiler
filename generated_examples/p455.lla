@@ -1,0 +1,29 @@
+let main main = let g a (bar : unit) = ()
+and bar = '7'
+and d c (e : array [*,*] of b) = 42.0
+and a main : char = ()
+and foo : bool = "bar" in (begin true end)
+and g (d : (foo ref)) : (foo) = let c (bar : ((array [*,*] of int) -> unit)) (main : unit ref) f = "foo"
+and g foo d d : char = '7'
+and g b main (b : int) = "Route66"
+and main foo (e : main) = () in (("foo"))
+and e e d (d : unit) = while let c a c = 'a'
+and foo g : char = 28
+and d (foo : unit) (f : unit ref ref ref -> unit ref) g = 42.0
+and foo = '\n'
+and f e bar g = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in 3.14 do (35 && true) done
+and d bar (e : char ref) (main : bool) = delete (match match 0.0 with
+  '7' -> ()
+end
+ with
+  ((false)) -> new char
+| (-.42.0) -> delete "bar"
+end
+)
+and f d = delete (delete (b[match true with
+  (+.42.0) -> 6
+| Nil -> ()
+| c -> 42.0
+end
+,begin "bar" end]))
+

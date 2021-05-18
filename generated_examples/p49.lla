@@ -1,0 +1,11 @@
+let rec f (a : char) = dim 1 f
+and g (g : int) b d : float -> unit = (if true then 6 mod (match () with
+  (-11) -> 38
+end
+))
+and b = for b = '7' to false do new array [*] of array [*,*] of (int) -> d ref done
+and bar e b c = (while "Route66" do () done /. (while false do "Route66" done))
+and foo = let c d foo = ()
+and f c foo = 42.0
+and mutable bar in (begin true end)
+

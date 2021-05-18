@@ -1,0 +1,7 @@
+let main a : (unit ref) = -. (delete (begin match "foo" with
+  false -> "bar"
+| a -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| 30 -> true
+end
+ end))
+

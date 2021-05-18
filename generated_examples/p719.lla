@@ -1,0 +1,21 @@
+type a = C | A of unit -> float -> (bool) bool array [*,*] of int ref array of array [*] of float -> char | B | D
+ and a = Cons of int unit -> float -> bool ref -> array of char | Empty of (char) -> bar -> unit -> array [*,*] of bool -> int -> (bool) | A | D
+ and foo = Empty of char array [*] of float ref
+
+let d foo (foo : bool) = while while 42.0 do "bar" done do ('a') done
+and b f a bar = match if 42.0 then 26 with
+  (Cons true (+.42.0) D (3.14)) -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n")
+end
+
+and b (c : array of char) (g : unit) = delete (delete (let mutable e
+and f main bar = 41
+and f main c = '\n'
+and d g c f = () in true))
+and mutable b[a[(if 25 then '7' == (+ true)),match a () with
+  D (('\n')) -> b[(),28]
+| true -> -. "bar"
+end
+]]
+
+type a = D
+

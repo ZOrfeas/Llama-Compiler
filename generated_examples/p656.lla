@@ -1,0 +1,9 @@
+let rec main = C (dim 2 g) (for c = '7' downto 7 do (42.0 := "bar") done)
+and b (a : bool) e (g : int) d = let b f = false in (dim g)
+and mutable f[(if '\'' then ((20)) else foo[42.0,()])]
+
+type c = B of (array of unit ref) a | A | Nil | Tree
+
+type g = C | A | Tree | Nil of char char array of a
+ and a = Cons
+

@@ -1,0 +1,7 @@
+type f = B | C | Cons
+ and foo = Nil | Cons of foo float unit bool | A of int array [*] of unit -> (bool) ref ref ref ref | A
+
+type f = Nil
+
+type g = Empty | Empty
+

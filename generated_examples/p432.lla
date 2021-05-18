@@ -1,0 +1,8 @@
+type a = Empty | Cons of bool array of unit int g | Tree of unit unit unit (d ref ref)
+
+type g = Empty
+ and a = Nil of char | A
+
+type bar = B | C of bool ref float ref char char ref ref | Tree | B
+ and a = C
+

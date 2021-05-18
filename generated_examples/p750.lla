@@ -1,0 +1,17 @@
+type b = Tree | Empty
+
+let b = b[(for e = "foo" downto 37 do true done),new float]
+
+let bar f = begin let a f = ()
+and f (main : c) (bar : (unit)) a = '\n'
+and foo g : array [*,*] of array of int ref -> bool = 16
+and a main main : unit = 17
+and b a a foo (g : int) = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in ((13)) end
+and g c bar bar : (array [*] of (bool) ref -> int -> char) = new unit
+and e : bool = begin if 20 then ((28 ++ 2.56)) else (39) end
+and e (main : array of (unit ref) ref -> array of g ref) : bool = (while (() +. false) do main done)
+and a main g = match new int with
+  Empty -> (34)
+end
+
+

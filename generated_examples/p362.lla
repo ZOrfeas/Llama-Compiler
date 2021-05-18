@@ -1,0 +1,15 @@
+let a (main : bool) = (delete false = (b[true,'7']))
+and b a g = dim 2 bar
+and d a c = if 14 then let g = 'a'
+and foo c (g : int -> char ref) = 0.0
+and g g a b (a : int) = ()
+and a b = 0.0
+and d f (a : char) foo g = true in 3.14
+
+type a = Cons | D
+ and e = C | C | B | Empty
+ and d = C | Empty
+
+type a = Empty | A
+ and c = A of (e)
+

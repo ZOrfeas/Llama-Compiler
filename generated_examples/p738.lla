@@ -1,0 +1,16 @@
+let rec foo (c : unit) main = bar[new array of bar]
+and b = (dim 2 foo ++ (match () with
+  ((-.42.0)) -> ()
+| 0.0 -> false
+| '\'' -> 0
+end
+))
+and b = while match 40 with
+  c -> ()
+| ('a') -> 0.0
+end
+ do match () with
+  (true) -> 11
+end
+ done
+

@@ -1,0 +1,9 @@
+type g = A | Tree | Tree of char
+
+type b = C of (float ref) int float char ref -> char | Nil | Nil | Nil
+
+let a = dim 2 d
+and f = b (new array [*] of int) (dim 2 d)
+and e (main : (array [*] of unit ref)) (foo : char) b g = begin ((42.0) -. (new int)) end
+and e = while if 13 then '7' do (23) done
+

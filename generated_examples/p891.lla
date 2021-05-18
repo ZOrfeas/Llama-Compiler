@@ -1,0 +1,16 @@
+let mutable main
+and foo bar g b (d : (main)) = begin delete (new char -> char) end
+and d f bar = b (delete (('\'' != 3.14)))
+and f foo g b main : int ref = begin while ! '\n' do a[true] done end
+and bar = match for bar = "foo" downto false do () done with
+  (0.0) -> match 34 with
+  Nil -> "Route66"
+| e -> "bar"
+end
+
+end
+
+
+let mutable a : char
+and d g = ((while () do () done < (C 2.56 true)))
+

@@ -1,0 +1,10 @@
+let f (c : a) c (bar : unit) = not (g[for e = 41 to false do () done])
+and g d a (foo : float) (b : bool) = let e d foo f c = '7'
+and bar = 30
+and g f c : int = 21
+and e b (foo : c -> unit) = 42.0 in ((true))
+
+type bar = A
+
+type b = B | C of ((bool)) (array of unit) (unit)
+

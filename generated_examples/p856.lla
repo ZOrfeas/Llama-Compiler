@@ -1,0 +1,8 @@
+let main = for foo = 24 downto 'a' do bar[42.0] done
+and mutable foo[(dim g)] : int ref
+and main d main g d = (dim c)
+and a d = (while (true ++ '7') do ! false done)
+and b e b (e : unit) = new int -> unit
+
+let rec c (e : unit) = dim b
+

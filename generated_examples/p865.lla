@@ -1,0 +1,15 @@
+let bar d = while b do begin false end done
+and f c = bar
+
+type d = D of float array [*] of (main) ref ref array [*,*] of bar | Tree | D of main | Empty
+
+let b a bar = let rec d main bar d (f : unit) : unit ref = "Route66"
+and foo g : int = 7 in (while 42.0 do 33 done)
+and main main bar = f[delete (Empty (match false with
+  (-2) -> ()
+| '7' -> true
+end
+) (dim 2 bar) (for bar = '\n' downto '\n' do 29 done)),- (delete (begin '7' end))]
+and f a e a = new a
+and b d : int = new float
+

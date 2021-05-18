@@ -1,0 +1,29 @@
+type foo = C
+
+type b = Nil of char | C
+
+type foo = A | D
+ and g = Empty of bool f d -> bool int ref
+
+type foo = A
+ and foo = Empty of unit | B of int float | Tree | Nil
+ and f = Tree
+
+type f = B of foo unit int | Cons
+
+let a d b a = a[new char,- (while '7' do 12 done)]
+
+let a foo = ! (B)
+and b a c b = if 42.0 then match () with
+  7 -> ()
+end
+
+and main e foo = delete (! (while () do 34 done))
+and d main f = -. (let e main e = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and f a (g : int) a c : (int) = ()
+and a a a = 2.56
+and b a d = "Route66" in (('\'' := 42.0)))
+and bar (bar : char) = delete (e[delete (begin "Route66" end),if () then '\'' else 16])
+
+let bar = delete (dim c)
+

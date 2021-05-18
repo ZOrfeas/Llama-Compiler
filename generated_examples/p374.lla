@@ -1,0 +1,46 @@
+type g = B of float char char ref | B | C
+
+let f g c bar = +. (match dim 1 main with
+  ((-29)) -> dim 1 b
+end
+)
+and bar e (b : bool) b c : int = if false then (23 > 22)
+and b d c = new unit
+
+let a (e : unit) (c : char -> d) (b : unit) bar : float = begin c[(if "Route66" then 'a'),let f main bar f a = 24 in ()] end
+and g f b bar : unit = dim c
+and d : char = (match (true && false) with
+  42.0 -> d[9,2.56]
+| true -> let f foo (main : array of float) = 0.0
+and foo foo main e : char = 42.0 in "foo"
+end
+)
+and bar bar f = g (B) (if 0.0 then (delete "bar") else for c = '\n' to "foo" do false done)
+and f f b d = if '7' then +. true
+
+let mutable main[(delete (- (d[2.56,"Route66"])))] : float
+and b main e b = let a main c = 33 in (while () do () done)
+and e foo foo a = c[match (42.0 != 10) with
+  (+.42.0) -> if () then () else '\''
+| b -> +. '7'
+| b -> match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  (4) -> ()
+end
+
+end
+]
+
+let bar = for g = 42.0 downto true do let f d g bar = '7'
+and d a e a (a : foo -> c) : array [*] of float = true
+and a g foo a = false in () done
+
+let rec f a b foo foo = delete (if 42.0 then (foo[17]) else - "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+and foo a bar d = d[(let g : (unit) = ()
+and g = '\''
+and d = true
+and b = '7'
+and b : int = 27 in '\'')]
+and f main d foo a = begin delete (f[delete false]) end
+and main = for bar = '7' downto 20 do dim 1 c done
+and g : char -> bool = if 30 then ("Route66")
+

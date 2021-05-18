@@ -1,0 +1,12 @@
+let e d bar foo bar = match dim 1 main with
+  (-.0.0) -> dim 2 bar
+end
+
+and g (main : unit) b = while foo[2.56,true] do Cons false 31 true done
+and c g : float ref = (("foo" > 3.14) <= (('\n' -. ())))
+and bar e main = dim foo
+
+type f = C | A of int unit g bool -> float | Tree
+
+type foo = Cons of int ref ref f ref foo | A of d e | Empty of char float (unit) | Empty
+

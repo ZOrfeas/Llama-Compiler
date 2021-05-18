@@ -1,0 +1,7 @@
+let foo = (while false do "bar" done <= (+ '7'))
+and d d foo d = g (while begin 41 end do begin false end done)
+and main d = match d['a'] with
+  b -> begin 'a' end
+end
+
+

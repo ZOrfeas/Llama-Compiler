@@ -1,0 +1,11 @@
+type d = D | Tree
+ and g = Cons | Tree | Tree | Tree
+
+let bar main e e = begin dim main end
+and a f g c = for e = 37 to 3.14 do new main done
+and bar f = foo[new bool,begin g[new (float)] end]
+and foo d = Nil (- (f[new array of (((array [*,*] of array of (((array [*,*] of int))) ref ref)) ref),while '\'' do "bar" done])) (while b 23 do if () then 2.56 done)
+and c : char = for f = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto () do C done
+
+type foo = A | Tree
+

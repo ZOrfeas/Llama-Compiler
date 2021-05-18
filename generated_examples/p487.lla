@@ -1,0 +1,9 @@
+let mutable a : char
+and d bar g (g : int) foo = dim bar
+and e e = if "foo" then (for b = "foo" to '\'' do 41 done) else dim f
+
+type g = Tree | A of array [*] of f (float) ref array [*] of char -> array of bool bar | D of int ref int
+ and f = B of unit bool | C of char char (float -> float ref) -> (float)
+
+type g = Empty of e ref | D
+

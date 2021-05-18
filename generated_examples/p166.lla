@@ -1,0 +1,6 @@
+let bar (main : unit) foo = while ! '\n' do if 3.14 then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else 42.0 done
+
+type f = D | Empty of unit ref g foo bool
+
+type b = Empty of float | Cons of array of bool -> int
+

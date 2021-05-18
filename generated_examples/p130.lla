@@ -1,0 +1,11 @@
+let f a e main (foo : f) = (new bool)
+and e = (new int)
+and main (b : array [*,*] of bool) = if 42.0 then B 8 '\n'
+and e f bar = C
+
+type foo = Cons | B of char
+ and bar = B of unit b -> float bool -> char
+
+type c = C of float b | C | Empty of array [*] of (unit) ref bool
+ and f = C
+

@@ -1,0 +1,6 @@
+let rec f = if 40 then (dim b) else dim 1 main
+and foo c e c = (new bool -> bool)
+and a e g : float -> char ref = new ((int))
+and a d c (b : int) = (D 29 > (while "foo" do true done))
+and mutable f[while begin false end do B '\n' done] : bool -> unit
+

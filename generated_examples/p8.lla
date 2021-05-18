@@ -1,0 +1,11 @@
+let d e = begin let f main b = 30
+and bar = false
+and main f g f = "bar"
+and b = true
+and e (c : float) b main c = '7' in (for a = '\'' to 18 do '7' done) end
+
+type e = B
+ and a = C | Nil | Tree
+
+type a = Cons of array [*,*] of array [*] of array [*] of unit ref | C of bool ref | A
+

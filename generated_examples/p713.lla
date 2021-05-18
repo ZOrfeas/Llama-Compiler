@@ -1,0 +1,24 @@
+let g f e : int = while while 42.0 do true done do match 29 with
+  (-9) -> 42.0
+| (+6) -> 0.0
+end
+ done
+and c g g (a : int) : bool = delete (delete (if '\'' then 42.0))
+and d foo c a = begin let rec e foo d g = 'a'
+and a b d = ()
+and f a (foo : bool -> char -> (char)) d d = () in (delete "foo") end
+and b (b : d) d foo = ! (while e[false] do delete '7' done)
+
+type bar = C of int -> int -> array of f ref -> array of array [*] of bool char c
+ and c = Empty | D of e ref -> bool ref | Tree | Nil
+
+let foo = delete (+. (new e))
+and d b c = begin bar[bar[if "foo" then 7 else false],new bool] end
+and a = match ("foo" + '\'') with
+  'a' -> delete 2.56
+| false -> new (foo) ref -> char
+| bar -> c[33,11]
+end
+
+and bar (g : bool) c (d : array of unit) a = not (while (15 >= ()) do + 42.0 done)
+

@@ -1,0 +1,14 @@
+let foo = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 3.14 done
+and c = new unit
+and e bar bar (main : d ref) : bool = c[for d = 2.56 to 0.0 do for e = 35 to () do '\'' done done,begin Nil (delete 3.14) end]
+and a (bar : (float ref -> array of int ref) ref) c g f = for c = 42 to 42.0 do dim b done
+and a = begin dim g end
+
+type b = B of foo array of (char -> g -> unit ref ref -> (unit)) -> int array of char array of (int) | C | B | Cons
+
+let f = (f[true,()] := (new bar ref))
+and bar f f c = new float ref
+and foo = while new (array [*] of float) -> int do begin '\'' end done
+and a (e : bool) (foo : ((unit -> (unit)))) (b : int) f = let rec main = true in (delete 2.56)
+and bar (main : array [*] of unit) = begin D (begin begin 2.56 end end) (for e = 42.0 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 2.56 done) (A (f[16]) (for f = 8 downto 15 do 2.56 done) (if 3.14 then '\'' else 0.0)) end
+

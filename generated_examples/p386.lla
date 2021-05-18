@@ -1,0 +1,16 @@
+type bar = C | Nil | Nil
+ and bar = Cons
+
+let g = g[match delete () with
+  true -> begin () end
+end
+,let d a = 0.0
+and c bar b = false
+and f d b = false
+and f (c : unit) c a foo = false in (+ '\n')]
+and c b a bar = c[new int]
+
+type foo = Empty | B | A
+
+type b = Empty | D
+

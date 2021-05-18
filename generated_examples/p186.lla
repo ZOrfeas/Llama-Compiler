@@ -1,0 +1,14 @@
+type d = C | Nil of int -> float array [*,*] of float char d | Tree | Empty of (int) array [*] of bool -> bool char char
+
+type c = Cons | B of g char (float) f | Empty
+
+let a f foo (a : float) = new array of bool -> (char) ref
+and d main e = match (()) with
+  true -> main[34,'7']
+end
+
+and a bar b d main = for b = 19 downto 2.56 do match 3.14 with
+  '7' -> 'a'
+end
+ done
+

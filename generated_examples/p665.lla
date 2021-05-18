@@ -1,0 +1,7 @@
+let f f e a main = delete (f[new d,match () with
+  d -> ()
+end
+])
+and foo main c bar = delete (new unit)
+and b c b : unit = begin (begin 42.0 end > (a () "bar" 42.0)) end
+

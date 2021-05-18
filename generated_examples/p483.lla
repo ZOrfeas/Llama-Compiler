@@ -1,0 +1,5 @@
+let mutable e[new ((array [*] of (unit) ref -> (foo -> array [*,*] of array of array [*] of f -> bool -> float ref)))]
+and main g = ((3.14 mod 21) - (let rec foo bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in 42))
+and main b : float = if true then (- "Name:\t\"DouglasAdams\"\nValue:\t42\n") else c['\n']
+and foo (g : int) (f : float) = c[- (begin f end)]
+

@@ -1,0 +1,15 @@
+let c e = match dim 1 a with
+  Empty -> if 3 then 3.14
+| true -> begin 3 end
+| Tree -> ("Route66" == "foo")
+end
+
+and c f = dim b
+and b = (begin delete (foo) end)
+and c g (c : array [*,*] of int) g = (e[Tree (C 42.0 13 0.0),for b = 'a' to () do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done])
+
+let mutable f[foo[match while () do () done with
+  37 -> C 0.0 false '7'
+end
+],if () then while () do true done]
+

@@ -1,0 +1,27 @@
+let e : float = begin delete (begin while 0.0 do true done end) end
+and mutable c[new char,new main]
+and g (a : int) bar g = match ("Name:\t\"DouglasAdams\"\nValue:\t42\n" - ()) with
+  (0.0) -> b[5]
+end
+
+and c (f : int) f = (-. false || (delete "bar"))
+and foo g e d main : g = match match 3.14 with
+  3.14 -> false
+end
+ with
+  c -> c[3.14]
+| (-.2.56) -> not 3.14
+| 39 -> e
+end
+
+
+let f = begin match b['\n',()] with
+  ('\'') -> (0.0)
+| C Tree true true (+27) -> ("foo" <= "bar")
+| bar -> begin () end
+end
+ end
+and e foo foo = if false then ('7')
+and main c (c : array [*] of char -> unit -> bool) b = for c = "bar" to 0.0 do dim b done
+and d bar g : char = dim d
+

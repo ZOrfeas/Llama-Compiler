@@ -1,0 +1,23 @@
+let main a c c = let f d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (delete false)
+and main f = begin for a = 12 downto 2.56 do begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end done end
+and foo = begin g[delete (while true do 9 done),new unit] end
+and foo (a : float) (d : float) g g = new unit
+
+let foo e = match a['7'] with
+  (+.0.0) -> if "bar" then '7'
+| '\n' -> while true do 30 done
+| 'a' -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n" == ())
+end
+
+and e bar d (bar : (int)) = c[while (()) do ! true done,match match "foo" with
+  (-12) -> 0.0
+| '7' -> 11
+| (+41) -> 42.0
+end
+ with
+  42.0 -> c['7']
+end
+]
+and bar = begin dim 2 g end
+and b main = + ((((false))))
+

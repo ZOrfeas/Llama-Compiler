@@ -1,0 +1,11 @@
+type a = Tree
+ and g = Empty | C
+ and main = Nil | D
+
+let c : unit = new c ref
+and g = (dim bar >= (begin () end))
+and bar main b = main[for bar = '\'' to 36 do not '7' done,if () then (for foo = 16 to '\'' do "bar" done) else dim 1 a]
+and foo g = for g = 0.0 to 42.0 do A done
+
+let b d a = (begin false end +. (b 'a' '\n' 13))
+

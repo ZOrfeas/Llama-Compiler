@@ -1,0 +1,27 @@
+let e d = - (if () then for b = 2.56 to 'a' do "bar" done)
+and mutable g
+and a f (g : c) bar = for d = true to "foo" do bar[(),"Route66"] done
+
+type f = C of e bool unit | D of unit char int ref | A | C
+ and f = Nil | D of a float
+
+let e e : bool = (match match () with
+  (-14) -> 3.14
+| b -> 'a'
+end
+ with
+  foo -> let bar (a : b) e = "bar"
+and g (c : unit) d = 37
+and mutable c[(),27] in 0.0
+| f -> delete 2.56
+end
+)
+and e d foo = match +. "bar" with
+  (+.2.56) -> b['\'',"bar"]
+| (+12) -> d[34,14]
+end
+
+and a = if "Route66" then (begin "Route66" end) else + '\n'
+and main f main (e : array [*,*] of int) = while begin () end do begin "foo" end done
+and a foo b main : main = while delete () do if 42.0 then '7' done
+

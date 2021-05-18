@@ -1,0 +1,20 @@
+type f = C | A | Nil of unit f char | A of array [*] of unit -> float ((float -> bool)) ref ref (f) ref bool ref
+
+let d d (g : unit) b = (let g = "foo"
+and f bar f (c : bool) = false
+and bar = "Route66" in ((1 ++ 3.14)))
+and a b c (bar : char ref) = (for a = () to 22 do (true) done)
+and mutable f[while dim f do match 14 with
+  true -> "bar"
+end
+ done,if () then for a = () downto '\'' do () done]
+and bar = dim a
+and c = delete (delete (if true then '\n' else 41))
+
+let mutable e[match if () then () else 2.56 with
+  '\n' -> (22)
+| Nil -> dim d
+| 35 -> while 39 do '7' done
+end
+,(! (if 4 then 0.0))]
+

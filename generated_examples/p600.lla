@@ -1,0 +1,2 @@
+let bar = for a = 25 downto 3 do (42.0 > '7') done
+

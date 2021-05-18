@@ -1,0 +1,24 @@
+let e g bar = delete (let main bar (e : unit) = 0.0
+and c main a = 3.14
+and c a = ()
+and g = 36
+and c a a (g : array [*] of bar) d = () in (delete 'a'))
+and f bar d b bar = (if false then (begin 'a' end) else begin true end)
+and c b bar bar = Empty (let b : (unit) = '\n'
+and a g (f : bool) c foo = true in (begin () end))
+and d = if 2.56 then (match "bar" with
+  8 -> 42.0
+end
+) else delete ()
+
+let a (f : char) main (g : unit) = begin if false then match () with
+  a -> ()
+end
+ end
+and f bar foo = while let b = true in "foo" do -. 42.0 done
+and c (e : char) = let bar main (bar : bool) bar = '\n'
+and main e d (bar : float) = () in (delete "bar")
+and foo f foo (d : float -> e) = (begin begin +. 8 end end)
+
+type foo = C
+

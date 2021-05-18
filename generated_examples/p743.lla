@@ -1,0 +1,12 @@
+type b = A | Cons | Cons
+ and bar = A of array [*] of bar int bool | D | B
+
+let d : unit = new (array [*,*] of float ref -> array of int -> (bool))
+and bar : (unit) = dim 2 f
+and bar (d : char -> float) bar : (foo) = while + () do let main c main = false
+and a (c : bool) = ()
+and b (bar : foo) g = 42.0 in '7' done
+and e f a = while not () do new unit done
+
+type g = Nil | D | Tree
+

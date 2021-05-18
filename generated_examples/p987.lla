@@ -1,0 +1,11 @@
+let rec d (b : int) (g : array of bool) g = delete (new array [*,*] of char)
+and g (e : unit) c main = while begin 14 end do (3.14 && true) done
+and main a (e : unit -> (((a))) -> char) (g : bool ref) a = f[for e = "foo" to 42.0 do begin '\n' end done]
+and foo (d : g) c (bar : foo ref) b = while for g = 34 downto "bar" do "Route66" done do match true with
+  2.56 -> 'a'
+| (-.42.0) -> 42.0
+| 'a' -> true
+end
+ done
+and d main = (-. (for e = 39 downto 'a' do 27 done))
+

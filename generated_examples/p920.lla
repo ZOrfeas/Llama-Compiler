@@ -1,0 +1,8 @@
+type d = C | Nil
+
+let mutable e
+and e f e (foo : float) = if () then f 42.0 0.0 4
+
+type e = Tree | C | D | A
+ and foo = Tree | Nil | Cons | C of ((array [*] of main -> unit)) array of int -> unit ref ref (char)
+

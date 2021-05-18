@@ -1,0 +1,11 @@
+type f = C of bool bool int | Tree | D
+
+let b g (foo : char) a main = dim b
+and f a e = if 5 then (g[(),10]) else let e b (g : array [*,*] of int) a (d : bool) = false
+and f g foo = 17
+and e e (d : unit -> char) = true in ()
+and a = while new unit do begin () end done
+and foo b (a : array [*,*] of (b) ref) (d : char -> bool -> char) = while for main = 2.56 downto 42.0 do 5 done do dim main done
+
+type e = Cons | Cons | Nil | Nil
+

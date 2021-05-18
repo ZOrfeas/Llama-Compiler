@@ -1,0 +1,18 @@
+type f = D | Cons of int -> char ref unit ref -> int -> int (int -> (bool) -> (float ref) ref -> unit) ref bool | Nil
+
+type d = Empty
+
+let f b bar b b : int = c[+. (begin a end),begin while "bar" do () done end]
+and d foo g foo (bar : bool) = begin dim 2 g end
+and foo : char = match match 32 with
+  3.14 -> 12
+| e -> false
+| Cons -> 30
+end
+ with
+  '7' -> d () 36 42.0
+| Cons true -> for f = '7' to '7' do '\n' done
+| false -> new g
+end
+
+

@@ -1,0 +1,21 @@
+type foo = B of array of char (int) unit -> (float) | D of foo int f | D of (unit) ref ref bool | Tree
+ and main = Cons | Nil | Cons
+
+let main b foo d : bool = if "Route66" then (+ ()) else let d f = "Route66" in 40
+and d bar d = begin let c (foo : g ref ref) b = 0.0
+and c c g (d : float) e = "Route66"
+and d b = true in (let a (bar : bar -> array of int ref) b : unit = 32
+and g foo (main : unit ref) bar = 'a' in 6) end
+and c d bar : float = dim 2 g
+and main a g b b = begin while match () with
+  33 -> 39
+| bar -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ do begin 13 end done end
+and a c = (f[(),"Route66"] ; (match "foo" with
+  '\'' -> '\n'
+end
+))
+
+type foo = Tree | Cons | C of int c bool (g) | C
+

@@ -1,0 +1,8 @@
+let g e (e : unit) b (d : float) = while (false) do c 42.0 done
+
+let b b = dim 2 f
+
+let foo e f b g = for e = '7' downto true do begin 12 end done
+and f a g d = dim 1 f
+and e : float = delete (dim 2 e)
+

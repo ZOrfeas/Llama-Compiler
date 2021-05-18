@@ -1,0 +1,9 @@
+type main = Empty | Cons of ((int) ref) (int) (int -> int ref -> unit) -> array of int ref array of e -> float | Tree of int float | D
+ and f = Tree | Tree of unit | B of (char) (char) | A
+ and f = B | D
+
+type d = Tree | D | Cons
+
+type d = Empty of unit bool bool char | Cons | D | C
+ and d = Cons | C of int bool | D | C
+

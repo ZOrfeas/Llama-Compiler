@@ -1,0 +1,13 @@
+type g = Tree of c -> array of (array of int ref -> bool -> (main)) ref bool (float) -> b | Cons | Tree of unit float float array of bool ref
+ and d = Cons of bool unit int -> int -> float unit ref | Nil of array [*] of (g) f int | A
+ and g = B | D | A
+
+let b = match dim d with
+  C (B) true -> begin "Route66" end
+| (42.0) -> (() / ())
+end
+
+
+let rec a f g : unit = (A (begin dim 1 bar end) (dim 1 main))
+and foo = (! ((42.0 && "bar")))
+

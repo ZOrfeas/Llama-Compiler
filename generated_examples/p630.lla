@@ -1,0 +1,6 @@
+let bar = + ((let c g (bar : bool) = "Route66"
+and g (e : int) = ()
+and foo e = 0.0
+and f d (d : char -> unit) = 3.14
+and mutable foo[true,'a'] in 42.0 mod (delete true)))
+

@@ -1,0 +1,11 @@
+let mutable e[(let g = '7' in () /. (let c bar c : bool = '7'
+and g (d : float ref) foo = false
+and a c d : char = 0.0
+and d main = 2.56 in 23))]
+
+type b = C of float unit -> char ref bool int | Cons | D
+ and main = B
+ and c = C of bool f | D
+
+type main = B of char e g -> f unit
+

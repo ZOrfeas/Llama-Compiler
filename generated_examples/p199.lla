@@ -1,0 +1,29 @@
+type d = B | A | Empty | A
+
+let bar (b : (unit)) b (a : bool) = match dim main with
+  '\n' -> a[()]
+end
+
+and g f (foo : bool) main bar = (if '\n' then false else true / (for a = true downto "foo" do () done))
+and a main = begin let e bar c = ()
+and mutable foo["Name:\t\"DouglasAdams\"\nValue:\t42\n"] : array [*] of bool -> f -> bool -> bool
+and f b main bar (b : unit) = () in (match 'a' with
+  true -> ()
+| bar -> '\''
+| f -> 13
+end
+) end
+
+let e d c g : float ref ref = for c = false downto false do +. false done
+and mutable c
+and bar bar = let rec bar main (foo : float) main = 42.0
+and b bar f foo : char = "foo"
+and c f f (foo : unit) = 3.14
+and f a = false
+and c = 1 in (for f = () to 6 do 26 done)
+and g d a = (match begin () end with
+  (35) -> let g = () in '7'
+| '\'' -> (true mod ())
+end
+)
+

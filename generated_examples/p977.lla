@@ -1,0 +1,4 @@
+let rec main = not (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then ('a' mod 1))
+
+let rec c foo g (g : bool) b = new unit
+

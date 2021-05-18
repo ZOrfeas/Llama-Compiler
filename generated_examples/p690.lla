@@ -1,0 +1,12 @@
+let main bar (a : foo) d main = (match 42.0 with
+  C (a) (+2) foo -> false
+| false -> "Route66"
+end
+ <> (delete 3.14))
+
+let b g b = delete ((delete 8 / (begin 15 end)))
+and f c g = let b g e f = true in ((2.56 mod 33))
+and c foo = ! (d[(delete "Route66")])
+and b e foo : int = while dim 1 g do e['a',()] done
+and b (e : char) d d = (dim 1 e)
+

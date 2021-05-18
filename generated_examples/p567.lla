@@ -1,0 +1,18 @@
+type a = C of array [*] of a bool ref int float ref | Nil | Nil of bool (main) ref
+
+let bar c = a[- (if () then 42.0)]
+and a foo main (bar : array of array [*] of float ref) a : e = (while 42.0 do 18 done > (- true))
+and f = while begin '7' end do ("foo") done
+and mutable c[! (while g[42.0,true] do (42.0 - ()) done),let a main f : int = 42.0
+and c = false
+and mutable g["Name:\t\"DouglasAdams\"\nValue:\t42\n"]
+and mutable f
+and e (a : array [*] of float) a main = '\n' in (let bar = true
+and bar d f g (foo : f) = 42.0
+and d foo d b : array [*,*] of char -> unit = 34
+and a g = true
+and mutable f : bool in ())]
+and g foo bar = for c = () to 3.14 do +. "bar" done
+
+type main = Cons | Empty | Tree | C
+

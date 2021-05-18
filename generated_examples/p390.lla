@@ -1,0 +1,17 @@
+let foo d d foo : array [*] of a = not (match let e = "bar"
+and b g b = '7'
+and b (foo : char) g = false in '\n' with
+  42.0 -> (0.0 + "bar")
+| (-31) -> (20 ++ "bar")
+| (+18) -> Tree
+end
+)
+and f bar (g : foo) b = begin for d = () downto () do if "foo" then "foo" done end
+and f main (main : c) b : unit = delete (for bar = 29 to 3.14 do (2.56 && 0.0) done)
+and b (d : array [*,*] of char) g g = + ((d['7',2.56] <> ((false -. 19))))
+and mutable f[f[match new bool -> char with
+  (+11) -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n" && 'a')
+| Nil (+.42.0) c '\n' -> dim 1 d
+end
+],if () then (delete ()) else for g = true downto true do 5 done]
+

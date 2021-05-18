@@ -1,0 +1,10 @@
+let d main (main : float) (bar : float) = delete ((new (float)))
+and f g (main : (array [*,*] of int ref ref)) b a = let rec g bar = 13 in (new unit -> unit)
+
+let rec e (bar : array [*,*] of array [*,*] of float) g g = begin match begin 'a' end with
+  (A '\'' D (-.42.0) (+14) '\n' (Cons 3.14 (+18))) -> ('7' != 3.14)
+| Nil (-.0.0) -> while 31 do "foo" done
+| 'a' -> g () 'a' ()
+end
+ end
+

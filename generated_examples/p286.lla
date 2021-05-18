@@ -1,0 +1,13 @@
+let c foo = for d = true to false do A 40 0.0 done
+and e bar = match dim g with
+  false -> delete '7'
+| (+.42.0) -> (false)
+end
+
+and e main d : array of float = while new unit do match () with
+  (Tree) -> 37
+end
+ done
+and b e main b bar : unit = delete (dim 2 f)
+and foo e = dim 1 main
+

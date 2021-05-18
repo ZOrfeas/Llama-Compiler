@@ -1,0 +1,13 @@
+let f d main b = dim main
+and foo (d : float) g d a = dim main
+and main b c d = (match delete () with
+  'a' -> if '7' then 'a' else 42.0
+| (+.2.56) -> d['\'']
+end
+)
+and g (d : float) = (let foo (foo : array [*,*] of (f ref) -> bar ref) : unit = "Route66"
+and foo e = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and bar (bar : (int)) a = 42.0
+and b f a b c : unit = "Route66" in 1 <> (for b = true to 3.14 do '7' done))
+and a b a c foo = main (for b = 42.0 to 2 do delete false done)
+

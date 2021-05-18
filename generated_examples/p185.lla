@@ -1,0 +1,16 @@
+type b = Empty | D of unit int
+
+type g = Cons | Empty
+
+let e foo g e = new f ref ref
+and c g f f c = while for b = () to false do 17 done do match 3.14 with
+  (+.42.0) -> 36
+| (true) -> ()
+| false -> '\n'
+end
+ done
+and f foo = (if 6 then let rec foo foo d = 42.0
+and b main (e : unit) e d = true
+and mutable bar["bar",true]
+and mutable f[false] : array of array [*,*] of (float -> float) in 2.56)
+

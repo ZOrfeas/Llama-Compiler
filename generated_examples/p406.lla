@@ -1,0 +1,3 @@
+let c = c[if '\'' then (for e = () downto '\'' do false done) else (()),begin for g = () to 26 do () done end]
+and g = delete ((while "Route66" do 21 done))
+

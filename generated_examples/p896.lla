@@ -1,0 +1,11 @@
+let d foo f = if '\n' then (42.0)
+and e c d = match dim 2 f with
+  b -> new unit
+| false -> B false 2 '\''
+end
+
+and bar = begin ((let mutable c[42.0] in ())) end
+and main c (main : array of unit) f bar = let b g g e = true
+and mutable a[42.0,true] : unit
+and foo (d : char) e = true in (if 19 then '\n')
+

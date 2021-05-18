@@ -1,0 +1,47 @@
+let c f a d a = -. (main (delete (match '\n' with
+  '7' -> false
+| (A true '\n') -> 42.0
+| true -> "Route66"
+end
+)))
+and c d bar d f : (int) = (e[while false do '\'' done,while '7' do false done])
+and d bar = ((3.14 > ()) ++ ((42.0 > ())))
+and e c = for bar = 3.14 to "foo" do begin 22 end done
+
+let main e = let rec e g (bar : float -> array [*] of (float ref)) d = true
+and c bar = 'a' in (main[3.14,'a'])
+and main (d : float) (bar : e) a (g : char) : unit = new (char) -> char
+and foo = delete (let a (g : char) c c = "bar" in (new int))
+and e bar = (d[dim 2 f,f[for main = true to "Route66" do 42.0 done,while 'a' do 42.0 done]])
+
+let g g (foo : bool) a b = if '\n' then (for foo = "Route66" downto 0.0 do false done) else while false do '\n' done
+and e e = begin for f = false downto 'a' do (11 >= true) done end
+
+type b = Tree of array [*,*] of int ref -> int bool array [*] of array of unit | C
+
+type bar = C
+ and d = C | D
+ and c = Cons
+
+let foo (main : char) = match e with
+  ((A)) -> begin () end
+| (((+.2.56))) -> if "bar" then true
+| '7' -> match 0.0 with
+  B ('a') true 2.56 -> ()
+| 42.0 -> false
+end
+
+end
+
+and e d (foo : c) = if "Route66" then if "foo" then 'a'
+and bar (b : char) bar c = (delete (delete (let bar = "Route66" in "Route66")))
+and mutable a[begin match new unit with
+  (false) -> begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+| (-.0.0) -> new char
+end
+ end,B (dim foo) ((delete () <> (begin '\'' end)))]
+and mutable e
+
+type bar = C
+ and b = A
+

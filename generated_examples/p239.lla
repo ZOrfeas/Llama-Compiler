@@ -1,0 +1,7 @@
+type e = Empty | Cons | Tree of int d int -> array [*] of a -> unit | D
+ and main = C | B
+
+let mutable foo
+
+type d = D of char | Empty | B
+

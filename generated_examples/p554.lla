@@ -1,0 +1,9 @@
+type bar = Cons | Nil | Tree of b -> unit char ref float
+
+type a = C of (((float))) foo array [*,*] of int unit
+
+let main foo f c bar : int ref = ((("foo" != 'a') / (bar)))
+and a d c = let bar e f = 23
+and foo d = '\''
+and mutable e[(),3.14] in (for f = false to true do 'a' done)
+

@@ -1,0 +1,7 @@
+let a = (a[match "foo" with
+  Cons -> 42.0
+| (+.42.0) -> "foo"
+| ((42.0)) -> true
+end
+,d[while "Route66" do 14 done,("foo")]])
+

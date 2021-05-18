@@ -1,0 +1,14 @@
+let foo bar = dim 1 d
+and g c d a a : bool -> float = (dim 2 b)
+and main = begin match (false == "foo") with
+  21 -> main[2,42.0]
+| Cons -> while () do "Route66" done
+| (c) -> (())
+end
+ end
+and f main b = + (dim 1 c)
+and d = match new unit with
+  '7' -> new a
+end
+
+

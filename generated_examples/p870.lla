@@ -1,0 +1,9 @@
+let rec foo c b = begin (if () then "bar" == (Nil "bar")) end
+and main = if '\'' then (if 42.0 then () else 42.0) else dim f
+and f e (g : float -> float) bar = if false then let e foo (main : d) e = 2.56
+and foo bar c bar = ()
+and mutable e[true] : array of (char)
+and main (b : bar ref) b = ()
+and g g b bar : (c ref ref) = 20 in false
+and foo bar e b a = while foo[(),30] do if 41 then 'a' done
+

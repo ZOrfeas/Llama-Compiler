@@ -1,0 +1,13 @@
+type main = Nil of char ref char int float | Nil | C | Cons
+ and g = Empty | B | C of int -> float | Nil
+ and f = C of int float
+
+let rec mutable a[if true then (dim 2 a) else if true then false]
+and main f foo = + (match begin '7' end with
+  '7' -> delete 17
+| (-31) -> dim 2 f
+end
+)
+
+type a = Empty of array [*,*] of char -> bool int unit -> bar array of unit | Nil | D
+

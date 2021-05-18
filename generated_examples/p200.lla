@@ -1,0 +1,16 @@
+let mutable d[match new c with
+  e -> c[32]
+end
+,c[while for d = 9 to '\n' do "foo" done do (() -. false) done,delete (for e = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto 14 do '\n' done)]] : int
+and c : float -> main = dim foo
+and e foo c b = (if '\'' then 42.0 < (while false do '7' done))
+and main foo d = match for foo = 2.56 downto 5 do 42.0 done with
+  (e) -> match 3.14 with
+  'a' -> false
+| '7' -> ()
+end
+
+| a -> if 23 then true
+end
+
+

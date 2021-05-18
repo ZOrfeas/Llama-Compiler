@@ -1,0 +1,16 @@
+type foo = Tree
+ and d = B
+ and g = A | B
+
+let e = if "foo" then if () then true
+and b = new unit
+and b foo b f main = delete (dim 2 a)
+
+let rec e d (a : char) = (while ('\'' ; 0.0) do match 15 with
+  Tree '\n' -> 20
+| (('a')) -> '7'
+| (+.42.0) -> "bar"
+end
+ done)
+and e main (main : ((char))) : array of char -> char ref -> array of unit = new int
+

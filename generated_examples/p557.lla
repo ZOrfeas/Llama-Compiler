@@ -1,0 +1,16 @@
+type e = D | A
+ and f = D
+
+let rec bar a = main[begin -. (for d = true to "bar" do 42.0 done) end]
+and e g c = if true then d 42.0 "bar"
+and e a : a = begin B (dim main) (while 2.56 do 28 done) end
+and g bar = delete (((3 == "Name:\t\"DouglasAdams\"\nValue:\t42\n") mod (new bool -> char)))
+
+let f c = delete (let e = 0.0
+and mutable e in ((false)))
+and bar = (let rec d (foo : bool) = 41
+and a (d : char -> unit ref -> bool -> unit) = 0.0 in "Name:\t\"DouglasAdams\"\nValue:\t42\n" > (let mutable foo['\n',19]
+and b (a : unit) (d : int) a a = false
+and main c main = 21
+and c bar e foo (a : char) = '\'' in 10))
+

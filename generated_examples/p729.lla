@@ -1,0 +1,6 @@
+type g = Tree
+
+type main = C | B | D of char int (int)
+
+type e = Cons | Nil
+

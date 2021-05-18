@@ -1,0 +1,15 @@
+type g = Cons of float | D of e (float) | Empty of bool array [*,*] of unit char (array [*] of char -> (array [*,*] of char)) | Cons
+
+let main main d = Empty
+and foo b = match for bar = '7' to true do '\'' done with
+  Tree false false (-2) -> for main = () downto 1 do true done
+end
+
+and main e = foo[Nil (while true do () done) (+ (if 38 then false)),((2.56 != ()) >= (for g = false to () do () done))]
+and c (a : c) = let a a (g : float) = 3.14 in (for b = false downto 24 do false done)
+
+let foo d (foo : (bool)) e (b : float) = (while () do 2.56 done -. (for foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto () do '\n' done))
+and f : (int) = begin dim a end
+and a main g c f = dim 2 a
+and e = ((true mod true) > (new bool -> d))
+

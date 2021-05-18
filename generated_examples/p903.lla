@@ -1,0 +1,16 @@
+let rec f bar g : int = delete (delete (new bool))
+and mutable b[if 27 then (a[true]) else delete false,match delete () with
+  (42.0) -> ('a' *. 2.56)
+| (+7) -> while () do 42.0 done
+| (-9) -> delete 19
+end
+]
+and foo (g : ((int))) (d : bool) e = let foo (c : (float)) g e (c : unit) = 42.0
+and a g a = ()
+and b b e b c : (array [*,*] of float) = '\n'
+and g a foo : f = 1
+and e f foo = 3.14 in (let rec f e main g = true
+and main (foo : unit) foo = 42.0
+and a (bar : (float)) g f d = "Route66"
+and b (c : char) foo b : int = true in ())
+

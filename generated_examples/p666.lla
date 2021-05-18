@@ -1,0 +1,14 @@
+type bar = A
+ and g = D of c ref float a | A of float -> char -> (bool) ref | Cons
+
+let c (c : bool) = ((delete (new int)))
+and main a (foo : bool) b = (new unit <= (dim 2 foo))
+and g f = a[bar[new (char) -> array [*,*] of char ref -> bool,- (match () with
+  '\'' -> '\n'
+end
+)]]
+and f f d bar = dim 1 g
+
+let foo b : b = delete (not (let rec c g = '\n'
+and d = '\'' in 19))
+

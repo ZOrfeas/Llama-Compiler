@@ -1,0 +1,10 @@
+type f = Cons | B | B of int | Cons
+
+let rec b d a = while new float -> array of bool do while 0.0 do "foo" done done
+and c bar main g = dim 1 b
+and main a (b : array [*,*] of char -> unit) = if 42.0 then ((7 ; ())) else for d = false downto true do 0.0 done
+and b c d bar d = delete (a[if () then '7',new bool -> int ref -> float -> array of unit -> bool])
+and f a c = let e e (c : array [*] of char) : int -> ((int ref)) = false in (("Name:\t\"DouglasAdams\"\nValue:\t42\n"))
+
+type d = Tree | Nil
+

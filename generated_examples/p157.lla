@@ -1,0 +1,10 @@
+type f = D of int | A of bool | D | Cons
+
+let bar (bar : bool) a f c = delete (c[(24 := 40)])
+and d g bar e main : char = new int -> bool
+and mutable main[delete (if '7' then (not '\'') else while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 3.14 done)]
+and c a = for f = '\n' to '\'' do begin 42.0 end done
+
+type d = Tree of char b (float) | Empty of bool | D of float ref ref ref
+ and b = Tree | Tree
+

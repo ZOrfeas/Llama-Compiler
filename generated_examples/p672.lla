@@ -1,0 +1,8 @@
+let rec e g = f
+and b e : array [*,*] of bool = (new bool ref ref)
+and main (c : b) b g c = let c = false
+and bar a f f : array [*] of unit -> char ref = 0.0 in (match '7' with
+  '\n' -> 42.0
+end
+)
+

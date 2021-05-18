@@ -1,0 +1,23 @@
+let bar = delete (d[a[("foo" ++ true),if 20 then '7'],('7' *. 27)])
+and f f (e : unit) b = match bar[2.56,'\''] with
+  Cons -> delete '7'
+| (-.3.14) -> dim 1 f
+end
+
+and mutable g[begin new unit end,(dim 2 f ++ (if () then 3.14))]
+and bar d b foo = while g[2.56] do new char done
+and c b d a a = while match "Route66" with
+  '7' -> '\n'
+| (-.3.14) -> 2.56
+end
+ do match 9 with
+  Tree '7' '\n' 3.14 -> 0.0
+| 19 -> 'a'
+| (-.0.0) -> ()
+end
+ done
+
+type e = Empty of unit | Tree
+
+type a = Cons of unit -> (float) int -> bool | Nil | Empty
+

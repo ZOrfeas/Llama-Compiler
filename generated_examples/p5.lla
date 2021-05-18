@@ -1,0 +1,10 @@
+type foo = Tree | D
+
+let rec bar d foo f = dim 1 bar
+and f c e foo = (for main = () downto "bar" do '\n' done /. (dim 1 main))
+and mutable a
+and c (c : char) (bar : (char) ref) = for f = 42.0 downto 2.56 do main["bar",42.0] done
+and mutable f[new float] : char ref
+
+type g = D | D | Cons of char float array [*] of (char) bool | Nil
+

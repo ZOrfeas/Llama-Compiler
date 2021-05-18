@@ -1,0 +1,27 @@
+let bar e c c main : array [*,*] of int = (if 36 then for f = false downto 42.0 do false done)
+and g (main : array [*,*] of char) a = match (false) with
+  true -> -. 26
+| '7' -> (27)
+| 42.0 -> ! false
+end
+
+and mutable d
+and f g g g g : bar = while ("bar" *. 32) do (false / ()) done
+and d = let rec e b (b : int) main d : char ref = 30
+and main (d : bool) c bar main : float = 33
+and g b = 42.0 in (Nil)
+
+let f bar = dim 1 b
+and c e g b = for d = "Route66" to 42.0 do ! "bar" done
+and b b (d : array [*] of unit) foo c = d (bar (d (new unit) (-. 3.14)) (match 10 with
+  foo -> ()
+| Tree -> 36
+end
+) (if () then "bar"))
+and f = match (3.14 * 2.56) with
+  true -> (42.0 mod false)
+| Tree '\n' (-0) -> for a = 3.14 downto false do '7' done
+| (-.42.0) -> if 42.0 then () else "foo"
+end
+
+

@@ -1,0 +1,22 @@
+type foo = B of unit array of char ref ref unit (int -> array of array of main ref ref -> ((float -> unit ref ref -> float)) -> unit) | C
+
+let b bar c = (if 42.0 then '\'' else 2.56 := (-. 12))
+and bar b f g (a : float -> ((array [*,*] of main))) = a[D (foo[let b bar = ()
+and mutable main
+and foo a d main main = 42.0
+and e f foo = "bar"
+and foo c (foo : char ref) = false in "bar",(2.56)]) (match false with
+  '\'' -> 15
+| '\'' -> 42.0
+| 3.14 -> "bar"
+end
+) (for a = 'a' to () do "Route66" done)]
+and b e (foo : int) = begin delete (if "bar" then ()) end
+and b f = while (() *. ()) do begin 11 end done
+and f foo a e c = begin delete (delete (match () with
+  (+.2.56) -> '7'
+end
+)) end
+
+type f = Nil of bool float float char | Nil of bool unit | B | Nil
+

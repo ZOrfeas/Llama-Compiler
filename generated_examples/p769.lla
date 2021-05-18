@@ -1,0 +1,10 @@
+let foo b b = match ! true with
+  (+34) -> new float
+| (-9) -> (42.0 - false)
+end
+
+and main = for foo = () downto "bar" do new unit done
+and a (a : float) (b : int) (a : unit) main = (let e (bar : unit) = 21
+and bar foo = 13 in '\'' /. (begin () end))
+and b = for b = false downto '\'' do dim 2 f done
+

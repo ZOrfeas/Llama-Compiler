@@ -1,0 +1,16 @@
+let rec a b = ! (begin b (while () do () done) end)
+and b bar f f b = for g = 39 downto "foo" do if () then 3.14 done
+and f d = (f[Cons (let d bar bar foo = "Route66"
+and d (foo : float) f (e : char) e = false
+and foo = '\'' in "foo") (('\'' ++ "Route66"))])
+and g = dim c
+and foo e (foo : int) (bar : array of char) = match new char ref with
+  true -> if () then 'a'
+end
+
+
+type bar = Nil | C
+ and bar = C | C
+
+type f = B
+

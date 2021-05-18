@@ -1,0 +1,3 @@
+let rec b = for f = () to 10 do dim 2 b done
+and foo b f e = for b = 42.0 to () do new (unit ref) done
+

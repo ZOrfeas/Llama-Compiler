@@ -1,0 +1,9 @@
+type foo = B | A
+ and main = Empty | B | Empty of unit float (char) float
+
+let bar f foo = begin (begin dim 2 foo end) end
+and g main a (a : (f ref)) a : array [*] of char -> bool ref ref = ((begin true end / (c[42.0])))
+
+type g = Cons | Tree | C
+ and b = Nil
+

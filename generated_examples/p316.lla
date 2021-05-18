@@ -1,0 +1,11 @@
+type f = A | C
+
+let f g = (let e main foo = 18 in "foo" >= (while 0.0 do 'a' done))
+and bar (d : (unit)) d = (if 42.0 then 0 > (let mutable foo["bar"] : (bool)
+and foo e b main = "Route66" in '\n'))
+and mutable e
+and bar (f : char) g (d : bool) foo : a ref = begin begin for g = '\n' downto 42.0 do 39 done end end
+and foo main d c = not (if () then (42.0))
+
+type g = Empty | Empty
+

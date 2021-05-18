@@ -1,0 +1,2 @@
+let g a : unit -> float -> unit = begin begin foo[delete true] end end
+

@@ -1,0 +1,25 @@
+let mutable e[delete (let bar = "bar" in (new int))] : bar -> float
+and a (bar : bool) (main : array [*,*] of float ref) foo = for d = 0.0 to '\n' do match () with
+  e -> ()
+| 19 -> true
+end
+ done
+and c c f (d : c) e = (foo[dim foo,match 'a' with
+  (+.3.14) -> 35
+| true -> "Route66"
+end
+])
+and f main = match match '\n' with
+  main -> 21
+| D (+.2.56) a D (-17) -> 'a'
+| a -> 'a'
+end
+ with
+  (main) -> for a = true downto 2.56 do 42.0 done
+end
+
+
+type c = Tree
+
+type c = B | D
+

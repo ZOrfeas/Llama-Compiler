@@ -1,0 +1,56 @@
+let c : c = Nil (for c = 4 to "bar" do dim 2 c done) (let f b main foo = () in (begin true end))
+and f a c (e : bool -> unit) d = let b c e = 16
+and main foo e a foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (let d c = 42.0
+and c foo b bar = 10 in 42.0)
+and b = + (f[dim 2 e])
+
+let c = ((match false with
+  (true) -> false
+| 42.0 -> "bar"
+| 'a' -> false
+end
+ +. (match 'a' with
+  (+.42.0) -> 35
+| '7' -> true
+end
+)))
+and mutable g[while if "foo" then 10 do while 12 do () done done,((new int ref))]
+and e = new unit
+and b d f b g = delete (g[for a = 'a' downto 3.14 do 37 done])
+
+let b = begin (match () with
+  A -> 0.0
+| '\n' -> 16
+end
+) end
+and e d c : bool = bar ((begin while false do 0.0 done end))
+
+let e d : e = Nil (new (char ref ref) -> float)
+and b (f : int) g bar = while begin 26 end do for a = 26 to 2.56 do 1 done done
+and g e = while match () with
+  d -> "Route66"
+| (-.42.0) -> 0.0
+| 35 -> true
+end
+ do - '7' done
+
+type a = A | Tree | A of int -> unit float
+
+let mutable foo[begin ! (e (c[true,false])) end]
+and foo f main g a = for foo = 41 downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do while 2.56 do 42.0 done done
+
+let rec f bar a f (e : int) : char = match for main = true downto 2.56 do () done with
+  ('7') -> ('7' || "Route66")
+| (13) -> if () then 42.0
+| (+.42.0) -> let e main = ()
+and mutable g[42.0]
+and c (e : bool) = '\n' in ()
+end
+
+and a c e f = if () then (delete ()) else begin 32 end
+
+type foo = B of int ref float | Nil
+ and d = C of float int | B | B of array of unit -> char
+
+type c = D | C | Nil of char bool | Empty of bool float unit
+

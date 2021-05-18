@@ -1,0 +1,6 @@
+let foo bar (bar : array [*] of unit) e c = match dim e with
+  (-13) -> ! "foo"
+end
+
+and b a (bar : int) f a = new float
+

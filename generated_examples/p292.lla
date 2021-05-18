@@ -1,0 +1,26 @@
+let a (e : (g ref -> f)) = for main = "bar" to 42.0 do -. () done
+and f main a = for bar = false to false do for b = 41 to '\n' do false done done
+and d c = begin delete (let foo = 26 in ()) end
+and foo f = match if true then 42.0 with
+  A A true 'a' false main -> match 19 with
+  A (-.0.0) '\n' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| true -> false
+| ('\'') -> false
+end
+
+| false -> while 42.0 do '7' done
+end
+
+and bar d d g main = match not 0.0 with
+  d -> D ()
+end
+
+
+let f g b d = for main = 42.0 to 34 do (false) done
+and e c = let rec main = 42.0
+and g f c (d : unit) = '\''
+and e e c : array of float = '\'' in (delete '\'')
+and main = c ((main (f['7','\n']))) (if '\n' then +. 0.0)
+and b c bar a foo = (+. '7' > ((true)))
+and e = if '7' then while 4 do 3.14 done
+

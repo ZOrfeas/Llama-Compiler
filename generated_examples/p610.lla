@@ -1,0 +1,6 @@
+type main = Empty
+
+let bar : (int) -> float -> (unit -> float) = bar
+
+type e = A | C | A
+

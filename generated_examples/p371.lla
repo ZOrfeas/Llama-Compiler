@@ -1,0 +1,20 @@
+let bar d = for main = 3.14 to 2 do match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  (+30) -> 3.14
+| 'a' -> '\''
+| a -> "Route66"
+end
+ done
+and f (c : char ref) bar main main = begin C (((42.0))) end
+and f g b b c = delete (let main d : unit = '\n'
+and c (g : f) (bar : (g)) = "bar"
+and foo g f main b = false
+and d foo b d main = false in (dim 1 foo))
+and mutable e[-. (let bar d a = 29
+and bar main f g : bool ref = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (+ 3.14))]
+
+type a = Nil | Tree | Empty of bool -> (int) -> float a ref bool array of array [*,*] of unit
+ and d = Nil | Tree
+
+type g = Tree | A of int (array [*,*] of c) (unit) | C
+ and bar = Empty
+

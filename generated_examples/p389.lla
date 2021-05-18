@@ -1,0 +1,3 @@
+let d = not (let mutable bar[42.0,()]
+and a = 5 in (if 26 then '7'))
+

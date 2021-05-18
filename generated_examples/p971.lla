@@ -1,0 +1,15 @@
+let g c main (c : unit) main = if 'a' then ((false)) else (() = ())
+and mutable a[+. (new bool)] : unit -> array [*,*] of (main) ref
+and f c = delete (match (true -. ()) with
+  B d d -> for a = 3.14 downto "Route66" do '\n' done
+| (+25) -> delete true
+| c -> dim 1 bar
+end
+)
+and f : array of array of int = (dim a)
+
+let b d b b = begin if "bar" then dim f end
+and bar : int = new unit
+and f = (d <= (begin 23 end))
+and c g e e e = for d = false downto 36 do dim d done
+

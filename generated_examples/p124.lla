@@ -1,0 +1,15 @@
+let rec mutable bar : (char)
+and mutable foo
+and c bar (b : unit) = c (dim 1 main) (foo[dim 2 d]) (while if false then "foo" else '\'' do if () then 11 else '\'' done)
+and g (a : a) f = (-. 3.14 <= (while '\'' do "bar" done))
+
+let rec a a g e = begin Nil (match 'a' with
+  14 -> ()
+end
+) (B (let d = "bar"
+and f bar foo = 3
+and main : bool = false
+and d c : ((int) ref ref) -> array [*,*] of int -> unit = () in 42.0)) end
+and foo d a g = foo[foo[begin for foo = false downto false do 20 done end,dim 2 g],let bar bar f = true
+and c e d (main : int) = '\'' in (g)]
+

@@ -1,0 +1,5 @@
+let foo a (foo : int ref) (main : char) = for b = '7' to 'a' do (() && ()) done
+and b d = new char -> unit
+and g c (c : array [*,*] of b) = new unit
+and foo c (b : d) (b : char ref -> array of unit) a = while ('\'' * 0.0) do main['7',20] done
+

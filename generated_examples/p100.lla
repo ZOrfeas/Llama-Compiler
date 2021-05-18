@@ -1,0 +1,25 @@
+let f g b a = let rec a e bar = 2.56
+and b e b = false
+and b bar d = () in (b[42.0])
+
+let rec bar (foo : char) = for b = true downto '\'' do new char ref done
+and mutable e[c[match Empty false with
+  true -> let rec a a g g f = ()
+and e foo = "foo"
+and c a : unit ref = () in 2.56
+| main -> begin "bar" end
+| 42.0 -> let g a = 5
+and f = 17
+and e (foo : (int)) foo = ()
+and c b = 25
+and a (main : float) f f (bar : c -> bool) = false in ()
+end
+],main[if 2.56 then (a 2.56 false) else dim 2 d]]
+
+let foo bar (e : float) e = begin for a = false downto "foo" do (23) done end
+and d = delete (while D 42.0 36 true do begin false end done)
+and foo (c : unit) bar e = match begin 42.0 end with
+  (-10) -> g["foo"]
+end
+
+

@@ -1,0 +1,7 @@
+let d = dim 2 foo
+and e main (f : char) (b : array [*] of unit) bar = delete (while ('\'') do not 33 done)
+and e bar c : array of ((unit) -> float ref) = let c : main = 7
+and a foo (bar : char) = 33 in (b["foo"])
+and a (d : char) foo (main : e) f = dim a
+and b d (foo : f) = (begin for main = 42.0 downto false do 42.0 done end)
+

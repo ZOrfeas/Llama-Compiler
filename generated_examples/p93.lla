@@ -1,0 +1,16 @@
+type a = Tree | D of bool bool | Empty
+
+type e = A | Cons | Cons
+ and f = A | Nil of array of float char | A
+
+let b c a main bar = for bar = 42.0 to () do match 2.56 with
+  ('\n') -> 17
+| a -> 4
+| b -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ done
+and mutable f[new f] : float -> array of int
+and bar b (e : float) : char = dim 1 d
+and foo bar b = foo[dim 2 g,a[new char -> int,while 'a' do "foo" done]]
+and bar = (new b mod (begin 4 end))
+

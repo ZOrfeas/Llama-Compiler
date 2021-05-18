@@ -1,0 +1,9 @@
+let c : unit = (let a (g : foo) g d : e = '\'' in (begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end))
+
+let main (f : int -> int) foo (b : (bool)) = for d = () to '7' do not "foo" done
+and c (d : bool ref -> unit ref) (g : array [*] of bool -> array [*,*] of char ref ref) = (delete () >= (match 40 with
+  29 -> 3.14
+| B B a a foo -> true
+end
+))
+

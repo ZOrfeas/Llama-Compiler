@@ -1,0 +1,25 @@
+type f = B | Cons | C | A
+ and b = Empty | Empty | C of unit | Tree
+
+let d foo b = +. ((b[while () do false done]))
+and d = b[delete (let e = true
+and e : array [*] of (int) = true
+and main d = false
+and d (e : bool) = () in ())]
+and e g b c b = (new (array of array of unit ref) >= ((())))
+and a c a main = while g do dim 2 main done
+
+let a g g (d : unit) d = e ((new array of float ref -. (match "bar" with
+  d -> false
+end
+))) (new array of array [*,*] of char ref)
+and d b b = for e = () downto true do (35) done
+and b = begin (match true with
+  0.0 -> 20
+| Cons (B (bar) '\'' (-.3.14)) ((-.42.0)) 0.0 -> "Route66"
+| (-.42.0) -> 30
+end
+) end
+and f f e : float = new (array [*,*] of array [*,*] of unit)
+and main = new array [*] of bool ref -> int
+

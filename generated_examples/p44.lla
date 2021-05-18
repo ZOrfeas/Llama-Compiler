@@ -1,0 +1,9 @@
+let bar g foo : a -> array of bool = delete (match +. 19 with
+  ('\n') -> new (array [*,*] of bool -> main ref)
+| '7' -> Cons "bar"
+| (-.0.0) -> ('a' <= 20)
+end
+)
+and f f main (a : array [*] of array of e) (e : (float)) = dim a
+and foo d (main : bool) d : array [*,*] of float ref = dim 2 bar
+

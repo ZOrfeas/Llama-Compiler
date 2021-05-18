@@ -1,0 +1,13 @@
+let a = delete (delete (match true with
+  a -> '\''
+| D D '7' true '7' -> '\''
+end
+))
+and main (foo : int ref) f = f[((true) && (match '\n' with
+  '\'' -> 10
+| bar -> 2.56
+| C -> 10
+end
+)),not (g[(false +. 42.0)])]
+and main d main d g = c[dim 1 bar]
+

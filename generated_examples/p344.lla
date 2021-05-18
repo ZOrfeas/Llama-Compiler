@@ -1,0 +1,8 @@
+let mutable f[begin if "foo" then (for e = '7' to false do true done) else while true do 10 done end,for c = '7' to false do let mutable c[26]
+and main = 3.14
+and c bar = 'a' in 26 done]
+
+type d = A
+
+type main = B | C
+

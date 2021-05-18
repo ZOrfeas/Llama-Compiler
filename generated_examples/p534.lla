@@ -1,0 +1,31 @@
+let c foo (d : char -> bool) e = e[begin -. (if 14 then 42.0) end]
+and foo bar = dim c
+and b foo e (main : (int)) (main : unit) = match for foo = 39 downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do () done with
+  e -> if () then false
+end
+
+
+let foo b : bool = match (()) with
+  (-42) -> ("Name:\t\"DouglasAdams\"\nValue:\t42\n" *. false)
+| (-.42.0) -> match "bar" with
+  (f) -> 20
+end
+
+| Tree -> new bool -> char
+end
+
+and b e : (bool) = match delete '\'' with
+  d -> + "foo"
+end
+
+and d f = bar[match (() * "Name:\t\"DouglasAdams\"\nValue:\t42\n") with
+  (+2) -> match '\n' with
+  (+.42.0) -> 13
+end
+
+| Cons (-3) -> g[(),false]
+| '7' -> (())
+end
+,(begin 'a' end mod (begin 35 end))]
+and foo bar = main[new char,if true then (() ++ true)]
+

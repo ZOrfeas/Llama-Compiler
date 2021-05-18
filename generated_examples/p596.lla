@@ -1,0 +1,12 @@
+let d = delete (match -. "bar" with
+  (13) -> dim f
+end
+)
+and foo b (main : unit) e foo : float = match delete 14 with
+  (-41) -> for main = 'a' to true do false done
+end
+
+and e e main foo = - (dim g)
+and b (e : bool) main e = dim a
+and foo (a : int ref) (c : unit ref) bar b = delete (if "Route66" then (for d = 21 downto () do "bar" done) else begin 2.56 end)
+

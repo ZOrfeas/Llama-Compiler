@@ -1,0 +1,19 @@
+let rec g g f (c : float) (g : float) : char = new int
+and a bar f b = match begin 42.0 end with
+  bar -> begin 6 end
+| '\'' -> for foo = "bar" downto '\'' do () done
+| Tree -> let b a d = 34
+and main c b (d : bool) foo = 'a'
+and bar (a : ((char))) (g : array [*] of array [*] of unit) f = 2.56 in ()
+end
+
+and g (foo : float) d = ! (let rec mutable e[()]
+and b d : d = 'a'
+and mutable main : array [*] of char in (match 30 with
+  (+.42.0) -> '\''
+| b -> 3.14
+end
+))
+and main : (char) = if '\n' then (for bar = 2.56 downto 12 do true done) else (false <> true)
+and a g main = foo[(dim 2 d < (while "bar" do 0.0 done))]
+

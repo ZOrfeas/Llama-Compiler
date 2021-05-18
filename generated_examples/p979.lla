@@ -1,0 +1,4 @@
+let mutable a[new float]
+and mutable foo[-. (dim foo)] : unit
+and bar d f main main = if "bar" then (for f = () downto () do () done) else while () do 39 done
+

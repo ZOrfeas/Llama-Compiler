@@ -1,0 +1,29 @@
+let f b d bar a = match if '\'' then true else true with
+  (Empty) -> let f b = false
+and c (d : array [*,*] of int) c a bar = true
+and mutable a[(),true]
+and mutable d['a'] in 3.14
+| C 'a' 3.14 (3.14) -> for c = 0 to () do '\n' done
+| true -> ('a' + 2.56)
+end
+
+and foo b = A (+. (delete (+. ()))) (if 2.56 then g[36])
+
+let f foo = (+ (new array [*] of char -> float -> bool))
+and d b (bar : main) foo = delete (C)
+
+let mutable b
+
+let rec foo = new int
+and a b g f foo = begin new f end
+
+type a = Nil of int | B
+
+let g : f = delete (if 42.0 then (new bool) else new bool ref ref)
+and f main foo = delete (while begin false end do delete 32 done)
+and e (f : unit) c = for a = () downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do Tree 3.14 true 2.56 done
+and mutable g
+and d : bool = e[main[('\n' - false)]]
+
+type main = C | C of float float
+

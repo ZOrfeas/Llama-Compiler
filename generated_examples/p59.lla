@@ -1,0 +1,7 @@
+let g foo c : array [*,*] of float ref = delete ((let bar f foo : d = 42.0
+and g c d main (b : int) = '\'' in ()))
+
+type b = Tree | A | Cons of char
+
+let main e d (d : array of unit) foo = (new float)
+

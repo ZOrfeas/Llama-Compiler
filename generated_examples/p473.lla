@@ -1,0 +1,4 @@
+let bar = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then d["foo",()]
+and a (g : (float)) f a a : array [*] of bool ref = (a['\'',42.0] := (dim 1 foo))
+and c e = a[f[while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do 42.0 done]]
+

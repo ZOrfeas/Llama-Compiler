@@ -1,0 +1,9 @@
+type foo = B of ((unit)) | Empty of bool unit ref (array [*,*] of (float)) (int) -> bool ref | D of g char ref | A
+ and c = Nil | Nil | Tree | Tree
+
+type f = Empty | A | Empty | Nil
+ and b = Tree | C of array [*,*] of char a char
+ and main = A of (array of (int ref) ref) char bool | C | Tree of unit ref unit | Tree of (unit ref) ref (float) unit
+
+type g = D | D of unit (float ref) char float -> array [*,*] of b | B of bool float | D
+

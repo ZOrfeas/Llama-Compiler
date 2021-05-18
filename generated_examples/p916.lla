@@ -1,0 +1,20 @@
+let mutable g
+and mutable g[match match () with
+  (+14) -> 17
+end
+ with
+  c -> for g = 11 downto () do () done
+end
+,if 42.0 then ("bar" *. '\n')] : int
+and a c = while ("bar" != ()) do (()) done
+and e (foo : foo ref) : array [*,*] of bool -> array of unit -> array [*,*] of bool = if '7' then begin 6 end
+
+type main = A | B of array [*] of float char | Tree | C
+
+let mutable e
+and g = dim 1 foo
+and b (g : char ref) = not (match (0.0) with
+  '\n' -> - '\n'
+end
+)
+

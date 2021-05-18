@@ -1,0 +1,4 @@
+let bar main foo bar d : bool = while Nil false false do delete '7' done
+and a = for main = false to () do for a = () downto false do '\'' done done
+and d e a = delete (while +. 12 do dim g done)
+

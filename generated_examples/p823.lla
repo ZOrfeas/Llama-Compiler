@@ -1,0 +1,8 @@
+type foo = Cons | C of float | Empty | Nil of d char unit
+ and b = A | A | Empty | Tree
+ and f = Empty
+
+type foo = A | Tree of (main) bool int | Cons
+
+type f = B | Nil of (c) int bool | C of (float) int ref | A of float char -> float
+

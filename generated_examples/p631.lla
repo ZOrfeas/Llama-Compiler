@@ -1,0 +1,34 @@
+type f = Cons | C | Empty
+
+let main = g (if '\'' then (begin true end) else let foo e d = () in true) (g[match 42.0 with
+  'a' -> ()
+| (c) -> 42.0
+| true -> ()
+end
+]) (((() + 42.0) *. (dim f)))
+and d c (bar : int -> float) = let rec a f (b : unit) (g : unit) = 39
+and bar g a d = false
+and foo d main c : unit = "Route66"
+and b a a = ()
+and d d (b : char -> (e)) : float = '7' in (if 'a' then 3.14 else 42.0)
+and bar c b main g = while ! 42 do dim g done
+and g g b d (g : bool ref) = begin if '\'' then (3.14 != '7') end
+
+let b c (b : unit -> char -> bool) (foo : bool) (foo : int ref) : bool = let mutable a[()] in (dim 2 g)
+and mutable e
+and d main = while let e main (main : char) main g = 'a'
+and g d c b = 'a'
+and mutable bar
+and b g foo g = 23 in '\'' do delete () done
+and mutable e[f[if false then (false ++ 42.0),bar (d (match 38 with
+  false -> 0.0
+| 3.14 -> 42.0
+end
+) (for main = "foo" downto 10 do "foo" done)) (b[! 41]) (C (new float ref) (match 'a' with
+  (+2) -> ()
+end
+))],let foo = "foo"
+and c b d foo = false
+and g (g : unit) f = 42.0 in (foo)] : f
+and d bar foo f c = not (bar[while 42.0 do 'a' done])
+

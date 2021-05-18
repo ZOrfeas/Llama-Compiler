@@ -1,0 +1,11 @@
+let a : float = + (bar[match 42.0 with
+  42.0 -> "bar"
+| 6 -> 2.56
+| false -> 3.14
+end
+])
+
+type bar = Empty
+
+let b (b : unit) e = new (bar)
+

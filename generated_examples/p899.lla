@@ -1,0 +1,16 @@
+let foo f a c = + (if true then (delete ()) else match false with
+  false -> ()
+| f -> '\n'
+| '\'' -> ()
+end
+)
+and b c c = (foo[let e bar foo f : int = '\n'
+and d main = ()
+and d (e : (char)) : bool = ()
+and c = 4 in 10,while 2.56 do 2.56 done])
+and d a main main = match for b = '\'' downto () do "foo" done with
+  11 -> begin () end
+end
+
+and main (e : bool -> float ref) c d : bool = + (-. (while () do true done))
+

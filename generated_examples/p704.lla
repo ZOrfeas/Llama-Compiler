@@ -1,0 +1,16 @@
+let f : bool = match ! () with
+  (g) -> while 3.14 do "foo" done
+| ((-29)) -> while "Route66" do '\'' done
+end
+
+and c f (a : bool) (d : float) (main : char -> a) : bool = (delete "bar" && (d['a',42.0]))
+and a a g (foo : array of int -> (e) -> bool) b = (while "Route66" do false done && (- true))
+
+let rec g (g : a) g b bar : char = dim 1 bar
+and e = match foo["Route66",()] with
+  false -> (true)
+| a -> ("bar" ; 35)
+end
+
+and f a : float = if 3.14 then if 'a' then false else '7'
+

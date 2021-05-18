@@ -1,0 +1,8 @@
+let rec f : char = if 39 then (new int -> array [*,*] of bool -> unit) else (false *. 0.0)
+and g d b = dim e
+and f foo c e = if '\n' then (for bar = () downto 42.0 do () done) else a[3,3.14]
+
+let b b a : char = (while 40 do false done && (not 18))
+and bar = dim 2 main
+and bar foo c bar (c : float ref) = Empty
+

@@ -1,0 +1,8 @@
+let bar bar = for d = false to () do match false with
+  true -> '\''
+| (-25) -> '\n'
+end
+ done
+
+let foo e f c (main : a) = dim f
+

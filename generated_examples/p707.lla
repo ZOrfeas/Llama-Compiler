@@ -1,0 +1,3 @@
+let e : c = new array of foo
+and e = if '\n' then (new bool) else let foo a = 28 in '\''
+

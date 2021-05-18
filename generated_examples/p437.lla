@@ -1,0 +1,7 @@
+let f f f f = new int
+and main g : float = dim 2 g
+
+type e = Empty of bool int -> unit bool | C of bool ref int ((float)) | Cons of char bool
+
+type e = B of bool ref ref | Cons of bool
+

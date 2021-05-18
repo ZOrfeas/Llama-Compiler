@@ -1,0 +1,5 @@
+let main bar = g[while new float -> bool do bar[(),true] done]
+and a g foo foo = for f = () to () do dim 1 main done
+and g c d f d : array of char = (delete (new bool -> bar -> (array [*,*] of int) -> unit))
+and b foo e (a : float) = for main = 3 to 0.0 do for foo = 2 downto 'a' do '\'' done done
+

@@ -1,0 +1,20 @@
+let a b c main = begin for c = 'a' downto "foo" do match 0.0 with
+  (+.3.14) -> "foo"
+| (+42) -> true
+end
+ done end
+and f g f f = while match false with
+  34 -> '7'
+| ((-.2.56)) -> "bar"
+| 42.0 -> 26
+end
+ do a[11] done
+and bar (f : bool) = new ((int -> int))
+and a a g c = delete ((dim d && ((false := 4))))
+and c main (d : unit) bar f : unit = while (17 *. 42.0) do dim d done
+
+let a (g : d) bar e = let d bar : (unit) -> char -> f = ()
+and e foo d main f : array of float -> float ref -> bool = "Route66"
+and e bar c = 11
+and bar : array of ((unit)) ref ref = 9 in (foo[29,true])
+

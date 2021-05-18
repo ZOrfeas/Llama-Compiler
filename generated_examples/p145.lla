@@ -1,0 +1,6 @@
+type c = Cons
+
+type d = D | Cons of bool ref | Tree | A
+
+type f = Tree of (array [*] of f) array [*,*] of (bool -> float ref) bool ref | Empty
+

@@ -1,0 +1,17 @@
+type bar = Empty of int b unit float | D of f | A of unit bool
+ and foo = A of int ref char bool float ref | D | Nil of int bool ref (main) (unit)
+ and c = Cons
+
+let b g b = let foo main g = 3.14
+and e f b = 42.0
+and f foo g (c : unit ref -> float -> (int) -> unit) f = () in (f[37,false])
+
+let f g foo f = if () then if () then 41 else 'a'
+and e (bar : int -> unit ref) (main : float) (main : int) (bar : char) = if '7' then bar "bar"
+and a f : char = match for c = false downto 'a' do () done with
+  true -> delete 42.0
+| e -> dim 1 g
+end
+
+and e b main c f = (g 8 42.0 "Route66" = (if 3.14 then "bar"))
+

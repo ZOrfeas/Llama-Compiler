@@ -1,0 +1,9 @@
+type bar = Tree of bool char (float) ref | Cons of float ref unit | Nil | Cons
+
+type bar = Empty | Tree of unit -> bool int b bool | Tree
+ and main = A
+
+type a = C | D | Nil | Empty of char bool
+ and c = Empty | Nil of unit f ref main unit
+ and c = Nil
+

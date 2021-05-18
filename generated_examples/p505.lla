@@ -1,0 +1,11 @@
+type e = A of float | D | Cons
+ and g = A | B | D
+
+type c = Empty | A of e char | Empty of int char bool -> array of bool
+ and e = Cons of int -> int | D
+ and a = Empty of char ((bool)) int unit
+
+type foo = B | B of bool float foo bool | D
+ and e = Tree of g
+ and b = A | C
+

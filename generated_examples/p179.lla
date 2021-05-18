@@ -1,0 +1,15 @@
+let e f c = delete ((match 21 with
+  '\'' -> "bar"
+| (+18) -> 2.56
+| 40 -> 38
+end
+ +. (while () do () done)))
+
+let main main : unit = (dim 1 c <= (+ "Route66"))
+and c main d g = begin A (delete ((42.0))) (for main = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto true do "bar" done) (let rec f e (f : float ref) bar = "bar"
+and c b a (bar : unit) = '7'
+and a (b : unit ref) = () in 24) end
+and b bar foo g : int = A
+and g : unit = while dim 1 a do (false) done
+and c main c = bar[e[for main = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to true do 8 done,main (if 42.0 then "bar")],while for a = 0.0 downto 42.0 do '\n' done do d[()] done]
+

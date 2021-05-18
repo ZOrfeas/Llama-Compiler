@@ -1,0 +1,4 @@
+let bar (foo : int) d (d : char) (g : unit ref) = - ((if () then "Route66" else false))
+and mutable d[if () then begin '\'' end]
+and g d f g = bar (if 31 then ('7' +. 17))
+

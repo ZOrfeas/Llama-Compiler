@@ -1,0 +1,21 @@
+let f (main : char) : array [*,*] of bool = delete (new int)
+and foo c (a : bar) d g = ! (foo[(Nil 'a' true "foo"),if "foo" then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else '\n'])
+and mutable e[+ (! (delete (if '\n' then "foo" else false)))]
+and a = +. (match new (array of unit ref) with
+  Empty -> dim 1 a
+| false -> (())
+| (-.3.14) -> foo "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+)
+and g b = while for main = false to 2.56 do () done do begin false end done
+
+let bar f (f : int) (e : char) a : unit = let mutable b[42,"foo"]
+and mutable a[true]
+and g e foo bar = 38
+and c bar d main d : bool = false
+and b b b c main = true in (for b = 13 to true do '7' done)
+and bar g c (g : float -> foo) f = (let g e a d f = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (dim 1 b))
+and e a main c bar = Empty (begin delete (foo[3.14]) end)
+
+type b = Empty
+

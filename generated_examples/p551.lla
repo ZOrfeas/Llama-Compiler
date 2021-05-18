@@ -1,0 +1,8 @@
+let rec d b main (b : float ref ref ref) e = if 24 then begin "bar" end
+and g foo : int ref = new array of ((unit))
+and c = while f[true] do new array of int done
+
+let b (d : int) d : foo = begin for e = "foo" downto () do dim a done end
+and b (e : char) b a (e : float -> char) = for foo = "foo" downto '\n' do new float done
+and d (foo : unit) : char = new unit
+

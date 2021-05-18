@@ -1,0 +1,5 @@
+let c = let a bar : char = true
+and d (b : array of float) f = 42.0
+and g (c : bool) (f : array [*,*] of float) a : array of bool = 21
+and c (f : char) g = '\'' in ((2.56 mod '\''))
+

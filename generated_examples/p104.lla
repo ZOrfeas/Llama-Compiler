@@ -1,0 +1,17 @@
+type e = Nil of float | A | Tree of int char ref unit | D
+
+type a = Tree | C of int int bool | A | Nil of int -> bool
+
+let bar a = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (new bool -> bool) else match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  true -> "foo"
+| (+3) -> "Route66"
+| 'a' -> true
+end
+
+and e d g = Tree (while e["foo"] do begin 12 end done) (begin Nil (main["bar",()]) (bar[37]) end)
+and c bar = main (for main = 37 downto () do bar done) (let g bar (bar : array [*,*] of float) = 42.0 in (begin 5 end)) (match (0.0 || 2.56) with
+  (+.3.14) -> for b = () to false do '\'' done
+| 0 -> delete 0.0
+end
+)
+

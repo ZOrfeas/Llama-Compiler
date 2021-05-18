@@ -1,0 +1,9 @@
+let f = not (match while '\n' do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done with
+  (B) -> delete 42.0
+| (+.42.0) -> dim 2 c
+| b -> delete "bar"
+end
+)
+
+let g foo d main (b : unit) = new unit
+

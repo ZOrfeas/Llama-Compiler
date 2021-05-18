@@ -1,0 +1,7 @@
+type d = Empty
+
+type g = B
+
+type e = C | D | Empty
+ and e = Cons | B | Empty of bar bar bool -> unit
+

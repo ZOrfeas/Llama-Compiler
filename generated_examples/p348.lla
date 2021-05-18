@@ -1,0 +1,14 @@
+let mutable d
+
+let foo (g : array of (array [*] of unit)) e = for g = '\n' to 42.0 do c "Route66" () done
+and f = delete ((if 42.0 then 42.0 /. (dim d)))
+and main = Nil (begin a[(8 + 42.0),begin () end] end) (match match () with
+  30 -> 'a'
+end
+ with
+  (a) -> d[28]
+end
+)
+and b (a : bool) foo c = let main = true
+and main main = 8 in (new int)
+

@@ -1,0 +1,16 @@
+let rec d b foo c = if false then begin 3.14 end
+and f = +. (for foo = "foo" downto 42.0 do for b = () to () do 3 done done)
+
+let foo (a : bool) e (d : char -> array of float ref) main = if 13 then ((12 < ())) else begin () end
+and b c c (bar : int) = let main = true
+and foo d bar e d = '\''
+and b bar e = true
+and g main = 42.0 in (while '\n' do 23 done)
+and g bar : array [*] of a = while a true do b done
+and f (b : (unit)) main e = for b = 3.14 downto false do Cons "foo" '7' 'a' done
+and b = delete (while let b e foo : array [*] of unit ref = 'a'
+and a = ()
+and f foo = "bar"
+and mutable b["bar","bar"]
+and main main f f = 23 in () do new f done)
+

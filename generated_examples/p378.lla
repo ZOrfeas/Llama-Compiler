@@ -1,0 +1,11 @@
+let g (g : int) (a : bool ref) = new bool -> bool
+and b g (b : array of b -> array [*,*] of unit ref) = begin match delete 42.0 with
+  true -> if 2.56 then "bar"
+| e -> while 35 do 11 done
+| false -> if "bar" then 12
+end
+ end
+and a (f : float) g (f : (float)) = (- false < (dim f))
+and g main e d = new e
+and b foo = a (begin new array of d ref end) ((dim 1 a))
+

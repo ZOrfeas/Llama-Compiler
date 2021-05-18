@@ -1,0 +1,5 @@
+let bar a c = delete (C ((delete "foo")))
+and mutable a[if '\'' then b[()]]
+and f bar = dim 1 bar
+and g e e c b = for c = 'a' downto () do delete () done
+

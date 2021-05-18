@@ -1,0 +1,24 @@
+let bar (b : char) c : bool = (c ((let mutable bar[0.0]
+and foo e c f : c = 42.0
+and mutable c['\'',42.0]
+and main = "foo"
+and a c b b = '\n' in "Name:\t\"DouglasAdams\"\nValue:\t42\n")) (if 36 then ()) (delete (begin '\n' end)))
+and bar foo bar main = if 42.0 then (match 42.0 with
+  '\'' -> 3.14
+| (false) -> ()
+end
+) else while '\'' do true done
+
+let e b e : bool = while delete "foo" do dim foo done
+and b (c : char) (g : array [*,*] of array of int ref ref -> unit) (bar : array of array of main -> float -> c -> array [*] of float ref ref) = main (for e = () to 42.0 do begin '\n' end done)
+and d c b = delete (match while false do "bar" done with
+  (+42) -> new array [*,*] of b -> bool ref ref ref
+end
+)
+and bar b = let foo f (b : float) b f = "bar"
+and mutable c[true,"bar"]
+and mutable main in (let rec foo g = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and bar f b foo c = () in 15)
+
+type g = A | B of char ref array [*] of int -> bool -> unit -> array of float ref -> bool | Cons of (bool) -> (char) ref unit int unit | C
+

@@ -1,0 +1,19 @@
+let bar (foo : float) g e c = new g
+and d e bar (d : char) bar = (match f[0.0] with
+  false -> for b = "foo" downto true do () done
+| 'a' -> new c
+end
+)
+and a = begin delete (dim 2 a) end
+and b (b : g) g (f : array of int ref) foo : (d) = while new int do (42.0) done
+and e f foo a = (begin if () then true else 42.0 end)
+
+let rec d (main : char) = (dim 1 g < ((false)))
+and main b = while b['\n'] do (()) done
+and d (b : float) c = delete (if false then match false with
+  false -> ()
+end
+)
+and d a b d g = B (while delete '7' do new float done) (g[(true - '\''),+. (while 26 do '7' done)])
+and d main = begin (while false do () done) end
+

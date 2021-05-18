@@ -1,0 +1,9 @@
+let mutable main[begin dim 2 bar end,(match false with
+  e -> false
+end
+ +. (for bar = '\n' downto 29 do false done))]
+and d e d main b = (new float)
+and e bar : array [*] of unit = delete (if '7' then (if 2.56 then '\n' else false) else let main foo e a = 'a'
+and f d = '\n'
+and c = '7' in 29)
+

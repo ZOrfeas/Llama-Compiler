@@ -1,0 +1,7 @@
+type d = A
+
+type c = Cons of int | Nil | Nil | D
+ and c = Nil | D | B of bool | Empty
+
+type a = C | Nil
+

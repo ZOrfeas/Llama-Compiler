@@ -1,0 +1,14 @@
+type f = Tree | Nil of g bool char ref | Nil
+ and f = B of d | Cons | C
+ and e = Empty | Cons | Nil of array of unit
+
+type foo = A | C
+ and foo = Nil | B | Tree | Nil
+
+let rec d (g : (int)) g : int = (match 42.0 with
+  7 -> 42.0
+| b -> false
+| (+2) -> true
+end
+ == ((true)))
+

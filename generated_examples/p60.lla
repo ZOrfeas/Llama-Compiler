@@ -1,0 +1,11 @@
+let d (g : array of int) (foo : bool) (g : char) d = ((dim g))
+and b f bar foo c = dim 2 d
+and b b (bar : int) bar = foo
+and main bar foo = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (C ()) else Cons
+
+let foo foo foo a foo = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then ('a')
+and main = new int
+and bar = delete (begin begin while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do "bar" done end end)
+and c f main = ((for main = 42 to "Route66" do '7' done = (main () '7' 4)))
+and c b f = a[begin -. (for foo = () to 42.0 do () done) end,while new float do C '\n' done]
+

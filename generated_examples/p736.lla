@@ -1,0 +1,3 @@
+let f (d : c) foo main : char = if "Route66" then while false do 3.14 done
+and foo (foo : float -> float) main b = begin if 3.14 then (e) else Tree end
+

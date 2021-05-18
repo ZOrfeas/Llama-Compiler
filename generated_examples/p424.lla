@@ -1,0 +1,14 @@
+type a = D of char float float -> int | Empty | Nil | Tree of char ref -> unit char
+
+type a = Cons of char | D
+
+let e g (g : f) b (c : int) : bool = (e[delete ((() = true))])
+and mutable bar[for e = 42.0 to '\'' do delete () done]
+and main f (bar : (unit)) = -. (let bar (e : array [*,*] of array [*] of array [*,*] of e) foo = false
+and b f f e = '\n'
+and foo (a : int) bar (bar : char) (f : float) = '\''
+and foo a main g = "Route66"
+and main (foo : char -> bool) = 3.14 in (("Route66" <> "Route66")))
+and bar b g main a = begin begin new char end end
+and mutable e[while dim 2 f do new bool -> float done]
+

@@ -1,0 +1,10 @@
+let d f foo d = let main (f : bool) foo = 42.0
+and bar g d = ()
+and g = 33 in (match '\n' with
+  (B a C (-40)) -> 5
+| (true) -> ()
+| (-14) -> '\n'
+end
+)
+and b foo : (unit -> array of unit) = dim bar
+

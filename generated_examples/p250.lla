@@ -1,0 +1,4 @@
+let a (g : array [*] of char) e = delete (if "foo" then (Empty) else while 39 do '\'' done)
+and main foo b : bool = -. (delete ((dim g)))
+and a foo g g e = while (true /. 3.14) do if 2.56 then '\n' else 3.14 done
+

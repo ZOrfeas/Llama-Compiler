@@ -1,0 +1,9 @@
+type a = B | B | Cons | Cons
+
+type foo = Cons of int (array of (bool)) bool | Nil
+
+let a main bar (f : bool) e = delete (while dim g do - 3.14 done)
+and foo = new unit ref
+and a = while dim 2 d do let c b e = 3.14 in 42.0 done
+and main main c = (if "bar" then 2.56 && (g["Name:\t\"DouglasAdams\"\nValue:\t42\n"]))
+

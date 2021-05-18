@@ -1,0 +1,9 @@
+let main c foo a = match begin false end with
+  29 -> (3.14 >= ())
+| false -> dim e
+| C -> delete '\''
+end
+
+and d g (b : array [*,*] of float) = for main = 0.0 downto '\n' do (4) done
+and main f b foo e = while -. "bar" do dim main done
+

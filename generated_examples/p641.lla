@@ -1,0 +1,6 @@
+type b = Empty | Cons
+
+type b = C of array of char ref unit -> array [*] of bool bool | D of unit unit -> unit float -> char
+
+type g = A | A | Empty | C
+

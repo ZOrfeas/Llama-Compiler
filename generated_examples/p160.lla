@@ -1,0 +1,26 @@
+let c (d : (bool)) (c : char) = B
+and bar d c a foo = foo (match if () then 'a' else 30 with
+  true -> -. 42.0
+end
+)
+and mutable d[dim foo,begin for foo = 7 downto false do begin "foo" end done end]
+and f b a c = delete (begin let c b (bar : bool) g = "Route66"
+and c b g = 0
+and foo c e a c = 3.14 in "bar" end)
+
+let rec e e = while new int do for b = 2.56 to 42.0 do '\'' done done
+and mutable main : array [*,*] of array [*,*] of int
+and f main (bar : unit) e e = match match 'a' with
+  Nil (-.42.0) 1 ('7') -> 14
+| (-.0.0) -> 2.56
+end
+ with
+  D (+.42.0) -> dim main
+end
+
+and d main b : unit = if "Route66" then ((false / "foo")) else let e c b b = '\'' in ()
+
+type foo = B | Empty | Tree
+ and bar = Empty | Nil
+ and main = Tree
+

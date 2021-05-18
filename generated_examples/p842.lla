@@ -1,0 +1,12 @@
+let e d (b : int) (foo : int) : bool ref -> int ref = + (dim 2 d)
+and c a = dim 2 e
+and foo e bar = d[dim 2 f]
+and f e f : float ref = begin Nil end
+
+type b = A | C
+
+let f (f : unit) main = +. (delete (e[if 3.14 then 25 else '\n',let b a d c = () in 14]))
+and f e c = dim bar
+and g c = if 42.0 then (if "bar" then ()) else Tree "Route66" false
+and mutable d[new char,dim bar]
+

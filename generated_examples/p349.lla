@@ -1,0 +1,14 @@
+let a g bar (foo : char) : e = if '\'' then (if 0.0 then "Route66") else match true with
+  ((((-2)))) -> false
+| '\n' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+
+
+let f a (c : bool) bar : unit = if '\'' then (for bar = false downto 'a' do "bar" done) else ("foo")
+and b = let mutable bar[true] in (("Route66"))
+and f bar = + (b (('\'' >= false)) (delete (new (char ref))))
+and main = B
+and b d main f = dim 1 a
+
+type a = B | A | C of (int) int -> a float | A
+

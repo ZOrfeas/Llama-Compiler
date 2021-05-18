@@ -1,0 +1,5 @@
+let c (bar : bool) main g bar = while if () then 42.0 do match 42.0 with
+  42.0 -> 16
+end
+ done
+

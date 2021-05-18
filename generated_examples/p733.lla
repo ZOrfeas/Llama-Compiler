@@ -1,0 +1,17 @@
+let rec e b = for g = () to '\n' do bar false "foo" '\n' done
+and e a b f main = begin d[(dim b)] end
+and main f = (if '\n' then ('a' == "foo"))
+
+let foo (e : char) b (f : bool) g : array of float = not (match Empty "foo" 2.56 '\n' with
+  B 25 true -> if 37 then ()
+end
+)
+and b = match -. false with
+  A A -> ('\n' - "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+| (+16) -> let g = ()
+and c (bar : (float)) a (g : (float)) : bool = '\n'
+and b main (foo : unit ref) main : char = true in ()
+| 42.0 -> - 36
+end
+
+

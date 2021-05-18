@@ -1,0 +1,6 @@
+let bar = (for e = 3.14 downto 2.56 do new bar done)
+
+type g = Empty
+
+type e = Empty of bool ref
+

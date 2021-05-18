@@ -1,0 +1,16 @@
+let d e c a foo = begin if 13 then ('\'' +. '\'') end
+and d = if '7' then ((28)) else c[false,()]
+and bar a g (bar : char) = for b = 'a' to false do delete true done
+and g : char = delete (let f g (main : float) (main : main) foo = '\'' in (begin "foo" end))
+
+let main e = main (not ((match 'a' with
+  main -> 2.56
+end
+))) (g[((27))])
+and b foo a = (new bool == (if 3.14 then '7' else "Route66"))
+and c b f bar = if 0.0 then (for main = false downto true do 42.0 done) else let g d foo f foo : float = '\''
+and c : bool -> unit ref = false
+and bar (main : char) f = 2.56
+and c = 1 in 33
+and e f (main : unit) c (c : int -> bool) : array of float -> int = while new float ref ref do begin 2.56 end done
+

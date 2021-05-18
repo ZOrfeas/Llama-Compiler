@@ -1,0 +1,3 @@
+let foo f main bar c = for main = '\n' to 19 do new char done
+and foo (e : int) : c = c
+

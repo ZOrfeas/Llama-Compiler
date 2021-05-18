@@ -1,0 +1,8 @@
+let rec d : char -> unit = dim 1 b
+and b = begin (((() && ()))) end
+and main (g : float ref) : (array of int) ref = match for e = 3.14 to () do () done with
+  3.14 -> begin '\'' end
+| 0.0 -> - true
+end
+
+

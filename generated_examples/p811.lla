@@ -1,0 +1,18 @@
+type foo = A | Empty of unit float ref bool unit | B of char char
+
+let d (e : (d)) a b c : bool = let bar foo bar a = "bar"
+and foo (c : char) = 0.0
+and g = "Route66"
+and g = 21
+and g = "Route66" in (match () with
+  (d) -> true
+end
+)
+and g = let foo bar f (b : float) = false
+and a f = 18
+and b f e = '7'
+and e d (foo : (b)) d = ()
+and b = () in (begin 2.56 end)
+
+type b = B | B | B of array [*,*] of float -> int -> (bool) | Empty
+

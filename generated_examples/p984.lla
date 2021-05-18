@@ -1,0 +1,8 @@
+let foo main f = let a a (bar : char ref) (e : (a ref)) : int = 32
+and g = 42.0
+and bar b = '7'
+and f = true in (match 42.0 with
+  false -> 2.56
+end
+)
+

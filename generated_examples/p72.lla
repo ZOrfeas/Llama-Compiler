@@ -1,0 +1,15 @@
+let g c main g = while - 32 do (() / '\n') done
+and a c = ((delete (match () with
+  false -> '\''
+| 12 -> ()
+| e -> '\''
+end
+)))
+and foo = while new array [*,*] of float do match 3 with
+  C B false ('\n') -> true
+| '\'' -> ()
+| false -> '7'
+end
+ done
+and g main : array [*] of array [*,*] of (f) ref -> float ref = new (bool)
+

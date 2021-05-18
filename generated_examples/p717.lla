@@ -1,0 +1,8 @@
+type g = C | D of unit ((array of int)) (((bool))) | Nil
+
+let bar f (e : (array [*,*] of char)) b = delete (foo[d[if 2.56 then 3.14,(())],delete (foo[()])])
+and main foo (main : array of (float)) = delete (while - "Route66" do if 25 then 42.0 done)
+and mutable a[(d 'a' "Route66" () mod ((29)))]
+
+type e = D
+

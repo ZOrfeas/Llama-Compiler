@@ -1,0 +1,29 @@
+type d = Empty
+
+let b d b (e : e) = for d = true downto false do begin '\n' end done
+and b (b : (char) -> c) (e : bool) f c = delete (new int)
+and foo g f = f ((match "bar" with
+  c -> 18
+| '\'' -> false
+| (-.42.0) -> 3.14
+end
+ - (('\'' != '7'))))
+and bar (a : float) c e = match ("Name:\t\"DouglasAdams\"\nValue:\t42\n" mod 2.56) with
+  d -> b ()
+| (+26) -> for main = "Route66" to true do "foo" done
+end
+
+
+let c bar = let d main b f main = ()
+and b (e : float -> array of (e) ref -> (float ref)) (f : unit) d = true
+and bar = true in (while true do () done)
+and foo c (d : unit) g : bool = +. (dim e)
+and main (g : (float)) = begin delete (for d = () to 'a' do '\n' done) end
+and foo = begin Empty (Nil (match 13 with
+  (+.42.0) -> 2.56
+| false -> ()
+end
+) (if '\'' then true)) end
+and e foo foo : int = - (let c b c b = true
+and foo d f f d = '\n' in (begin true end))
+

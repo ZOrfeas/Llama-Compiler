@@ -1,0 +1,15 @@
+let main a bar b = match foo "Name:\t\"DouglasAdams\"\nValue:\t42\n" false with
+  (C B '\n' D (+.42.0)) -> for g = 0.0 to 0.0 do 9 done
+end
+
+and c g d (a : int -> b) d = delete ((if '\n' then 14 + (match false with
+  (+20) -> 2.56
+| B 42.0 '\n' (a) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+)))
+and main = match for g = "bar" downto true do 'a' done with
+  16 -> ("bar" mod "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+| (-.3.14) -> delete false
+end
+
+

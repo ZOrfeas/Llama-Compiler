@@ -1,0 +1,3 @@
+let foo e f bar g = dim 2 foo
+and g e foo a : int = delete (let a = 42.0 in (delete 'a'))
+

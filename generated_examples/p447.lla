@@ -1,0 +1,26 @@
+let bar a = new array of array [*,*] of (int) ref -> d
+and mutable f
+and a (f : (char -> char)) : float = for foo = false to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do (() / ()) done
+and g g bar f f = match if '\'' then false with
+  3.14 -> ("Route66" >= 'a')
+end
+
+and d f b b foo : array [*] of float = b[if () then new bool]
+
+let e (e : float) main = if 32 then (dim g) else new bar
+and main c g = let rec b bar b c = true
+and b (foo : unit) main (b : int) = 42.0 in (while '7' do false done)
+and main c a = Cons (begin for e = 26 to 25 do () done end)
+and d d d bar foo : unit = - (match for d = "Route66" to 8 do true done with
+  (C) -> for bar = () to 25 do 2.56 done
+| 'a' -> while 21 do 'a' done
+| (+18) -> delete false
+end
+)
+and e g b : char = begin foo[a (while '7' do "bar" done) (for f = () to '\n' do '\n' done),begin delete true end] end
+
+let c = match (true > ()) with
+  B ('7') '7' A -> g '\n' 2.56
+end
+
+

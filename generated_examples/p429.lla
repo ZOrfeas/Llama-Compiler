@@ -1,0 +1,17 @@
+let g a bar = match main[42.0] with
+  Nil (+18) 3.14 -> while 25 do false done
+| A '\'' -> begin false end
+end
+
+and f main = +. (match dim 2 c with
+  (false) -> match "Route66" with
+  'a' -> false
+| '\n' -> true
+| (+33) -> ()
+end
+
+| (+.42.0) -> begin '7' end
+| true -> while 39 do 20 done
+end
+)
+

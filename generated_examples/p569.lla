@@ -1,0 +1,14 @@
+let e (c : g) = match dim 2 e with
+  (+35) -> delete '\n'
+| (-3) -> new int
+end
+
+and e c b = let foo b (a : char) foo (c : foo) = 3.14
+and b f main = 26
+and d foo d b = true
+and g f g main d = '\'' in (for d = 'a' to () do '7' done)
+and d (f : (array of array of char -> array of char) ref) d = g (d (a[let d main = 2
+and bar bar main e : char = () in 1,Nil 'a']) (let f c (a : bool ref ref) : bool = true
+and d foo g d = 0.0 in 0.0)) (((new bool)))
+and a (c : ((int)) -> char) = C (c (if 15 then 30) (let a : char = 42.0 in 42.0) (-. ((40 /. ())))) (new int)
+

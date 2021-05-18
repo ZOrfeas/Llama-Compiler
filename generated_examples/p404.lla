@@ -1,0 +1,8 @@
+type f = C | A | D of array of array [*,*] of unit f foo | A
+ and foo = C | Cons
+
+type main = D
+
+type c = A | A
+ and e = Tree | Cons of (array of (c)) (unit) float ref | Empty
+

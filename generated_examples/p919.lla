@@ -1,0 +1,15 @@
+let f f a f = bar[dim 2 a]
+and foo d e (a : int ref ref) = match match '7' with
+  0.0 -> 12
+| (+.2.56) -> true
+end
+ with
+  ((-13)) -> for main = 41 to false do 33 done
+end
+
+
+type c = C | Empty
+ and f = A | B | A | Cons
+
+type foo = Nil of float bool char ref | A of bool array of int e -> char array [*] of int | B | Empty
+

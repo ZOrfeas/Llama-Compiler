@@ -1,0 +1,21 @@
+let c b = if () then match 2 with
+  true -> 28
+| (-20) -> 'a'
+| g -> 3.14
+end
+
+and c : float = begin delete (if 25 then false) end
+and main = match match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  ((-.42.0)) -> 38
+end
+ with
+  g -> begin 42.0 end
+end
+
+
+type e = Empty
+
+type e = A | C | B of int char unit -> int unit -> main ref
+ and c = A | Empty | Tree | B
+ and g = Cons | Tree | D of char -> float ref unit | Tree
+

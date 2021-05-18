@@ -1,0 +1,25 @@
+let foo e main = begin delete (begin match 0.0 with
+  bar -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| (f) -> false
+| Nil ((-36)) D false b -> "foo"
+end
+ end) end
+and a c = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (- true) else ('a' := '\'')
+
+let c bar main g (g : char) = (if 40 then (('7' != ())) else while true do true done)
+and c e d bar = let main main b b a = ()
+and main a g d = 'a'
+and d : array of a = ()
+and c b = false
+and d d c main c = () in ((3.14))
+and c foo g b = for c = false to 2.56 do new bool done
+and f b = begin Empty end
+and a b = while dim e do match true with
+  '7' -> "Route66"
+| (-10) -> true
+end
+ done
+
+let main main a = delete ((if '\'' then ()))
+and a foo (c : (float)) foo (f : bool) = begin (for main = 0.0 downto '\'' do false done) end
+

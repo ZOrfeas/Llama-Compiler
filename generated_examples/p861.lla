@@ -1,0 +1,17 @@
+let rec main e (g : array [*,*] of int) = new array [*] of array of foo
+and mutable f[dim 2 main]
+
+let b c = for b = true to () do while false do 2.56 done done
+and bar f = if 42.0 then ((() < "Route66")) else (true)
+and d f f = begin while new unit do for g = false downto "bar" do true done done end
+and d g f = (match (false < false) with
+  (-24) -> dim g
+| D (-.3.14) 26 -> delete "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| '7' -> delete 5
+end
+)
+
+let e f g = Tree
+and f = delete (new (array of bool))
+and d main = dim f
+

@@ -1,0 +1,24 @@
+let c a main = delete (let g bar e = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and e foo f = 3.14 in (dim 1 f))
+and foo bar b bar : array of float ref ref = (delete 16 ++ (a['\'']))
+and e = begin match dim a with
+  (-.42.0) -> for main = 42 downto 3.14 do 42.0 done
+| 'a' -> delete "bar"
+end
+ end
+and g (d : array of (bool ref) ref -> f ref) bar b a = begin for f = 'a' to true do delete '\'' done end
+
+let rec e = match ('\'') with
+  true -> begin () end
+| '7' -> while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do false done
+| (+.3.14) -> match () with
+  '\'' -> true
+| (+17) -> false
+| 42.0 -> 41
+end
+
+end
+
+and c c f : (int) = new foo ref ref
+and e : bool ref = dim 1 g
+

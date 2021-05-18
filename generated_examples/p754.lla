@@ -1,0 +1,8 @@
+let main = dim 1 e
+and main = delete (begin if () then 42.0 else false end)
+and a foo : char = if 24 then dim foo
+and foo b bar g = a[(if () then '\'' ++ ((false)))]
+and mutable d[+. (let a c bar d a = 2
+and c foo foo : float = 'a'
+and d b foo d e = 2.56 in (for c = 18 downto 42.0 do 27 done)),(for g = true to true do if '\'' then '7' else true done)]
+

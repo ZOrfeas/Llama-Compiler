@@ -1,0 +1,15 @@
+type main = Cons | B | Nil
+ and b = Cons
+
+let b = begin let rec bar bar b (g : bool) = 2.56
+and a = ()
+and c main = 6
+and d g bar c : bool = ()
+and c bar bar = () in (begin true end) end
+and bar bar : float = delete (new bool)
+and d b e main = let a (b : bool) = false
+and main bar (main : d -> (b) ref -> bool -> bool ref) bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (begin false end)
+and bar foo main b (foo : array of bool) : char ref = new array [*] of array [*] of int
+
+type foo = B
+

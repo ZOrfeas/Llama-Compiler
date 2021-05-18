@@ -1,0 +1,21 @@
+let d a d = (a["foo",false] /. (delete 2.56))
+and f main b = let bar bar g : bool = ()
+and d e e b = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (match () with
+  (0.0) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+)
+
+let e = dim f
+and mutable a
+
+let main bar c g c = g[delete (('a' && '\'')),new unit]
+and c b d c b = match if "foo" then false with
+  '\'' -> (())
+| false -> new (array of char)
+| 0.0 -> if true then false else "foo"
+end
+
+and a d g = begin (let c = "bar"
+and c bar f = 42.0
+and b = 19 in () *. (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 4)) end
+

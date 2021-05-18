@@ -1,0 +1,9 @@
+let e = f[dim 2 b,begin while 42.0 do '\'' done end]
+and b foo : int = if "foo" then (('a' +. "Route66")) else -. ()
+and bar bar f a c : bool = Tree (-. ((16 || ()))) ((match 15 with
+  (+7) -> 2
+| '7' -> '7'
+| false -> false
+end
+))
+

@@ -1,0 +1,17 @@
+let mutable c[for c = 3.14 to false do for bar = 0.0 to true do false done done,begin if 'a' then ((() || '\n')) else ! 1 end] : main
+and main (f : int) (main : array [*,*] of unit -> ((char -> b -> unit)) -> int) = A (delete (if false then ()))
+and c = A (foo)
+and foo = let f main = "Route66"
+and a a : bool = '\n' in (bar[true,0.0])
+
+type d = Nil of array of unit unit | Tree | D | D
+
+let rec f (main : bool) bar (foo : bool) main : unit = match let bar (bar : array [*,*] of char) f g = '\''
+and mutable e['\'',1]
+and e (b : array of float) main c g = 'a' in 3.14 with
+  3.14 -> ('\n' == true)
+| 2.56 -> for c = 0.0 downto () do () done
+| 'a' -> - true
+end
+
+

@@ -1,0 +1,5 @@
+let rec f (foo : f) a = let bar c foo = ()
+and b (a : array [*,*] of int ref) f f foo = 23
+and mutable g['a'] in (delete ())
+and f = dim 2 e
+

@@ -1,0 +1,11 @@
+let e g = new float
+and main f a e d = ((() /. "foo") == (a[false,0.0]))
+and d bar = begin delete (-. (match '7' with
+  main -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| A -> 42.0
+| A (B) (+.42.0) (C d) -> "foo"
+end
+)) end
+and foo f b = (while Empty 0.0 true 42.0 do begin () end done)
+and c e f = new c
+

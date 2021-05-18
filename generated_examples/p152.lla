@@ -1,0 +1,21 @@
+let rec e a = (match + 9 with
+  12 -> not 42.0
+| false -> if 26 then ()
+end
+)
+and f d (g : bool) foo : a = dim 1 main
+and g e f = (let g foo d bar bar : float ref = ()
+and a e = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and g main = 20 in 5 := (main[false]))
+and main b (bar : bool) = new int
+and d g (foo : unit) (c : array of array [*] of array of float) : int = while begin 3.14 end do b done
+
+let bar e g c = begin let g b foo = ()
+and c a c = 'a'
+and bar d (main : unit) foo d = 15
+and main = false
+and b e d = 26 in (while "Route66" do () done) end
+and e = while if 13 then '\'' do if '\'' then 22 else false done
+and a (main : float) (b : char -> e) e = if 4 then (let f = '\'' in 8) else begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+and e e = for bar = 42.0 to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do dim 1 foo done
+

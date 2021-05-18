@@ -1,0 +1,7 @@
+let b = dim foo
+
+let foo (e : char) (g : bool) = (Cons 37 "Route66" () && (if true then () else "bar"))
+and c (a : float) = new unit
+and d g = begin new e end
+and g main c main : (bool) = Empty (while new b do ("foo" < ()) done) (g[dim 2 d,new char])
+

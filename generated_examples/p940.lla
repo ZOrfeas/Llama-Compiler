@@ -1,0 +1,27 @@
+let b = if false then (match true with
+  0.0 -> 9
+| c -> 0.0
+end
+) else match '7' with
+  B true (+.42.0) -> true
+| false -> '\''
+| '\n' -> ()
+end
+
+and e c bar bar = if true then (let rec a (foo : unit) a c bar = '\n'
+and bar c main = true
+and d = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and bar (bar : int) g = "bar"
+and a main f = 0.0 in true) else Tree ()
+and f d c main = if () then (let mutable e[19]
+and main b = true
+and a foo : unit = 34
+and c main d (f : int) e = "Route66" in true) else -. true
+and bar d d = for main = "foo" downto 34 do begin false end done
+and d foo c d = -. (new (float))
+
+let foo d f a c = (new float -. (let bar foo a = ()
+and main = 26
+and b (main : unit) f = false in "Name:\t\"DouglasAdams\"\nValue:\t42\n"))
+and b f c = -. (while begin true end do for c = () downto '7' do () done done)
+

@@ -1,0 +1,6 @@
+let rec g = dim 1 e
+
+type f = D of float int char -> float array [*,*] of float
+
+type bar = A of bool unit int | D | Tree
+

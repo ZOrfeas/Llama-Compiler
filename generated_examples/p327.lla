@@ -1,0 +1,8 @@
+type main = A | D
+
+type g = B of unit | Empty
+ and e = Tree | Tree
+ and b = Empty of float bool unit float
+
+type g = C
+

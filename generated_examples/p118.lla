@@ -1,0 +1,14 @@
+type bar = D of float float (f ref) array [*] of char | A of array of char ref float a bool | D of int ref | C
+
+type d = D of int bool -> (c -> unit -> e) | Tree | Cons
+
+let mutable bar[dim 1 e]
+and c a b = new f ref
+and foo (e : bool) bar bar = (delete "Name:\t\"DouglasAdams\"\nValue:\t42\n" = (if 2.56 then 12 else 13))
+and b (a : bool -> array [*] of unit ref) a e f = let g foo b e = '7'
+and f = "bar"
+and mutable foo[()]
+and main b c e foo = false
+and main (a : (unit)) bar (g : (array [*,*] of bool)) : float -> int = () in (new a)
+and c a = dim 1 e
+

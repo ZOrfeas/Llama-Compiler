@@ -1,0 +1,8 @@
+let rec g main a = match begin () end with
+  '\'' -> not 3.14
+| (Tree (-.3.14) main g) -> begin 42.0 end
+end
+
+and f = for d = "bar" to '7' do (31) done
+and mutable main[not (while dim 2 g do if 7 then '\n' else '\'' done)]
+

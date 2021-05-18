@@ -1,0 +1,11 @@
+type g = Cons of int ref foo array of bool
+
+let bar g g a = new b
+and d g e (main : float) = delete (match Cons 0.0 'a' with
+  (-1) -> if 42.0 then '\'' else true
+| '7' -> c 42.0 8 '\n'
+end
+)
+
+type g = Tree of unit -> float ref char b | B
+

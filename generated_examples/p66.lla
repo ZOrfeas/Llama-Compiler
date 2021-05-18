@@ -1,0 +1,8 @@
+type d = Empty of char
+
+type d = B of int
+
+let bar = dim g
+and c foo (f : float) d = dim e
+and g b bar = not (begin if 41 then false end)
+

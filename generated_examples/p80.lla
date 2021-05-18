@@ -1,0 +1,10 @@
+type main = Tree of unit
+ and c = Tree | Tree | Nil
+
+type b = Empty | Tree of char int int ref ref | D | Tree
+ and bar = D
+
+type foo = D | Empty of (unit) int bool float | C of int g array of bool a -> bool ref
+ and f = Nil | Nil
+ and g = C | Tree of char bar float char | C
+

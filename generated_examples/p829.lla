@@ -1,0 +1,6 @@
+let d = if 4 then (while true do 22 done) else (7 mod "Route66")
+and a f e = if 2 then (A 'a' 3.14 1) else for bar = () downto 0.0 do "foo" done
+and e d d g (f : b) = if 'a' then (delete 11) else c
+and c = dim 2 f
+and d g main = while e[(),()] do if true then () else false done
+

@@ -1,0 +1,18 @@
+type g = Nil | D of main bool ref ref unit | Tree of array [*] of array of array of int b float | D
+
+type foo = Cons | C | Tree | Tree
+ and e = C | Nil of int | C
+
+let c = delete (Cons (begin e end))
+and foo d foo g main = c[bar (dim d)]
+and e a d (c : unit) b = main (for b = "bar" to "Route66" do let b (bar : bool ref) bar bar : float = true
+and bar c : (array [*,*] of float) = false in '\n' done)
+and b = new float
+and e = match g[(),true] with
+  'a' -> new main
+| true -> let g f g c bar = "Route66"
+and c (e : (unit)) g d (foo : array of char) = 20
+and f e (bar : int ref) bar = () in true
+end
+
+

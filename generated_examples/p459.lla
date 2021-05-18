@@ -1,0 +1,14 @@
+type g = D
+ and bar = B | B | A | B
+
+type bar = B
+
+let g bar b = delete (for e = true to () do for bar = true downto () do 2.56 done done)
+and g = not (B ((begin true end)) (match () with
+  '\'' -> 'a'
+end
+) (dim foo))
+and d e foo b : char = let g = false
+and main bar = true
+and foo = () in (for f = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to () do 23 done)
+

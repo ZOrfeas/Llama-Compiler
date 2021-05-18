@@ -1,0 +1,7 @@
+type b = Nil of int array [*] of bool ref ref int float ref ref | D
+
+type f = Tree of bool -> d -> int bool -> float ref char -> char | Empty | A of char int bool ref int | C
+
+type main = Nil of bool array [*,*] of char char main | B | B of unit float ref array [*] of array of array [*,*] of int ref
+ and a = Tree | Empty | C of (array of b) array of char ref ref -> int (array of (bool) ref) | Empty of foo (array [*] of unit) -> array of (int) -> int
+

@@ -1,0 +1,47 @@
+let f e = while if 40 then 30 do delete 12 done
+
+type b = D
+ and main = Tree | D | A | D
+
+type foo = B | Empty of bool unit (float) float | B of char main ref int unit
+
+type bar = C of unit ref | D | A
+
+let main a d (f : bool) = if 5 then for c = '\'' downto "bar" do '\n' done
+and d bar = dim 2 c
+and a = - (let foo f f e b = 42.0
+and e = 0
+and c c = ()
+and a f d (f : bool) = ()
+and d bar foo = 3.14 in (begin 19 end))
+and g f a = begin for foo = "foo" to true do foo[42.0,3.14] done end
+
+let g g (f : (float)) = dim 2 e
+and d b e = let mutable main
+and foo e (e : unit) bar (b : int) : char = false
+and bar (foo : int ref) c g c = true
+and f f a g (foo : array [*] of (float) -> b -> bool) : f ref = () in (while 25 do "Route66" done)
+
+let b bar g a f = + (Cons (delete ((()))) (if 2 then false))
+and f c bar bar bar = let a main (main : int) bar = 0.0
+and c (bar : char) a = false
+and foo c = ()
+and g d (main : array of char) c (b : g) = 31
+and e = '\'' in (f['\n'])
+and d f = ((a / (let foo main a = 42.0
+and e (b : char) d = true
+and main b (f : unit) e : bool = ()
+and c (g : char) c d f : bool = 42.0 in ())))
+and a f e foo c = not (for a = 0.0 to () do (() && true) done)
+
+type foo = Nil | Tree | Cons | Nil
+
+let a d e : array of unit = f[match (() / "Route66") with
+  (true) -> while true do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+| (+.42.0) -> delete "foo"
+end
+]
+and d (bar : float) a main (bar : int) = (dim 1 d)
+and mutable c[(bar)]
+and d b c = ! (+ (delete (while 3.14 do '7' done)))
+

@@ -1,0 +1,7 @@
+let bar : int = while begin 3.14 end do while () do 0 done done
+and bar f (e : float) = delete (match bar 3.14 with
+  true -> while true do () done
+| (false) -> ("foo")
+end
+)
+

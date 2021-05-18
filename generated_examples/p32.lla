@@ -1,0 +1,9 @@
+let b c a = let f d = "foo"
+and mutable e
+and e c (b : int) bar = ()
+and main c d (c : float) = false
+and a a bar main c = 42.0 in (delete 30)
+and bar c g = new b -> int
+and bar b (b : array [*,*] of unit) a foo : float = let mutable b['7',"Name:\t\"DouglasAdams\"\nValue:\t42\n"] in (delete 2)
+and b = begin if 15 then ((())) else (true - 'a') end
+

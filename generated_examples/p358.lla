@@ -1,0 +1,13 @@
+let c f (b : g ref ref) main = while (12) do new float ref done
+and g b (main : ((array of array of array of int -> unit ref -> char))) = bar[g[Empty (begin () end) (b["Route66",3.14]),c],begin main (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 0.0) end]
+and g : (char) ref -> int = (((dim main)))
+and bar f = begin f[if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 42.0 else '\'',delete (delete '\n')] end
+
+let rec a (bar : char) f b e = ! (let main (f : bool) g c bar = '\n'
+and a = ()
+and bar = 39
+and f (main : (array [*,*] of bool -> bool -> (main) -> char -> (char) -> (int ref))) d = "Route66"
+and bar (b : c) main bar = () in (c["foo"]))
+
+type c = D of float char | Cons
+

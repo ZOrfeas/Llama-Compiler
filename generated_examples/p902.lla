@@ -1,0 +1,8 @@
+let d e g : d = for foo = '\n' to 34 do while () do true done done
+and mutable b[delete (c[begin - 3.14 end,for d = 2.56 downto false do false done]),d[A (if '\n' then 2 else '7') (let bar f d bar = () in ()) (match "foo" with
+  true -> ()
+| Nil '\n' B bar -> 23
+end
+)]]
+and main bar d = (if () then (not 3.14) else begin () end)
+

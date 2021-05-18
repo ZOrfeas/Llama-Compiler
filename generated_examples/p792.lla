@@ -1,0 +1,19 @@
+type f = C
+
+let bar d b = if 9 then (match 38 with
+  (+.3.14) -> true
+end
+) else begin () end
+and g main bar main f = let g b foo = 3 in (new array [*] of g -> float)
+and e f = for a = 2.56 to 'a' do new unit -> b done
+and mutable a[begin d[while 38 do false done] end,let mutable d["bar",'a']
+and main = "Route66"
+and e a b bar e = "Route66"
+and foo a c bar b = 42.0 in (bar[()])] : array of char
+
+let f g g d : e -> b = foo[dim d,C]
+and foo a (c : int) d c = let g bar main : (int) = ()
+and main : unit = '7'
+and d g d f = true in (dim 2 main)
+and main c : char = while (42.0) do C done
+

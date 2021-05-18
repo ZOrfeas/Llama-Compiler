@@ -1,0 +1,14 @@
+let f main b foo (bar : b) = delete (b[if false then true else true,delete (('7' ++ ()))])
+and a g (c : b) (c : unit) (main : int) = match if 34 then 3.14 else "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  ((+13)) -> -. true
+| ((+.42.0)) -> dim d
+| B -> (36)
+end
+
+and foo c (bar : float) = (Cons "bar" = (begin "foo" end))
+and e main d : (float) ref -> bar = (begin () end >= (delete 2.56))
+
+let c : int = for d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto false do while () do 3.14 done done
+and b d foo (b : float) (c : (int)) = let e = 36 in (dim 1 a)
+and bar = for e = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to () do begin () end done
+

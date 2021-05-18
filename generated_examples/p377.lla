@@ -1,0 +1,19 @@
+type c = C of bool bar float -> array of int b
+
+type f = Tree of array [*,*] of unit -> int -> char -> int (array of int) | A | B of int (unit) | Nil
+
+let b b = new float ref
+and a = begin not (dim main) end
+and b main foo (d : array of f -> c) = begin if 0.0 then (if '7' then "Name:\t\"DouglasAdams\"\nValue:\t42\n") else let main g = 33
+and foo d : array [*,*] of char = true
+and d = "foo"
+and d bar g main f : unit = false
+and e e e = 29 in 32 end
+and d f (g : f) = begin while a "Route66" do while '7' do "bar" done done end
+and g (foo : char ref) (a : unit) (main : int ref) = b[b[bar[if 3.14 then false else "Route66",match 2.56 with
+  13 -> "Route66"
+| (-41) -> 6
+| ('a') -> ()
+end
+]]]
+

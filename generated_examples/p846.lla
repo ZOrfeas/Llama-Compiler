@@ -1,0 +1,12 @@
+type c = A | A
+
+type b = Empty | Nil
+
+let bar = match (()) with
+  '\'' -> ('\'' = 2.56)
+| 0.0 -> delete '\n'
+| 'a' -> (false)
+end
+
+and bar = main[(if '\n' then 39 != (new foo)),for a = () to 23 do (2.56 = false) done]
+

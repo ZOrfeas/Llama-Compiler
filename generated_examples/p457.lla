@@ -1,0 +1,11 @@
+let a main d foo foo = match + "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  '\n' -> for foo = "bar" to 32 do false done
+| Cons 'a' -> while "Name:\t\"DouglasAdams\"\nValue:\t42\n" do '\n' done
+| '7' -> b['\'']
+end
+
+and bar f = begin if 0.0 then (let f d (main : d) (g : bool) bar = 41
+and bar = 2.56
+and d c = () in 32) else delete "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+and b b g (c : int) = dim c
+

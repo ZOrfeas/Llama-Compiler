@@ -1,0 +1,6 @@
+type c = Tree of d (bool -> foo)
+
+type e = Empty
+
+type d = Tree of unit bool float unit | Tree | C
+

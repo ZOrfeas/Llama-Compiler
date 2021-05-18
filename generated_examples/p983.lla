@@ -1,0 +1,7 @@
+type foo = Cons | C
+ and foo = C
+
+type foo = B of (bar -> char ref -> (g)) | Cons | Nil | C of bool float ref unit
+
+type e = Tree of a
+

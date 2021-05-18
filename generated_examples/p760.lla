@@ -1,0 +1,13 @@
+let f e b (a : char -> (bool) -> char) f = begin delete (if 42.0 then "Route66") end
+and main main = while Cons 2.56 24 do + () done
+and bar = ! (if true then ((12)) else new int)
+and bar = (begin begin let a g c = "bar"
+and foo g = () in 23 end end)
+and main = (+. (let b foo (d : unit) b a = 21 in 'a'))
+
+type g = D | Empty of float unit array of int -> int
+
+let d main g f = let foo d f : f = true
+and bar = ()
+and bar (a : bool) bar g bar = 39 in (d)
+

@@ -1,0 +1,10 @@
+let c b = match delete true with
+  false -> (false = "Name:\t\"DouglasAdams\"\nValue:\t42\n")
+| '7' -> Tree '\'' 22
+end
+
+and mutable d : (float)
+and c (f : float) main c = while g["Name:\t\"DouglasAdams\"\nValue:\t42\n"] do new float done
+
+let rec d main c main = delete (while a["foo",()] do delete false done)
+

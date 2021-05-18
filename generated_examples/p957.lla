@@ -1,0 +1,6 @@
+type foo = Tree | B | B of ((bool)) ref g
+
+type b = A of float char ref -> foo ref -> array [*,*] of bool foo -> unit -> bool int -> e ref | B | B
+
+type c = A | Tree
+

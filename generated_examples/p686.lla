@@ -1,0 +1,12 @@
+type f = C
+
+let bar (main : int) = match - "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  D A Nil (-8) (false) C (false) '7' A (('\n')) (+.3.14) (+18) -> while 35 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done
+| (((-.42.0))) -> (false)
+end
+
+and g = (g[while 16 do '7' done,new unit -> array of char -> (float -> unit) ref])
+and b (d : char) (f : bool) e e = dim 2 bar
+
+type b = Cons | B of (unit) ref d unit | D | Tree
+

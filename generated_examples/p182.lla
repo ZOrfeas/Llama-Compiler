@@ -1,0 +1,9 @@
+let a (a : char) b : e = match begin 37 end with
+  'a' -> A
+| Cons d (Tree 'a' bar) false -> begin '7' end
+end
+
+
+let f = (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (d[true]) else (31 < ()))
+and b d main bar g = g (dim c)
+

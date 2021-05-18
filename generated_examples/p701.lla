@@ -1,0 +1,21 @@
+type d = Empty of bool array [*] of array [*,*] of f ref | Nil | Empty | B of unit ref
+
+type f = B
+
+type f = Empty | Nil of char array of bar f ref d ref ref
+ and a = C of float | Tree | Tree of char unit | Tree
+
+type d = A | B of unit ref ref int char | A of b (array of array [*,*] of char -> array [*,*] of int -> char -> array of f ref) | B
+ and main = Cons of float char | C | D
+
+let f d c (f : unit) = f[if 27 then dim 2 a]
+and main a (f : float) = dim 2 a
+and e c foo d = b[a[if false then '\n'],begin delete (let rec d (bar : bool) e (c : unit) main = 35 in ()) end]
+and a = for e = () downto true do e['a',()] done
+
+type d = Tree of unit e | C | B | Tree
+ and c = C of array of array [*] of (main) array [*,*] of array [*] of unit array of int bool | D of char -> int bool (a)
+ and bar = D of b | Empty | A of bool
+
+type bar = Nil | D of float array of array of g ref e d | A of array of float unit int -> int | Cons
+

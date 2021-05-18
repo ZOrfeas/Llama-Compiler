@@ -1,0 +1,8 @@
+let rec b c b : array of float = for c = "foo" downto 'a' do while '\n' do 42.0 done done
+and e = for a = false to () do while 0.0 do false done done
+and g d (a : array of char) = let rec mutable a[42.0,true]
+and f f (g : f) e : array [*] of int = ()
+and main g e (f : ((bool ref))) main = ()
+and a bar b f = true in (('\n'))
+and g g d foo = for d = true downto 2.56 do let foo = false in '\'' done
+

@@ -1,0 +1,16 @@
+let f = - (while begin '\'' end do delete 'a' done)
+and bar c (f : array [*,*] of unit) (foo : unit) c : unit = -. (dim 1 a)
+and g (a : foo) bar : float -> char -> (main -> char) = match match true with
+  Tree (-.0.0) '\'' 39 -> '\''
+| true -> "Route66"
+end
+ with
+  Cons Tree Tree '\n' bar Empty bar Empty D (-16) a -> new foo
+end
+
+and e (bar : (bool)) f = new unit
+
+let rec mutable a[if 'a' then ((() /. true)) else for a = '7' to false do "Route66" done]
+and e a b bar : int = while delete 0.0 do ("Route66" <> false) done
+and bar : char = new int
+

@@ -1,0 +1,17 @@
+let a foo (b : char) = Tree ((match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  'a' -> 42.0
+| B -> 42.0
+end
+ <= (let a foo f b = 'a'
+and f g : int = '\n'
+and f e f f e = true
+and e (main : char) f = 2.56 in 10))) (if 0.0 then (() ; 2.56))
+and e d : b = begin while begin false end do if "Route66" then "foo" done end
+and a = let rec d f = '7'
+and c e main (bar : char) (g : unit) = true in (for f = false to '\n' do "foo" done)
+and bar : bool = delete (if "Route66" then (delete ()) else for g = () to "foo" do '\n' done)
+
+let b = dim 2 b
+and e foo b bar = (for e = () to () do dim 2 a done)
+and c foo : array of bool -> (bool) -> b -> int = B
+

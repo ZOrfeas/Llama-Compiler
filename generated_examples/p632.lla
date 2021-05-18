@@ -1,0 +1,7 @@
+type e = Empty of int | Cons | Cons
+
+type main = Cons | Cons of unit | Nil
+
+let b = for b = true downto 0.0 do dim 2 g done
+and g (f : unit) = b (if 36 then dim 2 c)
+

@@ -1,0 +1,11 @@
+let bar f g f f = while (() ; 'a') do A true 0.0 '\'' done
+and foo (c : bool) b foo f = b[delete (dim 1 e),delete (("foo" / "bar"))]
+and main g (c : array of int) d (foo : float) : unit = let d e : (int) = 42.0
+and d (a : array of d) f main : ((char) ref ref) = 29
+and foo b (e : (unit ref)) = ()
+and a foo f = () in (new array of char)
+and main e bar d = +. (delete (+. (match 3.14 with
+  '\'' -> true
+end
+)))
+

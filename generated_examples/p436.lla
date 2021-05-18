@@ -1,0 +1,4 @@
+let rec foo a (b : unit) bar d = new unit
+and main = delete (main (if false then ()))
+and mutable main
+

@@ -1,0 +1,15 @@
+let foo = begin begin f[new unit,(42.0)] end end
+and foo = match for c = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto () do false done with
+  A -> dim b
+| Tree -> let rec g foo = '\n' in 13
+| (-23) -> ('\n')
+end
+
+and bar d a g (e : array [*,*] of unit -> unit) = begin bar end
+and g : char = while if '\'' then () do if () then 15 else "foo" done
+and a bar g e b = delete (while new unit -> bool do c[(),false] done)
+
+type b = B | Cons of array of unit | A | A
+
+let b f : unit = (f[(),'\n'] * (C () '\n'))
+

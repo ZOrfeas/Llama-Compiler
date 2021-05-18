@@ -1,0 +1,9 @@
+let bar foo b (foo : (d)) (b : unit) : unit ref = if false then c[39]
+
+type foo = B | Cons | Cons
+ and a = D | Tree | Empty
+
+type b = C of char e int unit -> char ref -> int ref ref ref -> float ref -> char
+ and c = D of f | Cons of array [*] of unit -> ((float)) ref | B | Nil
+ and f = Nil | Cons of unit | D
+

@@ -1,0 +1,7 @@
+let f bar b = while match 'a' with
+  '\n' -> 'a'
+| true -> true
+end
+ do dim c done
+and foo c = begin (for foo = 26 to true do true done / (begin () end)) end
+

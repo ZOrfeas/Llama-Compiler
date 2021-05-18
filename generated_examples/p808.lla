@@ -1,0 +1,14 @@
+let main main a f = let g = 3.14
+and b = ()
+and g c = 2.56
+and f a : (char) = 28
+and e f (f : float) = '\n' in (- 42.0)
+and foo f e = not (while g "Route66" do let b c = 31
+and d = 0.0 in "bar" done)
+and c (bar : int ref) bar foo = delete (match new bool with
+  (C 'a' C (e) '\'' '7') -> delete 42
+| '7' -> begin 27 end
+| Empty -> while false do false done
+end
+)
+

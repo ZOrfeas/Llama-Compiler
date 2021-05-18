@@ -1,0 +1,16 @@
+type e = Nil | B | A of (float) array [*] of (unit) a int | Nil
+
+let g = d[for g = "Route66" to 9 do ("bar" && 12) done]
+and e (bar : char) = dim 1 c
+and main c d (main : int) bar = delete (while for main = "foo" to () do 5 done do if 0.0 then 30 done)
+
+let a g b foo b = delete (dim 2 f)
+and b = if '\n' then (let rec mutable f[(),false] in 42.0) else + 3.14
+and d = let b a : array [*,*] of f = 22
+and f (foo : char) (a : char) main (bar : array of char -> char) = false in (while "Route66" do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done)
+and g d f e main = +. (+ ((-. ())))
+and g f = for a = () downto () do match true with
+  B ((-26)) (-32) -> 'a'
+end
+ done
+

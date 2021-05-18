@@ -1,0 +1,19 @@
+let foo main c b = delete (for b = "foo" to "bar" do begin false end done)
+and b e a : bool = new a -> int
+and b (foo : unit) (d : int) foo d = match B 42.0 false with
+  ((-4)) -> new (array [*,*] of b)
+| C e (d) false -> ! 'a'
+| d -> delete ()
+end
+
+and c foo main bar = (+ (let foo bar a (a : unit) = '7'
+and c a bar b = 0.0
+and foo = 42.0
+and bar b g e foo = 1 in "foo"))
+
+type d = Cons
+
+let d bar = delete (for c = '\'' to 'a' do delete "Route66" done)
+and b e e : bool = for main = () to 38 do ('\n' && ()) done
+and bar foo (f : float) foo = for foo = 39 to () do while 25 do () done done
+

@@ -1,0 +1,14 @@
+let e d = ((0.0 || false) *. (dim 1 a))
+and c bar d f = dim bar
+and d = match ('a' > 4) with
+  (3.14) -> match false with
+  (-.2.56) -> ()
+| (C (-16) (35)) -> true
+end
+
+| foo -> delete "bar"
+| e -> a "bar"
+end
+
+and foo f main (f : (array [*] of unit -> (d)) -> (int)) = ! (b ((0.0 := false)))
+

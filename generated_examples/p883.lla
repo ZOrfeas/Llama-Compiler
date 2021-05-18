@@ -1,0 +1,13 @@
+type e = D of (float ref ref -> (int) ref) char | B of float char (int ref ref) g
+
+type bar = C of char (g) | B | Nil of char array of float ref ref
+
+let rec foo c = (e[1,'a'] = (let f (f : unit) (g : b) g (c : d) = "Route66" in "Route66"))
+and g = if 0.0 then match "bar" with
+  bar -> "Route66"
+| Empty -> ()
+| g -> 'a'
+end
+
+and bar (d : int) bar = (delete (("foo" && false)))
+

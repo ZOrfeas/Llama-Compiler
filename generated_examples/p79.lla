@@ -1,0 +1,2 @@
+let rec a f = for c = false downto 42.0 do delete 35 done
+

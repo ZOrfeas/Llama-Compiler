@@ -1,0 +1,20 @@
+type a = A | D
+
+let e d a = begin dim e end
+and f (f : char ref ref) e = D
+and bar bar = ! (match while true do "foo" done with
+  '\'' -> match 3.14 with
+  '\'' -> ()
+| ((-10)) -> ()
+end
+
+| (-14) -> e[false,29]
+end
+)
+
+let mutable main[new f] : char
+and mutable f
+and b c = (while true do 0.0 done - (while 24 do '\'' done))
+and a c d main (f : char ref) = while while 42.0 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done do ('a' && ()) done
+and c (bar : (array of bool -> unit)) bar f d = (g[3.14,"bar"] ; (let c d = 'a' in "Route66"))
+

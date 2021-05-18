@@ -1,0 +1,14 @@
+type f = Cons | A | Cons | D of (a ref) ref
+ and g = B
+
+let f a d e = for e = true to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do let f main d = "foo"
+and g a (c : char -> bool ref -> unit) e d = ()
+and g main (d : int) (g : int -> float) bar = '\n' in '7' done
+and f c f b foo : float = c[let d (a : unit ref) b f = "Route66"
+and b : unit = 19
+and mutable a[2,"Name:\t\"DouglasAdams\"\nValue:\t42\n"]
+and foo a = 41 in (begin () end),for d = 42.0 to '7' do begin 'a' end done]
+and b : char = (A "Route66" '\n' <= (if '7' then 42 else '7'))
+
+let g bar b : int = for bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to '7' do begin 36 end done
+

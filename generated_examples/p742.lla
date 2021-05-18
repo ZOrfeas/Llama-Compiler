@@ -1,0 +1,22 @@
+let foo e (d : (unit)) = (while delete () do match true with
+  ((-.42.0)) -> 2.56
+| 'a' -> true
+| b -> "bar"
+end
+ done)
+
+let rec bar foo (f : unit ref) e d = new int
+and foo (f : (bool)) main bar a = if 42.0 then (! 2) else match '\'' with
+  '\'' -> 42.0
+| Tree -> '\n'
+| main -> ()
+end
+
+and mutable f[+. (new int),delete (match dim 1 g with
+  (+0) -> main 'a' ()
+| 0.0 -> for f = () downto true do 26 done
+end
+)]
+and b = for c = '7' downto () do Cons false "Route66" done
+and foo c bar g = Tree (new float) (while e[(),19] do (0.0) done) (delete (delete (while () do false done)))
+

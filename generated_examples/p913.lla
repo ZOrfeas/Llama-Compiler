@@ -1,0 +1,25 @@
+let f = delete (let b (d : int) = 7
+and foo e (bar : unit) c = 6
+and e = false
+and bar = 0.0
+and bar foo c bar bar : float = '\'' in (('7' ; 42.0)))
+and g (b : int) g d (b : unit) = -. (if 2.56 then delete false)
+and d (c : (((int)))) b (bar : bool -> array of float) a = if 0.0 then + 10
+
+type foo = B | C
+
+let mutable main[match delete '7' with
+  (+.42.0) -> ! 'a'
+| foo -> d[false]
+| e -> match "foo" with
+  42.0 -> 1
+end
+
+end
+]
+and b b (main : float ref) = (match delete "foo" with
+  D false (-25) g -> ! 0.0
+end
+)
+and bar = new array [*] of (char)
+

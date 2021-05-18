@@ -1,0 +1,12 @@
+type a = Cons
+ and bar = D | Tree | Empty | A
+ and main = Tree | Cons | C | A
+
+let foo = while (false -. true) do if 34 then () done
+and b f d (main : e ref) = match delete 16 with
+  false -> f[42.0,"Name:\t\"DouglasAdams\"\nValue:\t42\n"]
+end
+
+
+let mutable bar[while ('\'') do -. 2.56 done,dim e]
+

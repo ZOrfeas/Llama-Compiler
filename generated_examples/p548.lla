@@ -1,0 +1,10 @@
+let d b a b : bool = for main = 42.0 downto 21 do while 27 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done done
+and a = new bool
+and e = A
+and g f = b[(if "Route66" then '7' else false),e[(delete 'a')]]
+and mutable g[match +. 3.14 with
+  (false) -> for main = 'a' downto '\n' do false done
+| (false) -> if "Route66" then () else 31
+end
+,new array [*,*] of float]
+

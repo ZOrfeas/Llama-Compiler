@@ -1,0 +1,53 @@
+let a foo a = for e = "foo" downto "bar" do dim g done
+and d b foo g = delete (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (dim 1 f) else f 42.0)
+and bar = for c = '\n' to true do match '\'' with
+  (42.0) -> true
+| 42.0 -> ()
+| '7' -> false
+end
+ done
+and bar d bar g b = (if 42.0 then true else 'a' = (! 3.14))
+
+type foo = A | Cons | A
+ and b = Cons
+ and a = Tree of float unit char int | Tree | Tree
+
+type a = Nil | D | Empty
+ and f = Nil
+
+let f (a : int) e = while b[false,42.0] do dim f done
+and foo c d d = (match begin 4 end with
+  b -> match 42.0 with
+  true -> 2.56
+| (-.0.0) -> '\n'
+end
+
+| (+.0.0) -> if 2.56 then '\n' else "foo"
+| g -> begin true end
+end
+)
+
+let mutable e[bar[(new float ref && ((()))),c[begin (()) end]],(match true with
+  D e true B -> 22
+| C '7' -> true
+end
+ ++ (('a')))]
+
+let foo = +. (bar (let d f = '7'
+and f (main : ((unit)) -> unit) bar = false in 20))
+
+let mutable b[let bar b f : char = 2.56
+and d foo bar d c : unit = 39
+and e e main = () in (begin '\n' end)]
+
+type d = Empty | C | Tree
+
+let bar g = begin (match 27 with
+  Cons B -> 42.0
+| main -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ / ((false * 42.0))) end
+and c b b = for bar = () downto 2.56 do delete "bar" done
+
+type main = Empty | D
+

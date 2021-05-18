@@ -1,0 +1,11 @@
+type b = D of (float) char ref
+ and foo = C | Cons of bool array [*,*] of int
+
+let main : d -> (array of ((e))) = dim 1 foo
+and bar f a g = delete (dim 2 e)
+
+let rec g (e : float) = begin bar[new unit] end
+and foo = delete ((a['a'] * (begin 42.0 end)))
+and b c b f = begin bar[dim g,e[- true,for bar = 0.0 to 31 do '7' done]] end
+and c c bar d a = dim 2 main
+

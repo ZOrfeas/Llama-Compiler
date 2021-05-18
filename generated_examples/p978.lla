@@ -1,0 +1,2 @@
+let foo a b e = for foo = "foo" to 31 do new foo done
+

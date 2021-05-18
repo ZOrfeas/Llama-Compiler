@@ -1,0 +1,26 @@
+let d b = match (42.0 + '\n') with
+  foo -> (31)
+| '7' -> dim e
+| (-10) -> if true then false
+end
+
+and e main g foo = let g c e b = '\''
+and c a f e = ()
+and d main (e : float) = false
+and c b a (e : unit) g = "bar" in (-. 36)
+and d d = (+ (if 3.14 then 37 else 2.56))
+
+type main = C | A of int float ref
+ and bar = C of array [*,*] of float bool ((char -> array of unit)) -> char char | D of float ref (unit) ref bool int | Nil
+
+let main a (a : unit ref) d f = if true then match 42.0 with
+  Nil b (-.3.14) 30 -> 'a'
+| (-.42.0) -> 0.0
+end
+
+and a f e d : (char) = new float
+and d f g = new unit
+and mutable foo[let rec mutable d['a']
+and f (a : d) a bar = false
+and main foo c = true in (new (array [*,*] of unit))] : array of char
+

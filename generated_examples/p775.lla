@@ -1,0 +1,8 @@
+type main = C | Cons of foo ((bar)) bool char | Empty | Tree
+
+let d = (+. (C ((())) (new unit -> array of unit)))
+and c bar d d = dim 1 e
+and d (f : char) a c bar = let f b d a = "foo" in (while true do 42.0 done)
+
+type c = B | Nil | B | Cons
+

@@ -1,0 +1,4 @@
+let b (g : unit) main e (g : (array [*] of int -> bool -> c) -> array [*] of bool) : int = begin c[("foo" = "Route66")] end
+and f bar foo g c = - (main[begin dim 2 bar end])
+and a b d = delete (main[new unit])
+

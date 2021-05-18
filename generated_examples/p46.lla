@@ -1,0 +1,7 @@
+type a = D | Cons of unit char ref (unit) | Tree of array [*,*] of c int ref | Nil
+
+type g = Nil | Nil of float | Nil | D of array [*,*] of b float bool
+
+type f = Nil | Nil | B
+ and bar = B of unit float array [*,*] of float unit ref
+

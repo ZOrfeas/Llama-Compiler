@@ -1,0 +1,19 @@
+type d = B | Cons | Cons | Empty
+ and b = B | C
+ and e = B of g ref int unit | Nil
+
+let a bar c c = match delete true with
+  '\n' -> while false do 3.14 done
+end
+
+and g g (d : int) = if true then new char ref -> array [*,*] of (int ref) ref
+and b = while (() := true) do match 0.0 with
+  b -> ()
+end
+ done
+and g = begin let d bar main : unit = "bar"
+and f (a : array [*,*] of unit) foo = 23 in (delete "Route66") end
+
+type main = Tree of int b ((bool)) | C | D of bool char
+ and g = D | Tree | Empty | C
+

@@ -1,0 +1,6 @@
+let d (main : d -> char -> char) = if 'a' then while 3.14 do true done
+and g main g d = new c
+and main = (b[c,begin while 'a' do 1 done end])
+and a d main foo = main[b[B (for g = "bar" to 'a' do true done) (while 42.0 do () done) (delete 15)]]
+and foo d g f = for g = "Name:\t\"DouglasAdams\"\nValue:\t42\n" to () do while 3 do "foo" done done
+

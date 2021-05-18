@@ -1,0 +1,6 @@
+let e bar d : (float) = delete (if 32 then (let c d = '7'
+and d f = 40
+and e g (bar : unit) d = true in "foo") else begin () end)
+
+let a c = (dim g <= (dim g))
+

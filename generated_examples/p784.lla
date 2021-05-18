@@ -1,0 +1,21 @@
+let f = c[if 0.0 then (b[false]) else main['\n']]
+and foo c bar = D
+and mutable foo
+
+type c = C
+
+let mutable g
+and e e b = delete (for e = '\n' downto () do if 7 then true done)
+and c d : char = if '\n' then match () with
+  (-36) -> '7'
+| ((-40)) -> '\''
+end
+
+and e (f : bool) e : int ref = delete (if true then (begin () end) else C)
+and b = match dim foo with
+  'a' -> delete false
+| (2) -> begin true end
+| (-.0.0) -> delete '\''
+end
+
+

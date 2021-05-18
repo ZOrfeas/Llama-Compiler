@@ -1,0 +1,10 @@
+let f main d c = (begin +. (delete false) end)
+and c g (main : (unit)) bar c : (array of char) = a[(while () do '\'' done *. ((3.14)))]
+and e foo = if () then match false with
+  '\n' -> true
+end
+
+and e (c : int) bar (d : (int) -> b) c = if 0.0 then (delete false) else let mutable d[false]
+and foo e = "foo" in false
+and bar bar (b : bool) = if 'a' then (new (unit) ref -> float ref ref) else dim e
+

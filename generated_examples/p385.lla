@@ -1,0 +1,13 @@
+let a = ((42.0 <> '\n') + (while () do '\n' done))
+and d (e : int) foo = while for e = 27 downto () do "bar" done do while false do 'a' done done
+and a = for a = '\'' downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do delete "foo" done
+
+let f (main : array [*] of d -> float) a g = for f = true to false do match "bar" with
+  Tree '\n' -> "Route66"
+| C -> 'a'
+| ((b)) -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ done
+and foo bar a f bar = +. (let e main a main foo = "Name:\t\"DouglasAdams\"\nValue:\t42\n" in (('7' + 42.0)))
+and foo e d = new (array of unit)
+

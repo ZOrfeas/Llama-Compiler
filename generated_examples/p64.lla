@@ -1,0 +1,15 @@
+let bar g main = ((bar[delete 'a',new float]))
+and g = match dim foo with
+  (+.3.14) -> delete 'a'
+end
+
+and foo foo (e : bool ref) (a : char ref) bar = begin dim bar end
+and f : float = new array [*,*] of char -> unit
+and c foo c (d : float) b : char = if () then (begin true end) else + ()
+
+type e = Empty | D | Tree
+ and f = Cons of main unit int unit | Nil | C | C of bool ref
+ and b = B | A | Empty
+
+type e = Cons of (int) char char | Cons
+

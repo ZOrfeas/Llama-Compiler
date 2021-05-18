@@ -1,0 +1,20 @@
+type d = B of (array [*] of unit) array of char main ref -> int | D | B of bool
+
+let d f b foo c = B
+and a foo a a = begin let foo d bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and bar a f = 10
+and c foo bar = 42.0
+and d (bar : ((float)) -> bool) bar (b : (float ref)) d = false
+and a = '7' in (let f b c = 9 in ()) end
+and e foo a b f = g
+
+let c g main = begin for main = false to '7' do if 0.0 then true done end
+and main bar = for main = () to () do + () done
+and e main = g[while for d = "Route66" downto "bar" do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done do begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end done,delete (delete (dim a))]
+and c : int = if () then if () then 19
+and e foo = (match true with
+  (+4) -> false
+| (Cons Tree (Nil Tree false (-30) 42.0 (true) Cons (-16))) -> 0.0
+end
+ == (+ "Route66"))
+

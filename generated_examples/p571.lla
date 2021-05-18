@@ -1,0 +1,5 @@
+let main f foo = begin for b = 0.0 to true do if () then true else "foo" done end
+
+let main bar = C (- (if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then "Route66" else "Route66"))
+and foo (g : (int)) = dim b
+

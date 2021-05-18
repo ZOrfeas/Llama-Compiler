@@ -1,0 +1,13 @@
+type c = C | B
+
+let main (b : bool ref) e d = while (false) do while "bar" do 21 done done
+
+let a g d (g : int) = let mutable main : bool in (match () with
+  ('\n') -> 0.0
+| g -> false
+end
+)
+and g e (d : char) bar = delete (delete ((if 42.0 then '\'')))
+and foo g e = d
+and a bar main = new (float)
+

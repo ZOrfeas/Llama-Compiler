@@ -1,0 +1,20 @@
+let g = while delete 'a' do while "bar" do false done done
+and a a main f = for foo = () to "foo" do ('\n') done
+and e a (main : c) : bool = while delete "bar" do (42.0 mod '\n') done
+
+type c = Cons | Nil of array of char ref
+
+type f = A | C | Empty | C of bool (e)
+
+type c = A | A | Cons | Cons
+
+type b = Cons | Cons of float float int -> unit | Tree | Empty
+
+type e = C | B of bool unit (unit) float | D
+
+let rec mutable c
+
+let rec c f = (e[42.0,42.0] = (while 28 do true done))
+
+let f d (d : int) = begin for d = '\'' to "Name:\t\"DouglasAdams\"\nValue:\t42\n" do begin 3.14 end done end
+

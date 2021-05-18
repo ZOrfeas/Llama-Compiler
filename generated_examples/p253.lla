@@ -1,0 +1,6 @@
+let rec f g a : bool ref = begin if 0 then (()) end
+and a c d d = let bar main c (g : int) = '\''
+and b = ()
+and f (bar : char) (foo : char) main : float = 3.14 in (- true)
+and d (e : char) g e = (delete 0.0 := ((false /. true)))
+

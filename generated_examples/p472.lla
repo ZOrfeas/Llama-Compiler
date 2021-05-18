@@ -1,0 +1,15 @@
+let g b : float = if "bar" then (new (unit ref)) else match 'a' with
+  d -> false
+| 'a' -> 0.0
+end
+
+and c foo = f
+and mutable f
+and main : int = A (foo[delete ((false)),for g = 6 downto () do false done]) ((for a = () downto () do 19 done)) (((() / ()) == ((()))))
+
+let mutable b
+and b foo main e b = let bar g foo g = true
+and d bar bar (a : bool -> array [*] of ((a)) ref) foo = false
+and g (main : unit) c c : unit = 'a' in (delete 31)
+and c main foo (d : array of char -> float) : int = delete (begin d[not (),dim e] end)
+

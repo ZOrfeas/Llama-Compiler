@@ -1,0 +1,10 @@
+type b = C of e ref int b -> array [*] of bool unit
+
+let rec foo c (main : array of unit) = delete (new unit)
+and foo d e = -. (not (+. (dim d)))
+and foo (a : float) = B (g[dim 1 b,dim 1 a])
+and g = for bar = true downto 12 do dim 2 foo done
+and d bar (d : int -> char) = (('\n') && (begin '\'' end))
+
+type f = C
+

@@ -1,0 +1,14 @@
+let a c g = dim 2 c
+and main bar bar (e : array [*,*] of char) = (while "Route66" do "foo" done *. (+. false))
+and a = if 0.0 then while 0.0 do "foo" done
+
+type a = Cons
+ and f = B | Empty | Nil
+ and main = D of int e b ref int
+
+let mutable foo[foo[new int -> int]] : float -> array of int ref ref
+and f e e = delete ((new unit < (begin 42.0 end)))
+and e = new unit -> (unit)
+and f f = ((new bool -> bool /. (dim 2 d)))
+and f f foo (foo : char ref -> float) b : bool = if () then (while false do 42.0 done) else for f = 'a' downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do true done
+

@@ -1,0 +1,20 @@
+type d = C | Nil | A of int float -> bool (bar) char | Nil
+
+type main = Nil of int array of unit -> float -> c ref
+ and b = A | B of array [*,*] of char ref -> int -> char -> float -> int int array [*] of char | Nil of array of float
+
+let bar d e (f : bar) a = match (2.56 /. 25) with
+  D (e) false '7' -> match '7' with
+  false -> 'a'
+end
+
+end
+
+and e foo foo f = for d = "foo" downto false do new (bool) done
+and g = match -. 'a' with
+  false -> let mutable f["bar"]
+and bar (f : (array of ((char)))) foo a = "foo"
+and bar e bar f : array of main -> unit = 30 in false
+end
+
+

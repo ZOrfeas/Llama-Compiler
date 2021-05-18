@@ -1,0 +1,11 @@
+let main = e[if '7' then ("Name:\t\"DouglasAdams\"\nValue:\t42\n")]
+and e c d = begin while match 33 with
+  ('\n') -> ()
+| (+.42.0) -> false
+end
+ do delete () done end
+and c (g : bool) = delete (if () then (begin '\'' end) else let e g = true
+and main main f : bool = '\n' in ())
+and bar d d = new array of int
+and c d b c = for c = false downto true do b done
+

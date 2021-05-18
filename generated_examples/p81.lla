@@ -1,0 +1,4 @@
+let a (foo : char ref) = begin if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (dim 1 g) else if "Route66" then () end
+
+let e c (foo : char) (c : foo) a = (dim 2 e)
+

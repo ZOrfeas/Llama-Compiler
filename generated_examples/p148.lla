@@ -1,0 +1,17 @@
+let foo foo a bar = (if '\n' then "bar" else 5 / (for g = () to 18 do "bar" done))
+and d g g = if "Route66" then Cons "Name:\t\"DouglasAdams\"\nValue:\t42\n" '\n'
+and main : unit = dim 2 c
+and b : int = (! (a[(() mod '\'')]))
+and bar main = while main false "Name:\t\"DouglasAdams\"\nValue:\t42\n" 'a' do if 'a' then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else 13 done
+
+let f d a g f = begin c[(! "foo")] end
+and c (a : f -> float) f g = match for d = () to true do '\n' done with
+  22 -> new char ref
+end
+
+and foo main (b : char) d main = for d = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto '7' do while 19 do 0.0 done done
+and foo (main : unit) (bar : bool) g = dim 1 e
+and d f (c : (unit)) = delete (begin for foo = 6 downto '\n' do () done end)
+
+type main = C | Cons of f unit c ref ((bar))
+

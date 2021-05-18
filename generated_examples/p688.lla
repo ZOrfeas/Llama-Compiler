@@ -1,0 +1,13 @@
+type main = B | D of float int array of char ref | A | C of char bool int
+
+type main = C | Tree of char ((bool)) float -> int
+
+let foo bar a bar : (((int -> (int))) -> unit) = (let g = ()
+and main b = false
+and f d foo = true
+and main = 42.0
+and c foo = "Route66" in false = (new g))
+and f b (e : array [*] of array of bool) c main = begin begin for bar = '7' to 3.14 do 0.0 done end end
+and d main = for f = false to () do a done
+and a a g (f : g) g : foo = Tree (dim 2 a) (while (()) do (2.56) done)
+

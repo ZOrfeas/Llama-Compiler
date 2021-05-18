@@ -1,0 +1,10 @@
+let e = dim a
+and foo f (g : bool) b e = not (while foo["Name:\t\"DouglasAdams\"\nValue:\t42\n",()] do for foo = 18 downto 17 do "foo" done done)
+and g g f foo = if 3 then (for d = '7' to 'a' do 42.0 done) else let g c e = 42.0
+and g c f foo (bar : bool ref -> array [*,*] of array of float ref ref -> (float)) = 42.0 in 29
+and a c d e = dim main
+
+type c = B | A
+
+type main = Cons
+

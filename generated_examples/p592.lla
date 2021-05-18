@@ -1,0 +1,19 @@
+let foo a a bar = match dim 1 e with
+  '\n' -> (0.0)
+| '7' -> dim 1 b
+| (+15) -> begin 34 end
+end
+
+and bar f main d (e : bool) = (d[19] >= (main[(),30]))
+and a main = let rec d foo e = 23
+and a e c (foo : unit) = "foo"
+and b f main foo = '7'
+and g bar : float = 3 in (while 42.0 do 3.14 done)
+
+type c = Tree | Empty of array [*,*] of int -> float ref | Cons
+ and g = B | B | Empty | B
+
+type d = A | Tree of bool int f array of char | Empty of float
+ and bar = Cons | Empty | B | B
+ and main = Tree | B of (unit) | Tree | A
+

@@ -1,0 +1,19 @@
+let d f foo = begin dim 2 f end
+and d = foo (dim 1 e) (let c b f = '\n'
+and a (e : bool) foo e = '7'
+and b foo main main foo = 13
+and a g d = '\''
+and b bar b (main : unit) = 23 in (while 0.0 do true done)) (begin delete (let rec c foo (g : a) (foo : bar) = true in "Route66") end)
+and mutable b[g[(match '7' with
+  false -> 10
+| f -> '\n'
+| '\'' -> false
+end
+)],(a[C,+. (C)])]
+and e d = delete (- (if 26 then () else false))
+and main a (bar : float) (e : bool) (main : char) = for f = 15 downto '7' do a["Name:\t\"DouglasAdams\"\nValue:\t42\n"] done
+
+type bar = C | D
+
+type b = C of bar array of char bool array [*] of (unit) | B of char
+

@@ -1,0 +1,23 @@
+let a bar d a (f : int) = match while 'a' do () done with
+  (false) -> for bar = false downto 10 do () done
+end
+
+and bar d a g : char = let bar (bar : unit) g (main : (float ref)) g = 5
+and a c (b : f) f : int ref = 2.56 in (foo["foo"])
+and d f d a = dim main
+and c g = for b = () downto 16 do f[false,'\n'] done
+
+let a = -. (dim 2 e)
+and d a e f (f : (array of array [*] of char -> g) -> int -> unit ref -> bool) = new foo
+and f = -. (begin e (delete 'a') (while false do true done) (begin () end) end)
+and main (d : float) e b e = match for f = true to () do '\'' done with
+  (+.42.0) -> for d = 19 to "foo" do 2.56 done
+end
+
+
+let d main (c : int) = e[new (array [*,*] of bool)]
+and mutable g[while delete false do foo false done,bar[(while () do 25 done)]] : array [*] of f
+and foo = (dim main >= (foo[()]))
+and a = +. (for c = 21 to '\n' do dim 1 e done)
+and mutable a[(new e ; (new bool))]
+

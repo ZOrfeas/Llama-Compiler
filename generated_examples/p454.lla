@@ -1,0 +1,22 @@
+let rec d (d : float) = Cons (delete (d[if "Route66" then 42.0,for f = 3.14 to 35 do () done]))
+and g (f : char) b = if "foo" then delete ()
+and c bar = (dim 1 main +. (match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  true -> 26
+| 42.0 -> "bar"
+end
+))
+and main = delete (let f = ()
+and g (d : d) main = ()
+and mutable g[0.0]
+and d f foo (e : (unit -> g)) : float -> bool = true
+and f = 42.0 in (delete '\n'))
+and c = let c b (f : array [*,*] of ((unit -> float)) ref) = 30 in (b[(),0.0])
+
+let main = d[while bar () "Name:\t\"DouglasAdams\"\nValue:\t42\n" 0.0 do begin '\'' end done]
+and c = bar[let d e g = 14 in (! true),for b = 42.0 downto 2.56 do begin () end done]
+and foo e main e b = for c = false downto 42.0 do while 42.0 do () done done
+and e e g = (e[-. (+. ())])
+and mutable b[e[new char,if 0.0 then (let b d g (e : char) bar = '7' in true) else dim 2 bar]]
+
+type main = C | Cons
+

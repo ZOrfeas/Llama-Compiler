@@ -1,0 +1,12 @@
+type d = Empty | Nil of bool bool unit unit -> char | Cons | Tree
+
+let foo f f g = match a[19,'\''] with
+  D -> for a = 3.14 to "Route66" do false done
+end
+
+and e : int = while d["Name:\t\"DouglasAdams\"\nValue:\t42\n"] do (13) done
+and a = - (delete ((0.0 ++ "foo")))
+and a main foo = - (if 3.14 then ('a'))
+
+type a = Cons | C
+

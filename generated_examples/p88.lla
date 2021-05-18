@@ -1,0 +1,11 @@
+type c = D
+
+let d : float = (foo (let mutable foo[42.0] in 21) (let b (bar : unit) : int = ()
+and e main g f main : bool = 0.0
+and e bar main bar foo = 42.0
+and c (a : array [*] of bool) e (b : array of array [*] of char) b = true in 28) (for bar = 0.0 downto 42.0 do () done))
+and foo e d = let mutable bar[32]
+and d (main : int -> char) foo d : array of (array [*] of (bool ref) -> char) = '\n' in ((()))
+
+type main = Empty | C of bool int
+

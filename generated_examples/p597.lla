@@ -1,0 +1,3 @@
+let b b b = (if true then 0.0 == (Tree true 42))
+and mutable c
+

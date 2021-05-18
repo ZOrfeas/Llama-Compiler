@@ -1,0 +1,4 @@
+let e f foo = while begin () end do while true do "bar" done done
+and g f bar g bar = if () then while () do 'a' done
+and f : bool = (c[2] != (foo[42.0,3.14]))
+

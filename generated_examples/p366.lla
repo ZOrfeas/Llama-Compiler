@@ -1,0 +1,20 @@
+let g = main (not (match '\n' with
+  b -> 'a'
+end
+)) (- (bar[D 'a' 42.0 42.0]))
+and b f (main : bool -> array [*,*] of (char) ref ref ref) = delete (match let rec f d f bar (foo : int) : bool = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and f bar = '\'' in () with
+  e -> (false)
+end
+)
+and a (b : bool) = delete (while let a b = true in 42.0 do dim 2 f done)
+
+let e b main g bar = delete (new float)
+and e d bar = - (dim g)
+and b c (main : char) = not (match let main (foo : array of bool -> (char)) b c = '\n'
+and b b c = true in "bar" with
+  b -> if 38 then '\''
+| 42.0 -> c
+end
+)
+

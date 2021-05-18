@@ -1,0 +1,8 @@
+type bar = C
+
+type b = B | B
+ and foo = A of bool a g | Empty
+
+type a = Tree of array [*,*] of e int b
+ and bar = Tree of f unit g -> (float) bool | A | Tree
+

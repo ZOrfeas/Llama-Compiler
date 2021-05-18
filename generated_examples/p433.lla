@@ -1,0 +1,15 @@
+let main : bool ref = while match 3.14 with
+  true -> 0.0
+| ('7') -> true
+| (((-.2.56))) -> false
+end
+ do let a c e c g = ()
+and c d (bar : int) f = "foo"
+and f = "Route66"
+and bar main = '\'' in 27 done
+
+let e main = d
+and e : float = main[dim b,let f a = '\n'
+and b = ()
+and bar f d foo d : int ref ref = false in (while '7' do false done)]
+

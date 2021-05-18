@@ -1,0 +1,15 @@
+type a = A of bool -> (bool) char (d) | A | B | B
+ and b = Empty
+
+type bar = Cons | Nil
+
+let e = dim 1 e
+and g a = for foo = '7' to () do match false with
+  bar -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| 2.56 -> '\''
+end
+ done
+and g = new char
+and main = dim foo
+and foo (d : int) (f : array [*,*] of bar) b f = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then (+ 2.56) else while 2.56 do true done
+

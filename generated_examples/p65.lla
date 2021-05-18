@@ -1,0 +1,7 @@
+let a e bar = match ! 1 with
+  Cons (+.42.0) b 0.0 -> delete 42.0
+| false -> for b = () to 'a' do "Route66" done
+| ('\n') -> main[false]
+end
+
+

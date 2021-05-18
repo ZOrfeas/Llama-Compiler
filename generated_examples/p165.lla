@@ -1,0 +1,18 @@
+type main = Empty
+ and foo = Cons | Cons | Tree | Nil
+
+let mutable a[begin match while 39 do 29 done with
+  (+.42.0) -> if 0.0 then ()
+| (-3) -> Empty
+end
+ end,if '7' then for a = 'a' to '\n' do true done]
+and main = let a = false
+and main g f main : float = 42.0
+and e foo e bar bar = '\n'
+and f d = '\n' in (Cons "foo" 16 false)
+and d e bar main = delete (B ((while () do 29 done)))
+
+let e = let rec b (g : g -> float -> float) foo (main : unit -> bool ref -> array of float -> unit) = 42.0
+and d = "bar" in ((true))
+and d = (begin not (delete '\'') end)
+

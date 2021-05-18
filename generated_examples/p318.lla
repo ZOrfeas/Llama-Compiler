@@ -1,0 +1,21 @@
+let d e = begin begin for f = () downto 'a' do '7' done end end
+and f bar = new int
+and c : float = a[match dim 1 g with
+  (+5) -> delete '\''
+| '\'' -> new bar
+end
+]
+
+let mutable main
+and d main (g : array [*] of (int)) = if "foo" then (if '\n' then 15) else match "Route66" with
+  ((e)) -> 8
+| ((((Empty B (+0) false)))) -> 3.14
+| D true (bar) main -> true
+end
+
+and g e = let e main b d c = "Route66" in (e['a'])
+and main c g e = ((("foo" *. '7')))
+and e = (for f = () to 34 do 0.0 done /. (delete '7'))
+
+type b = Tree | Nil | B of bool f (bar) ((char -> array of float -> unit -> bool -> a -> (char))) ref | Cons
+

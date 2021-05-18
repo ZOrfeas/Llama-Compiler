@@ -1,0 +1,13 @@
+type foo = Empty | A
+
+type c = B | Empty of int
+ and e = A of foo int bool
+
+let main e (f : (array of float)) (f : int) e = + (((37 >= '7') = (('7' ++ 31))))
+and main bar e c = f (let f = () in (while "foo" do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done))
+and main main bar d b = for d = "bar" downto 0.0 do for c = 10 to '\'' do 31 done done
+and c = g[for foo = 2.56 to 2.56 do (() /. 39) done,Empty (new unit) ((for g = '\n' downto 42.0 do false done))]
+and g d (bar : (bool)) a = while let b (b : unit) main a g = false
+and bar e e b bar = "foo"
+and c e g (g : f ref) g = 41 in () do while 17 do '\n' done done
+

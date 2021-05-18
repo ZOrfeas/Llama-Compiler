@@ -1,0 +1,3 @@
+let e g bar = if true then (begin "foo" end) else dim 1 foo
+and c (a : float) d : bool = while new e ref do e[true] done
+

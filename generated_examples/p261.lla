@@ -1,0 +1,13 @@
+type f = D | Cons of unit | Empty of array of bool
+ and a = Cons of unit array of array of bool | B | Cons
+ and b = Tree | D | C
+
+let a f (d : (array [*,*] of float ref ref -> char) -> c -> char ref) = if "bar" then while "foo" do 42.0 done
+and e g : unit = begin D (new ((bool)) ref) (match '\'' with
+  Nil f -> false
+end
+) end
+and d bar e e e : char = new float ref
+
+type b = D of bool char -> bool -> float ref bool a | Empty | Nil | A
+

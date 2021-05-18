@@ -1,0 +1,19 @@
+type foo = C of char unit bool | Empty
+ and c = D | Empty
+
+let rec g b e = let c f a = () in (new char)
+and g g = begin while new float do while 35 do 3.14 done done end
+and g : array of d = foo[while new foo do match 41 with
+  false -> '\n'
+| b -> 17
+| Tree true -> 16
+end
+ done,delete (- (new char))]
+and d g e = if false then (if () then "foo" else 42.0) else Tree
+
+let c (d : f) bar b = match new bool with
+  '7' -> Tree
+| 12 -> begin false end
+end
+
+

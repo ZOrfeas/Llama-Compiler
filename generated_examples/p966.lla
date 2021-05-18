@@ -1,0 +1,6 @@
+type bar = A | D of b
+
+type e = Cons
+
+type foo = A
+

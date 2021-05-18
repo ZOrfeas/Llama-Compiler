@@ -1,0 +1,18 @@
+let g b = +. (not (dim g))
+and f d d d (g : bool -> float) : float ref = (for c = "bar" to 19 do () done <> (match 38 with
+  g -> false
+end
+))
+and bar d foo (foo : char) b : int -> int -> int -> array [*,*] of (unit) = if 3.14 then match 0.0 with
+  (-11) -> ()
+| false -> ()
+| false -> 0.0
+end
+
+and c = c
+
+let foo (foo : int) d d = if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then new (float)
+and e (foo : array [*,*] of unit) c e : unit = let rec c d foo = 0.0
+and e a d main : char -> c = 42.0 in (new unit)
+and bar foo d = c[b[new bool,not (if 0.0 then () else "Route66")]]
+

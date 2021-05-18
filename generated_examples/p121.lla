@@ -1,0 +1,9 @@
+let main g (e : (unit)) foo c = let f f d : (float) = "Route66"
+and a b f : float = 2.56
+and c a = ()
+and main a a d d = 24
+and g g f = false in ((()))
+and bar e f d e = begin ! (begin ! true end) end
+and bar = (if false then false ++ (! 2.56))
+and main g = for b = "bar" downto 42.0 do if () then true done
+

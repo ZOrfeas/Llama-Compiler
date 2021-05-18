@@ -1,0 +1,22 @@
+let bar main foo main main = match delete () with
+  31 -> ! "foo"
+| true -> begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+| (-22) -> if () then "Route66"
+end
+
+and c (a : int) : (foo -> array [*] of (array of bool)) = match delete false with
+  Tree true -> match '7' with
+  '\n' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| a -> false
+| c -> "Route66"
+end
+
+end
+
+and mutable c[begin dim 2 foo end,dim b]
+
+let g foo foo f = new (int)
+and mutable f[B (let f e a main = () in (for g = 30 to 27 do '7' done)) (f[bar[Cons 42.0 "foo"]]),new char] : unit
+
+type main = Tree of bool bool float | Empty
+

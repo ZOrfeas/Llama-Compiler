@@ -1,0 +1,12 @@
+let b e d e foo = let f : unit = 'a'
+and bar a a e d = 'a' in (Cons true 22 ())
+and f d c g = dim 2 main
+and f (bar : bool) = begin dim a end
+and c d = dim 2 g
+and c (foo : array [*,*] of char -> float) (g : unit -> (char)) e (g : char ref) : a = while match () with
+  false -> 0
+| (-.42.0) -> '\''
+| false -> "Route66"
+end
+ do -. 'a' done
+

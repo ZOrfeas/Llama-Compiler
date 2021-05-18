@@ -1,0 +1,7 @@
+type g = Empty | Nil of (unit) int | Tree | B
+ and main = Nil of unit char int unit | C
+
+type foo = Cons | D of (b -> (char ref -> int)) int ref -> char -> bool unit array of bool
+
+let main = ((not 1 mod (C 'a' 11)))
+

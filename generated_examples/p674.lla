@@ -1,0 +1,10 @@
+type d = A | Nil of int | Cons
+ and c = C of f -> c | Nil | B of f | C
+ and c = Nil of char c | B of unit char ref | D of ((bool)) char -> unit -> array [*] of float -> float bool float
+
+type main = Empty
+ and c = C of float bool
+ and foo = Empty of bool float foo | Cons | B | B
+
+type b = B of array of array of array of bool -> unit -> (int) | C | A
+

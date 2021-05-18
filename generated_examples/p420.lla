@@ -1,0 +1,5 @@
+let f (g : float) bar main = C (delete (new unit)) (delete (g))
+
+let main d d foo b = ((34) <> (delete '7'))
+and b b b (a : float -> array [*,*] of bool -> unit) = (main[42.0] - ((3.14)))
+

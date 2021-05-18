@@ -1,0 +1,7 @@
+let b (bar : unit ref ref) = dim bar
+and f b = for b = 3.14 to () do dim d done
+
+let b c = for f = () downto false do if "foo" then "bar" done
+and d main g (c : float ref -> float) d = let g d (foo : float) (d : float) = ()
+and bar d = 42.0 in (g["Route66"])
+

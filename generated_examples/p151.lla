@@ -1,0 +1,13 @@
+let main (e : array of array [*] of array of int -> float) = match if "foo" then "bar" else 37 with
+  d -> ('a' ; ())
+| C -> begin () end
+| true -> delete 42.0
+end
+
+and bar bar c = while delete 'a' do ("Route66" *. '\n') done
+and main = if () then (let g (bar : bool) f d main = "Route66"
+and g b = '\''
+and d = 10
+and bar g (c : unit) a main = true in '7') else begin () end
+and foo (a : bool) c = begin +. (for b = "Route66" to 6 do 40 done) end
+

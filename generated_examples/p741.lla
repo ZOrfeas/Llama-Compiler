@@ -1,0 +1,10 @@
+let main (d : float) b g bar = delete (dim foo)
+and bar g bar b foo = while dim 2 bar do if 3.14 then "foo" done
+and main = dim 2 d
+
+let foo = match begin "bar" end with
+  '\n' -> foo
+| f -> new a
+end
+
+

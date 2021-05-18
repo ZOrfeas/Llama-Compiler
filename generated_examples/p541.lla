@@ -1,0 +1,7 @@
+type main = Nil | Tree
+ and c = Cons | B | Tree of array [*,*] of char ref ref array [*,*] of b ref unit -> bool main -> float
+
+type g = D | Tree | Nil
+
+type a = Cons of unit | A
+

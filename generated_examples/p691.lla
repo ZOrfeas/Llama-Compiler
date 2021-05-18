@@ -1,0 +1,15 @@
+type foo = Nil
+
+let main b bar = new bool
+and foo d b d (f : g) : char = let d f a d a = "bar"
+and f e (d : int) = 42.0
+and b (a : int) = true
+and mutable main[38,false] in (e['a','a'])
+and main g foo = while dim 1 c do new int done
+and bar main a bar : (unit) = let e a : array of unit = 3.14
+and c a c c = '\n'
+and c foo (d : b) (f : bool) = '7'
+and e = () in (if () then '\n' else 3.14)
+
+type a = A | Empty | Empty | A of array of bool -> char float unit b
+

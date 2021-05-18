@@ -1,0 +1,28 @@
+let mutable f[Cons (delete ((match '\n' with
+  (false) -> true
+end
+))) (while match "foo" with
+  (+.2.56) -> 17
+| (('7')) -> false
+end
+ do new int done) (match for foo = true to 11 do '\'' done with
+  'a' -> e["Route66",26]
+| e -> match false with
+  B -> 'a'
+| Empty C (-30) (+36) 42.0 A (-28) ((((-16)))) -> 15
+end
+
+| true -> delete ()
+end
+)] : array [*,*] of unit -> array [*] of array of bool ref ref
+and mutable d[new array of bar,delete (let b c (bar : char) = '7' in (let main b (bar : unit) (d : (array of c ref -> (foo))) (g : float) = false
+and foo d foo = true
+and b foo b : char = ()
+and main c = '\'' in 31))] : bool
+and g (b : int) = for main = "bar" downto () do e[()] done
+
+type g = Empty | B of char char
+ and bar = A | C of (char) float ref unit bool -> (float) | Cons | B
+
+type g = D
+

@@ -1,0 +1,19 @@
+let b g = let foo e foo f = true in (match 36 with
+  false -> "foo"
+| ('\n') -> true
+| ('a') -> 42.0
+end
+)
+and mutable f[begin c[if false then "Route66" else 3.14,e (match 'a' with
+  true -> 3.14
+| true -> 13
+end
+)] end]
+and c (d : array of int -> int ref) bar c = C (for g = 14 downto 42.0 do c["Name:\t\"DouglasAdams\"\nValue:\t42\n"] done)
+and mutable f[g[b[for b = true to true do "Route66" done,(('\''))]]]
+
+type a = Empty | C of (bool -> int ref) array [*,*] of f unit | D
+ and g = Cons | D | Tree | B
+
+type foo = Tree | Cons of unit -> f array of float
+

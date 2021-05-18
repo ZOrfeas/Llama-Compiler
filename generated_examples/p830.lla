@@ -1,0 +1,9 @@
+let rec bar f g a bar : float = if 42.0 then (if true then true else 4) else begin 42.0 end
+and main main (b : foo) = match if 2.56 then 'a' else "bar" with
+  main -> if '\'' then () else 'a'
+| (-.42.0) -> if false then "Route66"
+end
+
+and mutable b[while (true ; 3) do ("foo" || 11) done]
+and a (main : (bool)) d = for d = true to false do while () do 42.0 done done
+

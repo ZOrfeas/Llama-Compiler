@@ -1,0 +1,53 @@
+type f = Empty | C | C | Nil of ((char)) int
+ and f = D | Cons | Nil | Cons of ((c ref)) int -> bool ref g
+
+let f = match if 12 then 'a' with
+  0.0 -> let foo b f = 42.0
+and b foo (main : char ref) bar bar : bool = ()
+and b a g = ()
+and foo (foo : char) foo f = 35
+and main (c : int) = true in ()
+end
+
+and foo (f : float) a e a = while d[false] do for bar = false downto 6 do 25 done done
+and a d = dim 1 bar
+
+type main = Nil | B of int foo bar bool ref | Empty
+ and bar = A
+ and d = Cons
+
+type g = Empty | A | Empty of int
+
+let foo e = (while dim foo do not () done)
+and c (c : (char)) foo (e : array of array of float -> a) = if 41 then (main['\n',()]) else ('a' /. 26)
+
+type foo = Cons | Empty | D | Empty
+ and foo = Empty of array [*] of char char | D | Cons of float -> unit float ref char ref
+
+let g (e : bool) a = Tree (for foo = '\n' downto () do dim 1 foo done) (let mutable main : array [*,*] of char -> a ref
+and main f g d = '\n'
+and mutable f in (dim 1 f)) (if 'a' then for g = "bar" to () do 4 done)
+and b e b = (("foo" == true) + (delete 7))
+and g = b[c (+ (begin 42.0 end)) (a (if false then false else '\n'))]
+and f c b c = + (for c = "bar" to () do for bar = '\'' downto 32 do 3 done done)
+and g f a (bar : (unit)) = dim main
+
+let d a (main : float ref) d = for d = 2.56 to 40 do if 42.0 then 42.0 done
+and f (g : char ref) f g d = for bar = true to 0.0 do while true do false done done
+and e e : bool = delete (dim d)
+and a main e g = while begin 42.0 end do delete "bar" done
+
+let foo : foo = delete (while e[2.56] do dim f done)
+and mutable b[match f[false] with
+  'a' -> match () with
+  D a ((-14)) (-8) -> ()
+| a -> 3.14
+end
+
+| '\n' -> Nil () '7' ()
+| a -> +. 3.14
+end
+,delete (+. (new array [*,*] of int))]
+and c g f = let mutable b['a']
+and a a : (float) = 42.0 in (if "foo" then '7')
+

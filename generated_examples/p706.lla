@@ -1,0 +1,21 @@
+let d c a (a : char -> bool -> array of float ref) g = (for c = 3.14 to 15 do true done + (begin 5 end))
+and b d foo (a : a) = g (match for c = '\n' downto '7' do "foo" done with
+  'a' -> match "Route66" with
+  (-17) -> "Route66"
+| 0.0 -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+| false -> "bar"
+end
+
+| Cons -> dim g
+| '7' -> match () with
+  f -> ()
+| (+21) -> '\n'
+end
+
+end
+) (g)
+and f b = Cons (for f = 'a' downto 'a' do begin false end done) (for bar = "bar" downto () do (true) done) (if false then Empty false "Name:\t\"DouglasAdams\"\nValue:\t42\n" 2)
+
+let bar = dim 1 b
+and main : array [*,*] of bool = new array of float
+

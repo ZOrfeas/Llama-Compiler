@@ -1,0 +1,7 @@
+let f : d ref = (match '7' with
+  main -> 2.56
+| (-36) -> '\n'
+end
+ - (if 16 then () else true))
+and e bar b e : (int) = b (- (for bar = 0.0 downto '7' do 40 done))
+

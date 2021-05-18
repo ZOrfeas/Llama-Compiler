@@ -1,0 +1,5 @@
+let mutable f[if 42.0 then new f,if "Route66" then (while true do 8 done) else while 6 do 3.14 done]
+and f = begin for main = '7' to 3.14 do for e = 10 to 42.0 do '\'' done done end
+and main f main bar = for foo = 20 to true do delete 21 done
+and f b c (d : float) = (new g >= (dim main))
+

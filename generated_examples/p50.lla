@@ -1,0 +1,19 @@
+type foo = Tree of int -> float ref ref | Cons of unit
+
+type f = Tree | D | Tree of bool float bool ref
+
+let main (foo : char) (e : d) main g = (for main = '7' downto 42.0 do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done > (new int))
+and c f b = let foo = ()
+and a b f = "foo"
+and a main f (a : bool ref) = "Route66"
+and c foo g main f = 18
+and mutable bar in (match "foo" with
+  ((+.2.56)) -> 11
+end
+)
+and g foo (g : array of unit) (f : (b)) c = a
+and a = while delete "bar" do match () with
+  '\n' -> 42.0
+end
+ done
+

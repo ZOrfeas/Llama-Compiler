@@ -1,0 +1,9 @@
+type b = Cons | C of unit | Nil | B of array [*] of char
+
+type g = B | C | Tree
+
+let rec b = c[match delete 2.56 with
+  (-29) -> Cons 2.56 0.0 '\''
+end
+]
+

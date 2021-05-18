@@ -1,0 +1,24 @@
+let rec d = for b = '\'' downto 42.0 do - '\'' done
+
+let rec mutable b[(("Route66" <> "bar") == (match 33 with
+  e -> true
+| '\'' -> ()
+end
+)),f[delete ((b[true])),match while "foo" do () done with
+  '7' -> while () do '\n' done
+| D ((f)) -> while "Route66" do 0.0 done
+| true -> ('7' == 3.14)
+end
+]] : unit -> float
+and bar f = if 'a' then ((true)) else dim 1 e
+and main c = dim bar
+
+let bar foo e f c = new char
+and f c = g[(dim 1 foo +. (for bar = () downto () do "Route66" done)),new foo -> char ref]
+and g (f : float -> bool ref) bar foo main = B
+and d e g foo a = (e[delete (match false with
+  '7' -> 'a'
+| true -> false
+end
+)])
+

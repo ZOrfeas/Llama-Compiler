@@ -1,0 +1,2 @@
+let a (g : bool) foo = + (delete (dim 1 foo))
+

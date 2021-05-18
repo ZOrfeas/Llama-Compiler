@@ -1,0 +1,32 @@
+type d = A of bool float | Tree of int float ref float (char)
+ and b = C of (bool) char | Cons of int char float array of array [*] of float ref
+ and f = A | Tree | Empty | D of e -> (array of bool) ref -> ((bool)) -> array [*,*] of array [*] of (int) -> bool -> e bool
+
+let g = match let d (e : array of float ref ref) (e : unit) main (g : array [*] of array [*] of array [*] of unit -> float ref) = 'a' in 2.56 with
+  (+21) -> (13)
+end
+
+and g e bar = (if "bar" then (let e b = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and foo g d (e : bool) = 0.0
+and d (g : (bar) -> ((float ref))) : char = "foo"
+and foo (g : array of int) bar d e : float = 10 in 2.56) else ("bar"))
+and main main e : bool = match a () 42 with
+  (+36) -> match 13 with
+  foo -> '7'
+| a -> '\n'
+| Tree (+.3.14) '\n' false -> "foo"
+end
+
+end
+
+and c main c (b : unit -> unit ref) = (match () with
+  false -> 'a'
+| 2.56 -> 31
+| g -> false
+end
+ mod (d[35]))
+
+type a = D of bool int (g) | D of foo char
+ and foo = A | D | Tree | D
+ and a = B of int (float) char float | A
+

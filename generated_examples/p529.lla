@@ -1,0 +1,8 @@
+type a = D | D | D | Nil
+
+type b = D
+ and a = Empty
+ and foo = B of (int) c (int) -> int ref char | Nil
+
+let mutable b[new b]
+

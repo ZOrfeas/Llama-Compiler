@@ -1,0 +1,9 @@
+let c b b g bar = +. (new array [*,*] of (char -> bool))
+and a c = while if false then () do not 'a' done
+and mutable foo : bool
+and bar bar (foo : g) (f : float) bar = dim 2 a
+
+type c = D of bool float -> char unit int | Tree
+
+type foo = B | Tree of bool char | Nil
+

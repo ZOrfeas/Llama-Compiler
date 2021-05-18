@@ -1,0 +1,12 @@
+let a foo (b : unit -> float ref) = new a
+and bar (e : bar -> int) (e : float) f e = -. (match dim c with
+  3.14 -> (34)
+| '7' -> for foo = 42.0 downto false do "bar" done
+| false -> (())
+end
+)
+
+type d = B | Tree of char | Nil
+
+let g c d = new (char) ref
+

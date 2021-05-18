@@ -1,0 +1,6 @@
+type main = Tree | B | B of int
+
+type main = A | Cons | D | Cons
+
+type e = Empty | A | A
+

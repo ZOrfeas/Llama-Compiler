@@ -1,0 +1,7 @@
+let foo g main = new array [*,*] of array [*,*] of int ref
+
+let rec c = delete (a[match 42.0 with
+  3 -> false
+end
+])
+

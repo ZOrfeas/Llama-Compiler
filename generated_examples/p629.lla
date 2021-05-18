@@ -1,0 +1,12 @@
+let f (a : int ref) d = + (while if 12 then 42.0 do C done)
+and d b (d : unit) d : unit = delete (while for c = 42.0 to () do '\n' done do while 11 do false done done)
+and a b b main c = dim d
+and foo e foo b = let c b : a = true
+and c foo bar f a = '7'
+and c b e = '\n' in (let e d foo g f = 2.56
+and g main = 42.0
+and c : char = 42.0 in 39)
+and a foo g (f : unit) b = g[begin new array of (array of char ref) ref ref end,d[dim 2 d,delete (while '7' do 0.0 done)]]
+
+let d g : float = b
+

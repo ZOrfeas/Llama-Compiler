@@ -1,0 +1,4 @@
+let bar = if false then delete 42.0
+and f main d (foo : float -> unit ref) foo : char = dim foo
+and main = (let b d foo = 42.0 in (! ()))
+

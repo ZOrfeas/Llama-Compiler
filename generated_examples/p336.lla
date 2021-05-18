@@ -1,0 +1,9 @@
+type f = Empty
+ and c = B
+ and e = C | Tree | D of char
+
+type f = Tree | A | B of float -> float e float | Tree of (foo) unit
+ and b = Cons
+
+type g = Nil of bool | A | Nil
+

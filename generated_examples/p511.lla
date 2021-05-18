@@ -1,0 +1,6 @@
+type a = A
+
+type c = A | Tree | Empty
+
+let rec mutable a
+

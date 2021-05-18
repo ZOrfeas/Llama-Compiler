@@ -1,0 +1,6 @@
+let rec c e (main : char) foo a = for d = '\'' downto () do for g = false downto true do "Route66" done done
+and c = let rec foo c foo (main : bool) = ()
+and d f main g = 2
+and foo main : int = '7' in ((5))
+and c foo e = for main = "foo" downto 25 do ! () done
+

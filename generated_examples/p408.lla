@@ -1,0 +1,10 @@
+type f = Empty of bool bool
+
+type d = Empty of char | D of (int) float int
+
+let d bar d e f = (match b[(),()] with
+  42.0 -> e[15]
+end
+)
+and a a c a c = dim 1 bar
+

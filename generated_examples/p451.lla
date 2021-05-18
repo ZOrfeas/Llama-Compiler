@@ -1,0 +1,6 @@
+let mutable g[for e = '7' downto 33 do new e done,begin not ((0 ++ "bar")) end] : (unit)
+
+type a = B of bool array of c ref float int | Cons | Tree | B
+
+type b = B | A | Nil of float unit -> char
+

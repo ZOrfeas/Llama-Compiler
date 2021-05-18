@@ -1,0 +1,75 @@
+type b = D of int
+
+type e = Nil | Tree | Cons | Empty
+ and bar = Nil of unit float int -> (char) -> (int) int | Tree
+
+type bar = Cons | Cons | D of bool bool foo
+
+let mutable bar[for e = () downto false do let rec b main f foo = () in () done,while match 3.14 with
+  true -> 37
+| true -> 3
+end
+ do (false) done]
+and main d b g a = begin match if "Route66" then false with
+  (+19) -> + 3.14
+end
+ end
+and e bar = +. ((dim foo == (match 36 with
+  Nil B true ('7') -> 42.0
+end
+)))
+
+type f = Nil of char unit char -> c | A of float unit | A
+ and bar = Tree of array [*] of (int) | Empty of unit
+
+let a (d : char -> array [*] of array [*,*] of main) foo c = foo[-. (new main),((false) mod (for g = 15 downto 42.0 do 42.0 done))]
+
+let b = match f[3] with
+  (false) -> + "Route66"
+| 42.0 -> if '\'' then true else false
+end
+
+
+let bar (e : unit) e f = -. (let b = 42.0
+and a : bool ref = false
+and c a g e foo = true
+and f d : array [*] of g -> array of int -> unit = '7'
+and mutable g[3.14,'7'] in (while () do '7' done))
+and e = match D "Name:\t\"DouglasAdams\"\nValue:\t42\n" 3.14 with
+  (-.2.56) -> while 'a' do 3.14 done
+| bar -> +. 22
+end
+
+and mutable g[match while 'a' do "Name:\t\"DouglasAdams\"\nValue:\t42\n" done with
+  '\n' -> (())
+end
+] : bool
+and e = let f e foo b e = 37
+and bar = "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+and d (foo : bool) (e : float) : bar ref = 3.14
+and d (foo : float) (b : array [*,*] of bool) f = false
+and foo = '\n' in (begin () end)
+and c a d a bar = - (if 0.0 then (dim 2 f) else while 42.0 do 12 done)
+
+let rec mutable d[new main -> char]
+and c main foo e : bool = match for bar = 40 downto () do 3.14 done with
+  41 -> ("bar")
+| D (-.2.56) -> while 42.0 do () done
+| (+.42.0) -> for c = "Route66" downto 2.56 do true done
+end
+
+and bar = (b[c[while 3.14 do 42.0 done],delete (Empty () 25 0.0)])
+and main f main = match let f d b b (f : bool) = ()
+and b c : bool = "foo" in "Route66" with
+  ('7') -> begin "Name:\t\"DouglasAdams\"\nValue:\t42\n" end
+end
+
+
+let foo b c foo foo = (foo[2.56] <= (Cons))
+and main c (d : unit) = ((42.0) - (match "Name:\t\"DouglasAdams\"\nValue:\t42\n" with
+  2.56 -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+))
+and foo (f : array [*] of array of float -> int) bar f g = - (Nil (a[delete "Route66"]) (("bar" != false)) ((true - "bar")))
+and foo g f = if '7' then (begin 'a' end) else Empty 0 "Route66" '7'
+

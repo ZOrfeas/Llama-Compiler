@@ -1,0 +1,17 @@
+let g a foo d g : (array of bool ref) = match if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then '\n' with
+  true -> ! '\''
+| bar -> (42.0)
+end
+
+and b main = for main = "Name:\t\"DouglasAdams\"\nValue:\t42\n" downto 2.56 do (33) done
+and f (main : bool) a bar c = d (new unit) (match begin '\n' end with
+  (+11) -> while "Route66" do "foo" done
+end
+) (delete (main))
+and mutable d[while let g a b = 0.0 in true do match 38 with
+  (true) -> 21
+| ((-.3.14)) -> 35
+end
+ done,- ((new bool -. (delete false)))]
+and f f bar = c[delete (if 42.0 then 22),delete ((let e a e (main : unit) = '7' in 5))]
+

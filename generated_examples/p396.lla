@@ -1,0 +1,17 @@
+let mutable e : char
+and main b = begin match -. 0.0 with
+  true -> for e = 41 to "foo" do () done
+| main -> C 42.0
+| d -> (7)
+end
+ end
+
+let e (b : d) (e : int) main = (('\'') * (delete 'a'))
+and f b = (('a' mod 3.14) mod (new array of array [*,*] of c))
+and foo bar = delete (let d f = '\''
+and foo b = 2.56 in (match '\'' with
+  (-13) -> false
+end
+))
+and g (c : (g)) main g a = ! ((begin '7' end +. (f[true,'\''])))
+

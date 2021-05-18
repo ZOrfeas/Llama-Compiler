@@ -1,0 +1,16 @@
+let d main c = match match 42.0 with
+  (+24) -> 3.14
+| '7' -> '\''
+end
+ with
+  (-17) -> ('\n' * 2.56)
+| 'a' -> let b g foo d g = false
+and g = false
+and mutable bar[false,23]
+and c a = ()
+and g = "foo" in ()
+| (+9) -> if 'a' then ()
+end
+
+and b c = delete (dim 1 c)
+

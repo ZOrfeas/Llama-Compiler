@@ -1,0 +1,15 @@
+let mutable f
+and b f b = let rec c g b g e : unit = () in (for f = "foo" to false do () done)
+and mutable f[(dim 2 bar)]
+
+let rec main g d (c : foo ref) bar = begin +. (let f = 16
+and e (e : d) f c = "bar"
+and a (g : bool) b d d = 'a' in 42.0) end
+and a = for g = false to 42.0 do while false do "foo" done done
+and a = delete ((while 'a' do () done))
+and foo b main = match if 42.0 then "Name:\t\"DouglasAdams\"\nValue:\t42\n" else "bar" with
+  ('\n') -> let foo d (c : unit ref ref) e foo = 37 in ()
+end
+
+and c : foo = new bool
+

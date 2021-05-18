@@ -1,0 +1,11 @@
+type a = A of int -> foo -> array [*,*] of unit (float) char array [*] of array of int ref -> (bool -> bool)
+ and a = B | D of unit bool array [*,*] of bool ref int | D | Empty
+ and main = A of char c ref | A | C | Nil of array of unit float bool -> (float)
+
+let mutable f : e
+
+let b c foo = dim a
+and e a bar (f : char ref) main = ((for f = false to 42.0 do "bar" done))
+and bar a g = (dim c + (dim 2 foo))
+and bar = for e = false downto () do for d = 24 to true do 11 done done
+

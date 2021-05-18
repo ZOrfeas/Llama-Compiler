@@ -1,0 +1,9 @@
+let bar main = match if 0.0 then true with
+  Cons (+16) '\'' -> foo[36]
+end
+
+
+type f = Tree | Empty of bool -> array [*,*] of bool -> float ref int | Cons
+
+type g = C | Tree of unit bool float int | Empty
+

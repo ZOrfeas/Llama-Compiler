@@ -1,0 +1,8 @@
+let b (main : int) g = (begin new unit -> (array of int) -> ((array of (int))) end)
+and c = delete (for c = () downto () do if 42.0 then () else 2.56 done)
+and bar c b = (for bar = 'a' to false do new unit done)
+
+let bar d bar e f = begin if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then delete 2.56 end
+and f a b (g : char) = begin for g = "bar" downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 4 else 0.0 done end
+and f f d g bar = bar[f (c (dim b)) (a (for d = true to "Route66" do 2 done) (begin () end))]
+

@@ -1,0 +1,12 @@
+type c = C of int float char int | A of (unit) int bool | A | Cons
+
+type bar = D | A | C
+
+let foo a g = foo[if '\n' then match '\'' with
+  (-14) -> ()
+| false -> 18
+| g -> ()
+end
+,+. ((dim d))]
+and e (foo : float) c a e = while not "Route66" do ("Route66" mod '\'') done
+

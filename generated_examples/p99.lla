@@ -1,0 +1,6 @@
+let rec c (a : array of unit) (b : a -> bool) = e[! (match 42.0 with
+  (+8) -> '7'
+| bar -> '\''
+end
+),if 7 then (35)]
+

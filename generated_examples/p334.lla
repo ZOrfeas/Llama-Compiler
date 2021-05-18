@@ -1,0 +1,14 @@
+let f c f main : int ref = if 42.0 then (dim main) else a[19]
+and e a = while new unit do ('\n' +. '\'') done
+and d (f : char -> char -> int) e d (main : (char)) = (dim 2 e < (while 35 do () done))
+and bar c e = dim 2 bar
+and foo e (c : float -> char ref) c b = (Cons (for g = '7' downto 2.56 do false done) (not (begin () end)))
+
+let a (bar : int) g bar = delete (while new int do delete true done)
+
+let bar e g (foo : int) = let rec f : (bool -> unit -> int ref) = false
+and c g : (e) = '\n'
+and g foo e = 42.0
+and b f d d : unit = 0.0 in (for d = true to 7 do 3.14 done)
+and d main f = for e = true to "foo" do dim f done
+

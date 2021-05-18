@@ -1,0 +1,6 @@
+type f = A of bool
+
+type d = Empty
+
+let f = new (array of bool)
+

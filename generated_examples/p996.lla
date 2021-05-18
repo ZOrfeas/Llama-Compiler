@@ -1,0 +1,9 @@
+let mutable foo
+and b foo b a g : unit = (begin false end && (delete '\n'))
+and mutable a[-. ((match true with
+  6 -> ()
+| true -> 27
+| '\'' -> ()
+end
+))]
+

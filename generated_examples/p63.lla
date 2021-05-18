@@ -1,0 +1,7 @@
+let main bar foo b (bar : unit ref) = (new bool)
+and foo f f : array of bar = if () then (dim d) else foo[42.0]
+
+let f b (b : bool) bar (bar : unit) = b[begin dim 2 foo end]
+and d c foo : char = dim e
+and f c b = delete (bar[for a = () downto 42.0 do 7 done])
+

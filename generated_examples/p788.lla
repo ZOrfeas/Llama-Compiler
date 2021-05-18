@@ -1,0 +1,25 @@
+let d e bar b a = begin (while 2 do () done) end
+and a c bar = begin match new unit -> g ref ref with
+  true -> d[26,true]
+end
+ end
+and mutable bar
+
+let a d f f (d : bool) : bool = -. (C (f[delete 0.0,match 15 with
+  false -> ()
+| 0.0 -> 24
+end
+]))
+and b g (g : ((array of bool -> ((bool))) -> bar)) = not (delete (match "foo" with
+  f -> '\''
+| (+36) -> 2
+end
+))
+and c main foo e = for b = 42.0 downto "Name:\t\"DouglasAdams\"\nValue:\t42\n" do match 3.14 with
+  'a' -> "Name:\t\"DouglasAdams\"\nValue:\t42\n"
+end
+ done
+and bar (a : float ref) = let mutable b[38,'a']
+and f bar (d : int) (f : (float -> float -> int ref ref)) = 42.0
+and mutable foo[true,42.0] in (begin () end)
+

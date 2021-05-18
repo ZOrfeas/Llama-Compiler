@@ -1,0 +1,15 @@
+let mutable d[(match 2.56 with
+  foo -> "foo"
+| 39 -> "bar"
+| false -> "foo"
+end
+ > (new unit))]
+and d a : c = begin (bar 'a' '7' () != (not 2.56)) end
+and f (f : (unit)) = begin for b = "bar" downto '7' do a 'a' 'a' true done end
+and f d a main = if () then if () then false
+and main bar (foo : array of int) = while begin () end do match 0 with
+  (+41) -> 27
+| '\'' -> 9
+end
+ done
+

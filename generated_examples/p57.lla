@@ -1,0 +1,36 @@
+type bar = C
+ and bar = A | C
+
+let foo d g a = begin new unit -> bool ref end
+and b main e g = Empty
+and a e = while dim 2 foo do (0.0) done
+and e (f : array of char -> char) = Nil (a (not (delete ())) (+ (while 3.14 do false done))) (b[delete (D "bar" 25),new int])
+
+let b (c : char ref) main g main = begin bar[(42.0 >= 28)] end
+and a (c : bool) bar = let c c f = 0.0
+and c e = "Route66" in (for foo = 29 to false do true done)
+and a = new bool
+and f g bar bar f = not (let rec mutable d[false]
+and main (a : float -> g -> array [*] of array [*] of float -> char -> char -> bool -> char -> float -> g -> d) (b : char) g e : d ref -> char = "bar"
+and foo = 4
+and b f main d = 32
+and a e (d : (unit)) d = () in (begin true end))
+
+let bar foo : array of array of unit -> char = match for e = 'a' to 6 do false done with
+  '\'' -> begin () end
+end
+
+and main d foo foo main = d
+and bar a : float = delete (begin new int end)
+and mutable bar
+
+type foo = Cons | Tree
+ and c = Nil
+ and c = Nil | Tree | Tree | Tree
+
+type b = Empty | C
+ and e = Nil | B
+ and c = B | B | Empty of (float) c | B
+
+type g = Tree | C of unit | Cons of float ref | A
+
