@@ -124,7 +124,7 @@
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_list
-%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list comma_expr_2_list expr_2_list pattern_list
+%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list /*comma_expr_2_list*/ expr_2_list pattern_list
 %type<constr_vect> bar_constr_opt_list
 //%type<def_vect> and_def_opt_list
 //%type<tdef_vect> and_tdef_opt_list
@@ -302,10 +302,10 @@ expr_2
 | "begin" expr "end"                { $$ = $2; }
 ;
 
-comma_expr_2_list
+/* comma_expr_2_list
 : expr_2                            { $$ = new std::vector<Expr *>(); $$->push_back($1); }
 | comma_expr_2_list ',' expr_2      { $1->push_back($3); $$ = $1; }
-;
+; */
 
 expr_2_list
 : expr_2                        { $$ = new std::vector<Expr *>(); $$->push_back($1); }
