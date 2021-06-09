@@ -6,7 +6,7 @@
 
 #include "symbol.hpp"
 const std::string type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
-                                    "TYPE_string", "TYPE_char", "TYPE_ref", "TYPE_arrray", "TYPE_function" };
+                                    "TYPE_string", "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function" };
 
 //#include "parser.hpp"
 
@@ -34,7 +34,7 @@ private:
 public:
     BasicType(type t): t(t) { /* std::cout << type_string[t]; */ }
     virtual void printOn(std::ostream &out) const override {
-        out << type_string[t];
+        out << type_string[static_cast<int>(t)];
     }
 };
 
@@ -131,7 +131,7 @@ private:
     std::string id;
     Type *type;
 public:
-    Par(std::string *id, Type *t = new BasicType(TYPE_unknown)): id(*id), type(t) {}
+    Par(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): id(*id), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Par(" << id << ", " << *type << ")";
     }
@@ -171,7 +171,7 @@ protected:
     Expr *expr;
     Type *type;
 public:
-    Constant(std::string *id, Expr *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr(e), type(t) {}
+    Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): id(*id), expr(e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *type << ", " << *expr << ")";
     }
@@ -181,7 +181,7 @@ class Function: public Constant {
 private:
     std::vector<Par *> par_list;
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(TYPE_unknown)): Constant(id, e, t), par_list(*p){}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Constant(id, e, t), par_list(*p){}
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
         for(Par *p: par_list){ out << ", " << *p; }
@@ -198,7 +198,7 @@ private:
     std::vector<Expr *> expr_list;
     Type *type;
 public:
-    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
+    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Array(" << id;
         if(!expr_list.empty()) {
@@ -221,7 +221,7 @@ private:
     std::string id;
     Type *type;
 public:
-    Variable(std::string *id, Type *type = new BasicType(TYPE_unknown)): id(*id), type(type) {}
+    Variable(std::string *id, Type *type = new BasicType(type::TYPE_unknown)): id(*id), type(type) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Variable(" << id << ", " << *type << ", " << ")";
     }
@@ -336,7 +336,7 @@ class String_literal: public Literal {
 private:
     std::string s;
 public:
-    String_literal(std::string *s): s(*s) { type = new BasicType(TYPE_string); }
+    String_literal(std::string *s): s(*s) { type = new BasicType(type::TYPE_string); }
     virtual void printOn(std::ostream &out) const override {
         out << "String(" << s << ")";
     }
@@ -348,7 +348,7 @@ private:
     char c;
 public:
     Char_literal(std::string *c_string): c_string(*c_string) { 
-        type = new BasicType(TYPE_char); 
+        type = new BasicType(type::TYPE_char); 
         c = getChar(*c_string);
     }
     
@@ -391,7 +391,7 @@ class Bool_literal: public Literal {
 private:
     bool b;
 public:
-    Bool_literal(bool b): b(b) { type = new BasicType(TYPE_bool); }
+    Bool_literal(bool b): b(b) { type = new BasicType(type::TYPE_bool); }
     virtual void printOn(std::ostream &out) const override {
         out << "Bool(" << b << ")";
     }
@@ -401,7 +401,7 @@ class Float_literal: public Literal {
 private:
     double d;
 public:
-    Float_literal(double d): d(d) { type = new BasicType(TYPE_float); }
+    Float_literal(double d): d(d) { type = new BasicType(type::TYPE_float); }
     virtual void printOn(std::ostream &out) const override {
         out << "Float(" << d << ")";
     }
@@ -411,7 +411,7 @@ class Int_literal: public Literal {
 private:
     int n;
 public:
-    Int_literal(int n): n(n) { type = new BasicType(TYPE_int); }
+    Int_literal(int n): n(n) { type = new BasicType(type::TYPE_int); }
     virtual void printOn(std::ostream &out) const override {
         out << "Int(" << n << ")";
     }
@@ -419,7 +419,7 @@ public:
 
 class Unit: public Literal {
 public:
-    Unit() { type = new BasicType(TYPE_unit); }
+    Unit() { type = new BasicType(type::TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "Unit";
     }
@@ -451,7 +451,7 @@ class While: public Expr {
 private:
     Expr *cond, *body;
 public:
-    While(Expr *e1, Expr *e2): cond(e1), body(e2) { type = new BasicType(TYPE_unit); }
+    While(Expr *e1, Expr *e2): cond(e1), body(e2) { type = new BasicType(type::TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "While(" << *cond << ", " << *body << ")";
     }
@@ -463,7 +463,7 @@ private:
     std::string step;
     Expr *start, *finish, *body;
 public:
-    For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = new BasicType(TYPE_unit); }
+    For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = new BasicType(type::TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
@@ -473,7 +473,7 @@ class If: public Expr{
 private:
     Expr *cond, *body, *else_body;
 public:
-    If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) { type = new BasicType(TYPE_unit); }
+    If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) { type = new BasicType(type::TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "If(" << *cond << ", " << *body;
         

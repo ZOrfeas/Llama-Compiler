@@ -235,11 +235,11 @@ par
 ;
 
 type
-: "unit"                            { $$ = new BasicType(TYPE_unit); }     
-| "int"                             { $$ = new BasicType(TYPE_int); }
-| "char"                            { $$ = new BasicType(TYPE_char); }
-| "bool"                            { $$ = new BasicType(TYPE_bool); }
-| "float"                           { $$ = new BasicType(TYPE_float); }
+: "unit"                            { $$ = new BasicType(type::TYPE_unit); }     
+| "int"                             { $$ = new BasicType(type::TYPE_int); }
+| "char"                            { $$ = new BasicType(type::TYPE_char); }
+| "bool"                            { $$ = new BasicType(type::TYPE_bool); }
+| "float"                           { $$ = new BasicType(type::TYPE_float); }
 | '(' type ')'                      { $$ = $2; }
 | type "->" type                    { $$ = new FunctionType($1, $3); }
 | type "ref"                        { $$ = new RefType($1); }
