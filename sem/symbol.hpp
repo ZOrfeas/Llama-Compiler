@@ -17,6 +17,7 @@ enum class EntryType {
 class SymbolEntry {
 private:
 public:
+    std::string name;
     EntryType eType;
     virtual ~SymbolEntry() {}
 };
@@ -24,30 +25,30 @@ public:
 class VariableEntry: public SymbolEntry {
 public:
     type *t;
-    VariableEntry(const char* name, type *t);
+    VariableEntry(std::string name, type *t);
 };
 class ParameterEntry: public SymbolEntry {
 public:
     type *t;
-    ParameterEntry(const char* name, type *t);
+    ParameterEntry(std::string name, type *t);
 };
 class FunctionEntry: public SymbolEntry {
 public:
     type *t;
     std::vector<ParameterEntry *> parameters;
-    FunctionEntry(const char* name, type *t);
+    FunctionEntry(std::string name, type *t);
     void addParam(ParameterEntry *);
 };
 class ConstantEntry: public SymbolEntry {
 public:
     type *t;
-    ConstantEntry(const char* name, type *t);
+    ConstantEntry(std::string name, type *t);
 };
 class TypeEntry: public SymbolEntry {};
 class ConstructorEntry: public SymbolEntry {
 public:
     TypeEntry *customType;
-    ConstructorEntry(const char* name, TypeEntry *customType);
+    ConstructorEntry(std::string name, TypeEntry *customType);
 };
 
 class SymbolTable {
