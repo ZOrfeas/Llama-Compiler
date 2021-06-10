@@ -83,23 +83,27 @@ SymbolEntry* SymbolTable::lookup(string name, EntryType type,
 /** SymbolEntry method implementations */
 /*************************************************************/
 
-VariableEntry::VariableEntry(std::string n, type *t): SymbolEntry(n,t) {};
+VariableEntry::VariableEntry(std::string n, type *t)
+    : SymbolEntry(n,t,EntryType::VARIABLE) {};
 
-ParameterEntry::ParameterEntry(std::string n, type *t): SymbolEntry(n,t) {};
+ParameterEntry::ParameterEntry(std::string n, type *t)
+    : SymbolEntry(n,t,EntryType::PARAMETER) {};
 
 FunctionEntry::FunctionEntry(std::string n, type *t)
-    :SymbolEntry(n,t),
+    :SymbolEntry(n,t,EntryType::FUNCTION),
     parameters(new std::vector<ParameterEntry *>()) {};
 FunctionEntry::~FunctionEntry() { delete parameters; }
 
-ConstantEntry::ConstantEntry(std::string n, type *t): SymbolEntry(n,t) {};
+ConstantEntry::ConstantEntry(std::string n, type *t)
+    : SymbolEntry(n,t,EntryType::CONSTANT) {};
 
 TypeEntry::TypeEntry(std::string n, type *t)
-    :SymbolEntry(n,t),
+    :SymbolEntry(n,t,EntryType::TYPE),
     constructors(new std::vector<ConstructorEntry *>()) {};
 TypeEntry::~TypeEntry() { delete constructors; }
 
-ConstructorEntry::ConstructorEntry(std::string n, type *t): SymbolEntry(n,t) {};
+ConstructorEntry::ConstructorEntry(std::string n, type *t)
+: SymbolEntry(n,t,EntryType::CONSTRUCTOR) {};
 
 
 void ParameterEntry::setFunction(FunctionEntry *f)

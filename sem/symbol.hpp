@@ -23,7 +23,7 @@ public:
     std::string name;
     EntryType eType;
     type *ty;
-    SymbolEntry(std::string n, type *t): name(n), ty(t) {};
+    SymbolEntry(std::string n, type *t, EntryType eType): name(n), ty(t) {};
     virtual ~SymbolEntry() {}
 };
 /*************************************************************/
