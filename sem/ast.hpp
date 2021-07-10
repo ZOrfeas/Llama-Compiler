@@ -139,14 +139,18 @@ public:
 
 //--------------------------------------------------------------------
 class DefStmt: public AST {
+protected:
+    std::string id;
+public:
+    DefStmt(std::string id): id(id) {}
+    std::string get_id() { return id; }
 };
 
 class Tdef: public DefStmt {
 private:
-    std::string id;
     std::vector<Constr *> constr_list;
 public:
-    Tdef(std::string *id, std::vector<Constr *> *c): id(*id), constr_list(*c) {}
+    Tdef(std::string *id, std::vector<Constr *> *c): DefStmt(*id), constr_list(*c) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Tdef(" << id << ", ";
 
@@ -163,15 +167,17 @@ public:
 };
 
 class Def: public DefStmt {
+protected: 
+    Type *type;
+public:
+    Def(std::string id, Type *t): DefStmt(id), type(t) {}
 };
 
 class Constant: public Def {
 protected:
-    std::string id;
     Expr *expr;
-    Type *type;
 public:
-    Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): id(*id), expr(e), type(t) {}
+    Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Def(*id, t), expr(e) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *type << ", " << *expr << ")";
     }
@@ -190,15 +196,15 @@ public:
 };
 
 class Mutable: public Def {
+public:
+    Mutable(std::string id, Type *t): Def(id, t) {}
 };
 
 class Array: public Mutable {
 private:
-    std::string id;
     std::vector<Expr *> expr_list;
-    Type *type;
 public:
-    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): id(*id), expr_list(*e), type(t) {}
+    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t), expr_list(*e){}
     virtual void printOn(std::ostream &out) const override {
         out << "Array(" << id;
         if(!expr_list.empty()) {
@@ -218,10 +224,9 @@ public:
 
 class Variable: public Mutable {
 private:
-    std::string id;
-    Type *type;
+
 public:
-    Variable(std::string *id, Type *type = new BasicType(type::TYPE_unknown)): id(*id), type(type) {}
+    Variable(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t) {}
     virtual void printOn(std::ostream &out) const override {
         out << "Variable(" << id << ", " << *type << ", " << ")";
     }
@@ -238,6 +243,18 @@ private:
     std::vector<DefStmt *> def_list;
 public:
     Letdef(std::vector<DefStmt *> *d, bool rec = false): recursive(rec), def_list(*d) {}
+    virtual void sem() override {
+        for(DefStmt *d: def_list){
+            // If recursive add identifier before
+            if(recursive) st.add(d->get_id());
+
+            // Call sem() on every definition
+            d->sem();   
+
+            // If not recursive add identifier after
+            if(!recursive) st.add(d->get_id());
+        }
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Let(";
         if(recursive) out << "rec ";
@@ -309,6 +326,19 @@ private:
     Expr *expr;
 public:
     LetIn(Definition *letdef, Expr *expr): letdef(letdef), expr(expr) {}
+    virtual void sem() override {
+        // Create new scope
+        st.open_scope();
+
+        // Semantically analyse letdef
+        letdef->sem();
+
+        // Semantically analyse expression
+        expr->sem();
+
+        // Close scope defined by expression
+        st.close_scope();
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "LetIN(" << *letdef << ", " << *expr << ")";
     }
@@ -464,6 +494,19 @@ private:
     Expr *start, *finish, *body;
 public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { type = new BasicType(type::TYPE_unit); }
+    virtual void sem() override {
+        // Create new scope for counter and add it
+        st.open_scope();
+        st.add(id);
+
+        // Semantically analyse start, finish, body
+        start->sem();
+        finish->sem();
+        body->sem();
+
+        // Close the scope
+        st.close_scope();
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
@@ -572,6 +615,13 @@ private:
     std::vector<Clause *> clause_list;
 public:
     Match(Expr *e, std::vector<Clause *> *c): toMatch(e), clause_list(*c) {}
+    virtual void sem() {
+        // Semantically analyse expression
+        toMatch->sem();
+
+        // Semantically analyse every clause
+        for (Clause *c: clause_list) c->sem();
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Match(" << *toMatch;
         for (Clause *c: clause_list) {
