@@ -6,7 +6,7 @@
 #include <map>
 
 enum class type { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
-            TYPE_string, TYPE_char, TYPE_ref, TYPE_array, TYPE_function };
+            TYPE_string, TYPE_char, TYPE_ref, TYPE_array, TYPE_function, TYPE_custom };
 
 
 /*************************************************************/
