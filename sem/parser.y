@@ -294,7 +294,7 @@ expr_2
 | T_idupper                         { $$ = new ConstructorCall($1); /* LOOKUP */ }
 | "true"                            { $$ = new Bool_literal(true); }
 | "false"                           { $$ = new Bool_literal(false); }
-| '(' ')'                           { $$ = new Unit(); }
+| '(' ')'                           { $$ = new Unit_literal(); }
 | '!' expr_2                        { $$ = new UnOp('!', $2); }
 | T_idlower bracket_comma_expr_list { $$ = new ArrayAccess($1, $2); /* ARRAY ACCESS */; }
 | "new" type                        { $$ = new New($2); /* DYNAMIC ALLOCATION */; }

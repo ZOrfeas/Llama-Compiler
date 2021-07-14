@@ -36,7 +36,6 @@ public:
     friend bool shallow_compare_types(Type *T1, Type *T2) { return (T1->t == T2->t); }
     
 };
-
 class BasicType: public Type {
 public:
     BasicType(type t): Type(t) { /* std::cout << type_string[t]; */ }
@@ -44,7 +43,6 @@ public:
         out << type_string[static_cast<int>(t)];
     }
 };
-
 class FunctionType: public Type {
 private:
     Type *lhtype, *rhtype;
@@ -54,7 +52,6 @@ public:
         out << *lhtype << "->" << *rhtype;
     }
 };
-
 class ArrayType: public Type {
 private:
     int dimensions;
@@ -65,9 +62,8 @@ public:
         out << "TYPE_array(" << dimensions << ", " << *elem_type << ")";
     }
 };
-
-/* NOTE: MUST NOT BE ArrayType !! */
 class RefType: public Type {
+/* NOTE: MUST NOT BE ArrayType !! */
 private:
     Type *ref_type;
 public:
@@ -76,7 +72,6 @@ public:
         out << "TYPE_ref(" << *ref_type << ")";
     }
 };
-
 class CustomType: public Type {
 private: 
     std::string Id;
@@ -97,10 +92,14 @@ Type *ARRAY = new ArrayType();
 Type *FUNCTION = new FunctionType();
 Type *UNIT = new BasicType(type::TYPE_unit);
 
-// Basic abstract classes --------------------------------------------
+/* Basic Abstract Classes *******************************************/
+
 class Expr: public AST {
 protected:
     Type *T;
+    // dynamic shows whether an expression
+    // was created with new
+    bool dynamic = false; 
 public:
     void type_check(Type *t) {
         sem();
@@ -109,8 +108,10 @@ public:
             exit(1);
         }
     }
-    // Succeeds only if T is inside the vector
-    // If negation is true then it succeeds only if T is not in the vector
+    /* Succeeds only if T is inside the vector
+     * If negation is true then it succeeds only 
+     * if T is not in the vector
+     */
     void type_check(std::vector< Type* > Type_vect, bool negation = false) {
         sem(); 
         if(!negation) {
@@ -140,8 +141,14 @@ public:
         }
     }
     Type* get_type() {
-        // Careful with this, it returns the pointer
+        // NOTE: Careful with this, it returns the pointer
         return T;
+    }
+    void dynamic_check() { 
+        if(!dynamic) {
+            yyerror("Not created with new");
+            exit(1);
+        }
     }
 };
 
@@ -161,7 +168,8 @@ protected:
     std::string name;
 };
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class Constr: public AST {
 private:
     std::string Id;
@@ -179,7 +187,8 @@ public:
     }
 };
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class Par: public AST {
 private:
     std::string id;
@@ -191,20 +200,26 @@ public:
     }
 };
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class DefStmt: public AST {
 protected:
     std::string id;
 public:
     DefStmt(std::string id): id(id) {}
-    std::string get_id() { return id; }
+    virtual void insert_id_to_st() {}
+    virtual void insert_id_to_tt() {}
 };
-
 class Tdef: public DefStmt {
 private:
     std::vector<Constr *> constr_list;
 public:
     Tdef(std::string *id, std::vector<Constr *> *c): DefStmt(*id), constr_list(*c) {}
+    virtual void insert_id_to_tt() override {
+        // Insert custom type to type table
+        tt.insert(id);
+    }
+    virtual void sem() override {}
     virtual void printOn(std::ostream &out) const override {
         out << "Tdef(" << id << ", ";
 
@@ -219,46 +234,74 @@ public:
         out << ")";
     }
 };
-
 class Def: public DefStmt {
 protected: 
+    // T is the BasicType of the defined identifier
     Type *T;
 public:
     Def(std::string id, Type *t): DefStmt(id), T(t) {}
+    Type* get_type() { /* NOTE: Returns the pointer */ return T; }
 };
-
 class Constant: public Def {
 protected:
     Expr *expr;
 public:
     Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Def(*id, t), expr(e) {}
+    virtual void sem() override { expr->type_check(T); }
+    virtual void insert_id_to_st() override {
+        // Insert constant to symbol table
+        st.insert(id);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
     }
 };
-
 class Function: public Constant {
 private:
     std::vector<Par *> par_list;
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(type::TYPE_function)): Constant(id, e, t), par_list(*p){}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Constant(id, e, t), par_list(*p){}
+    virtual void sem() override {
+        // Semantically analyse parameters and add them to symbol table
+        for(Par *p: par_list) { p->sem(); }
+
+        // Check the type of the expression
+        expr->type_check(T);
+    }
+    virtual void insert_id_to_st() override {
+        // Create vector of types of parameters
+        std::vector< Type* > par_types;
+        for(Par *p: par_list) { par_types.push_back(p->get_type()); }
+
+        // Insert function to symbol table
+        st.insert(id);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
         for(Par *p: par_list){ out << ", " << *p; }
         out << ", " << *T << ", " << *expr << ")";
     }
 };
-
 class Mutable: public Def {
 public:
     Mutable(std::string id, Type *t): Def(id, t) {}
 };
-
 class Array: public Mutable {
 private:
     std::vector<Expr *> expr_list;
 public:
     Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t), expr_list(*e){}
+    virtual void sem() override {
+        // All dimension sizes are of type integer
+        for(Expr *e: expr_list){ e->type_check(INT); }
+    }
+    int get_dimensions() { return expr_list.size(); }
+    virtual void insert_id_to_st() {
+        int d = get_dimensions();
+
+        // Insert array to symbol table
+        st.insert(id);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Array(" << id;
         if(!expr_list.empty()) {
@@ -275,22 +318,23 @@ public:
         out << ", " << *T << ")";
     }
 };
-
 class Variable: public Mutable {
-private:
-
 public:
     Variable(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t) {}
+    virtual void insert_id_to_st() override {
+        // Add variable to symbol table
+        st.insert(id);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Variable(" << id << ", " << *T << ", " << ")";
     }
 };
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class Definition: public AST {
     // virtual void append(DefStmt *d) = 0;
 };
-
 class Letdef: public Definition {
 private:
     bool recursive;
@@ -300,22 +344,20 @@ public:
     virtual void sem() override {
         // Recursive
         if(recursive) {
-            for(DefStmt *d: def_list){
-                // Insert identifier before
-                st.insert(d->get_id());
+            // Insert identifiers to symbol table before all the definitions
+            for(DefStmt *d: def_list) { d->insert_id_to_st(); }
 
-                // Semantically analyse definitions
-                d->sem();   
-            }
+            // Semantically analyse definitions
+            for(DefStmt *d: def_list) { d->sem(); }
         }
 
         // Not recursive
         else {
-            // Semantiacally analyse definitions
+            // Semantically analyse definitions
             for(DefStmt *d: def_list) { d->sem(); }
 
             // Insert identifiers to symbol table after all the definitions
-            for(DefStmt *d: def_list) { st->insert(d->get_id()); }
+            for(DefStmt *d: def_list) { d->insert_id_to_st(); }
         }
     }
     virtual void printOn(std::ostream &out) const override {
@@ -333,12 +375,18 @@ public:
         out << ")";
     }
 };
-
 class Typedef: public Definition {
 private:
     std::vector<DefStmt *> tdef_list;
 public:
     Typedef(std::vector<DefStmt *> *t): tdef_list(*t) {}
+    virtual void sem() override {
+        // Insert identifiers to type table before all the definitions
+        for(DefStmt *td: tdef_list) { td->insert_id_to_tt(); }
+
+        // Semantically analyse definitions
+        for(DefStmt *td: tdef_list) { td->sem(); }
+    }
     virtual void printOn(std::ostream &out) const override{
         out << "Type(";
 
@@ -354,13 +402,17 @@ public:
     }
 };
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class Program: public AST {
 private:
     std::vector<Definition *> definition_list;
 public:
     ~Program() {}
     Program(): definition_list() {}
+    virtual void sem() override {
+        for(Definition *d: definition_list) { d->sem(); }
+    }
     void append(Definition *d){
         definition_list.push_back(d);
     }
@@ -378,9 +430,8 @@ public:
     }
 };
 
-// Exresssions -------------------------------------------------------
+/* Expressions ******************************************************/
 // class Expr: public AST (used to be here)
-
 // class Identifier: public Expr (used to be here)
 
 class LetIn: public Expr {
@@ -414,7 +465,6 @@ public:
         out << "Id(" << name << ")";
     }
 };
-
 class Id_lower: public Identifier {
 public:
     Id_lower(std::string *s) { name = *s; }
@@ -424,7 +474,6 @@ public:
 };
 
 class Literal: public Expr {};
-
 class String_literal: public Literal {
 private:
     std::string s;
@@ -434,7 +483,6 @@ public:
         out << "String(" << s << ")";
     }
 };
-
 class Char_literal: public Literal {
 private:
     std::string c_string;
@@ -479,7 +527,6 @@ public:
         out << "Char(" << c_string << ")";
     }
 };
-
 class Bool_literal: public Literal {
 private:
     bool b;
@@ -489,7 +536,6 @@ public:
         out << "Bool(" << b << ")";
     }
 };
-
 class Float_literal: public Literal {
 private:
     double d;
@@ -499,20 +545,20 @@ public:
         out << "Float(" << d << ")";
     }
 };
-
-class Int_literal: public Literal {
+class Int_literal : public Literal
+{
 private:
     int n;
 public:
     Int_literal(int n): n(n) { T = new BasicType(type::TYPE_int); }
+    int get_int() { return n; }
     virtual void printOn(std::ostream &out) const override {
         out << "Int(" << n << ")";
     }
 };
-
-class Unit: public Literal {
+class Unit_literal: public Literal {
 public:
-    Unit() { T = new BasicType(type::TYPE_unit); }
+    Unit_literal() { T = new BasicType(type::TYPE_unit); }
     virtual void printOn(std::ostream &out) const override {
         out << "Unit";
     }
@@ -587,7 +633,6 @@ public:
         out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
     }
 };
-
 class UnOp: public Expr {
 private:
     Expr *expr;
@@ -610,12 +655,31 @@ public:
                 T = expr->get_type();
             case T_delete: 
                 expr->type_check(REF);
+                expr->dynamic_check();
                 T = new BasicType(type::TYPE_unit);
             default: break;
         }
     }
     virtual void printOn(std::ostream &out) const override {
         out << "UnOp(" << op << ", " << *expr << ")";
+    }
+};
+class New: public Expr {
+    Type *new_type;
+public:
+    New(Type *t): new_type(t) {}
+    virtual void sem() override {
+        // Array type not allowed
+        if(shallow_compare_types(new_type, ARRAY)) {
+            yyerror("Type mismatch");
+            exit(1);
+        }
+
+        T = new RefType(new_type); 
+        dynamic = true;
+    }
+    virtual void printOn(std::ostream &out) const override {
+        out << "New(" << *T << ")";
     }
 };
 
@@ -633,7 +697,6 @@ public:
         out << "While(" << *cond << ", " << *body << ")";
     }
 };
-
 class For: public Expr {
 private:
     std::string id;
@@ -658,7 +721,6 @@ public:
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
     }
 };
-
 class If: public Expr{
 private:
     Expr *cond, *body, *else_body;
@@ -692,6 +754,21 @@ private:
     std::string id;
 public:
     Dim(std::string *id, Int_literal *dim = new Int_literal(1)): dim(dim), id(*id) {}
+    virtual void sem() override {
+        // Lookup the array
+        Array *arr = st.lookup(id);
+
+        // Get the number of the dimension
+        int i = dim->get_int();
+
+        // Check if i is withing the correct bounds
+        if(i < 1 && i > arr->get_dimensions()) {
+            yyerror("Out of bounds");
+            exit(1);
+        }
+
+        T = new BasicType(type::TYPE_int);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Dim(";
         if(dim) out << *dim << ", ";
@@ -699,16 +776,22 @@ public:
     }
 };
 
+// NOTE: All these need lookups
 class ConstantCall: public Expr {
 protected:
     std::string id;
 public:
     ConstantCall(std::string *id): id(*id) {}
+    virtual void sem() override {
+        // Lookup constant
+        Constant *c = st.lookup(id);
+
+        T = c->get_type();
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "ConstantCall(" << id << ")";
     }
 };
-
 class FunctionCall: public ConstantCall {
 private:
     std::vector<Expr *> expr_list;
@@ -722,7 +805,6 @@ public:
         out << ")";
     }
 };
-
 class ConstructorCall: public Expr {
 private:
     std::string Id;
@@ -737,7 +819,6 @@ public:
         out << ")";
     }
 };
-
 class ArrayAccess: public Expr {
 private:
     std::string id;
@@ -756,14 +837,6 @@ public:
         }
 
         out << "])";
-    }
-};
-
-class New: public Expr {
-public:
-    New(Type *t) { T = t; }
-    virtual void printOn(std::ostream &out) const override {
-        out << "New(" << *T << ")";
     }
 };
 
