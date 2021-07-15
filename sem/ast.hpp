@@ -87,6 +87,7 @@ Type *BOOL = new BasicType(type::TYPE_bool);
 Type *INT = new BasicType(type::TYPE_int);
 Type *FLOAT = new BasicType(type::TYPE_float);
 Type *CHAR = new BasicType(type::TYPE_char);
+Type *STRING = new BasicType(type::TYPE_string);
 Type *REF = new RefType();
 Type *ARRAY = new ArrayType();
 Type *FUNCTION = new FunctionType();
@@ -152,17 +153,6 @@ public:
     }
 };
 
-class Clause: public AST {
-private:
-    Expr *pattern;
-    Expr *expr;
-public:
-    Clause(Expr *p, Expr *e): pattern(p), expr(e) {}
-    virtual void printOn(std::ostream &out) const override {
-        out << "Clause(" << *pattern << ", " << *expr << ")";
-    }
-};
-
 class Identifier: public Expr {
 protected:
     std::string name;
@@ -176,6 +166,9 @@ private:
     std::vector<Type *> type_list;
 public:
     Constr(std::string *Id, std::vector<Type *> *t): Id(*Id), type_list(*t) {}
+    virtual void sem() override {
+        tt.insert(Id);
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Constr(" << Id;
 
@@ -195,6 +188,10 @@ private:
     Type *T;
 public:
     Par(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): id(*id), T(t) {}
+    virtual void sem() override {
+        st.insert(id);
+    }
+    Type* get_type() { return T; }
     virtual void printOn(std::ostream &out) const override {
         out << "Par(" << id << ", " << *T << ")";
     }
@@ -219,7 +216,9 @@ public:
         // Insert custom type to type table
         tt.insert(id);
     }
-    virtual void sem() override {}
+    virtual void sem() override {
+        for(Constr *c: constr_list) { c->sem(); }
+    }
     virtual void printOn(std::ostream &out) const override {
         out << "Tdef(" << id << ", ";
 
@@ -442,7 +441,7 @@ public:
     LetIn(Definition *letdef, Expr *expr): letdef(letdef), expr(expr) {}
     virtual void sem() override {
         // Create new scope
-        st.open_scope();
+        st.openScope();
 
         // Semantically analyse letdef
         letdef->sem();
@@ -451,7 +450,7 @@ public:
         expr->sem();
 
         // Close scope defined by expression
-        st.close_scope();
+        st.closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "LetIN(" << *letdef << ", " << *expr << ")";
@@ -706,7 +705,7 @@ public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { T = new BasicType(type::TYPE_unit); }
     virtual void sem() override {
         // Create new scope for counter and add it
-        st.open_scope();
+        st.openScope();
         st.insert(id);
 
         // Typecheck start, finish, body
@@ -715,7 +714,7 @@ public:
         body->type_check(UNIT);
 
         // Close the scope
-        st.close_scope();
+        st.closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
@@ -840,6 +839,75 @@ public:
     }
 };
 
+/* Match ************************************************************/
+
+class Pattern: public AST {};
+class PatternLiteral: public Pattern {
+protected:
+    Literal *literal;
+public:
+    PatternLiteral(Literal *l): literal(l) {}
+    virtual void sem() override {
+        Type* T = literal->get_type();
+        if(shallow_compare_types(T, UNIT) || shallow_compare_types(T, STRING)) {
+            yyerror("Unit and string not allowed in pattern");
+            exit(1);
+        }
+    }
+    virtual void printOn(std::ostream &out) const override {
+        out << "PatternLiteral(" << *literal << ")";
+    }
+};
+class PatternId: public Pattern {
+protected: 
+    std::string id;
+public:
+    PatternId(std::string *id): id(*id) {}
+    virtual void sem() override {
+        // Create constant with identifier id
+        st.insert(id);
+    }
+    virtual void printOn(std::ostream &out) const override {
+        out << "PatternId(" << id << ")";
+    }
+};
+class PatternConstr: public Pattern {
+protected:
+    std::string Id;
+    std::vector< Pattern* > pattern_list;
+public:
+    PatternConstr(std::string *Id, std::vector< Pattern* > *p_list = new std::vector< Pattern* >()): Id(*Id), pattern_list(*p_list) {}
+    virtual void sem() {
+        // Lookup constructor
+        tt.lookup(Id);
+
+        // Semantically analyse patterns
+        for(Pattern *p: pattern_list) { p->sem(); }
+    }
+    virtual void printOn(std::ostream &out) const override {
+        out << "PatternConstr(" << Id;
+        for(Pattern *p: pattern_list) { out << ", " << *p; }
+        out << ")";
+    }
+};
+
+class Clause: public AST {
+private:
+    Pattern *pattern;
+    Expr *expr;
+public:
+    Clause(Pattern *p, Expr *e): pattern(p), expr(e) {}
+    virtual void sem() override {
+        // Open new scope just in case of PatternId
+        st.openScope();
+        pattern->sem();
+        expr->sem();
+        st.closeScope();
+    }
+    virtual void printOn(std::ostream &out) const override {
+        out << "Clause(" << *pattern << ", " << *expr << ")";
+    }
+};
 class Match: public Expr {
 private:
     Expr *toMatch;

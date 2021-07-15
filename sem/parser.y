@@ -19,6 +19,7 @@
     DefStmt *def_stmt;
     Definition *definition;
     Program *program;
+    Pattern *pat;
     Expr *expr;
     Type *type;
     Clause *clause;
@@ -29,6 +30,7 @@
     //std::vector<Tdef *> *tdef_vect;
     std::vector<DefStmt *> *defstmt_vect;
     std::vector<Type *> *type_vect;
+    std::vector<Pattern *> *pat_vect;
     std::vector<Clause *> *clause_vect;
     std::string *id;
     int op;     // This will store the lexical code of the operator
@@ -124,7 +126,8 @@
 %type<definition> definition_choice letdef typedef
 %type<def_stmt> def tdef
 %type<par_vect> par_list
-%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list /*comma_expr_2_list*/ expr_2_list pattern_list
+%type<expr_vect> bracket_comma_expr_list comma_expr_opt_list /*comma_expr_2_list*/ expr_2_list
+%type<pat_vect> pattern_list
 %type<constr_vect> bar_constr_opt_list
 //%type<def_vect> and_def_opt_list
 //%type<tdef_vect> and_tdef_opt_list
@@ -134,8 +137,9 @@
 %type<par> par
 %type<type> type
 %type<op> unop comp_operator add_operator mult_operator
-%type<expr> expr expr_2 pattern
+%type<expr> expr expr_2
 %type<num> comma_star_opt_list bracket_star_opt
+%type<pat> pattern 
 %type<clause_vect> bar_clause_opt_list
 %type<clause> clause
 
@@ -364,23 +368,23 @@ clause
 ;
 
 pattern
-: '+' T_intconst                        { $$ = new Int_literal($2);         }
-| '-' T_intconst                        { $$ = new Int_literal(-$2);        }
-| T_intconst                            { $$ = new Int_literal($1);         }
-| "+." T_floatconst                     { $$ = new Float_literal($2);       }
-| "-." T_floatconst                     { $$ = new Float_literal(-$2);      }
-| T_floatconst                          { $$ = new Float_literal($1);       }
-| T_charconst                           { $$ = new Char_literal($1);        }
-| "true"                                { $$ = new Bool_literal(true);      }
-| "false"                               { $$ = new Bool_literal(false);     }
-| T_idlower                             { $$ = new ConstantCall($1);        }
-| T_idupper                             { $$ = new ConstructorCall($1);     }
+: '+' T_intconst                        { $$ = new PatternLiteral(Int_literal($2));     }
+| '-' T_intconst                        { $$ = new PatternLiteral(Int_literal(-$2));    }
+| T_intconst                            { $$ = new PatternLiteral(Int_literal($1));     }
+| "+." T_floatconst                     { $$ = new PatternLiteral(Float_literal($2));   }
+| "-." T_floatconst                     { $$ = new PatternLiteral(Float_literal(-$2));  }
+| T_floatconst                          { $$ = new PatternLiteral(Float_literal($1);    }
+| T_charconst                           { $$ = new PatternLiteral(Char_literal($1));    }
+| "true"                                { $$ = new PatternLiteral(Bool_literal(true));  }
+| "false"                               { $$ = new PatternLiteral(Bool_literal(false)); }
+| T_idlower                             { $$ = new PatternId($1);        }
+| T_idupper                             { $$ = new PatternConstr($1);     }
 | '(' pattern ')'                       { $$ = $2;                          }
-| '(' T_idupper pattern_list ')'        { $$ = new ConstructorCall($2, $3); }
+| '(' T_idupper pattern_list ')'        { $$ = new PatternConstr($2, $3); }
 ;
 
 pattern_list
-: pattern                           { $$ = new std::vector<Expr *>(); $$->push_back($1); }
+: pattern                           { $$ = new std::vector< Pattern* >(); $$->push_back($1); }
 | pattern_list pattern              { $1->push_back($2); $$ = $1; }
 ;
 
