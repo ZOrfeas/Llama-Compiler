@@ -136,5 +136,5 @@ public:
 /*************************************************************/
 /**                Table instantiations                      */
 /*************************************************************/
-SymbolTable st;
-TypeTable tt;
+SymbolTable *st = new SymbolTable();
+TypeTable *tt = new TypeTable();
