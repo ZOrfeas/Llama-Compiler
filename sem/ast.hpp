@@ -14,7 +14,8 @@ const std::string type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TY
 
 void yyerror(const char *msg);
 
-//--------------------------------------------------------------------
+/********************************************************************/
+
 class AST {
 public:
     virtual ~AST() {}
@@ -27,12 +28,15 @@ inline std::ostream& operator<< (std::ostream &out, const AST &t) {
   return out;
 }
 
-// Type classes ------------------------------------------------------
+/* Type classes *****************************************************/
+// These classes are used when the name of a type apears in the code
+
 class Type: public AST {
 protected:
     type t;
 public:
     Type(type t): t(t) {}
+    bool compare_basic_type(type _t) { return t == _t; }
     friend bool shallow_compare_types(Type *T1, Type *T2) { return (T1->t == T2->t); }
     
 };
@@ -83,6 +87,7 @@ public:
 };
 
 // Some types that are useful for typechecking
+/*
 Type *BOOL = new BasicType(type::TYPE_bool);
 Type *INT = new BasicType(type::TYPE_int);
 Type *FLOAT = new BasicType(type::TYPE_float);
@@ -92,6 +97,7 @@ Type *REF = new RefType();
 Type *ARRAY = new ArrayType();
 Type *FUNCTION = new FunctionType();
 Type *UNIT = new BasicType(type::TYPE_unit);
+*/
 
 /* Basic Abstract Classes *******************************************/
 
@@ -102,9 +108,36 @@ protected:
     // was created with new
     bool dynamic = false; 
 public:
+    void basic_type_check(type t) {
+        sem();
+        if (!T->compare_basic_type(t)) { 
+            yyerror("Type mismatch");
+            exit(1);
+        }
+    }
+    void basic_type_check(std::vector< type > type_vect, bool negation = false) {
+        sem(); 
+        if(!negation) {
+            for(type temp_t: type_vect) {
+                if(T->compare_basic_type(temp_t)) return; 
+            }
+            yyerror("Type mismatch");
+            exit(1);
+        } 
+        else {
+            for(type temp_t: type_vect) {
+                if(T->compare_basic_type(temp_t)) {
+                    yyerror("Type mismatch");
+                    exit(1);
+                }
+            }
+            return;
+        }
+
+    }
     void type_check(Type *t) {
         sem();
-        if (T != t) { 
+        if (!shallow_compare_types(T, t)) { 
             yyerror("Type mismatch");
             exit(1);
         }
@@ -292,7 +325,7 @@ public:
     Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t), expr_list(*e){}
     virtual void sem() override {
         // All dimension sizes are of type integer
-        for(Expr *e: expr_list){ e->type_check(INT); }
+        for(Expr *e: expr_list){ e->basic_type_check(type::TYPE_int); }
     }
     int get_dimensions() { return expr_list.size(); }
     virtual void insert_id_to_st() {
@@ -572,23 +605,23 @@ public:
     virtual void sem() override {
         switch(op) {
             case '+': case '-': case '*': case '/': case T_mod:
-                lhs->type_check(INT);
-                rhs->type_check(INT);
+                lhs->basic_type_check(type::TYPE_int);
+                rhs->basic_type_check(type::TYPE_int);
                 T = new BasicType(type::TYPE_int);
             case T_plusdot: case T_minusdot: case T_stardot: case T_slashdot: case T_dblstar:
-                lhs->type_check(FLOAT);
-                rhs->type_check(FLOAT);
+                lhs->basic_type_check(type::TYPE_float);
+                rhs->basic_type_check(type::TYPE_float);
                 T = new BasicType(type::TYPE_float);
             case T_dblbar: case T_dblampersand:
-                lhs->type_check(BOOL);
-                rhs->type_check(BOOL);
+                lhs->basic_type_check(type::TYPE_bool);
+                rhs->basic_type_check(type::TYPE_bool);
                 T = new BasicType(type::TYPE_bool);
             case '=': case T_lessgreater: case T_dbleq: case T_exclameq:
             {   
                 // Check that they are not arrays or functions
-                std::vector< Type* > v = { ARRAY, FUNCTION };
-                lhs->type_check(v, true);
-                rhs->type_check(v, true); 
+                std::vector< type > v = { type::TYPE_array, type::TYPE_function };
+                lhs->basic_type_check(v, true);
+                rhs->basic_type_check(v, true); 
 
                 // Check that they are of the same type
                 same_type(lhs, rhs);
@@ -599,9 +632,9 @@ public:
             case '<': case '>': case T_leq: case T_geq:
             {
                 // Check that they are char, int or float
-                std::vector< Type* > v = { CHAR, INT, FLOAT };
-                lhs->type_check(v);
-                rhs->type_check(v);
+                std::vector< type > v = { type::TYPE_char, type::TYPE_int, type::TYPE_float };
+                lhs->basic_type_check(v);
+                rhs->basic_type_check(v);
 
                 // Check that they are of the same type
                 same_type(lhs, rhs);
@@ -641,19 +674,19 @@ public:
     virtual void sem() override {
         switch(op) {
             case '+': case '-': 
-                expr->type_check(INT); 
+                expr->basic_type_check(type::TYPE_int); 
                 T = new BasicType(type::TYPE_int);
             case T_minusdot: case T_plusdot: 
-                expr->type_check(FLOAT);
+                expr->basic_type_check(type::TYPE_float);
                 T = new BasicType(type::TYPE_float);
             case T_not: 
-                expr->type_check(BOOL);
+                expr->basic_type_check(type::TYPE_bool);
                 T = new BasicType(type::TYPE_bool);
             case '!': 
-                expr->type_check(REF);
+                expr->basic_type_check(type::TYPE_ref);
                 T = expr->get_type();
             case T_delete: 
-                expr->type_check(REF);
+                expr->basic_type_check(type::TYPE_ref);
                 expr->dynamic_check();
                 T = new BasicType(type::TYPE_unit);
             default: break;
@@ -669,7 +702,7 @@ public:
     New(Type *t): new_type(t) {}
     virtual void sem() override {
         // Array type not allowed
-        if(shallow_compare_types(new_type, ARRAY)) {
+        if(new_type->compare_basic_type(type::TYPE_array)) {
             yyerror("Type mismatch");
             exit(1);
         }
@@ -689,8 +722,8 @@ public:
     While(Expr *e1, Expr *e2): cond(e1), body(e2) { T = new BasicType(type::TYPE_unit); }
     virtual void sem() override {
         // Typecheck
-        cond->type_check(BOOL);
-        body->type_check(UNIT);
+        cond->basic_type_check(type::TYPE_bool);
+        body->basic_type_check(type::TYPE_unit);
     }
     virtual void printOn(std::ostream &out) const override {
         out << "While(" << *cond << ", " << *body << ")";
@@ -709,9 +742,9 @@ public:
         st.insert(id);
 
         // Typecheck start, finish, body
-        start->type_check(INT);
-        finish->type_check(INT);
-        body->type_check(UNIT);
+        start->basic_type_check(type::TYPE_int);
+        finish->basic_type_check(type::TYPE_int);
+        body->basic_type_check(type::TYPE_unit);
 
         // Close the scope
         st.closeScope();
@@ -727,7 +760,7 @@ public:
     If(Expr *e1, Expr *e2, Expr *e3 = nullptr): cond(e1), body(e2), else_body(e3) {}
     virtual void sem() override {
         // Typecheck condition 
-        cond->type_check(BOOL);
+        cond->basic_type_check(type::TYPE_bool);
 
         // If there is no else just semantically analyse body
         if(else_body == nullptr) { body->sem(); }
@@ -849,7 +882,7 @@ public:
     PatternLiteral(Literal *l): literal(l) {}
     virtual void sem() override {
         Type* T = literal->get_type();
-        if(shallow_compare_types(T, UNIT) || shallow_compare_types(T, STRING)) {
+        if(T->compare_basic_type(type::TYPE_unit) || T->compare_basic_type(type::TYPE_string)) {
             yyerror("Unit and string not allowed in pattern");
             exit(1);
         }
