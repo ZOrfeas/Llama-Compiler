@@ -23,9 +23,12 @@ enum class EntryType {
 /** Parent class for all possible Symbol Entry types */
 class SymbolEntry {
 public:
-    std::string name; // Id associated with SymbolEntry
-    EntryType eType;  // Tracker to be able to Downcast to appropriate subclass
-    type *ty;         // (Placeholder) Will hold pointer to Type Graph of entry
+    // Id associated with SymbolEntry
+    std::string name;
+    // Tracker to be able to Downcast to appropriate subclass
+    EntryType eType;
+    // (Placeholder) Will hold pointer to Type Graph of entry
+    type *ty;
     SymbolEntry(std::string n, type *t, EntryType eType): name(n), ty(t) {};
     virtual ~SymbolEntry() {}
 };
@@ -39,14 +42,19 @@ class TypeEntry;
 
 class VariableEntry: public SymbolEntry {
 public:
-    bool dynamic; // Tracks whether var was dynamically allocated
-    VariableEntry(std::string n, bool dyn, type *t);
+    // Tracks whether var was dynamically allocated
+    bool dynamic;
+    VariableEntry(std::string n, type *t, bool dyn = false);
+    // Toggle flag allocation status (dynamic or not). Returns new status
+    bool toggle_dynamic(); 
     ~VariableEntry();
 };
 class FunctionEntry: public SymbolEntry {
 public:
-    std::vector<ConstantEntry *> *parameters; // SymbolEntries of Function params
-    void addParam(ConstantEntry *param);      // Adds a function param to this function (doesn't add to SymbolTable)
+    // SymbolEntries of Function params
+    std::vector<ConstantEntry *> *parameters; 
+    // Adds a function param to this function (doesn't add to SymbolTable)
+    void addParam(ConstantEntry *param);
     FunctionEntry(std::string n, type *t);
     ~FunctionEntry();
 };
@@ -57,15 +65,19 @@ public:
 };
 class TypeEntry: public SymbolEntry {
 public:
-    std::vector<ConstructorEntry *> *constructors; // SymbolEntries of Constructors
-    void addConstructor(ConstructorEntry *constr); // Adds a constructor to this type (doesn't add to TypeTable)
+    // SymbolEntries of Constructors
+    std::vector<ConstructorEntry *> *constructors;
+    // Adds a constructor to this type (doesn't add to TypeTable)
+    void addConstructor(ConstructorEntry *constr);
     TypeEntry(std::string n, type *t);
     ~TypeEntry();
 };
 class ConstructorEntry: public SymbolEntry {
 public:
-    TypeEntry *typeEntry;       // The TypeEntry this constructor corresponds to
-    void setType(TypeEntry *t); // Sets this Constructor's TypeEntry
+    // The TypeEntry this constructor corresponds to
+    TypeEntry *typeEntry;
+    // Sets this Constructor's TypeEntry
+    void setType(TypeEntry *t);
     ConstructorEntry(std::string n, type *t);
     ~ConstructorEntry();
 };

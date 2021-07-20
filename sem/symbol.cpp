@@ -95,8 +95,8 @@ bool SymbolTable::closeScope(bool deleteEntries = true) {
     return false;
 }
 
-VariableEntry* SymbolTable::insertVariable(string name, type *t, bool dynamic, bool overwrite = true) {
-    VariableEntry *ve = new VariableEntry(name, dynamic, t);
+VariableEntry* SymbolTable::insertVariable(string name, type *t, bool dynamic = false, bool overwrite = true) {
+    VariableEntry *ve = new VariableEntry(name, t, dynamic);
     insert(ve, overwrite);
     return ve;
 }
@@ -217,8 +217,9 @@ ConstructorEntry* TypeTable::lookupConstructor(string name, bool err = true) {
 /** SymbolEntry method implementations */
 /*************************************************************/
 
-VariableEntry::VariableEntry(std::string n, bool dyn, type *t)
+VariableEntry::VariableEntry(std::string n, type *t, bool dyn = false)
     : SymbolEntry(n,t,EntryType::VARIABLE), dynamic(dyn) {};
+bool VariableEntry::toggle_dynamic() { return dynamic = !dynamic; }
 
 FunctionEntry::FunctionEntry(std::string n, type *t)
     :SymbolEntry(n,t,EntryType::FUNCTION),
