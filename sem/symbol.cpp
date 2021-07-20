@@ -19,15 +19,21 @@ using std::string;
 bool nameInScope(string name, tScope *scope) {
     return (scope->find(name) != scope->end());
 }
-
+const std::string EntryType_string[] = {
+    "VARIABLE", "FUNCTION", "CONSTNANT", "CONSTRUCTOR", "TYPE"
+};
+string stringifyEntry(EntryType eType) {
+    return EntryType_string[static_cast<int>(eType)];
+}
 /*************************************************************/
 /** SymbolTable method implementations */
 /*************************************************************/
 
-SymbolTable::SymbolTable(bool openGlobalScope = true) {
+SymbolTable::SymbolTable(bool debug = false, bool openGlobalScope = true) {
+    this->debug = debug;
     Table = new sTable();
     if (openGlobalScope) {
-        Table->push_back(new tScope());
+        openScope();
     }
 }
 SymbolTable::~SymbolTable() {
@@ -41,8 +47,11 @@ void SymbolTable::error(string msg, bool crash = true) {
     if (crash) exit(1);
 
 }
+void SymbolTable::log(string msg) {error(msg, false);}
 
 SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite = true) {
+    if (debug) 
+        log("Inserting " + stringifyEntry(entry->eType) + " with name" + entry->name);
     if (nameInScope(entry->name, Table->back()) && !overwrite) {
             return nullptr;
     } else {
@@ -53,6 +62,8 @@ SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite = true) {
 }
 SymbolEntry* SymbolTable::lookup(string name, EntryType type,
                                  bool err = true) {
+    if (debug)
+        log("Looking up " + stringifyEntry(type) + " with name" + name);
     for (auto it = Table->rbegin(); it != Table->rend(); ++it) {
         if (nameInScope(name, *it) && (**it)[name]->eType == type) {
             return (**it)[name];
@@ -63,9 +74,13 @@ SymbolEntry* SymbolTable::lookup(string name, EntryType type,
 }
 
 void SymbolTable::openScope() {
+    if (debug)
+        log("Opening a new scope");
     Table->push_back(new tScope());
 }
 bool SymbolTable::closeScope(bool deleteEntries = true) {
+    if (debug)
+        log("Closing a scope");
     if (Table->size() != 0) {
         tScope *poppedScope = Table->back();
         Table->pop_back();
@@ -126,7 +141,8 @@ FunctionEntry* SymbolTable::lookupFunction(string name, bool err = true) {
 /** TypeTable method implementations */
 /*************************************************************/
 
-TypeTable::TypeTable() {
+TypeTable::TypeTable(bool debug = false) {
+    this->debug = debug;
     Table = new tScope();
 }
 TypeTable::~TypeTable() {
@@ -140,14 +156,19 @@ void TypeTable::error(string msg, bool crash = true) {
     std::cout << msg << std::endl;
     if (crash) exit(1);
 }
+void TypeTable::log(string msg) {error(msg, false);}
 
 SymbolEntry* TypeTable::lookup(string name, EntryType type,
                     bool err = true) {
+    if (debug)
+        log("Looking up " + stringifyEntry(type) + " with name" + name);
     if (nameInScope(name, Table) && (*Table)[name]->eType == type) {
         return (*Table)[name];
     }
 }
 SymbolEntry* TypeTable::insert(SymbolEntry *entry, bool overwrite = false) {
+    if (debug)
+        log("Inserting " + stringifyEntry(entry->eType) + " with name" + entry->name);
     if (nameInScope(entry->name, Table) && !overwrite) {
         string msg;
         if (std::isupper(entry->name[0])) 

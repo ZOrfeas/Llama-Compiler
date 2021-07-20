@@ -82,9 +82,11 @@ class SymbolTable {
     /** Inserts a new symbol entry in the current active scope */
     SymbolEntry* insert(SymbolEntry *entry, bool overwrite = true);
     void error(std::string msg, bool crash = true);
+    void log(std::string msg);
+    bool debug;
 public:
     /** Constructor can opt out of creating the first scope */
-    SymbolTable(bool openGlobalScope = true);
+    SymbolTable(bool debug = false, bool openGlobalScope = true);
     /** Opens a new scope */
     void openScope();
     /** Closes the currently active scope and discards it */
@@ -118,8 +120,10 @@ class TypeTable {
                         bool err = true);
     SymbolEntry* insert(SymbolEntry *entry, bool overwrite = false);
     void error(std::string msg, bool crash = true);
+    void log(std::string msg);
+    bool debug;
 public:
-    TypeTable();
+    TypeTable(bool debug = false);
     // Insert wrappers
     /** insert wrapper for TypeEntries */
     TypeEntry* insertType(std::string name, type *t, bool overwrite = false);
