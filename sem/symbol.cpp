@@ -95,11 +95,6 @@ bool SymbolTable::closeScope(bool deleteEntries = true) {
     return false;
 }
 
-VariableEntry* SymbolTable::insertVariable(string name, type *t, bool dynamic = false, bool overwrite = true) {
-    VariableEntry *ve = new VariableEntry(name, t, dynamic);
-    insert(ve, overwrite);
-    return ve;
-}
 ConstantEntry* SymbolTable::insertConstant(string name, type *t, bool overwrite = true) {
     ConstantEntry *ce = new ConstantEntry(name, t);
     insert(ce, overwrite);
@@ -111,14 +106,6 @@ FunctionEntry* SymbolTable::insertFunction(string name, type *t, bool overwrite 
     return fe;
 }
 
-VariableEntry* SymbolTable::lookupVariable(string name, bool err = true) {
-    SymbolEntry *e = lookup(name, EntryType::VARIABLE, err);
-    if (VariableEntry *ve = dynamic_cast<VariableEntry *>(e)) {
-        return ve;
-    } else {
-        error("Internal error. Downcast to requested SymbolEntry subclass failed...");
-    }
-}
 ConstantEntry* SymbolTable::lookupConstant(string name, bool err = true) {
     SymbolEntry *e = lookup(name, EntryType::CONSTANT, err);
     if (ConstantEntry *ce = dynamic_cast<ConstantEntry *>(e)) {
@@ -216,10 +203,6 @@ ConstructorEntry* TypeTable::lookupConstructor(string name, bool err = true) {
 /*************************************************************/
 /** SymbolEntry method implementations */
 /*************************************************************/
-
-VariableEntry::VariableEntry(std::string n, type *t, bool dyn = false)
-    : SymbolEntry(n,t,EntryType::VARIABLE), dynamic(dyn) {};
-bool VariableEntry::toggle_dynamic() { return dynamic = !dynamic; }
 
 FunctionEntry::FunctionEntry(std::string n, type *t)
     :SymbolEntry(n,t,EntryType::FUNCTION),

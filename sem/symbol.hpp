@@ -13,7 +13,7 @@ enum class type { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
 
 /** Enum class with available SymbolEntry Types */
 enum class EntryType {
-    VARIABLE, FUNCTION, CONSTANT, 
+    FUNCTION, CONSTANT, 
     CONSTRUCTOR, TYPE,
 };
 
@@ -40,15 +40,6 @@ public:
 class ConstructorEntry;
 class TypeEntry;
 
-class VariableEntry: public SymbolEntry {
-public:
-    // Tracks whether var was dynamically allocated
-    bool dynamic;
-    VariableEntry(std::string n, type *t, bool dyn = false);
-    // Toggle flag allocation status (dynamic or not). Returns new status
-    bool toggle_dynamic(); 
-    ~VariableEntry();
-};
 class FunctionEntry: public SymbolEntry {
 public:
     // SymbolEntries of Function params
@@ -105,15 +96,11 @@ public:
     bool closeScope(bool deleteEntries = true);
 
     // Insert wrappers
-    /** insert wrapper for VariableEntries */
-    VariableEntry* insertVariable(std::string name, type *t, bool dynamic, bool overwrite = true);
     /** insert wrapper for ConstantEntries */
     ConstantEntry* insertConstant(std::string name, type *t, bool overwrite = true);
     /** insert wrapper for FunctionEntries */
     FunctionEntry* insertFunction(std::string name, type *t, bool overwrite = true);
     // Lookup wrappers
-    /** lookup wrapper for VariableEntries */
-    VariableEntry* lookupVariable(std::string name, bool err = true);
     /** lookup wrapper for ConstantEntries */
     ConstantEntry* lookupConstant(std::string name, bool err = true);
     /** lookup wrapper for FunctionEntries */
