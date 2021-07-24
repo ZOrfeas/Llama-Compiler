@@ -1,32 +1,26 @@
-#include "symbol.hpp"
 #include <iostream>
 #include <vector>
 #include <map>
 #include <string>
+#include "symbol.hpp"
 
 /*************************************************************/
-/** Common aliases */
+/**                   Common aliases                         */
 /*************************************************************/
 using tScope = std::map<std::string, SymbolEntry *>;
 using sTable = std::vector<tScope *>;
 using std::string;
 
 /*************************************************************/
-/** Helper functions */
+/**                  Helper functions                        */
 /*************************************************************/
 
 /** Helper function checking existsence of an identifier in a scope */
 bool nameInScope(string name, tScope *scope) {
     return (scope->find(name) != scope->end());
 }
-const std::string EntryType_string[] = {
-    "VARIABLE", "FUNCTION", "CONSTNANT", "CONSTRUCTOR", "TYPE"
-};
-string stringifyEntry(EntryType eType) {
-    return EntryType_string[static_cast<int>(eType)];
-}
 /*************************************************************/
-/** SymbolTable method implementations */
+/**           SymbolTable method implementations             */
 /*************************************************************/
 
 SymbolTable::SymbolTable(bool debug = false, bool openGlobalScope = true) {
@@ -51,7 +45,7 @@ void SymbolTable::log(string msg) {error(msg, false);}
 
 SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite = true) {
     if (debug) 
-        log("Inserting " + stringifyEntry(entry->eType) + " with name" + entry->name);
+        log("Inserting " + entry->typeGraph->stringifyType() + " with name" + entry->name);
     if (nameInScope(entry->name, Table->back()) && !overwrite) {
             return nullptr;
     } else {
@@ -60,12 +54,11 @@ SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite = true) {
         return entry;
     }
 }
-SymbolEntry* SymbolTable::lookup(string name, EntryType type,
-                                 bool err = true) {
+SymbolEntry* SymbolTable::lookup(string name, bool err = true) {
     if (debug)
-        log("Looking up " + stringifyEntry(type) + " with name" + name);
+        log("Looking up name:" + name);
     for (auto it = Table->rbegin(); it != Table->rend(); ++it) {
-        if (nameInScope(name, *it) && (**it)[name]->eType == type) {
+        if (nameInScope(name, *it)) {
             return (**it)[name];
         }
     }
@@ -95,74 +88,94 @@ bool SymbolTable::closeScope(bool deleteEntries = true) {
     return false;
 }
 
-ConstantEntry* SymbolTable::insertConstant(string name, type *t, bool overwrite = true) {
-    ConstantEntry *ce = new ConstantEntry(name, t);
-    insert(ce, overwrite);
-    return ce;
+/******************************************/
+/** Insert wrapper method implementations */
+/******************************************/
+
+SymbolEntry* SymbolTable::insertBasic(string name, TypeGraph *t, bool overwrite = true) {
+    SymbolEntry* basicEntry = new SymbolEntry(name, t);
+    return insert(basicEntry, overwrite);
 }
-FunctionEntry* SymbolTable::insertFunction(string name, type *t, bool overwrite = true) {
-    FunctionEntry *fe = new FunctionEntry(name, t);
-    insert(fe, overwrite);
-    return fe;
+FunctionEntry* SymbolTable::insertFunction(string name, TypeGraph *resT, bool overwrite = true) {
+    FunctionTypeGraph* funcType = new FunctionTypeGraph(resT);
+    FunctionEntry* funcEntry = new FunctionEntry(name, funcType);
+    return dynamic_cast<FunctionEntry *>(insert(funcEntry, overwrite));
+}
+ArrayEntry* SymbolTable::insertArray(string name, TypeGraph *containedT, int dimensions,
+                                      bool overwrite = true) {
+    ArrayTypeGraph* arrType = new ArrayTypeGraph(dimensions, containedT);
+    ArrayEntry* arrEntry = new ArrayEntry(name, arrType);
+    return dynamic_cast<ArrayEntry *>(insert(arrEntry, overwrite));
+}
+RefEntry* SymbolTable::insertRef(string name, TypeGraph *pointedT,
+                                    bool allocated, bool dynamic, bool overwrite = true) {
+    RefTypeGraph* refType = new RefTypeGraph(pointedT, allocated, dynamic);
+    RefEntry* refEntry = new RefEntry(name,refType);
+    return dynamic_cast<RefEntry *>(insert(refEntry, overwrite));
 }
 
-ConstantEntry* SymbolTable::lookupConstant(string name, bool err = true) {
-    SymbolEntry *e = lookup(name, EntryType::CONSTANT, err);
-    if (ConstantEntry *ce = dynamic_cast<ConstantEntry *>(e)) {
-        return ce;
-    } else {
-        error("Internal error. Downcast to requested SymbolEntry subclass failed...");
-    }
-}
+/******************************************/
+/** Lookup wrapper method implementations */
+/******************************************/
+
 FunctionEntry* SymbolTable::lookupFunction(string name, bool err = true) {
-    SymbolEntry *e = lookup(name, EntryType::FUNCTION, err);
-    if (FunctionEntry *fe = dynamic_cast<FunctionEntry *>(e)) {
-        return fe;
-    } else {
-        error("Internal error. Downcast to requested SymbolEntry subclass failed...");
+    if (SymbolEntry* candidate = lookup(name, err)) {
+        if (candidate->typeGraph->isFunction()) {
+            return dynamic_cast<FunctionEntry *>(candidate);
+        } else {
+            error("Function " + name + " not found", err);
+            return nullptr;
+        }
+    }
+}
+ArrayEntry* SymbolTable::lookupArray(string name, bool err = true) {
+    if (SymbolEntry* candidate = lookup(name, err)) {
+        if (candidate->typeGraph->isArray()) {
+            return dynamic_cast<ArrayEntry *>(candidate);
+        } else {
+            error("Array " + name + " not found", err);
+            return nullptr;
+        }
+    }
+}
+RefEntry* SymbolTable::lookupRef(string name, bool err = true) {
+    if (SymbolEntry* candidate = lookup(name, err)) {
+        if (candidate->typeGraph->isRef()) {
+            return dynamic_cast<RefEntry *>(candidate);
+        } else {
+            error("Ref " + name + " not found", err);
+            return nullptr;
+        }
     }
 }
 
-
 /*************************************************************/
-/** TypeTable method implementations */
+/**           BaseTable method implementations               */
 /*************************************************************/
 
-TypeTable::TypeTable(bool debug = false) {
+BaseTable::BaseTable(string kind = "BaseTable", bool debug = false) {
     this->debug = debug;
+    this->kind = kind;
     Table = new tScope();
 }
-TypeTable::~TypeTable() {
+BaseTable::~BaseTable() {
     for (auto &pair: *Table) {
         delete pair.second;
     }
     delete Table;
 }
-void TypeTable::error(string msg, bool crash = true) {
-    std::cout << "TypeTable:" << std::endl;
+void BaseTable::error(string msg, bool crash = true) {
+    std::cout << kind << ":" << std::endl;
     std::cout << msg << std::endl;
     if (crash) exit(1);
 }
-void TypeTable::log(string msg) {error(msg, false);}
+void BaseTable::log(string msg) {error(msg, false);}
 
-SymbolEntry* TypeTable::lookup(string name, EntryType type,
-                    bool err = true) {
+SymbolEntry* BaseTable::insert(SymbolEntry *entry, bool overwrite = false) {
     if (debug)
-        log("Looking up " + stringifyEntry(type) + " with name" + name);
-    if (nameInScope(name, Table) && (*Table)[name]->eType == type) {
-        return (*Table)[name];
-    }
-}
-SymbolEntry* TypeTable::insert(SymbolEntry *entry, bool overwrite = false) {
-    if (debug)
-        log("Inserting " + stringifyEntry(entry->eType) + " with name" + entry->name);
+        log("Inserting " + entry->typeGraph->stringifyType() + " with name" + entry->name);
     if (nameInScope(entry->name, Table) && !overwrite) {
-        string msg;
-        if (std::isupper(entry->name[0])) 
-            msg = "Constructor with name ";
-        else
-            msg =  "Type with name ";
-        msg += entry->name + " declared twice";
+        string msg = "Name" + entry->name + "declared twice";
         error(msg);
     } else {
         // creates or updates existing
@@ -170,62 +183,88 @@ SymbolEntry* TypeTable::insert(SymbolEntry *entry, bool overwrite = false) {
         return entry;
     }
 }
-
-TypeEntry* TypeTable::insertType(string name, type *t, bool overwrite = false) {
-    TypeEntry* te = new TypeEntry(name, t);
-    insert(te, overwrite);
-    return te;
-}
-ConstructorEntry* TypeTable::insertConstructor(string name, type *t, bool overwrite = false) {
-    ConstructorEntry* ce = new ConstructorEntry(name, t);
-    insert(ce, overwrite);
-    return ce;
+SymbolEntry* BaseTable::lookup(string name, bool err = true) {
+    if (debug)
+        log("Looking up name: " + name);
+    if (nameInScope(name, Table)) {
+        return (*Table)[name];
+    }
 }
 
+/*************************************************************/
+/** TypeTable method implementations */
+/*************************************************************/
+
+TypeEntry* TypeTable::insertType(string name, bool overwrite = false) {
+    CustomTypeGraph *customType = new CustomTypeGraph();
+    TypeEntry *typeEntry = new TypeEntry(name, customType);
+    return dynamic_cast<TypeEntry *>(insert(typeEntry, overwrite));
+}
 TypeEntry* TypeTable::lookupType(string name, bool err = true) {
-    SymbolEntry *e = lookup(name, EntryType::TYPE, err);
-    if (TypeEntry *te = dynamic_cast<TypeEntry *>(e)) {
-        return te;
-    } else {
-        error("Internal error. Downcast to requested SymbolEntry subclass failed...");
-    }
-}
-ConstructorEntry* TypeTable::lookupConstructor(string name, bool err = true) {
-    SymbolEntry *e = lookup(name, EntryType::CONSTRUCTOR, err);
-    if (ConstructorEntry *ce = dynamic_cast<ConstructorEntry *>(e)) {
-        return ce;
-    } else {
-        error("Internal error. Downcast to requested SymbolEntry subclass failed...");
-    }
+    return dynamic_cast<TypeEntry *>(lookup(name, err));
 }
 
+/*************************************************************/
+/** ConstructorTable method implementations */
+/*************************************************************/
+
+ConstructorEntry* ConstructorTable::insertConstructor(string name, TypeGraph *t, bool overwrite = false) {
+    ConstructorEntry *constructorEntry = new ConstructorEntry(name, t);
+    return dynamic_cast<ConstructorEntry *>(insert(constructorEntry, overwrite));
+}
+ConstructorEntry* ConstructorTable::lookupConstructor(string name, bool err = true) {
+    return dynamic_cast<ConstructorEntry *>(lookup(name, err));
+}
 
 /*************************************************************/
 /** SymbolEntry method implementations */
 /*************************************************************/
 
-FunctionEntry::FunctionEntry(std::string n, type *t)
-    :SymbolEntry(n,t,EntryType::FUNCTION),
-    parameters(new std::vector<ConstantEntry *>()) {};
-FunctionEntry::~FunctionEntry() { delete parameters; }
+FunctionTypeGraph* FunctionEntry::getTypeGraph() {
+    if (typeGraph->isFunction()) 
+        return dynamic_cast<FunctionTypeGraph *>(typeGraph);
+    std::cout << "Entry " << name << " is not associated with a function"
+              << std::endl;
+    exit(1);
+}
+void FunctionEntry::addParam(TypeGraph *param) {
+    getTypeGraph()->addParam(param);
+}
+ArrayTypeGraph* ArrayEntry::getTypeGraph() {
+    if (typeGraph->isArray())
+        return dynamic_cast<ArrayTypeGraph *>(typeGraph);
+    std::cout << "Entry " << name << " is not associated with an array"
+              << std::endl;
+    exit(1);
+}
+RefTypeGraph* RefEntry::getTypeGraph() {
+    if (typeGraph->isRef())
+        return dynamic_cast<RefTypeGraph *>(typeGraph);
+    std::cout << "Entry " << name << " is not associated with a ref"
+              << std::endl;
+    exit(1);
+}
 
-ConstantEntry::ConstantEntry(std::string n, type *t)
-    : SymbolEntry(n,t,EntryType::CONSTANT) {};
-
-TypeEntry::TypeEntry(std::string n, type *t)
-    :SymbolEntry(n,t,EntryType::TYPE),
+TypeEntry::TypeEntry(std::string n, TypeGraph *t)
+    :SymbolEntry(n,t),
     constructors(new std::vector<ConstructorEntry *>()) {};
-TypeEntry::~TypeEntry() { delete constructors; }
-
-ConstructorEntry::ConstructorEntry(std::string n, type *t)
-: SymbolEntry(n,t,EntryType::CONSTRUCTOR) {};
-
-
-void FunctionEntry::addParam(ConstantEntry *param)
-    { parameters->push_back(param); }
-void ConstructorEntry::setType(TypeEntry *t)
-    { typeEntry = t; }
-void TypeEntry::addConstructor(ConstructorEntry *constr) {
+TypeEntry::~TypeEntry() { 
+    for (auto &constr: *constructors) delete constr; 
+    delete constructors;
+}
+void TypeEntry::addConstructor(ConstructorEntry *constr) {    
     constructors->push_back(constr);
-    constr->setType(this);
+    constr->setTypeEntry(this);
+    getType()->addConstructor(constr->getType());
+}
+CustomTypeGraph* TypeEntry::getType() {
+    return dynamic_cast<CustomTypeGraph *>(typeGraph);
+}
+
+ConstructorEntry::ConstructorEntry(std::string n, TypeGraph *t)
+    : SymbolEntry(n,t) {};
+void ConstructorEntry::setTypeEntry(TypeEntry *t)
+    { typeEntry = t; }
+ConstructorTypeGraph* ConstructorEntry::getType() {
+    return dynamic_cast<ConstructorTypeGraph *>(typeGraph);
 }
