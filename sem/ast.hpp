@@ -8,6 +8,12 @@
 #include "symbol.hpp"
 #include "parser.hpp"
 
+const std::string type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
+                            "TYPE_string", "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_record" };
+
+enum class type { TYPE_unit, TYPE_int, TYPE_float, TYPE_bool, TYPE_string, TYPE_char };
+enum class category { CATEGORY_basic, CATEGORY_function, CATEGORY_array, CATEGORY_ref, CATEGORY_custom, CATEGORY_unknown };
+
 //#include "parser.hpp"
 
 void yyerror(const char *msg);
@@ -31,16 +37,31 @@ inline std::ostream& operator<< (std::ostream &out, const AST &t) {
 
 class Type: public AST {
 protected:
-    type t;
+    category c; // Shows what kind of object it is 
 public:
-    Type(type t): t(t) {}
-    bool compare_basic_type(type _t) { return t == _t; }
-    friend bool shallow_compare_types(Type *T1, Type *T2) { return (T1->t == T2->t); }
+    Type(category c): c(c) {}
+    category get_category() { return c; }
+    bool compare_category(category _c) { return c == _c; }
+    virtual bool compare_basic_type(type t) { return false; }
+    friend bool compare_categories(Type *T1, Type *T2) { return (T1->c == T2->c); }
     
 };
-class BasicType: public Type {
+class UnknownType: public Type {
+protected:
+    std::string temp_name;
 public:
-    BasicType(type t): Type(t) { /* std::cout << type_string[t]; */ }
+    UnknownType(): Type(category::CATEGORY_unknown) {}
+    virtual void printOn(std::ostream &out) const override {
+        out << "UnknownType()";
+    }
+};
+class BasicType: public Type {
+protected: 
+    // Shows which BasicType it is
+    type t;
+public:
+    BasicType(type t): t(t), Type(category::CATEGORY_basic) { /* std::cout << type_string[t]; */ }
+    virtual bool compare_basic_type(type _t) override { return t == _t; }
     virtual void printOn(std::ostream &out) const override {
         out << type_string[static_cast<int>(t)];
     }
@@ -49,7 +70,7 @@ class FunctionType: public Type {
 private:
     Type *lhtype, *rhtype;
 public:
-    FunctionType(Type *lhtype = new BasicType(type::TYPE_int), Type *rhtype = new BasicType(type::TYPE_int)): lhtype(lhtype), rhtype(rhtype), Type(type::TYPE_function) {}
+    FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType): lhtype(lhtype), rhtype(rhtype), Type(category::CATEGORY_function) {}
     virtual void printOn(std::ostream &out) const override {
         out << *lhtype << "->" << *rhtype;
     }
@@ -59,7 +80,7 @@ private:
     int dimensions;
     Type *elem_type;
 public:
-    ArrayType(int dimensions = 0, Type *elem_type = new BasicType(type::TYPE_int)): dimensions(dimensions), elem_type(elem_type), Type(type::TYPE_array) {}
+    ArrayType(int dimensions = 0, Type *elem_type = new UnknownType): dimensions(dimensions), elem_type(elem_type), Type(category::CATEGORY_array) {}
     virtual void printOn(std::ostream &out) const override {
         out << "TYPE_array(" << dimensions << ", " << *elem_type << ")";
     }
@@ -69,7 +90,7 @@ class RefType: public Type {
 private:
     Type *ref_type;
 public:
-    RefType(Type *ref_type = new BasicType(type::TYPE_int)): ref_type(ref_type), Type(type::TYPE_ref) {}
+    RefType(Type *ref_type = new BasicType(type::TYPE_int)): ref_type(ref_type), Type(category::CATEGORY_ref) {}
     virtual void printOn(std::ostream &out) const override {
         out << "TYPE_ref(" << *ref_type << ")";
     }
@@ -78,11 +99,12 @@ class CustomType: public Type {
 private: 
     std::string Id;
 public:
-    CustomType(std::string *Id): Id(*Id), Type(type::TYPE_custom) {}
+    CustomType(std::string *Id): Id(*Id), Type(category::CATEGORY_custom) {}
     virtual void printOn(std::ostream &out) const override {
         out << "CustomType(" << Id << ")";
     }
 };
+
 
 // Some types that are useful for typechecking
 /*
@@ -106,6 +128,33 @@ protected:
     // was created with new
     bool dynamic = false; 
 public:
+    void category_check(category c) {
+        sem();
+        if (!T->compare_category(c)) { 
+            yyerror("Type mismatch");
+            exit(1);
+        }
+    }
+    void category_check(std::vector< category > category_vect, bool negation = false) {
+        sem(); 
+        if(!negation) {
+            for(category temp_c: category_vect) {
+                if(T->compare_category(temp_c)) return; 
+            }
+            yyerror("Type mismatch");
+            exit(1);
+        } 
+        else {
+            for(category temp_c: category_vect) {
+                if(T->compare_category(temp_c)) {
+                    yyerror("Type mismatch");
+                    exit(1);
+                }
+            }
+            return;
+        }
+
+    }
     void basic_type_check(type t) {
         sem();
         if (!T->compare_basic_type(t)) { 
@@ -135,7 +184,7 @@ public:
     }
     void type_check(Type *t) {
         sem();
-        if (!shallow_compare_types(T, t)) { 
+        if (!compare_categories(T, t)) { 
             yyerror("Type mismatch");
             exit(1);
         }
@@ -148,14 +197,14 @@ public:
         sem(); 
         if(!negation) {
             for(Type *temp_T: Type_vect) {
-                if(shallow_compare_types(T, temp_T)) return; 
+                if(compare_categories(T, temp_T)) return; 
             }
             yyerror("Type mismatch");
             exit(1);
         } 
         else {
             for(Type *temp_T: Type_vect) {
-                if(shallow_compare_types(T, temp_T)) {
+                if(compare_categories(T, temp_T)) {
                     yyerror("Type mismatch");
                     exit(1);
                 }
@@ -219,9 +268,8 @@ private:
     Type *T;
 public:
     Par(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): id(*id), T(t) {}
-    virtual void sem() override {
-        st.insert(id);
-    }
+    ConstantEntry* get_ConstantEntry() { return new ConstantEntry(id, T); }
+    void insert_id_to_st() { st->insertConstant(id, T); }
     Type* get_type() { return T; }
     virtual void printOn(std::ostream &out) const override {
         out << "Par(" << id << ", " << *T << ")";
@@ -266,7 +314,7 @@ public:
 };
 class Def: public DefStmt {
 protected: 
-    // T is the BasicType of the defined identifier
+    // T is the Type of the defined identifier
     Type *T;
 public:
     Def(std::string id, Type *t): DefStmt(id), T(t) {}
@@ -278,10 +326,7 @@ protected:
 public:
     Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Def(*id, t), expr(e) {}
     virtual void sem() override { expr->type_check(T); }
-    virtual void insert_id_to_st() override {
-        // Insert constant to symbol table
-        st.insert(id);
-    }
+    virtual void insert_id_to_st() override { st->insertConstant(id, T); }
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
     }
@@ -292,19 +337,24 @@ private:
 public:
     Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Constant(id, e, t), par_list(*p){}
     virtual void sem() override {
-        // Semantically analyse parameters and add them to symbol table
-        for(Par *p: par_list) { p->sem(); }
+        // New scope for the body of the function where the parameters will be inserted
+        st->openScope();
 
-        // Check the type of the expression
+        // Insert parameters to symbol table
+        for(Par *p: par_list) { p->insert_id_to_st(); }
+
+        // Check the type of the expression (and call sem)
         expr->type_check(T);
+
+        // Close the scope
+        st->closeScope();
     }
     virtual void insert_id_to_st() override {
-        // Create vector of types of parameters
-        std::vector< Type* > par_types;
-        for(Par *p: par_list) { par_types.push_back(p->get_type()); }
+        // Insert Function id to symbol table
+        FunctionEntry *F = st->insertFunction(id, T);
 
-        // Insert function to symbol table
-        st.insert(id);
+        // Add the parameters to the entry
+        for(Par *p: par_list) { F->addParam(p->get_ConstantEntry()); }
     }
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
@@ -351,10 +401,7 @@ public:
 class Variable: public Mutable {
 public:
     Variable(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t) {}
-    virtual void insert_id_to_st() override {
-        // Add variable to symbol table
-        st.insert(id);
-    }
+    virtual void insert_id_to_st() override { st->insertConstant(id, T); }
     virtual void printOn(std::ostream &out) const override {
         out << "Variable(" << id << ", " << *T << ", " << ")";
     }
@@ -472,7 +519,7 @@ public:
     LetIn(Definition *letdef, Expr *expr): letdef(letdef), expr(expr) {}
     virtual void sem() override {
         // Create new scope
-        st.openScope();
+        st->openScope();
 
         // Semantically analyse letdef
         letdef->sem();
@@ -481,7 +528,7 @@ public:
         expr->sem();
 
         // Close scope defined by expression
-        st.closeScope();
+        st->closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "LetIN(" << *letdef << ", " << *expr << ")";
@@ -617,9 +664,9 @@ public:
             case '=': case T_lessgreater: case T_dbleq: case T_exclameq:
             {   
                 // Check that they are not arrays or functions
-                std::vector< type > v = { type::TYPE_array, type::TYPE_function };
-                lhs->basic_type_check(v, true);
-                rhs->basic_type_check(v, true); 
+                std::vector< category > v = { category::CATEGORY_array, category::CATEGORY_function };
+                lhs->category_check(v, true);
+                rhs->category_check(v, true); 
 
                 // Check that they are of the same type
                 same_type(lhs, rhs);
@@ -681,10 +728,10 @@ public:
                 expr->basic_type_check(type::TYPE_bool);
                 T = new BasicType(type::TYPE_bool);
             case '!': 
-                expr->basic_type_check(type::TYPE_ref);
+                expr->category_check(category::CATEGORY_ref);
                 T = expr->get_type();
             case T_delete: 
-                expr->basic_type_check(type::TYPE_ref);
+                expr->category_check(category::CATEGORY_ref);
                 expr->dynamic_check();
                 T = new BasicType(type::TYPE_unit);
             default: break;
@@ -700,7 +747,7 @@ public:
     New(Type *t): new_type(t) {}
     virtual void sem() override {
         // Array type not allowed
-        if(new_type->compare_basic_type(type::TYPE_array)) {
+        if(new_type->compare_category(category::CATEGORY_array)) {
             yyerror("Type mismatch");
             exit(1);
         }
@@ -736,7 +783,7 @@ public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { T = new BasicType(type::TYPE_unit); }
     virtual void sem() override {
         // Create new scope for counter and add it
-        st.openScope();
+        st->openScope();
         st.insert(id);
 
         // Typecheck start, finish, body
@@ -745,7 +792,7 @@ public:
         body->basic_type_check(type::TYPE_unit);
 
         // Close the scope
-        st.closeScope();
+        st->closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";

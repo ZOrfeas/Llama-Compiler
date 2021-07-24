@@ -5,19 +5,19 @@
 #include <vector>
 #include <string>
 
-enum class type { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
-            TYPE_string, TYPE_char, TYPE_ref, TYPE_array, TYPE_function, TYPE_custom, TYPE_record };
+enum class graphType { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
+            TYPE_char, TYPE_ref, TYPE_array, TYPE_function, TYPE_custom, TYPE_record };
 
-const std::string type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
-                                    "TYPE_string", "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_record" };
+const std::string graph_type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
+                                    "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_record" };
 
 
 
 /** Base Type Graph class from which all others are derived */
 class TypeGraph {
-    type t;
+    graphType t;
 public:
-    TypeGraph(type t): t(t) {}
+    TypeGraph(graphType t): t(t) {}
     std::string stringifyType() {
         return type_string[static_cast<int>(t)];
     }
@@ -25,17 +25,17 @@ public:
         std::cout << "TypeGraph of type " << stringifyType()
                   << " says:" << std::endl << msg << std::endl;
     }
-    bool isFunction()    { return t == type::TYPE_function; }
-    bool isArray()       { return t == type::TYPE_array;    }
-    bool isRef()         { return t == type::TYPE_ref;      }
-    bool isInt()         { return t == type::TYPE_int;      }
-    bool isUnit()        { return t == type::TYPE_unit;     }
-    bool isBool()        { return t == type::TYPE_bool;     }
-    bool isChar()        { return t == type::TYPE_char;     }
-    bool isFloat()       { return t == type::TYPE_float;    }
-    bool isCustom()      { return t == type::TYPE_custom;   }
-    bool isConstructor() { return t == type::TYPE_record;   }
-    bool isUnknown()     { return t == type::TYPE_unknown;  }
+    bool isFunction()    { return t == graphType::TYPE_function; }
+    bool isArray()       { return t == graphType::TYPE_array;    }
+    bool isRef()         { return t == graphType::TYPE_ref;      }
+    bool isInt()         { return t == graphType::TYPE_int;      }
+    bool isUnit()        { return t == graphType::TYPE_unit;     }
+    bool isBool()        { return t == graphType::TYPE_bool;     }
+    bool isChar()        { return t == graphType::TYPE_char;     }
+    bool isFloat()       { return t == graphType::TYPE_float;    }
+    bool isCustom()      { return t == graphType::TYPE_custom;   }
+    bool isConstructor() { return t == graphType::TYPE_record;   }
+    bool isUnknown()     { return t == graphType::TYPE_unknown;  }
     bool isBasic() { return dynamic_cast<BasicTypeGraph *>(this); }
     bool isDeletable() { return isFunction() || isArray() || isRef(); }
     virtual ~TypeGraph() {}
@@ -43,38 +43,38 @@ public:
 /************************************************************/
 class UnknownTypeGraph : public TypeGraph {
 public:
-    UnknownTypeGraph(): TypeGraph(type::TYPE_unknown) {}
+    UnknownTypeGraph(): TypeGraph(graphType::TYPE_unknown) {}
     ~UnknownTypeGraph() {}
 };
 /************************************************************/
 /** Base Basic Type Graph class from whic all basic type are derived */
 class BasicTypeGraph : public TypeGraph {
 public:
-    BasicTypeGraph(type t): TypeGraph(t) {}
+    BasicTypeGraph(graphType t): TypeGraph(t) {}
 };
 class UnitTypeGraph : public BasicTypeGraph {
 public:
-    UnitTypeGraph() : BasicTypeGraph(type::TYPE_unit) {}
+    UnitTypeGraph() : BasicTypeGraph(graphType::TYPE_unit) {}
     ~UnitTypeGraph() {}
 };
 class IntTypeGraph : public BasicTypeGraph {
 public:
-    IntTypeGraph() : BasicTypeGraph(type::TYPE_int) {}
+    IntTypeGraph() : BasicTypeGraph(graphType::TYPE_int) {}
     ~IntTypeGraph() {}
 };
 class CharTypeGraph : public BasicTypeGraph {
 public:
-    CharTypeGraph() : BasicTypeGraph(type::TYPE_char) {}
+    CharTypeGraph() : BasicTypeGraph(graphType::TYPE_char) {}
     ~CharTypeGraph() {}
 };
 class BoolTypeGraph : public BasicTypeGraph {
 public:
-    BoolTypeGraph() : BasicTypeGraph(type::TYPE_bool) {}
+    BoolTypeGraph() : BasicTypeGraph(graphType::TYPE_bool) {}
     ~BoolTypeGraph() {}
 };
 class FloatTypeGraph : public BasicTypeGraph {
 public:
-    FloatTypeGraph() : BasicTypeGraph(type::TYPE_float) {}
+    FloatTypeGraph() : BasicTypeGraph(graphType::TYPE_float) {}
     ~FloatTypeGraph() {}
 };
 /** Complex Type Graphs */
@@ -84,7 +84,7 @@ class ArrayTypeGraph : public TypeGraph {
 public:
     int dimensions;
     ArrayTypeGraph(int dimensions, TypeGraph *containedType)
-    : TypeGraph(type::TYPE_array), dimensions(dimensions), Type(containedType) {}
+    : TypeGraph(graphType::TYPE_array), dimensions(dimensions), Type(containedType) {}
     TypeGraph* getContainedType() { return Type; }
     ~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 };
@@ -93,7 +93,7 @@ class RefTypeGraph : public TypeGraph {
 public:
     bool allocated, dynamic;
     RefTypeGraph(TypeGraph *refType, bool allocated = false, bool dynamic = false)
-    : TypeGraph(type::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
+    : TypeGraph(graphType::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
     TypeGraph* getContainedType() { return Type; }
     void setAllocated() { allocated = true; }
     void setDynamic() { dynamic = true; }
@@ -106,7 +106,7 @@ class FunctionTypeGraph : public TypeGraph {
     TypeGraph *resultType;
 public:
     FunctionTypeGraph(TypeGraph *resultType)
-    : TypeGraph(type::TYPE_function), resultType(resultType), paramTypes(new std::vector<TypeGraph *>()) {}
+    : TypeGraph(graphType::TYPE_function), resultType(resultType), paramTypes(new std::vector<TypeGraph *>()) {}
     std::vector<TypeGraph *>* getParamTypes() { return paramTypes; }
     TypeGraph* getResultType() { return resultType; }
     int getParamCount() { return paramTypes->size(); }
@@ -131,7 +131,7 @@ class ConstructorTypeGraph : public TypeGraph {
     CustomTypeGraph *customType;
 public:
     ConstructorTypeGraph(std::vector<TypeGraph *> *fields, CustomTypeGraph *cType)
-    : TypeGraph(type::TYPE_record), fields(fields), customType(cType) {}
+    : TypeGraph(graphType::TYPE_record), fields(fields), customType(cType) {}
     std::vector<TypeGraph *>* getFields() { return fields; }
     void setTypeGraph(CustomTypeGraph *owningType) { customType = owningType; }
     int getFieldCount() { return fields->size(); }
@@ -148,7 +148,7 @@ class CustomTypeGraph : public TypeGraph {
     std::vector<ConstructorTypeGraph *> *constructors;
 public:
     CustomTypeGraph(std::vector<ConstructorTypeGraph *> *constructors = new std::vector<ConstructorTypeGraph *>())
-    : TypeGraph(type::TYPE_custom), constructors(constructors) {}
+    : TypeGraph(graphType::TYPE_custom), constructors(constructors) {}
     std::vector<ConstructorTypeGraph *>* getConstructors() { return constructors; }
     int getConstructorCount() { return constructors->size(); }
     void addConstructor(ConstructorTypeGraph *constructor) {
@@ -158,7 +158,7 @@ public:
     ~CustomTypeGraph() { for (auto &constructor: *constructors) delete constructor; }
 };
 
-/** Global basic type classes instantiation */
+/** Global basic graphType classes instantiation */
 
 UnitTypeGraph unitType;
 IntTypeGraph intType;
