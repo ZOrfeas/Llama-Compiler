@@ -7,8 +7,7 @@
 #include "symbol.hpp"
 #include "parser.hpp"
 
-const std::string type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
-                                    "TYPE_string", "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function" };
+const std::string type_string[] = { "unit", "int", "float", "bool", "string", "char" };
 
 enum class type { TYPE_unit, TYPE_int, TYPE_float, TYPE_bool, TYPE_string, TYPE_char };
 enum class category { CATEGORY_basic, CATEGORY_function, CATEGORY_array, CATEGORY_ref, CATEGORY_custom, CATEGORY_unknown };
