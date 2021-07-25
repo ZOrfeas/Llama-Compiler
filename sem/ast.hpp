@@ -4,11 +4,12 @@
 #include <map>
 #include <vector>
 
+#include "types.hpp"
 #include "symbol.hpp"
 #include "parser.hpp"
+#include "types.hpp"
 
 const std::string type_string[] = { "unit", "int", "float", "bool", "string", "char" };
-
 enum class type { TYPE_unit, TYPE_int, TYPE_float, TYPE_bool, TYPE_string, TYPE_char };
 enum class category { CATEGORY_basic, CATEGORY_function, CATEGORY_array, CATEGORY_ref, CATEGORY_custom, CATEGORY_unknown };
 
@@ -41,6 +42,7 @@ public:
     category get_category() { return c; }
     bool compare_category(category _c) { return c == _c; }
     virtual bool compare_basic_type(type t) { return false; }
+    virtual TypeGraph* get_TypeGraph() {}
     friend bool compare_categories(Type *T1, Type *T2) { return (T1->c == T2->c); }
     
 };
@@ -60,6 +62,7 @@ protected:
 public:
     BasicType(type t): t(t), Type(category::CATEGORY_basic) { /* std::cout << type_string[t]; */ }
     virtual bool compare_basic_type(type _t) override { return t == _t; }
+    virtual TypeGraph* get_TypeGraph() override { return tt.lookupType(type_string[(int)t])->getType(); }
     virtual void printOn(std::ostream &out) const override {
         out << type_string[static_cast<int>(t)];
     }
@@ -95,11 +98,12 @@ public:
 };
 class CustomType: public Type {
 private: 
-    std::string Id;
+    std::string id;
 public:
-    CustomType(std::string *Id): Id(*Id), Type(category::CATEGORY_custom) {}
+    CustomType(std::string *id): id(*id), Type(category::CATEGORY_custom) {}
+    virtual TypeGraph* get_TypeGraph() { return tt.lookupType(id)->getType(); }
     virtual void printOn(std::ostream &out) const override {
-        out << "CustomType(" << Id << ")";
+        out << "CustomType(" << id << ")";
     }
 };
 
@@ -244,8 +248,11 @@ private:
     std::vector<Type *> type_list;
 public:
     Constr(std::string *Id, std::vector<Type *> *t): Id(*Id), type_list(*t) {}
-    virtual void sem() override {
-        tt.insert(Id);
+    void add_Id_to_ct(TypeEntry *te) {
+        ConstructorEntry* c = ct.insertConstructor(Id);
+        for(Type *t: type_list) { c->addType(t->get_TypeGraph()); }
+
+        te->addConstructor(c);
     }
     virtual void printOn(std::ostream &out) const override {
         out << "Constr(" << Id;
@@ -265,10 +272,10 @@ private:
     std::string id;
     Type *T;
 public:
-    Par(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): id(*id), T(t) {}
-    ConstantEntry* get_ConstantEntry() { return new ConstantEntry(id, T); }
-    void insert_id_to_st() { st->insertConstant(id, T); }
-    Type* get_type() { return T; }
+    Par(std::string *id, Type *t = new UnknownType): id(*id), T(t) {}
+    /*SymbolEntry* get_SymbolEntry() { return new SymbolEntry(id, T->get_TypeGraph()); }*/
+    void insert_id_to_st() { st.insertBasic(id, T->get_TypeGraph()); }
+    TypeGraph* get_TypeGraph() { return T->get_TypeGraph(); }
     virtual void printOn(std::ostream &out) const override {
         out << "Par(" << id << ", " << *T << ")";
     }
@@ -291,10 +298,12 @@ public:
     Tdef(std::string *id, std::vector<Constr *> *c): DefStmt(*id), constr_list(*c) {}
     virtual void insert_id_to_tt() override {
         // Insert custom type to type table
-        tt.insert(id);
+        tt.insertType(id);
     }
     virtual void sem() override {
-        for(Constr *c: constr_list) { c->sem(); }
+        TypeEntry *t = tt.lookupType(id);
+
+        for(Constr *c: constr_list) { c->add_Id_to_ct(t); }
     }
     virtual void printOn(std::ostream &out) const override {
         out << "Tdef(" << id << ", ";
@@ -322,9 +331,9 @@ class Constant: public Def {
 protected:
     Expr *expr;
 public:
-    Constant(std::string *id, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Def(*id, t), expr(e) {}
+    Constant(std::string *id, Expr *e, Type *t = new UnknownType): Def(*id, t), expr(e) {}
     virtual void sem() override { expr->type_check(T); }
-    virtual void insert_id_to_st() override { st->insertConstant(id, T); }
+    virtual void insert_id_to_st() override { st.insertBasic(id, T->get_TypeGraph()); }
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
     }
@@ -333,10 +342,10 @@ class Function: public Constant {
 private:
     std::vector<Par *> par_list;
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new BasicType(type::TYPE_unknown)): Constant(id, e, t), par_list(*p){}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType): Constant(id, e, t), par_list(*p){}
     virtual void sem() override {
         // New scope for the body of the function where the parameters will be inserted
-        st->openScope();
+        st.openScope();
 
         // Insert parameters to symbol table
         for(Par *p: par_list) { p->insert_id_to_st(); }
@@ -345,14 +354,14 @@ public:
         expr->type_check(T);
 
         // Close the scope
-        st->closeScope();
+        st.closeScope();
     }
     virtual void insert_id_to_st() override {
         // Insert Function id to symbol table
-        FunctionEntry *F = st->insertFunction(id, T);
+        FunctionEntry *F = st.insertFunction(id, T->get_TypeGraph());
 
         // Add the parameters to the entry
-        for(Par *p: par_list) { F->addParam(p->get_ConstantEntry()); }
+        for(Par *p: par_list) { F->addParam(p->get_TypeGraph()); }
     }
     virtual void printOn(std::ostream &out) const override {
         out << "Function(" << id;
@@ -362,13 +371,13 @@ public:
 };
 class Mutable: public Def {
 public:
-    Mutable(std::string id, Type *t): Def(id, t) {}
+    Mutable(std::string id, Type *T): Def(id, T) {}
 };
 class Array: public Mutable {
 private:
     std::vector<Expr *> expr_list;
 public:
-    Array(std::string *id, std::vector<Expr *> *e, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t), expr_list(*e){}
+    Array(std::string *id, std::vector<Expr *> *e, Type *T = new UnknownType): Mutable(*id, T), expr_list(*e){}
     virtual void sem() override {
         // All dimension sizes are of type integer
         for(Expr *e: expr_list){ e->basic_type_check(type::TYPE_int); }
@@ -378,7 +387,7 @@ public:
         int d = get_dimensions();
 
         // Insert array to symbol table
-        st.insert(id);
+        st.insertArray(id, T->get_TypeGraph(), d);
     }
     virtual void printOn(std::ostream &out) const override {
         out << "Array(" << id;
@@ -398,8 +407,8 @@ public:
 };
 class Variable: public Mutable {
 public:
-    Variable(std::string *id, Type *t = new BasicType(type::TYPE_unknown)): Mutable(*id, t) {}
-    virtual void insert_id_to_st() override { st->insertConstant(id, T); }
+    Variable(std::string *id, Type *T = new UnknownType): Mutable(*id, T) {}
+    virtual void insert_id_to_st() override { st.insertBasic(id, T->get_TypeGraph()); }
     virtual void printOn(std::ostream &out) const override {
         out << "Variable(" << id << ", " << *T << ", " << ")";
     }
@@ -517,7 +526,7 @@ public:
     LetIn(Definition *letdef, Expr *expr): letdef(letdef), expr(expr) {}
     virtual void sem() override {
         // Create new scope
-        st->openScope();
+        st.openScope();
 
         // Semantically analyse letdef
         letdef->sem();
@@ -526,7 +535,7 @@ public:
         expr->sem();
 
         // Close scope defined by expression
-        st->closeScope();
+        st.closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "LetIN(" << *letdef << ", " << *expr << ")";
@@ -781,8 +790,10 @@ public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3): id(*id), step(s), start(e1), finish(e2), body(e3) { T = new BasicType(type::TYPE_unit); }
     virtual void sem() override {
         // Create new scope for counter and add it
-        st->openScope();
-        st.insert(id);
+        st.openScope();
+
+        TypeGraph *t = tt.lookupType("int")->getType();
+        st.insertBasic(id, t);
 
         // Typecheck start, finish, body
         start->basic_type_check(type::TYPE_int);
@@ -790,7 +801,7 @@ public:
         body->basic_type_check(type::TYPE_unit);
 
         // Close the scope
-        st->closeScope();
+        st.closeScope();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
