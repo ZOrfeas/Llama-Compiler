@@ -208,8 +208,9 @@ TypeEntry* TypeTable::lookupType(string name, bool err = true) {
 /** ConstructorTable method implementations */
 /*************************************************************/
 
-ConstructorEntry* ConstructorTable::insertConstructor(string name, TypeGraph *t, bool overwrite = false) {
-    ConstructorEntry *constructorEntry = new ConstructorEntry(name, t);
+ConstructorEntry* ConstructorTable::insertConstructor(string name, bool overwrite = false) {
+    ConstructorTypeGraph *constrType = new ConstructorTypeGraph();
+    ConstructorEntry *constructorEntry = new ConstructorEntry(name, constrType);
     return dynamic_cast<ConstructorEntry *>(insert(constructorEntry, overwrite));
 }
 ConstructorEntry* ConstructorTable::lookupConstructor(string name, bool err = true) {
@@ -255,9 +256,9 @@ TypeEntry::~TypeEntry() {
 void TypeEntry::addConstructor(ConstructorEntry *constr) {    
     constructors->push_back(constr);
     constr->setTypeEntry(this);
-    getType()->addConstructor(constr->getType());
+    getTypeGraph()->addConstructor(constr->getTypeGraph());
 }
-CustomTypeGraph* TypeEntry::getType() {
+CustomTypeGraph* TypeEntry::getTypeGraph() {
     return dynamic_cast<CustomTypeGraph *>(typeGraph);
 }
 
@@ -265,6 +266,9 @@ ConstructorEntry::ConstructorEntry(std::string n, TypeGraph *t)
     : SymbolEntry(n,t) {};
 void ConstructorEntry::setTypeEntry(TypeEntry *t)
     { typeEntry = t; }
-ConstructorTypeGraph* ConstructorEntry::getType() {
+ConstructorTypeGraph* ConstructorEntry::getTypeGraph() {
     return dynamic_cast<ConstructorTypeGraph *>(typeGraph);
+}
+void ConstructorEntry::addType(TypeGraph *field) {
+    getTypeGraph()->addField(field);
 }

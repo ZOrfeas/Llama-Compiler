@@ -42,11 +42,14 @@ class RefEntry : public SymbolEntry {
 public:
     RefEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
     RefTypeGraph* getTypeGraph();
+    bool isDynamic() { return getTypeGraph()->dynamic; }
+    bool isAllocated() {return getTypeGraph()->allocated;}
+    void setDynamic() { getTypeGraph()->setDynamic(); }
+    void setAllocated() { getTypeGraph()->setAllocated(); }
+    void resetDynamic() { getTypeGraph()->resetDynamic(); }
+    void resetAllocated() { getTypeGraph()->resetAllocated(); }
     ~RefEntry();
 };
-
-class ConstructorEntry;
-class TypeEntry;
 
 class TypeEntry: public SymbolEntry {
 public:
@@ -54,7 +57,7 @@ public:
     std::vector<ConstructorEntry *> *constructors;
     // Adds a constructor to this type (doesn't add to TypeTable)
     void addConstructor(ConstructorEntry *constr);
-    CustomTypeGraph* getType();
+    CustomTypeGraph* getTypeGraph();
     TypeEntry(std::string n, TypeGraph *t);
     ~TypeEntry();
 };
@@ -64,7 +67,8 @@ public:
     TypeEntry *typeEntry;
     // Sets this Constructor's TypeEntry
     void setTypeEntry(TypeEntry *t);
-    ConstructorTypeGraph* getType();
+    void addType(TypeGraph *field);
+    ConstructorTypeGraph* getTypeGraph();
     ConstructorEntry(std::string n, TypeGraph *t);
     ~ConstructorEntry();
 };
@@ -141,7 +145,7 @@ class ConstructorTable : public BaseTable {
 public:
     ConstructorTable(bool debug = false): BaseTable("ConstructorTable", debug) {};
     /** insert wrapper for ConstructorEntries */
-    ConstructorEntry* insertConstructor(std::string, TypeGraph *t, bool overwrite = false);
+    ConstructorEntry* insertConstructor(std::string name, bool overwrite = false);
     /** lookup wrapper for ConstructorEntries */
     ConstructorEntry* lookupConstructor(std::string name, bool err = true);
     ~ConstructorTable();
