@@ -62,7 +62,7 @@ protected:
 public:
     BasicType(type t): t(t), Type(category::CATEGORY_basic) { /* std::cout << type_string[t]; */ }
     virtual bool compare_basic_type(type _t) override { return t == _t; }
-    virtual TypeGraph* get_TypeGraph() override { return tt.lookupType(type_string[(int)t])->getType(); }
+    virtual TypeGraph* get_TypeGraph() override { return tt.lookupType(type_string[(int)t])->getTypeGraph(); }
     virtual void printOn(std::ostream &out) const override {
         out << type_string[static_cast<int>(t)];
     }
@@ -101,7 +101,7 @@ private:
     std::string id;
 public:
     CustomType(std::string *id): id(*id), Type(category::CATEGORY_custom) {}
-    virtual TypeGraph* get_TypeGraph() { return tt.lookupType(id)->getType(); }
+    virtual TypeGraph* get_TypeGraph() { return tt.lookupType(id)->getTypeGraph(); }
     virtual void printOn(std::ostream &out) const override {
         out << "CustomType(" << id << ")";
     }
@@ -790,7 +790,7 @@ public:
         // Create new scope for counter and add it
         st.openScope();
 
-        TypeGraph *t = tt.lookupType("int")->getType();
+        TypeGraph *t = tt.lookupType("int")->getTypeGraph();
         st.insertBasic(id, t);
 
         // Typecheck start, finish, body

@@ -130,9 +130,10 @@ class ConstructorTypeGraph : public TypeGraph {
     std::vector<TypeGraph *> *fields;
     CustomTypeGraph *customType;
 public:
-    ConstructorTypeGraph(std::vector<TypeGraph *> *fields, CustomTypeGraph *cType)
-    : TypeGraph(graphType::TYPE_record), fields(fields), customType(cType) {}
+    ConstructorTypeGraph() : TypeGraph(graphType::TYPE_record),
+    fields(new std::vector<TypeGraph *>()), customType(nullptr) {}
     std::vector<TypeGraph *>* getFields() { return fields; }
+    void addField(TypeGraph *field) { fields->push_back(field); }
     void setTypeGraph(CustomTypeGraph *owningType) { customType = owningType; }
     int getFieldCount() { return fields->size(); }
     TypeGraph* getFieldType(int index) {
