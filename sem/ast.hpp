@@ -9,8 +9,8 @@
 #include "parser.hpp"
 #include "types.hpp"
 
-const std::string type_string[] = { "unit", "int", "float", "bool", "string", "char" };
-enum class type { TYPE_unit, TYPE_int, TYPE_float, TYPE_bool, TYPE_string, TYPE_char };
+const std::string type_string[] = { "unit", "int", "float", "bool", "char" };
+enum class type { TYPE_unit, TYPE_int, TYPE_float, TYPE_bool, TYPE_char };
 enum class category { CATEGORY_basic, CATEGORY_function, CATEGORY_array, CATEGORY_ref, CATEGORY_custom, CATEGORY_unknown };
 
 //#include "parser.hpp"
@@ -126,10 +126,13 @@ Type *UNIT = new BasicType(type::TYPE_unit);
 class Expr: public AST {
 protected:
     Type *T;
+    TypeGraph *TG;
+
     // dynamic shows whether an expression
     // was created with new
     bool dynamic = false; 
 public:
+    TypeGraph* get_TypeGraph() { return TG; }
     void category_check(category c) {
         sem();
         if (!T->compare_category(c)) { 
@@ -184,49 +187,8 @@ public:
         }
 
     }
-    void type_check(Type *t) {
-        sem();
-        if (!compare_categories(T, t)) { 
-            yyerror("Type mismatch");
-            exit(1);
-        }
-    }
-    /* Succeeds only if T is inside the vector
-     * If negation is true then it succeeds only 
-     * if T is not in the vector
-     */
-    void type_check(std::vector< Type* > Type_vect, bool negation = false) {
-        sem(); 
-        if(!negation) {
-            for(Type *temp_T: Type_vect) {
-                if(compare_categories(T, temp_T)) return; 
-            }
-            yyerror("Type mismatch");
-            exit(1);
-        } 
-        else {
-            for(Type *temp_T: Type_vect) {
-                if(compare_categories(T, temp_T)) {
-                    yyerror("Type mismatch");
-                    exit(1);
-                }
-            }
-            return;
-        }
-    }
-    friend void same_type(Expr *e1, Expr *e2) {
-        e1->sem();
-        e2->sem();
-
-        if(e1->T != e2->T) {
-            yyerror("Type mismatch");
-            exit(1);
-        }
-    }
-    Type* get_type() {
-        // NOTE: Careful with this, it returns the pointer
-        return T;
-    }
+    void type_check(TypeGraph *t) {}
+    friend void same_type(Expr *e1, Expr *e2) {}
     void dynamic_check() { 
         if(!dynamic) {
             yyerror("Not created with new");
@@ -332,7 +294,10 @@ protected:
     Expr *expr;
 public:
     Constant(std::string *id, Expr *e, Type *t = new UnknownType): Def(*id, t), expr(e) {}
-    virtual void sem() override { expr->type_check(T); }
+    virtual void sem() override { 
+        expr->sem(); 
+        expr->type_check(T->get_TypeGraph()); 
+    }
     virtual void insert_id_to_st() override { st.insertBasic(id, T->get_TypeGraph()); }
     virtual void printOn(std::ostream &out) const override {
         out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
@@ -562,7 +527,7 @@ class String_literal: public Literal {
 private:
     std::string s;
 public:
-    String_literal(std::string *s): s(*s) { T = new BasicType(type::TYPE_string); }
+    String_literal(std::string *s): s(*s) { TG = new ArrayTypeGraph(1, &charType); }
     virtual void printOn(std::ostream &out) const override {
         out << "String(" << s << ")";
     }
@@ -573,10 +538,9 @@ private:
     char c;
 public:
     Char_literal(std::string *c_string): c_string(*c_string) { 
-        T = new BasicType(type::TYPE_char); 
+        TG = &charType; 
         c = getChar(*c_string);
     }
-    
     // Recognise character from string
     char getChar(std::string c) {
         char ans = 0;
@@ -615,7 +579,7 @@ class Bool_literal: public Literal {
 private:
     bool b;
 public:
-    Bool_literal(bool b): b(b) { T = new BasicType(type::TYPE_bool); }
+    Bool_literal(bool b): b(b) { TG = &boolType; }
     virtual void printOn(std::ostream &out) const override {
         out << "Bool(" << b << ")";
     }
@@ -624,7 +588,7 @@ class Float_literal: public Literal {
 private:
     double d;
 public:
-    Float_literal(double d): d(d) { T = new BasicType(type::TYPE_float); }
+    Float_literal(double d): d(d) { TG = &floatType; }
     virtual void printOn(std::ostream &out) const override {
         out << "Float(" << d << ")";
     }
@@ -634,7 +598,7 @@ class Int_literal : public Literal
 private:
     int n;
 public:
-    Int_literal(int n): n(n) { T = new BasicType(type::TYPE_int); }
+    Int_literal(int n): n(n) { TG = &intType; }
     int get_int() { return n; }
     virtual void printOn(std::ostream &out) const override {
         out << "Int(" << n << ")";
@@ -642,7 +606,7 @@ public:
 };
 class Unit_literal: public Literal {
 public:
-    Unit_literal() { T = new BasicType(type::TYPE_unit); }
+    Unit_literal() { TG = &unitType; }
     virtual void printOn(std::ostream &out) const override {
         out << "Unit";
     }
@@ -655,61 +619,73 @@ private:
 public:
     BinOp(Expr *e1, int op, Expr *e2): lhs(e1), rhs(e2), op(op) {}
     virtual void sem() override {
+        lhs->sem();
+        rhs->sem();
+
+        TypeGraph *t_lhs = lhs->get_TypeGraph();
+        TypeGraph *t_rhs = rhs->get_TypeGraph();
+
         switch(op) {
             case '+': case '-': case '*': case '/': case T_mod:
-                lhs->basic_type_check(type::TYPE_int);
-                rhs->basic_type_check(type::TYPE_int);
-                T = new BasicType(type::TYPE_int);
+                if(!t_lhs->isInt() || !t_rhs->isInt()) {
+                    yyerror("Only int allowed");
+                    exit(1);
+                }
+                TG = tt.lookupType("int")->getType();
             case T_plusdot: case T_minusdot: case T_stardot: case T_slashdot: case T_dblstar:
-                lhs->basic_type_check(type::TYPE_float);
-                rhs->basic_type_check(type::TYPE_float);
-                T = new BasicType(type::TYPE_float);
+                if(!t_lhs->isFloat() || !t_rhs->isFloat()){
+                    yyerror("Only float allowed");
+                    exit(1);
+                }
+                TG = tt.lookupType("float")->getType();
             case T_dblbar: case T_dblampersand:
-                lhs->basic_type_check(type::TYPE_bool);
-                rhs->basic_type_check(type::TYPE_bool);
-                T = new BasicType(type::TYPE_bool);
+                if(!t_lhs->isBool() || !t_rhs->isBool()){
+                    yyerror("Only bool allowed");
+                    exit(1);
+                }
+                TG = tt.lookupType("bool")->getType();
             case '=': case T_lessgreater: case T_dbleq: case T_exclameq:
             {   
                 // Check that they are not arrays or functions
-                std::vector< category > v = { category::CATEGORY_array, category::CATEGORY_function };
-                lhs->category_check(v, true);
-                rhs->category_check(v, true); 
+                if(t_lhs->isArray() || t_lhs->isFunction() ||
+                   t_rhs->isArray() || t_rhs->isFunction()) {
+                    yyerror("Array and Function not allowed");
+                    exit(1);
+                }
 
                 // Check that they are of the same type
                 same_type(lhs, rhs);
 
                 // The result is bool
-                T = new BasicType(type::TYPE_bool);
+                TG = tt.lookupType("bool")->getType();
             }
             case '<': case '>': case T_leq: case T_geq:
             {
                 // Check that they are char, int or float
-                std::vector< type > v = { type::TYPE_char, type::TYPE_int, type::TYPE_float };
-                lhs->basic_type_check(v);
-                rhs->basic_type_check(v);
+                if(!t_lhs->isChar() && !t_lhs->isInt() && !t_lhs->isFloat() &&
+                   !t_rhs->isChar() && !t_rhs->isInt() && !t_rhs->isFloat()) {
+                    yyerror("Only char, int and float allowed");
+                    exit(1);
+                }
 
                 // Check that they are of the same type
                 same_type(lhs, rhs);
 
                 // Get the correct type for the result
-                T = lhs->get_type();
+                TG = t_lhs;
             }
             case T_coloneq:
-                // Semantically analyse rhs
-                rhs->sem();
-
-                // Find the type on the rhs
-                Type *rhs_T = rhs->get_type();
-
+            {
                 // The lhs must be a ref of the same type as the rhs
-                RefType *correct_lhs = new RefType(rhs_T);
+                RefTypeGraph *correct_lhs = new RefTypeGraph(t_rhs);
                 lhs->type_check(correct_lhs);
 
                 // Cleanup
                 delete correct_lhs;
 
                 // The result is unit
-                T = new BasicType(type::TYPE_unit);
+                TG = tt.lookupType("unit")->getType();
+            }
             default: break;
         }
     }
@@ -724,23 +700,44 @@ private:
 public:
     UnOp(int op, Expr *e): expr(e), op(op) {}
     virtual void sem() override {
+        expr->sem();
+        TypeGraph *t_expr = expr->get_TypeGraph();
+
         switch(op) {
             case '+': case '-': 
-                expr->basic_type_check(type::TYPE_int); 
-                T = new BasicType(type::TYPE_int);
+                if(!t_expr->isInt()){
+                    yyerror("Only int allowed");
+                    exit(1);
+                } 
+                TG = tt.lookupType("int")->getType();
             case T_minusdot: case T_plusdot: 
-                expr->basic_type_check(type::TYPE_float);
-                T = new BasicType(type::TYPE_float);
+                if(!t_expr->isFloat()) {
+                    yyerror("Only float allowed");
+                    exit(1);
+                }
+                TG = tt.lookupType("float")->getType();
             case T_not: 
-                expr->basic_type_check(type::TYPE_bool);
-                T = new BasicType(type::TYPE_bool);
+                if(!t_expr->isBool()) {
+                    yyerror("Only bool allowed");
+                    exit(1);
+                }
+                TG = tt.lookupType("bool")->getType();
             case '!': 
-                expr->category_check(category::CATEGORY_ref);
-                T = expr->get_type();
+                if(!t_expr->isRef()) {
+                    yyerror("Only ref allowed");
+                    exit(1);
+                }
+                TG = t_expr;
             case T_delete: 
-                expr->category_check(category::CATEGORY_ref);
-                expr->dynamic_check();
-                T = new BasicType(type::TYPE_unit);
+                if(!t_expr->isRef()) {
+                    yyerror("Only ref allowed");
+                    exit(1);
+                }
+                if(!t_expr->isDynamic()) {
+                    yyerror("Must have been assigned value with new");
+                    exit(1);
+                }
+                TG = tt.lookupType("unit")->getType();
             default: break;
         }
     }
@@ -753,14 +750,15 @@ class New: public Expr {
 public:
     New(Type *t): new_type(t) {}
     virtual void sem() override {
+        TypeGraph *t = new_type->get_TypeGraph();
+
         // Array type not allowed
-        if(new_type->compare_category(category::CATEGORY_array)) {
-            yyerror("Type mismatch");
+        if(t->isArray()) {
+            yyerror("Array not allowed");
             exit(1);
         }
 
-        T = new RefType(new_type); 
-        dynamic = true;
+        TG = new RefTypeGraph(t, true, true); 
     }
     virtual void printOn(std::ostream &out) const override {
         out << "New(" << *T << ")";
@@ -870,9 +868,8 @@ public:
     ConstantCall(std::string *id): id(*id) {}
     virtual void sem() override {
         // Lookup constant
-        Constant *c = st.lookup(id);
-
-        T = c->get_type();
+        SymbolEntry *s = st.lookup(id);
+        TG = s->getType();
     }
     virtual void printOn(std::ostream &out) const override {
         out << "ConstantCall(" << id << ")";
