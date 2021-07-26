@@ -16,6 +16,7 @@ public:
     std::string name;
     // Holds pointer to Type Graph of entry
     TypeGraph *typeGraph;
+    virtual TypeGraph* getTypeGraph() { return typeGraph; }
     SymbolEntry(std::string n, TypeGraph *t): name(n), typeGraph(t) {};
     virtual ~SymbolEntry() {}
 };
@@ -28,20 +29,20 @@ public:
 class FunctionEntry : public SymbolEntry {
 public:
     FunctionEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    FunctionTypeGraph* getTypeGraph();
+    virtual FunctionTypeGraph* getTypeGraph();
     void addParam(TypeGraph *param);
     ~FunctionEntry();
 };
 class ArrayEntry : public SymbolEntry {
 public:
     ArrayEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    ArrayTypeGraph* getTypeGraph();
+    virtual ArrayTypeGraph* getTypeGraph();
     ~ArrayEntry();
 };
 class RefEntry : public SymbolEntry {
 public:
     RefEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    RefTypeGraph* getTypeGraph();
+    virtual RefTypeGraph* getTypeGraph();
     bool isDynamic() { return getTypeGraph()->dynamic; }
     bool isAllocated() {return getTypeGraph()->allocated;}
     void setDynamic() { getTypeGraph()->setDynamic(); }
@@ -57,7 +58,7 @@ public:
     std::vector<ConstructorEntry *> *constructors;
     // Adds a constructor to this type (doesn't add to TypeTable)
     void addConstructor(ConstructorEntry *constr);
-    CustomTypeGraph* getTypeGraph();
+    virtual CustomTypeGraph* getTypeGraph();
     TypeEntry(std::string n, TypeGraph *t);
     ~TypeEntry();
 };
@@ -68,7 +69,7 @@ public:
     // Sets this Constructor's TypeEntry
     void setTypeEntry(TypeEntry *t);
     void addType(TypeGraph *field);
-    ConstructorTypeGraph* getTypeGraph();
+    virtual ConstructorTypeGraph* getTypeGraph();
     ConstructorEntry(std::string n, TypeGraph *t);
     ~ConstructorEntry();
 };
