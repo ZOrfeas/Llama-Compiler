@@ -113,6 +113,25 @@ private:
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType)
         : lhtype(lhtype), rhtype(rhtype), Type(category::CATEGORY_function) {}
+    virtual TypeGraph *get_TypeGraph() override 
+    {
+        FunctionTypeGraph *f;
+        TypeGraph *l = lhtype->get_TypeGraph();
+        TypeGraph *r = rhtype->get_TypeGraph();
+
+        if(r->isFunction()) 
+        {
+            f = dynamic_cast<FunctionTypeGraph *>(r);
+        }
+
+        else 
+        {
+            f = new FunctionTypeGraph(r);
+        }
+
+        f->addParam(l);
+        return f;
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << *lhtype << "->" << *rhtype;

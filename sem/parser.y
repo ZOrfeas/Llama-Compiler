@@ -106,7 +106,7 @@
 // Type definition necessary precedences
 %precedence ARRAYOF
 %precedence "ref"
-%left "->"
+%right "->"
 
 // Operator precedences
 %precedence LETIN
