@@ -30,7 +30,9 @@ class FunctionEntry : public SymbolEntry {
 public:
     FunctionEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
     virtual FunctionTypeGraph* getTypeGraph();
-    void addParam(TypeGraph *param);
+    /** Utility method for creating more complex FunctionTypeGraphs 
+     * @param push_back If true then param is appended, else inserted at start */
+    void addParam(TypeGraph *param, bool push_back = true);
     ~FunctionEntry();
 };
 class ArrayEntry : public SymbolEntry {

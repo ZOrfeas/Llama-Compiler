@@ -19,7 +19,7 @@ class TypeGraph {
 public:
     TypeGraph(graphType t): t(t) {}
     std::string stringifyType() {
-        return type_string[static_cast<int>(t)];
+        return graph_type_string[static_cast<int>(t)];
     }
     void log(std::string msg) {
         std::cout << "TypeGraph of type " << stringifyType()
@@ -153,8 +153,14 @@ public:
     std::vector<TypeGraph *>* getParamTypes() { return paramTypes; }
     TypeGraph* getResultType() { return resultType; }
     int getParamCount() { return paramTypes->size(); }
-    /** Utility method for creating more complex FunctionTypeGraphs */
-    void addParam(TypeGraph *param) { paramTypes->push_back(param); }
+    /** Utility method for creating more complex FunctionTypeGraphs 
+     * @param push_back If true then param is appended, else inserted at start */
+    void addParam(TypeGraph *param, bool push_back = true) {
+        if (push_back)
+            paramTypes->push_back(param);
+        else
+            paramTypes->insert(paramTypes->begin(), param);
+    }
     TypeGraph* getParamType(int index) {
         if (index >= paramTypes->size() || index < 0) {
             std::cout << "Out of bounds param requested";

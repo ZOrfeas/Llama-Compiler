@@ -228,8 +228,8 @@ FunctionTypeGraph* FunctionEntry::getTypeGraph() {
               << std::endl;
     exit(1);
 }
-void FunctionEntry::addParam(TypeGraph *param) {
-    getTypeGraph()->addParam(param);
+void FunctionEntry::addParam(TypeGraph *param, bool push_back = true) {
+    getTypeGraph()->addParam(param, push_back);
 }
 ArrayTypeGraph* ArrayEntry::getTypeGraph() {
     if (typeGraph->isArray())
