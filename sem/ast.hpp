@@ -1417,6 +1417,10 @@ public:
 
 class Pattern : public AST
 {
+public:
+    // Checks whether the pattern is valid for TypeGraph *t
+    virtual void checkPatternTypeGraph(TypeGraph *t) 
+    {}
 };
 class PatternLiteral : public Pattern
 {
@@ -1426,14 +1430,11 @@ protected:
 public:
     PatternLiteral(Literal *l)
         : literal(l) {}
-    virtual void sem() override
+    virtual void checkPatternTypeGraph(TypeGraph *t)
     {
-        TypeGraph *string_type = new ArrayTypeGraph(1, tt.lookupType("char")->getTypeGraph());
-        TypeGraph *t = literal->get_TypeGraph();
-
-        if (t->isUnit() || t->isString())
+        if(!t->equals(literal->get_TypeGraph()))
         {
-            printError("Unit and string not allowed in pattern");
+            printError("Literal is not a valid pattern for given type");
         }
     }
     virtual void printOn(std::ostream &out) const override
@@ -1449,10 +1450,10 @@ protected:
 public:
     PatternId(std::string *id)
         : id(*id) {}
-    virtual void sem() override
+    virtual void checkPatternTypeGraph(TypeGraph *t)
     {
-        // Create constant with identifier id
-        st.insert(id);
+        // Insert a new symbol with name id and type the same as that of e
+        st.insertBasic(id, t);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1468,15 +1469,23 @@ protected:
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>())
         : Id(*Id), pattern_list(*p_list) {}
-    virtual void sem()
+    virtual void checkPatternTypeGraph(TypeGraph *t)
     {
-        // Lookup constructor
-        tt.lookup(Id);
+        ConstructorEntry *c = ct.lookupConstructor(Id);
+        ConstructorTypeGraph *c_TypeGraph = c->getTypeGraph();
 
-        // Semantically analyse patterns
-        for (Pattern *p : pattern_list)
+        int count = t->getFieldCount();
+        if (count != pattern_list.size())
         {
-            p->sem();
+            printError("Partial constructor pattern not allowed");
+        }
+
+        TypeGraph *correct_t;
+        for (int i = 0; i < count; i++)
+        {
+            correct_t = c_TypeGraph->getFieldType(i);
+
+            pattern_list[i]->checkPatternTypeGraph(correct_t);
         }
     }
     virtual void printOn(std::ostream &out) const override
@@ -1496,15 +1505,39 @@ private:
     Pattern *pattern;
     Expr *expr;
 
+    // Will be filled by the Match's sem
+    TypeGraph *correctPatternTypeGraph = nullptr;
+
 public:
-    Clause(Pattern *p, Expr *e) : pattern(p), expr(e) {}
+    Clause(Pattern *p, Expr *e) 
+    : pattern(p), expr(e) {}
     virtual void sem() override
     {
         // Open new scope just in case of PatternId
         st.openScope();
-        pattern->sem();
+
+        // Check whether the pattern is valid for given expression
+        if(correctPatternTypeGraph == nullptr) 
+        {
+            printError("Don't know the expected type of e");
+        } else 
+        {
+            pattern->checkPatternTypeGraph(correctPatternTypeGraph);
+        }
+        
+        // Semantically analyse expression
         expr->sem();
+
+        // Close the scope
         st.closeScope();
+    }
+    void set_correctPatternTypeGraph(TypeGraph *t) 
+    {
+        correctPatternTypeGraph = t;
+    }
+    TypeGraph* get_exprTypeGraph() 
+    {
+        return expr->get_TypeGraph();
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1524,9 +1557,28 @@ public:
         // Semantically analyse expression
         toMatch->sem();
 
+        // Get the TypeGraph t of e, must be the same as patterns
+        TypeGraph *t = toMatch->get_TypeGraph();
+
+        // Will be used during the loop to check all possible results
+        TypeGraph *temp;
+
         // Semantically analyse every clause
-        for (Clause *c : clause_list)
+        for(Clause *c : clause_list)
+        {
+            c->set_correctPatternTypeGraph(t);
             c->sem();
+            if(temp->equals(c->get_exprTypeGraph())) 
+            {
+                temp = c->get_exprTypeGraph();
+            } else 
+            {
+                printError("Results of match have different types");
+            }
+        }
+
+        // Reached the end so all the results have the same type
+        TG = temp;
     }
     virtual void printOn(std::ostream &out) const override
     {
