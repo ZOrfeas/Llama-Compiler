@@ -25,6 +25,7 @@ public:
 /**                SymbolEntry SubClasses                    */
 /*************************************************************/
 // These are necessary to allow circular dependencies
+class ConstructorEntry;
 
 class FunctionEntry : public SymbolEntry {
 public:

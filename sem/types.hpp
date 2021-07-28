@@ -11,7 +11,10 @@ enum class graphType { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
 const std::string graph_type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
                                     "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_record" };
 
-
+// Forward declarations
+class CustomTypeGraph;
+class ConstructorTypeGraph;
+class BasicTypeGraph;
 
 /** Base Type Graph class from which all others are derived */
 class TypeGraph {
@@ -42,7 +45,9 @@ public:
     bool isCustom()      { return t == graphType::TYPE_custom;   }
     bool isConstructor() { return t == graphType::TYPE_record;   }
     bool isUnknown()     { return t == graphType::TYPE_unknown;  }
-    bool isBasic() { return dynamic_cast<BasicTypeGraph *>(this); }
+    bool isBasic() {
+        return isInt() || isUnit() || isBool() || isChar() || isFloat();
+    }
     bool isDeletable() { return isFunction() || isArray() || isRef(); }
     virtual bool equals(TypeGraph *o) = 0;
     virtual TypeGraph* getContainedType() { wrongCall("getContainedType()"); }
@@ -69,7 +74,7 @@ class UnknownTypeGraph : public TypeGraph {
 public:
     UnknownTypeGraph(): TypeGraph(graphType::TYPE_unknown) {}
     //TODO: not complete
-    bool equals(TypeGraph *o) override {}; 
+    bool equals(TypeGraph *o) override { return false; }; 
     ~UnknownTypeGraph() {}
 };
 /************************************************************/
@@ -115,7 +120,7 @@ class ArrayTypeGraph : public TypeGraph {
 public:
     int dimensions;
     ArrayTypeGraph(int dimensions, TypeGraph *containedType)
-    : TypeGraph(graphType::TYPE_array), dimensions(dimensions), Type(containedType) {}
+    : TypeGraph(graphType::TYPE_array), Type(containedType), dimensions(dimensions) {}
     TypeGraph* getContainedType() override { return Type; }
     bool equals(TypeGraph *o) override {
         if (this == o) return true;
@@ -147,7 +152,8 @@ class FunctionTypeGraph : public TypeGraph {
     TypeGraph *resultType;
 public:
     FunctionTypeGraph(TypeGraph *resultType)
-    : TypeGraph(graphType::TYPE_function), resultType(resultType), paramTypes(new std::vector<TypeGraph *>()) {}
+    : TypeGraph(graphType::TYPE_function), paramTypes(new std::vector<TypeGraph *>()),
+    resultType(resultType) {}
     std::vector<TypeGraph *>* getParamTypes() override { return paramTypes; }
     TypeGraph* getResultType() override { return resultType; }
     int getParamCount() override { return paramTypes->size(); }
@@ -185,13 +191,6 @@ public:
     }
 };
 
-// forward declarations, possibly avoidable if we decide
-// and make sure that constructor equality happens only when
-// their customTypeGraphs are the same
-class CustomTypeGraph : public TypeGraph {
-public:
-    virtual bool equals(TypeGraph *o);
-};
 /** This represents a singular constructor */
 class ConstructorTypeGraph : public TypeGraph {
     std::vector<TypeGraph *> *fields;
@@ -211,11 +210,7 @@ public:
         }
         return (*fields)[index];
     }
-    bool equals(TypeGraph *o) override {
-        if (this == o) return true;
-        return o->getSubClass() == graphType::TYPE_record &&
-               getCustomType()->equals(o->getCustomType());
-    }
+    bool equals(TypeGraph *o) override; // implementation moved after CustomTypeGraph definition for dependency reasons
     ~ConstructorTypeGraph() { for (auto &field: *fields) if (field->isDeletable()) delete field; }
 };
 class CustomTypeGraph : public TypeGraph {
@@ -238,6 +233,11 @@ public:
     ~CustomTypeGraph() { for (auto &constructor: *constructors) delete constructor; }
 };
 
+bool ConstructorTypeGraph::equals(TypeGraph *o) {
+    if (this == o) return true;
+    return o->getSubClass() == graphType::TYPE_record &&
+            getCustomType()->equals(o->getCustomType());
+}
 /** Global basic graphType classes instantiation */
 
 UnitTypeGraph unitType;
