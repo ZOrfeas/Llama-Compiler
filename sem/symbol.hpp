@@ -137,7 +137,13 @@ public:
 
 class TypeTable : public BaseTable {
 public:
-    TypeTable(bool debug = false): BaseTable("TypeTable", debug) {}
+    TypeTable(bool debug = false): BaseTable("TypeTable", debug) {
+        insert(new TypeEntry("int", &intType));
+        insert(new TypeEntry("float", &floatType));
+        insert(new TypeEntry("char", &charType));
+        insert(new TypeEntry("unit" , &unitType));
+        insert(new TypeEntry("bool" , &boolType));
+    }
         /** insert wrapper for TypeEntries */
     TypeEntry* insertType(std::string name, bool overwrite = false);
     /** lookup wrapper for TypeEntries */
@@ -168,8 +174,4 @@ ConstructorTable ct;
 /**            Bad code, move to main to avoid tmps          */
 /*************************************************************/
 
-SymbolEntry *tt_init_tmp  = tt.insert(new TypeEntry("int", &intType));
-SymbolEntry *tt_init_tmp1 = tt.insert(new TypeEntry("float", &floatType));
-SymbolEntry *tt_init_tmp2 = tt.insert(new TypeEntry("char", &charType));
-SymbolEntry *tt_init_tmp3 = tt.insert(new TypeEntry("unit" , &unitType));
-SymbolEntry *tt_init_tmp4 = tt.insert(new TypeEntry("bool" , &boolType));
+// moved inside constructor

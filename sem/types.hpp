@@ -16,8 +16,14 @@ const std::string graph_type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int
 /** Base Type Graph class from which all others are derived */
 class TypeGraph {
     graphType t;
+    void wrongCall(std::string functionName) {
+        log("Function '" + functionName + "' called for wrong " +
+            "subClass, exiting...");
+        exit(1);
+    }
 public:
     TypeGraph(graphType t): t(t) {}
+    graphType const & getSubClass() {return t;}
     std::string stringifyType() {
         return graph_type_string[static_cast<int>(t)];
     }
@@ -38,37 +44,32 @@ public:
     bool isUnknown()     { return t == graphType::TYPE_unknown;  }
     bool isBasic() { return dynamic_cast<BasicTypeGraph *>(this); }
     bool isDeletable() { return isFunction() || isArray() || isRef(); }
-    virtual bool equals(TypeGraph *o) {
-        if (this == o) return true;
-        if (BasicTypeGraph *b1 = dynamic_cast<BasicTypeGraph*>(this) &&
-            BasicTypeGraph *b2 = dynamic_cast<BasicTypeGraph*>(o)) {
-            return b1->equals(b2);
-        } else if (ArrayTypeGraph *a1 = dynamic_cast<ArrayTypeGraph*>(this) &&
-            ArrayTypeGraph *a2 = dynamic_cast<ArrayTypeGraph*>(o)) {
-            return a1->equals(a2);
-        } else if (RefTypeGraph *r1 = dynamic_cast<RefTypeGraph*>(this) &&
-            RefTypeGraph *r2 = dynamic_cast<RefTypeGraph*>(o)) {
-            return r1->equals(r2);
-        } else if (FunctionTypeGraph *f1 = dynamic_cast<FunctionTypeGraph*>(this) &&
-            FunctionTypeGraph *f2 = dynamic_cast<FunctionTypeGraph*>(o)) {
-            return f1->equals(f2);
-        } else if (ConstructorTypeGraph *c1 = dynamic_cast<ConstructorTypeGraph*>(this) &&
-            ConstructorTypeGraph *c2 = dynamic_cast<ConstructorTypeGraph*>(o)) {
-            return c1->equals(c2);
-        } else if (CustomTypeGraph *t1 = dynamic_cast<CustomTypeGraph*>(this) &&
-            CustomTypeGraph *t2 = dynamic_cast<CustomTypeGraph*>(o)) {
-            return t1->equals(t2);
-        } else {
-            log("equals() control reached (imo) unreachable spot");
-            exit(1);
-        }
-    }
+    virtual bool equals(TypeGraph *o) = 0;
+    virtual TypeGraph* getContainedType() { wrongCall("getContainedType()"); }
+    virtual void setDynamic() { wrongCall("setDynamic()"); }
+    virtual void setAllocated() { wrongCall("setAllocated"); }
+    virtual void resetDynamic()  { wrongCall("resetDynamic"); }
+    virtual void resetAllocated() { wrongCall("resetAllocated"); }
+    virtual std::vector<TypeGraph *>* getParamTypes() { wrongCall("getParamTypes()"); }
+    virtual TypeGraph* getResultType() { wrongCall("getResultType()"); }
+    virtual int getParamCount() { wrongCall("getParamCount()"); }
+    virtual void addParam(TypeGraph *param, bool push_back = true) { wrongCall("addParam()"); }
+    virtual TypeGraph* getParamType(int index) { wrongCall("getParamType"); }
+    virtual std::vector<TypeGraph *>* getFields() { wrongCall("getFields()"); }
+    virtual void addField(TypeGraph *field) { wrongCall("addField"); }
+    virtual void setTypeGraph(CustomTypeGraph *owningType) { wrongCall("setTypeGraph()"); }
+    virtual CustomTypeGraph* getCustomType() { wrongCall("getCustomType()"); }
+    virtual int getFieldCount() { wrongCall("getFieldCount"); }
+    virtual int getConstructorCount() { wrongCall("getConstructorCount()"); }
+    virtual void addConstructor(ConstructorTypeGraph *constructor) { wrongCall("addConstructor()"); }
     virtual ~TypeGraph() {}
 };
 /************************************************************/
 class UnknownTypeGraph : public TypeGraph {
 public:
     UnknownTypeGraph(): TypeGraph(graphType::TYPE_unknown) {}
+    //TODO: not complete
+    bool equals(TypeGraph *o) override {}; 
     ~UnknownTypeGraph() {}
 };
 /************************************************************/
@@ -76,9 +77,9 @@ public:
 class BasicTypeGraph : public TypeGraph {
 public:
     BasicTypeGraph(graphType t): TypeGraph(t) {}
-    virtual bool equals(TypeGraph *o) {
-        if (this == o || t == o->t) return true;
-        return false;
+    bool equals(TypeGraph *o) override {
+        if (this == o) return true;
+        return getSubClass() == o->getSubClass();
     }
     ~BasicTypeGraph() {}
 };
@@ -115,13 +116,11 @@ public:
     int dimensions;
     ArrayTypeGraph(int dimensions, TypeGraph *containedType)
     : TypeGraph(graphType::TYPE_array), dimensions(dimensions), Type(containedType) {}
-    TypeGraph* getContainedType() { return Type; }
-    virtual bool equals(TypeGraph *o) {
+    TypeGraph* getContainedType() override { return Type; }
+    bool equals(TypeGraph *o) override {
         if (this == o) return true;
-        if (ArrayTypeGraph *tmp = dynamic_cast<ArrayTypeGraph *>(o) &&
-            dimensions == tmp->dimensions) {
-            return Type->equals(o);
-        }
+        return o->getSubClass() == graphType::TYPE_array &&
+               getContainedType()->equals(o->getContainedType());
     }
     ~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 };
@@ -131,16 +130,15 @@ public:
     bool allocated, dynamic;
     RefTypeGraph(TypeGraph *refType, bool allocated = false, bool dynamic = false)
     : TypeGraph(graphType::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
-    TypeGraph* getContainedType() { return Type; }
-    void setAllocated() { allocated = true; }
-    void setDynamic() { dynamic = true; }
-    void resetAllocated() { allocated = false; }
-    void resetDynamic() { dynamic = false; }
-    virtual bool equals(TypeGraph *o) {
+    TypeGraph* getContainedType() override { return Type; }
+    void setAllocated() override { allocated = true; }
+    void setDynamic() override { dynamic = true; }
+    void resetAllocated() override { allocated = false; }
+    void resetDynamic() override { dynamic = false; }
+    bool equals(TypeGraph *o) override {
         if (this == o) return true;
-        if (RefTypeGraph *tmp = dynamic_cast<RefTypeGraph *>(o)) {
-            return Type->equals(o);
-        }
+        return o->getSubClass() == graphType::TYPE_ref &&
+               getContainedType()->equals(o->getContainedType());
     }
     ~RefTypeGraph() { if (Type->isDeletable()) delete Type; }
 };
@@ -150,34 +148,35 @@ class FunctionTypeGraph : public TypeGraph {
 public:
     FunctionTypeGraph(TypeGraph *resultType)
     : TypeGraph(graphType::TYPE_function), resultType(resultType), paramTypes(new std::vector<TypeGraph *>()) {}
-    std::vector<TypeGraph *>* getParamTypes() { return paramTypes; }
-    TypeGraph* getResultType() { return resultType; }
-    int getParamCount() { return paramTypes->size(); }
+    std::vector<TypeGraph *>* getParamTypes() override { return paramTypes; }
+    TypeGraph* getResultType() override { return resultType; }
+    int getParamCount() override { return paramTypes->size(); }
     /** Utility method for creating more complex FunctionTypeGraphs 
      * @param push_back If true then param is appended, else inserted at start */
-    void addParam(TypeGraph *param, bool push_back = true) {
+    void addParam(TypeGraph *param, bool push_back = true) override {
         if (push_back)
             paramTypes->push_back(param);
         else
             paramTypes->insert(paramTypes->begin(), param);
     }
-    TypeGraph* getParamType(int index) {
+    TypeGraph* getParamType(int index) override {
         if (index >= paramTypes->size() || index < 0) {
             std::cout << "Out of bounds param requested";
             exit(1);
         }
         return (*paramTypes)[index];
     }
-    virtual bool equals(TypeGraph *o) {
+    bool equals(TypeGraph *o) override {
         if (this == o) return true;
-        if (FunctionTypeGraph *tmp = dynamic_cast<FunctionTypeGraph *>(o) &&
-            getParamCount() == tmp->getParamCount()) {
+        if (o->getSubClass() == graphType::TYPE_function &&
+            getParamCount() == o->getParamCount()) {
             for (int i = 0; i < getParamCount(); i++) {
-                if (! getParamType(i)->equals(tmp->getParamType(i)) )
+                if (!getParamType(i)->equals(o->getParamType(i)))
                     return false;
             }
-            return getResultType()->equals(tmp->getResultType());
+            return getResultType()->equals(o->getResultType());
         }
+        return false;
     }
     ~FunctionTypeGraph() {
         for (auto &paramType: *paramTypes) 
@@ -200,11 +199,11 @@ class ConstructorTypeGraph : public TypeGraph {
 public:
     ConstructorTypeGraph() : TypeGraph(graphType::TYPE_record),
     fields(new std::vector<TypeGraph *>()), customType(nullptr) {}
-    std::vector<TypeGraph *>* getFields() { return fields; }
-    void addField(TypeGraph *field) { fields->push_back(field); }
-    void setTypeGraph(CustomTypeGraph *owningType) { customType = owningType; }
-    CustomTypeGraph* getCustomType() { return customType; }
-    int getFieldCount() { return fields->size(); }
+    std::vector<TypeGraph *>* getFields() override { return fields; }
+    void addField(TypeGraph *field) override { fields->push_back(field); }
+    void setTypeGraph(CustomTypeGraph *owningType) override { customType = owningType; }
+    CustomTypeGraph* getCustomType() override { return customType; }
+    int getFieldCount() override { return fields->size(); }
     TypeGraph* getFieldType(int index) {
         if (index >= fields->size() || index < 0) {
             std::cout << "Out of bounds param requested";
@@ -212,11 +211,10 @@ public:
         }
         return (*fields)[index];
     }
-    virtual bool equals(TypeGraph *o) {
+    bool equals(TypeGraph *o) override {
         if (this == o) return true;
-        if (ConstructorTypeGraph *tmp = dynamic_cast<ConstructorTypeGraph *>(o)) {
-            return getCustomType()->equals(tmp->getCustomType());
-        }
+        return o->getSubClass() == graphType::TYPE_record &&
+               getCustomType()->equals(o->getCustomType());
     }
     ~ConstructorTypeGraph() { for (auto &field: *fields) if (field->isDeletable()) delete field; }
 };
@@ -226,13 +224,16 @@ public:
     CustomTypeGraph(std::vector<ConstructorTypeGraph *> *constructors = new std::vector<ConstructorTypeGraph *>())
     : TypeGraph(graphType::TYPE_custom), constructors(constructors) {}
     std::vector<ConstructorTypeGraph *>* getConstructors() { return constructors; }
-    int getConstructorCount() { return constructors->size(); }
-    void addConstructor(ConstructorTypeGraph *constructor) {
+    int getConstructorCount() override { return constructors->size(); }
+    void addConstructor(ConstructorTypeGraph *constructor) override {
         constructors->push_back(constructor);
         constructor->setTypeGraph(this);
     }
-    virtual bool equals(TypeGraph *o) {
-        if (this == o) return true;
+    //! possibly too strict. keep an eye out
+    bool equals(TypeGraph *o) override {
+        // might be of help here
+        // o->getSubClass() == graphType::TYPE_custom
+        return this == o;
     }
     ~CustomTypeGraph() { for (auto &constructor: *constructors) delete constructor; }
 };
