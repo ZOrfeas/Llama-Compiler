@@ -1562,13 +1562,23 @@ public:
 
         // Will be used during the loop to check all possible results
         TypeGraph *temp;
+        
+        // On the first loop temp will be assigned a value
+        bool first = true;
 
         // Semantically analyse every clause
         for(Clause *c : clause_list)
         {
             c->set_correctPatternTypeGraph(t);
             c->sem();
-            if(temp->equals(c->get_exprTypeGraph())) 
+
+            if(first) 
+            {   
+                temp = c->get_exprTypeGraph();
+                first = false;
+                continue;
+            }
+            else if(temp->equals(c->get_exprTypeGraph())) 
             {
                 temp = c->get_exprTypeGraph();
             } else 
