@@ -114,7 +114,7 @@ protected:
 
 public:
     BasicType(type t)
-        : t(t), Type(category::CATEGORY_basic) {}
+        : Type(category::CATEGORY_basic), t(t) {}
     virtual bool compare_basic_type(type _t) override
     {
         return t == _t;
@@ -135,7 +135,7 @@ private:
 
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType)
-        : lhtype(lhtype), rhtype(rhtype), Type(category::CATEGORY_function) {}
+        : Type(category::CATEGORY_function) , lhtype(lhtype), rhtype(rhtype) {}
     virtual TypeGraph *get_TypeGraph() override
     {
         FunctionTypeGraph *f;
@@ -168,7 +168,7 @@ private:
 
 public:
     ArrayType(int dimensions = 0, Type *elem_type = new UnknownType)
-        : dimensions(dimensions), elem_type(elem_type), Type(category::CATEGORY_array) {}
+        : Type(category::CATEGORY_array) , dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
         return new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
@@ -186,7 +186,7 @@ private:
 
 public:
     RefType(Type *ref_type = new BasicType(type::TYPE_int))
-        : ref_type(ref_type), Type(category::CATEGORY_ref) {}
+        : Type(category::CATEGORY_ref), ref_type(ref_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
         return new RefTypeGraph(ref_type->get_TypeGraph());
@@ -203,7 +203,7 @@ private:
 
 public:
     CustomType(std::string *id)
-        : id(*id), Type(category::CATEGORY_custom) {}
+        : Type(category::CATEGORY_custom), id(*id) {}
     virtual TypeGraph *get_TypeGraph()
     {
         return tt.lookupType(id)->getTypeGraph();
@@ -1357,7 +1357,7 @@ public:
         FunctionTypeGraph *t = f->getTypeGraph();
 
         int count = t->getParamCount();
-        if (count != expr_list.size())
+        if (count != (int)expr_list.size())
         {
             printError("Partial function call not allowed");
         }
@@ -1398,7 +1398,7 @@ public:
         ConstructorTypeGraph *t = c->getTypeGraph();
 
         int count = t->getFieldCount();
-        if (count != expr_list.size())
+        if (count != (int)expr_list.size())
         {
             printError("Partial constructor call not allowed");
         }
@@ -1439,7 +1439,7 @@ public:
         ArrayTypeGraph *t = a->getTypeGraph();
 
         int count = t->dimensions;
-        if (count != expr_list.size())
+        if (count != (int)expr_list.size())
         {
             printError("Partial array call not allowed");
         }
@@ -1539,7 +1539,7 @@ public:
         ConstructorTypeGraph *c_TypeGraph = c->getTypeGraph();
 
         int count = t->getFieldCount();
-        if (count != pattern_list.size())
+        if (count != (int)pattern_list.size())
         {
             printError("Partial constructor pattern not allowed");
         }
