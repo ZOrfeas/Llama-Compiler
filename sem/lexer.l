@@ -7,9 +7,9 @@
 #include <cstdlib> 
 
 #include "lexer.hpp"
-#include "ast.hpp"
-#include "parser.hpp"
-
+#include "ast.hpp"      // Doesn't include parser.hpp
+#include "parser.hpp"   
+#include "functions_that_need_yytokentype.hpp" // Brings functions that require yytokentype and includes parser.hpp
 
 // int yylineno = 1;
 int comment_cnt = 0;

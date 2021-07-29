@@ -27,8 +27,6 @@ enum class category
     CATEGORY_unknown
 };
 
-//#include "parser.hpp"
-
 void yyerror(const char *msg);
 
 /********************************************************************/
@@ -985,8 +983,8 @@ private:
 public:
     BinOp(Expr *e1, int op, Expr *e2)
         : lhs(e1), rhs(e2), op(op) {}
-    virtual void sem() override
-    {
+    virtual void sem() override;
+    /*{
         lhs->sem();
         rhs->sem();
 
@@ -1082,7 +1080,7 @@ public:
         default:
             break;
         }
-    }
+    }*/
     virtual void printOn(std::ostream &out) const override
     {
         out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
@@ -1097,8 +1095,8 @@ private:
 public:
     UnOp(int op, Expr *e)
         : expr(e), op(op) {}
-    virtual void sem() override
-    {
+    virtual void sem() override;
+    /*{
         expr->sem();
         TypeGraph *t_expr = expr->get_TypeGraph();
 
@@ -1156,7 +1154,7 @@ public:
         default:
             break;
         }
-    }
+    }*/
     virtual void printOn(std::ostream &out) const override
     {
         out << "UnOp(" << op << ", " << *expr << ")";

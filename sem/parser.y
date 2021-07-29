@@ -368,15 +368,15 @@ clause
 ;
 
 pattern
-: '+' T_intconst                        { $$ = new PatternLiteral(Int_literal($2));     }
-| '-' T_intconst                        { $$ = new PatternLiteral(Int_literal(-$2));    }
-| T_intconst                            { $$ = new PatternLiteral(Int_literal($1));     }
-| "+." T_floatconst                     { $$ = new PatternLiteral(Float_literal($2));   }
-| "-." T_floatconst                     { $$ = new PatternLiteral(Float_literal(-$2));  }
-| T_floatconst                          { $$ = new PatternLiteral(Float_literal($1);    }
-| T_charconst                           { $$ = new PatternLiteral(Char_literal($1));    }
-| "true"                                { $$ = new PatternLiteral(Bool_literal(true));  }
-| "false"                               { $$ = new PatternLiteral(Bool_literal(false)); }
+: '+' T_intconst                        { $$ = new PatternLiteral(new Int_literal($2));     }
+| '-' T_intconst                        { $$ = new PatternLiteral(new Int_literal(-$2));    }
+| T_intconst                            { $$ = new PatternLiteral(new Int_literal($1));     }
+| "+." T_floatconst                     { $$ = new PatternLiteral(new Float_literal($2));   }
+| "-." T_floatconst                     { $$ = new PatternLiteral(new Float_literal(-$2));  }
+| T_floatconst                          { $$ = new PatternLiteral(new Float_literal($1));    }
+| T_charconst                           { $$ = new PatternLiteral(new Char_literal($1));    }
+| "true"                                { $$ = new PatternLiteral(new Bool_literal(true));  }
+| "false"                               { $$ = new PatternLiteral(new Bool_literal(false)); }
 | T_idlower                             { $$ = new PatternId($1);        }
 | T_idupper                             { $$ = new PatternConstr($1);     }
 | '(' pattern ')'                       { $$ = $2;                          }
