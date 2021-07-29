@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "symbol.hpp"
-#include "parser.hpp"
+//#include "parser.hpp"
 #include "types.hpp"
 
 const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
@@ -39,10 +39,17 @@ protected:
     int line_number;
 
 public:
-    AST() { line_number = yylineno; }
-    virtual ~AST() {}
+    AST()
+    {
+        line_number = yylineno;
+    }
+    virtual ~AST()
+    {
+    }
     virtual void printOn(std::ostream &out) const = 0;
-    virtual void sem() {}
+    virtual void sem()
+    {
+    }
     virtual void printError(std::string s)
     {
         std::cout << "Error at line " << line_number << ": " << s << std::endl;
@@ -64,12 +71,25 @@ class Type : public AST
 protected:
     category c; // Shows what kind of object it is
 public:
-    Type(category c) : c(c) {}
-    category get_category() { return c; }
-    bool compare_category(category _c) { return c == _c; }
-    virtual bool compare_basic_type(type t) { return false; }
-    virtual TypeGraph *get_TypeGraph() {}
-    friend bool compare_categories(Type *T1, Type *T2) { return (T1->c == T2->c); }
+    Type(category c)
+        : c(c) {}
+    category get_category()
+    {
+        return c;
+    }
+    bool compare_category(category _c)
+    {
+        return c == _c;
+    }
+    virtual bool compare_basic_type(type t)
+    {
+        return false;
+    }
+    virtual TypeGraph *get_TypeGraph() = 0;
+    friend bool compare_categories(Type *T1, Type *T2)
+    {
+        return (T1->c == T2->c);
+    }
 };
 class UnknownType : public Type
 {
@@ -77,7 +97,12 @@ protected:
     std::string temp_name;
 
 public:
-    UnknownType() : Type(category::CATEGORY_unknown) {}
+    UnknownType()
+        : Type(category::CATEGORY_unknown) {}
+    virtual TypeGraph* get_TypeGraph() override 
+    {
+        return tt.lookupType(temp_name)->getTypeGraph();
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "UnknownType()";
@@ -113,18 +138,18 @@ private:
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType)
         : lhtype(lhtype), rhtype(rhtype), Type(category::CATEGORY_function) {}
-    virtual TypeGraph *get_TypeGraph() override 
+    virtual TypeGraph *get_TypeGraph() override
     {
         FunctionTypeGraph *f;
         TypeGraph *l = lhtype->get_TypeGraph();
         TypeGraph *r = rhtype->get_TypeGraph();
 
-        if(r->isFunction()) 
+        if (r->isFunction())
         {
             f = dynamic_cast<FunctionTypeGraph *>(r);
         }
 
-        else 
+        else
         {
             f = new FunctionTypeGraph(r);
         }
@@ -318,7 +343,8 @@ private:
     std::vector<Type *> type_list;
 
 public:
-    Constr(std::string *Id, std::vector<Type *> *t) : Id(*Id), type_list(*t) {}
+    Constr(std::string *Id, std::vector<Type *> *t)
+        : Id(*Id), type_list(*t) {}
     void add_Id_to_ct(TypeEntry *te)
     {
         ConstructorEntry *c = ct.insertConstructor(Id);
@@ -351,10 +377,17 @@ private:
     Type *T;
 
 public:
-    Par(std::string *id, Type *t = new UnknownType) : id(*id), T(t) {}
+    Par(std::string *id, Type *t = new UnknownType)
+        : id(*id), T(t) {}
     /*SymbolEntry* get_SymbolEntry() { return new SymbolEntry(id, T->get_TypeGraph()); }*/
-    void insert_id_to_st() { st.insertBasic(id, T->get_TypeGraph()); }
-    TypeGraph *get_TypeGraph() { return T->get_TypeGraph(); }
+    void insert_id_to_st()
+    {
+        st.insertBasic(id, T->get_TypeGraph());
+    }
+    TypeGraph *get_TypeGraph()
+    {
+        return T->get_TypeGraph();
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "Par(" << id << ", " << *T << ")";
@@ -369,9 +402,14 @@ protected:
     std::string id;
 
 public:
-    DefStmt(std::string id) : id(id) {}
-    virtual void insert_id_to_st() {}
-    virtual void insert_id_to_tt() {}
+    DefStmt(std::string id)
+        : id(id) {}
+    virtual void insert_id_to_st()
+    {
+    }
+    virtual void insert_id_to_tt()
+    {
+    }
 };
 class Tdef : public DefStmt
 {
@@ -379,7 +417,8 @@ private:
     std::vector<Constr *> constr_list;
 
 public:
-    Tdef(std::string *id, std::vector<Constr *> *c) : DefStmt(*id), constr_list(*c) {}
+    Tdef(std::string *id, std::vector<Constr *> *c)
+        : DefStmt(*id), constr_list(*c) {}
     virtual void insert_id_to_tt() override
     {
         // Insert custom type to type table
@@ -419,7 +458,8 @@ protected:
     Type *T;
 
 public:
-    Def(std::string id, Type *t) : DefStmt(id), T(t) {}
+    Def(std::string id, Type *t)
+        : DefStmt(id), T(t) {}
     Type *get_type()
     { /* NOTE: Returns the pointer */
         return T;
@@ -453,7 +493,8 @@ private:
     std::vector<Par *> par_list;
 
 public:
-    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType) : Constant(id, e, t), par_list(*p) {}
+    Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType)
+        : Constant(id, e, t), par_list(*p) {}
     virtual void sem() override
     {
         // New scope for the body of the function where the parameters will be inserted
@@ -495,7 +536,8 @@ public:
 class Mutable : public Def
 {
 public:
-    Mutable(std::string id, Type *T) : Def(id, T) {}
+    Mutable(std::string id, Type *T)
+        : Def(id, T) {}
 };
 class Array : public Mutable
 {
@@ -503,7 +545,8 @@ private:
     std::vector<Expr *> expr_list;
 
 public:
-    Array(std::string *id, std::vector<Expr *> *e, Type *T = new UnknownType) : Mutable(*id, T), expr_list(*e) {}
+    Array(std::string *id, std::vector<Expr *> *e, Type *T = new UnknownType)
+        : Mutable(*id, T), expr_list(*e) {}
     virtual void sem() override
     {
         // All dimension sizes are of type integer
@@ -548,8 +591,12 @@ public:
 class Variable : public Mutable
 {
 public:
-    Variable(std::string *id, Type *T = new UnknownType) : Mutable(*id, T) {}
-    virtual void insert_id_to_st() override { st.insertBasic(id, T->get_TypeGraph()); }
+    Variable(std::string *id, Type *T = new UnknownType)
+        : Mutable(*id, T) {}
+    virtual void insert_id_to_st() override
+    {
+        st.insertBasic(id, T->get_TypeGraph());
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "Variable(" << id << ", " << *T << ", "
@@ -675,8 +722,11 @@ private:
     std::vector<Definition *> definition_list;
 
 public:
-    ~Program() {}
-    Program() : definition_list() {}
+    ~Program()
+    {
+    }
+    Program()
+        : definition_list() {}
     virtual void sem() override
     {
         for (Definition *d : definition_list)
@@ -717,7 +767,8 @@ private:
     Expr *expr;
 
 public:
-    LetIn(Definition *letdef, Expr *expr) : letdef(letdef), expr(expr) {}
+    LetIn(Definition *letdef, Expr *expr)
+        : letdef(letdef), expr(expr) {}
     virtual void sem() override
     {
         // Create new scope
@@ -744,7 +795,10 @@ public:
 class Id_upper : public Identifier
 {
 public:
-    Id_upper(std::string *s) { name = *s; }
+    Id_upper(std::string *s)
+    {
+        name = *s;
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "Id(" << name << ")";
@@ -753,7 +807,10 @@ public:
 class Id_lower : public Identifier
 {
 public:
-    Id_lower(std::string *s) { name = *s; }
+    Id_lower(std::string *s)
+    {
+        name = *s;
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "id(" << name << ")";
@@ -769,7 +826,8 @@ private:
     std::string s;
 
 public:
-    String_literal(std::string *s) : s(*s) {}
+    String_literal(std::string *s)
+        : s(*s) {}
     virtual void sem() override
     {
         TG = new ArrayTypeGraph(1, tt.lookupType("unit")->getTypeGraph());
@@ -786,7 +844,8 @@ private:
     char c;
 
 public:
-    Char_literal(std::string *c_string) : c_string(*c_string)
+    Char_literal(std::string *c_string)
+        : c_string(*c_string)
     {
         c = getChar(*c_string);
     }
@@ -854,7 +913,8 @@ private:
     bool b;
 
 public:
-    Bool_literal(bool b) : b(b) {}
+    Bool_literal(bool b)
+        : b(b) {}
     virtual void sem() override
     {
         TG = tt.lookupType("bool")->getTypeGraph();
@@ -870,7 +930,8 @@ private:
     double d;
 
 public:
-    Float_literal(double d) : d(d) {}
+    Float_literal(double d)
+        : d(d) {}
     virtual void sem() override
     {
         TG = tt.lookupType("float")->getTypeGraph();
@@ -886,7 +947,8 @@ private:
     int n;
 
 public:
-    Int_literal(int n) : n(n) {}
+    Int_literal(int n)
+        : n(n) {}
     int get_int()
     {
         return n;
@@ -904,7 +966,10 @@ class Unit_literal : public Literal
 {
 public:
     Unit_literal() {}
-    virtual void sem() override { TG = tt.lookupType("unit")->getTypeGraph(); }
+    virtual void sem() override
+    {
+        TG = tt.lookupType("unit")->getTypeGraph();
+    }
     virtual void printOn(std::ostream &out) const override
     {
         out << "Unit";
@@ -1419,8 +1484,9 @@ class Pattern : public AST
 {
 public:
     // Checks whether the pattern is valid for TypeGraph *t
-    virtual void checkPatternTypeGraph(TypeGraph *t) 
-    {}
+    virtual void checkPatternTypeGraph(TypeGraph *t)
+    {
+    }
 };
 class PatternLiteral : public Pattern
 {
@@ -1430,9 +1496,9 @@ protected:
 public:
     PatternLiteral(Literal *l)
         : literal(l) {}
-    virtual void checkPatternTypeGraph(TypeGraph *t)
+    virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
-        if(!t->equals(literal->get_TypeGraph()))
+        if (!t->equals(literal->get_TypeGraph()))
         {
             printError("Literal is not a valid pattern for given type");
         }
@@ -1450,7 +1516,7 @@ protected:
 public:
     PatternId(std::string *id)
         : id(*id) {}
-    virtual void checkPatternTypeGraph(TypeGraph *t)
+    virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         // Insert a new symbol with name id and type the same as that of e
         st.insertBasic(id, t);
@@ -1469,7 +1535,7 @@ protected:
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>())
         : Id(*Id), pattern_list(*p_list) {}
-    virtual void checkPatternTypeGraph(TypeGraph *t)
+    virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         ConstructorEntry *c = ct.lookupConstructor(Id);
         ConstructorTypeGraph *c_TypeGraph = c->getTypeGraph();
@@ -1509,33 +1575,34 @@ private:
     TypeGraph *correctPatternTypeGraph = nullptr;
 
 public:
-    Clause(Pattern *p, Expr *e) 
-    : pattern(p), expr(e) {}
+    Clause(Pattern *p, Expr *e)
+        : pattern(p), expr(e) {}
     virtual void sem() override
     {
         // Open new scope just in case of PatternId
         st.openScope();
 
         // Check whether the pattern is valid for given expression
-        if(correctPatternTypeGraph == nullptr) 
+        if (correctPatternTypeGraph == nullptr)
         {
             printError("Don't know the expected type of e");
-        } else 
+        }
+        else
         {
             pattern->checkPatternTypeGraph(correctPatternTypeGraph);
         }
-        
+
         // Semantically analyse expression
         expr->sem();
 
         // Close the scope
         st.closeScope();
     }
-    void set_correctPatternTypeGraph(TypeGraph *t) 
+    void set_correctPatternTypeGraph(TypeGraph *t)
     {
         correctPatternTypeGraph = t;
     }
-    TypeGraph* get_exprTypeGraph() 
+    TypeGraph *get_exprTypeGraph()
     {
         return expr->get_TypeGraph();
     }
@@ -1551,7 +1618,8 @@ private:
     std::vector<Clause *> clause_list;
 
 public:
-    Match(Expr *e, std::vector<Clause *> *c) : toMatch(e), clause_list(*c) {}
+    Match(Expr *e, std::vector<Clause *> *c)
+        : toMatch(e), clause_list(*c) {}
     virtual void sem()
     {
         // Semantically analyse expression
@@ -1562,26 +1630,27 @@ public:
 
         // Will be used during the loop to check all possible results
         TypeGraph *temp;
-        
+
         // On the first loop temp will be assigned a value
         bool first = true;
 
         // Semantically analyse every clause
-        for(Clause *c : clause_list)
+        for (Clause *c : clause_list)
         {
             c->set_correctPatternTypeGraph(t);
             c->sem();
 
-            if(first) 
-            {   
+            if (first)
+            {
                 temp = c->get_exprTypeGraph();
                 first = false;
                 continue;
             }
-            else if(temp->equals(c->get_exprTypeGraph())) 
+            else if (temp->equals(c->get_exprTypeGraph()))
             {
                 temp = c->get_exprTypeGraph();
-            } else 
+            }
+            else
             {
                 printError("Results of match have different types");
             }

@@ -4,11 +4,12 @@
 
 #include <string>
 #include <cstdio>
-#include <cstdlib>
+#include <cstdlib> 
 
-#include "ast.hpp"
 #include "lexer.hpp"
+#include "ast.hpp"
 #include "parser.hpp"
+
 
 // int yylineno = 1;
 int comment_cnt = 0;

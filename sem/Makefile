@@ -13,8 +13,8 @@ parser.hpp parser.cpp: parser.y
 
 # Add your dependencies here, e.g.
 # parser.o: parser.cpp lexer.hpp symbol.hpp
-lexer.o: lexer.cpp lexer.hpp parser.hpp
-parser.o: parser.cpp lexer.hpp symbol.hpp
+lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
+parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
 symbol.o: symbol.cpp symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
