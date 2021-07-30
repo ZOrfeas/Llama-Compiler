@@ -145,7 +145,7 @@
 
 %%
 program 
-: program_list                      { $$ = $1; std::cout << *$$ << std::endl; } 
+: program_list                      { $$ = $1; std::cout << *$$ << std::endl; $$->sem(); } 
 ;
 
 program_list

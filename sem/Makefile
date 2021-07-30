@@ -16,10 +16,11 @@ parser.hpp parser.cpp: parser.y
 lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
 parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
 symbol.o: symbol.cpp symbol.hpp
+types.o: types.cpp types.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o symbol.o
-	$(CXX) $(CXXFLAGS) -o llamac lexer.o parser.o symbol.o
+compiler: lexer.o parser.o symbol.o types.o
+	$(CXX) $(CXXFLAGS) -o llamac lexer.o parser.o symbol.o types.o
 
 clean:
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o
