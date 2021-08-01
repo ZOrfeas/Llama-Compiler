@@ -15,9 +15,14 @@ void TypeGraph::wrongCall(std::string functionName) {
 TypeGraph::TypeGraph(graphType t): t(t) {}
 graphType const & TypeGraph::getSubClass() { return t; }
 std::string TypeGraph::stringifyType() {
-    return graph_type_string[
-        static_cast<int>(getSubClass())
-        ];
+    static const std::string graph_type_string[] = {
+     "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
+     "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_custom", "TYPE_record"
+    };
+    // std::cout << "debugging...: ";
+    // std::cout << "test " << (int)t << " "
+    //           << graph_type_string[2] << "\n";
+    return graph_type_string[(int)(t)];
 }
 void TypeGraph::log(std::string msg) {
     std::cout << "TypeGraph of type " << stringifyType()
@@ -226,8 +231,7 @@ TypeGraph* ConstructorTypeGraph::getFieldType(unsigned int index) {
 }
 bool ConstructorTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
-    return o->getSubClass() == graphType::TYPE_record &&
-            getCustomType()->equals(o->getCustomType());
+    return getCustomType()->equals(o);
 }
 ConstructorTypeGraph::~ConstructorTypeGraph() {
     for (auto &field: *fields)
@@ -255,6 +259,8 @@ void CustomTypeGraph::addConstructor(ConstructorTypeGraph *constructor) {
 bool CustomTypeGraph::equals(TypeGraph *o) {
     // might be of help here
     // o->getSubClass() == graphType::TYPE_custom
+    if (o->getSubClass() == graphType::TYPE_record)
+        return this == o->getCustomType();
     return this == o;
 }
 CustomTypeGraph::~CustomTypeGraph() {

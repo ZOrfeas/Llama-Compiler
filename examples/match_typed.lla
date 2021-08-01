@@ -1,0 +1,9 @@
+type pile = Left | Middle | Right
+let print_string (a : array of char) : unit = ()
+
+let print_pile (pile : pile) : unit =
+    match pile with
+    Left -> print_string "left"
+    | Middle -> print_string "middle"
+    | Right -> print_string "right"
+    end

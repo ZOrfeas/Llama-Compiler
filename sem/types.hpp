@@ -7,9 +7,6 @@
 enum class graphType { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
             TYPE_char, TYPE_ref, TYPE_array, TYPE_function, TYPE_custom, TYPE_record };
 
-const std::string graph_type_string[] = { "TYPE_unknown", "TYPE_unit", "TYPE_int", "TYPE_float", "TYPE_bool",
-                                    "TYPE_char", "TYPE_ref", "TYPE_array", "TYPE_function", "TYPE_record" };
-
 // Forward declarations
 class CustomTypeGraph;
 class ConstructorTypeGraph;
