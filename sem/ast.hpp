@@ -97,7 +97,7 @@ protected:
 public:
     UnknownType()
         : Type(category::CATEGORY_unknown) {}
-    virtual TypeGraph* get_TypeGraph() override 
+    virtual TypeGraph *get_TypeGraph() override
     {
         return tt.lookupType(temp_name)->getTypeGraph();
     }
@@ -135,7 +135,7 @@ private:
 
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType)
-        : Type(category::CATEGORY_function) , lhtype(lhtype), rhtype(rhtype) {}
+        : Type(category::CATEGORY_function), lhtype(lhtype), rhtype(rhtype) {}
     virtual TypeGraph *get_TypeGraph() override
     {
         FunctionTypeGraph *f;
@@ -168,7 +168,7 @@ private:
 
 public:
     ArrayType(int dimensions = 0, Type *elem_type = new UnknownType)
-        : Type(category::CATEGORY_array) , dimensions(dimensions), elem_type(elem_type) {}
+        : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
         return new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
@@ -313,16 +313,16 @@ public:
     }
     */
 
-    void type_check(TypeGraph *t)
+    void type_check(TypeGraph *t, std::string msg = "Type mismatch")
     {
         if (!TG->equals(t))
         {
-            printError("Type mismatch");
+            printError(msg);
         }
     }
-    friend void same_type(Expr *e1, Expr *e2)
+    friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
     {
-        e1->type_check(e2->TG);
+        e1->type_check(e2->TG, msg);
     }
 };
 
