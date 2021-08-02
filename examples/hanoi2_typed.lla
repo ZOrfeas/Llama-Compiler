@@ -1,0 +1,28 @@
+type pile =
+    Left
+  | Middle
+  | Right
+
+let print_pile (pile : pile) : unit =
+  match pile with
+    Left -> print_string "left"
+  | Middle -> print_string "middle"
+  | Right -> print_string "right"
+  end
+
+let main : unit =
+  let move (source : pile) (target : pile) : unit =
+    print_string "Moving from: ";
+    print_pile source;
+    print_string " to ";
+    print_pile target;
+    print_string "\n" in
+  let rec hanoi (rings : int) (source : pile) (target : pile) (auxil :
+    pile) : unit =
+    if rings > 0 then
+      (hanoi (rings - 1) source auxil target;
+       move source target;
+       hanoi (rings - 1) auxil target source) in
+  print_string "Please, give the number of rings: ";
+  let n : int = read_int () in
+  hanoi n Left Right Middle
