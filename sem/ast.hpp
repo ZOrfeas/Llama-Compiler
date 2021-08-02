@@ -7,7 +7,7 @@
 #include "symbol.hpp"
 #include "types.hpp"
 
-const std::string type_string[] = { "unit", "int", "float", "bool", "char" };
+const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
 enum class type
 {
     TYPE_unit,
@@ -107,6 +107,10 @@ public:
     virtual TypeGraph *get_TypeGraph() override
     {
         return tt.lookupType(temp_name)->getTypeGraph();
+    }
+    virtual std::string stringify() 
+    {
+        return temp_name;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -256,21 +260,23 @@ public:
             // TG must be in the list
             for (TypeGraph *t : TypeGraph_list)
             {
-                if (TG->equals(t)) flag = true;
+                if (TG->equals(t))
+                    flag = true;
             }
         }
         else
-        {   
+        {
             flag = true;
 
             // TG must not be in the list
             for (TypeGraph *t : TypeGraph_list)
             {
-                if (TG->equals(t)) flag = false;
+                if (TG->equals(t))
+                    flag = false;
             }
         }
 
-        if(!flag) 
+        if (!flag)
         {
             printError(msg);
         }
@@ -428,8 +434,9 @@ public:
         : Def(*id, t), expr(e) {}
     virtual void sem() override
     {
+        std::string err = "Must be of specified type " + T->get_TypeGraph()->stringifyType();
         expr->sem();
-        expr->type_check(T->get_TypeGraph());
+        expr->type_check(T->get_TypeGraph(), err);
     }
     virtual void insert_id_to_st() override
     {
@@ -460,8 +467,9 @@ public:
         }
 
         // Check the type of the expression (and call sem)
+        std::string err = "Function body must be of specified type " + T->get_TypeGraph()->stringifyType();
         expr->sem();
-        expr->type_check(T->get_TypeGraph());
+        expr->type_check(T->get_TypeGraph(), err);
 
         // Close the scope
         st.closeScope();
@@ -506,7 +514,7 @@ public:
         // All dimension sizes are of type integer
         for (Expr *e : expr_list)
         {
-            e->type_check(type_int, "Dimension sizes must be int");
+            e->type_check(type_int, "Array dimension sizes must be int");
         }
     }
     int get_dimensions()
@@ -995,8 +1003,8 @@ public:
     virtual void sem() override
     {
         // Typecheck
-        cond->type_check(type_bool);
-        body->type_check(type_unit);
+        cond->type_check(type_bool, "While condition must be bool");
+        body->type_check(type_unit, "While body must be unit");
 
         TG = type_unit;
     }
@@ -1026,9 +1034,9 @@ public:
         finish->sem();
         body->sem();
 
-        start->type_check(type_int);
-        finish->type_check(type_int);
-        body->type_check(type_unit);
+        start->type_check(type_int, "Start value of iterator must be int");
+        finish->type_check(type_int, "Finish value of iterator must be int");
+        body->type_check(type_unit, "For body must be unit");
 
         // Close the scope
         st.closeScope();
@@ -1050,10 +1058,7 @@ public:
     virtual void sem() override
     {
         cond->sem();
-        if (!cond->get_TypeGraph()->isBool())
-        {
-            printError("Condition of if must be bool");
-        }
+        cond->type_check(type_bool, "Condition of if must be bool");
 
         // If there is no else just semantically analyse body
         if (else_body == nullptr)
@@ -1064,11 +1069,9 @@ public:
         // If there is else then check if the types match
         else
         {
+            body->sem();
             else_body->sem();
-
-            TypeGraph *body_t = body->get_TypeGraph();
-
-            else_body->type_check(body_t);
+            same_type(body, else_body, "Return value of if and else must be same type");
         }
 
         // The type of the body is the type of the If
@@ -1156,13 +1159,14 @@ public:
             printError("Partial function call not allowed");
         }
 
+        std::string err = "Type mismatch on parameter No. ";
         TypeGraph *correct_t;
         for (int i = 0; i < count; i++)
         {
             correct_t = t->getParamType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t);
+            expr_list[i]->type_check(correct_t, err + std::to_string(i));
         }
 
         TG = t->getResultType();
@@ -1197,13 +1201,14 @@ public:
             printError("Partial constructor call not allowed");
         }
 
+        std::string err = "Type mismatch on field No. ";
         TypeGraph *correct_t;
         for (int i = 0; i < count; i++)
         {
             correct_t = t->getFieldType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t);
+            expr_list[i]->type_check(correct_t, err + std::to_string(i));
         }
 
         TG = c->getTypeGraph();
@@ -1242,11 +1247,7 @@ public:
         for (int i = 0; i < count; i++)
         {
             expr_list[i]->sem();
-            temp_e = expr_list[i]->get_TypeGraph();
-            if (!temp_e->isInt())
-            {
-                printError("Array indices can only be int");
-            }
+            expr_list[i]->type_check(type_int, "Array indices can only be int");
         }
 
         TG = t->getContainedType();

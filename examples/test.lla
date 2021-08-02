@@ -1,0 +1,4 @@
+let x : int = 3
+let c : char = 'a'
+
+let y = x
