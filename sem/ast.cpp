@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string>
 #include <cstdio>
 #include <cstdlib> 
@@ -7,6 +5,12 @@
 #include "lexer.hpp"
 #include "ast.hpp"
 #include "parser.hpp"
+
+TypeGraph *type_unit = tt.lookupType("unit")->getTypeGraph();
+TypeGraph *type_int = tt.lookupType("int")->getTypeGraph();
+TypeGraph *type_float = tt.lookupType("float")->getTypeGraph();
+TypeGraph *type_bool = tt.lookupType("bool")->getTypeGraph();
+TypeGraph *type_char = tt.lookupType("char")->getTypeGraph();
 
 void UnOp::sem() {
         expr->sem();
@@ -17,30 +21,24 @@ void UnOp::sem() {
         case '+':
         case '-':
         {
-            if (!t_expr->isInt())
-            {
-                printError("Only int allowed");
-            }
-            TG = tt.lookupType("int")->getTypeGraph();
+            expr->type_check(type_int, "Only int allowed");
+
+            TG = type_int;
             break;
         }
         case T_minusdot:
         case T_plusdot:
         {
-            if (!t_expr->isFloat())
-            {
-                printError("Only float allowed");
-            }
-            TG = tt.lookupType("float")->getTypeGraph();
+            expr->type_check(type_float, "Only float allowed");
+
+            TG = type_float;
             break;
         }
         case T_not:
         {
-            if (!t_expr->isBool())
-            {
-                printError("Only bool allowed");
-            }
-            TG = tt.lookupType("bool")->getTypeGraph();
+            expr->type_check(type_bool, "Only bool allowed");
+            
+            TG = type_bool;
             break;
         }
         case '!':
@@ -49,6 +47,7 @@ void UnOp::sem() {
             {
                 printError("Only ref allowed");
             }
+
             TG = t_expr;
             break;
         }
@@ -63,14 +62,13 @@ void UnOp::sem() {
                 printError("Must have been assigned value with new");
             }
 
-            TG = tt.lookupType("unit")->getTypeGraph();
+            TG = type_unit;
             break;
         }
         default:
             break;
         }
 }
-
 void BinOp::sem() {
         lhs->sem();
         rhs->sem();
@@ -86,12 +84,10 @@ void BinOp::sem() {
         case '/':
         case T_mod:
         {
-            if (!t_lhs->isInt() || !t_rhs->isInt())
-            {
-                printError("Only int allowed");
-            }
+            lhs->type_check(type_int, "Only int allowed");
+            rhs->type_check(type_int, "Only int allowed");
 
-            TG = tt.lookupType("int")->getTypeGraph();
+            TG = type_int;
             break;
         }
         case T_plusdot:
@@ -100,23 +96,19 @@ void BinOp::sem() {
         case T_slashdot:
         case T_dblstar:
         {
-            if (!t_lhs->isFloat() || !t_rhs->isFloat())
-            {
-                printError("Only float allowed");
-            }
+            lhs->type_check(type_float, "Only float allowed");
+            rhs->type_check(type_float, "Only float allowed");
 
-            TG = tt.lookupType("float")->getTypeGraph();
+            TG = type_float;
             break;
         }
         case T_dblbar:
         case T_dblampersand:
         {
-            if (!t_lhs->isBool() || !t_rhs->isBool())
-            {
-                printError("Only bool allowed");
-            }
+            lhs->type_check(type_bool, "Only bool allowed");
+            rhs->type_check(type_bool, "Only bool allowed");
 
-            TG = tt.lookupType("bool")->getTypeGraph();
+            TG = type_bool;
             break;
         }
         case '=':
@@ -143,12 +135,9 @@ void BinOp::sem() {
         case T_leq:
         case T_geq:
         {
-            // Check that they are char, int or float
-            if (!t_lhs->isChar() && !t_lhs->isInt() && !t_lhs->isFloat() &&
-                !t_rhs->isChar() && !t_rhs->isInt() && !t_rhs->isFloat())
-            {
-                printError("Only char, int and float allowed");
-            }
+            std::vector<TypeGraph *> type_char_int_float = { type_char, type_int, type_float };
+            lhs->type_check(type_char_int_float, "Only char, int and float allowed");
+            rhs->type_check(type_char_int_float, "Only char, int and float allowed");
 
             // Check that they are of the same type
             same_type(lhs, rhs);
@@ -167,7 +156,7 @@ void BinOp::sem() {
             delete correct_lhs;
 
             // The result is unit
-            TG = tt.lookupType("unit")->getTypeGraph();
+            TG = type_unit;
             break;
         }
         case ';':

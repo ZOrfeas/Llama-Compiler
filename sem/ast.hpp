@@ -5,10 +5,9 @@
 #include <vector>
 
 #include "symbol.hpp"
-//#include "parser.hpp"
 #include "types.hpp"
 
-const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
+const std::string type_string[] = { "unit", "int", "float", "bool", "char" };
 enum class type
 {
     TYPE_unit,
@@ -28,6 +27,14 @@ enum class category
 };
 
 void yyerror(const char *msg);
+
+/* TypeGraphs of basic types useful for type checking ***************/
+
+extern TypeGraph *type_unit;
+extern TypeGraph *type_int;
+extern TypeGraph *type_float;
+extern TypeGraph *type_bool;
+extern TypeGraph *type_char;
 
 /********************************************************************/
 
@@ -231,93 +238,34 @@ public:
     {
         return TG;
     }
-
-    /* Deprecated functions
-    void dynamic_check()
+    void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
     {
-        if (!dynamic)
-        {
-            yyerror("Not created with new");
-            exit(1);
-        }
-    }
-    void category_check(category c)
-    {
-        sem();
-        if (!T->compare_category(c))
-        {
-            yyerror("Type mismatch");
-            exit(1);
-        }
-    }
-    void category_check(std::vector<category> category_vect, bool negation = false)
-    {
-        sem();
-        if (!negation)
-        {
-            for (category temp_c : category_vect)
-            {
-                if (T->compare_category(temp_c))
-                    return;
-            }
-            yyerror("Type mismatch");
-            exit(1);
-        }
-        else
-        {
-            for (category temp_c : category_vect)
-            {
-                if (T->compare_category(temp_c))
-                {
-                    yyerror("Type mismatch");
-                    exit(1);
-                }
-            }
-            return;
-        }
-    }
-    void basic_type_check(type t)
-    {
-        sem();
-        if (!T->compare_basic_type(t))
-        {
-            yyerror("Type mismatch");
-            exit(1);
-        }
-    }
-    void basic_type_check(std::vector<type> type_vect, bool negation = false)
-    {
-        sem();
-        if (!negation)
-        {
-            for (type temp_t : type_vect)
-            {
-                if (T->compare_basic_type(temp_t))
-                    return;
-            }
-            yyerror("Type mismatch");
-            exit(1);
-        }
-        else
-        {
-            for (type temp_t : type_vect)
-            {
-                if (T->compare_basic_type(temp_t))
-                {
-                    yyerror("Type mismatch");
-                    exit(1);
-                }
-            }
-            return;
-        }
-    }
-    */
-
-    void type_check(TypeGraph *t, std::string msg = "Type mismatch")
-    {
-        if (!TG->equals(t))
+        if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
         {
             printError(msg);
+        }
+    }
+    void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
+    {
+        if (!negation)
+        {
+            for (TypeGraph *t : TypeGraph_list)
+            {
+                if (!TG->equals(t))
+                {
+                    printError(msg);
+                }
+            }
+        }
+        else
+        {
+            for (TypeGraph *t : TypeGraph_list)
+            {
+                if (TG->equals(t))
+                {
+                    printError(msg);
+                }
+            }
         }
     }
     friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
@@ -551,7 +499,7 @@ public:
         // All dimension sizes are of type integer
         for (Expr *e : expr_list)
         {
-            e->type_check(tt.lookupType("int")->getTypeGraph());
+            e->type_check(type_int, "Dimension sizes must be int");
         }
     }
     int get_dimensions()
@@ -829,7 +777,7 @@ public:
         : s(*s) {}
     virtual void sem() override
     {
-        TG = new ArrayTypeGraph(1, tt.lookupType("char")->getTypeGraph());
+        TG = new ArrayTypeGraph(1, type_char);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -899,7 +847,7 @@ public:
     }
     virtual void sem() override
     {
-        TG = tt.lookupType("char")->getTypeGraph();
+        TG = type_char;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -916,7 +864,7 @@ public:
         : b(b) {}
     virtual void sem() override
     {
-        TG = tt.lookupType("bool")->getTypeGraph();
+        TG = type_bool;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -933,7 +881,7 @@ public:
         : d(d) {}
     virtual void sem() override
     {
-        TG = tt.lookupType("float")->getTypeGraph();
+        TG = type_float;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -954,7 +902,7 @@ public:
     }
     virtual void sem() override
     {
-        TG = tt.lookupType("int")->getTypeGraph();
+        TG = type_int;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -967,7 +915,7 @@ public:
     Unit_literal() {}
     virtual void sem() override
     {
-        TG = tt.lookupType("unit")->getTypeGraph();
+        TG = type_unit;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -985,103 +933,6 @@ public:
     BinOp(Expr *e1, int op, Expr *e2)
         : lhs(e1), rhs(e2), op(op) {}
     virtual void sem() override;
-    /*{
-        lhs->sem();
-        rhs->sem();
-
-        TypeGraph *t_lhs = lhs->get_TypeGraph();
-        TypeGraph *t_rhs = rhs->get_TypeGraph();
-
-        switch (op)
-        {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        case T_mod:
-        {
-            if (!t_lhs->isInt() || !t_rhs->isInt())
-            {
-                printError("Only int allowed");
-            }
-
-            TG = tt.lookupType("int")->getTypeGraph();
-        }
-        case T_plusdot:
-        case T_minusdot:
-        case T_stardot:
-        case T_slashdot:
-        case T_dblstar:
-        {
-            if (!t_lhs->isFloat() || !t_rhs->isFloat())
-            {
-                printError("Only float allowed");
-            }
-
-            TG = tt.lookupType("float")->getTypeGraph();
-        }
-        case T_dblbar:
-        case T_dblampersand:
-        {
-            if (!t_lhs->isBool() || !t_rhs->isBool())
-            {
-                printError("Only bool allowed");
-            }
-
-            TG = tt.lookupType("bool")->getTypeGraph();
-        }
-        case '=':
-        case T_lessgreater:
-        case T_dbleq:
-        case T_exclameq:
-        {
-            // Check that they are not arrays or functions
-            if (t_lhs->isArray() || t_lhs->isFunction() ||
-                t_rhs->isArray() || t_rhs->isFunction())
-            {
-                printError("Array and Function not allowed");
-            }
-
-            // Check that they are of the same type
-            same_type(lhs, rhs);
-
-            // The result is bool
-            TG = tt.lookupType("bool")->getTypeGraph();
-        }
-        case '<':
-        case '>':
-        case T_leq:
-        case T_geq:
-        {
-            // Check that they are char, int or float
-            if (!t_lhs->isChar() && !t_lhs->isInt() && !t_lhs->isFloat() &&
-                !t_rhs->isChar() && !t_rhs->isInt() && !t_rhs->isFloat())
-            {
-                printError("Only char, int and float allowed");
-            }
-
-            // Check that they are of the same type
-            same_type(lhs, rhs);
-
-            // Get the correct type for the result
-            TG = t_lhs;
-        }
-        case T_coloneq:
-        {
-            // The lhs must be a ref of the same type as the rhs
-            RefTypeGraph *correct_lhs = new RefTypeGraph(t_rhs);
-            lhs->type_check(correct_lhs);
-
-            // Cleanup
-            delete correct_lhs;
-
-            // The result is unit
-            TG = tt.lookupType("unit")->getTypeGraph();
-        }
-        default:
-            break;
-        }
-    }*/
     virtual void printOn(std::ostream &out) const override
     {
         out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
@@ -1097,65 +948,6 @@ public:
     UnOp(int op, Expr *e)
         : expr(e), op(op) {}
     virtual void sem() override;
-    /*{
-        expr->sem();
-        TypeGraph *t_expr = expr->get_TypeGraph();
-
-        switch (op)
-        {
-        case '+':
-        case '-':
-        {
-            if (!t_expr->isInt())
-            {
-                printError("Only int allowed");
-            }
-            TG = tt.lookupType("int")->getTypeGraph();
-        }
-        case T_minusdot:
-        case T_plusdot:
-        {
-            if (!t_expr->isFloat())
-            {
-                printError("Only float allowed");
-            }
-            TG = tt.lookupType("float")->getTypeGraph();
-        }
-        case T_not:
-        {
-            if (!t_expr->isBool())
-            {
-                printError("Only bool allowed");
-            }
-            TG = tt.lookupType("bool")->getTypeGraph();
-        }
-        case '!':
-        {
-            if (!t_expr->isRef())
-            {
-                printError("Only ref allowed");
-            }
-            TG = t_expr;
-        }
-        case T_delete:
-        {
-            if (!t_expr->isRef())
-            {
-                printError("Only ref allowed");
-            }
-
-            RefTypeGraph *rt_expr = dynamic_cast<RefTypeGraph *>(t_expr);
-            if (!rt_expr->dynamic)
-            {
-                printError("Must have been assigned value with new");
-            }
-
-            TG = tt.lookupType("unit")->getTypeGraph();
-        }
-        default:
-            break;
-        }
-    }*/
     virtual void printOn(std::ostream &out) const override
     {
         out << "UnOp(" << op << ", " << *expr << ")";
@@ -1195,14 +987,11 @@ public:
         : cond(e1), body(e2) {}
     virtual void sem() override
     {
-        TypeGraph *bool_type = tt.lookupType("bool")->getTypeGraph();
-        TypeGraph *unit_type = tt.lookupType("unit")->getTypeGraph();
-
         // Typecheck
-        cond->type_check(bool_type);
-        body->type_check(unit_type);
+        cond->type_check(type_bool);
+        body->type_check(type_unit);
 
-        TG = unit_type;
+        TG = type_unit;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1221,26 +1010,23 @@ public:
         : id(*id), step(s), start(e1), finish(e2), body(e3) {}
     virtual void sem() override
     {
-        TypeGraph *unit_type = tt.lookupType("unit")->getTypeGraph();
-        TypeGraph *int_type = tt.lookupType("int")->getTypeGraph();
-
         // Create new scope for counter and add it
         st.openScope();
-        st.insertBasic(id, int_type);
+        st.insertBasic(id, type_int);
 
         // Typecheck start, finish, body
         start->sem();
         finish->sem();
         body->sem();
 
-        start->type_check(int_type);
-        finish->type_check(int_type);
-        body->type_check(unit_type);
+        start->type_check(type_int);
+        finish->type_check(type_int);
+        body->type_check(type_unit);
 
         // Close the scope
         st.closeScope();
 
-        TG = unit_type;
+        TG = type_unit;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1315,7 +1101,7 @@ public:
             printError("Index out of bounds");
         }
 
-        TG = tt.lookupType("int")->getTypeGraph();
+        TG = type_int;
     }
     virtual void printOn(std::ostream &out) const override
     {
