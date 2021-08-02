@@ -247,25 +247,32 @@ public:
     }
     void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
     {
+        bool flag;
+
         if (!negation)
         {
+            flag = false;
+
+            // TG must be in the list
             for (TypeGraph *t : TypeGraph_list)
             {
-                if (!TG->equals(t))
-                {
-                    printError(msg);
-                }
+                if (TG->equals(t)) flag = true;
             }
         }
         else
-        {
+        {   
+            flag = true;
+
+            // TG must not be in the list
             for (TypeGraph *t : TypeGraph_list)
             {
-                if (TG->equals(t))
-                {
-                    printError(msg);
-                }
+                if (TG->equals(t)) flag = false;
             }
+        }
+
+        if(!flag) 
+        {
+            printError(msg);
         }
     }
     friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")

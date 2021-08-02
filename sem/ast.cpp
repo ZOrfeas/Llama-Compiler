@@ -127,7 +127,7 @@ void BinOp::sem() {
             same_type(lhs, rhs);
 
             // The result is bool
-            TG = tt.lookupType("bool")->getTypeGraph();
+            TG = type_bool;
             break;
         }
         case '<':
