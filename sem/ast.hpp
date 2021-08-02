@@ -1309,7 +1309,7 @@ public:
         int i = dim->get_int();
 
         // Check if i is withing the correct bounds
-        if (i < 1 && i > arr->getTypeGraph()->dimensions)
+        if (i < 1 && i > arr->getTypeGraph()->getDimensions())
         {
             printError("Index out of bounds");
         }
@@ -1354,7 +1354,7 @@ public:
     virtual void sem() override
     {
         FunctionEntry *f = st.lookupFunction(id);
-        FunctionTypeGraph *t = f->getTypeGraph();
+        TypeGraph *t = f->getTypeGraph();
 
         int count = t->getParamCount();
         if (count != (int)expr_list.size())
@@ -1395,7 +1395,7 @@ public:
     virtual void sem()
     {
         ConstructorEntry *c = ct.lookupConstructor(Id);
-        ConstructorTypeGraph *t = c->getTypeGraph();
+        TypeGraph *t = c->getTypeGraph();
 
         int count = t->getFieldCount();
         if (count != (int)expr_list.size())
@@ -1436,9 +1436,9 @@ public:
     virtual void sem() override
     {
         ArrayEntry *a = st.lookupArray(id);
-        ArrayTypeGraph *t = a->getTypeGraph();
+        TypeGraph *t = a->getTypeGraph();
 
-        int count = t->dimensions;
+        int count = t->getDimensions();
         if (count != (int)expr_list.size())
         {
             printError("Partial array call not allowed");
@@ -1536,7 +1536,7 @@ public:
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         ConstructorEntry *c = ct.lookupConstructor(Id);
-        ConstructorTypeGraph *c_TypeGraph = c->getTypeGraph();
+        TypeGraph *c_TypeGraph = c->getTypeGraph();
 
         int count = t->getFieldCount();
         if (count != (int)pattern_list.size())

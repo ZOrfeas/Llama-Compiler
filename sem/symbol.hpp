@@ -16,8 +16,8 @@ public:
     std::string name;
     // Holds pointer to Type Graph of entry
     TypeGraph *typeGraph;
-    virtual TypeGraph* getTypeGraph() { return typeGraph; }
-    SymbolEntry(std::string n, TypeGraph *t): name(n), typeGraph(t) {};
+    TypeGraph* getTypeGraph();
+    SymbolEntry(std::string n, TypeGraph *t);
     virtual ~SymbolEntry() {}
 };
 
@@ -29,30 +29,30 @@ class ConstructorEntry;
 
 class FunctionEntry : public SymbolEntry {
 public:
-    FunctionEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    virtual FunctionTypeGraph* getTypeGraph();
+    FunctionEntry(std::string n, TypeGraph *t);
+    // virtual FunctionTypeGraph* getTypeGraph();
     /** Utility method for creating more complex FunctionTypeGraphs 
      * @param push_back If true then param is appended, else inserted at start */
     void addParam(TypeGraph *param, bool push_back = true);
-    ~FunctionEntry();
+    ~FunctionEntry() {};
 };
 class ArrayEntry : public SymbolEntry {
 public:
-    ArrayEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    virtual ArrayTypeGraph* getTypeGraph();
-    ~ArrayEntry();
+    ArrayEntry(std::string n, TypeGraph *t);
+    // virtual ArrayTypeGraph* getTypeGraph();
+    ~ArrayEntry() {};
 };
 class RefEntry : public SymbolEntry {
 public:
-    RefEntry(std::string n, TypeGraph *t): SymbolEntry(n, t) {}
-    virtual RefTypeGraph* getTypeGraph();
-    bool isDynamic() { return getTypeGraph()->dynamic; }
-    bool isAllocated() {return getTypeGraph()->allocated;}
-    void setDynamic() { getTypeGraph()->setDynamic(); }
-    void setAllocated() { getTypeGraph()->setAllocated(); }
-    void resetDynamic() { getTypeGraph()->resetDynamic(); }
-    void resetAllocated() { getTypeGraph()->resetAllocated(); }
-    ~RefEntry();
+    RefEntry(std::string n, TypeGraph *t);
+    // virtual RefTypeGraph* getTypeGraph();
+    bool isDynamic();
+    bool isAllocated();
+    void setDynamic();
+    void setAllocated();
+    void resetDynamic();
+    void resetAllocated();
+    ~RefEntry() {};
 };
 
 class TypeEntry: public SymbolEntry {
@@ -61,7 +61,7 @@ public:
     std::vector<ConstructorEntry *> *constructors;
     // Adds a constructor to this type (doesn't add to TypeTable)
     void addConstructor(ConstructorEntry *constr);
-    virtual CustomTypeGraph* getTypeGraph();
+    // virtual CustomTypeGraph* getTypeGraph();
     TypeEntry(std::string n, TypeGraph *t);
     ~TypeEntry();
 };
@@ -72,9 +72,9 @@ public:
     // Sets this Constructor's TypeEntry
     void setTypeEntry(TypeEntry *t);
     void addType(TypeGraph *field);
-    virtual ConstructorTypeGraph* getTypeGraph();
+    // virtual ConstructorTypeGraph* getTypeGraph();
     ConstructorEntry(std::string n, TypeGraph *t);
-    ~ConstructorEntry();
+    ~ConstructorEntry() {};
 };
 /*************************************************************/
 /**                SymbolTable class                         */
@@ -123,13 +123,13 @@ public:
 /**                Other Table classes                       */
 /*************************************************************/
 class BaseTable {
-    /** Pointer to a map of name-Entry_pointer pairs*/
-    std::map<std::string, SymbolEntry *> *Table;
     void error(std::string msg, bool crash = true);
     void log(std::string msg);
     bool debug;
     std::string kind;
 public:
+    /** Pointer to a map of name-Entry_pointer pairs*/
+    std::map<std::string, SymbolEntry *> *Table;
     BaseTable(std::string kind = "BaseTable", bool debug = false);
     SymbolEntry *lookup(std::string name, bool err = true);
     SymbolEntry* insert(SymbolEntry *entry, bool overwrite = false);
@@ -138,13 +138,7 @@ public:
 
 class TypeTable : public BaseTable {
 public:
-    TypeTable(bool debug = false): BaseTable("TypeTable", debug) {
-        insert(new TypeEntry("int", &intType));
-        insert(new TypeEntry("float", &floatType));
-        insert(new TypeEntry("char", &charType));
-        insert(new TypeEntry("unit" , &unitType));
-        insert(new TypeEntry("bool" , &boolType));
-    }
+    TypeTable(bool debug = false);
         /** insert wrapper for TypeEntries */
     TypeEntry* insertType(std::string name, bool overwrite = false);
     /** lookup wrapper for TypeEntries */
@@ -153,7 +147,7 @@ public:
 };
 class ConstructorTable : public BaseTable {
 public:
-    ConstructorTable(bool debug = false): BaseTable("ConstructorTable", debug) {};
+    ConstructorTable(bool debug = false);
     /** insert wrapper for ConstructorEntries */
     ConstructorEntry* insertConstructor(std::string name, bool overwrite = false);
     /** lookup wrapper for ConstructorEntries */
@@ -166,13 +160,8 @@ public:
 /**                Table instantiations                      */
 /*************************************************************/
 
-SymbolTable st;
-TypeTable tt;
-ConstructorTable ct;
+// definitions are at the end of symbol.cpp
 
-/*************************************************************/
-/**              Basic type entry instantiations             */
-/**            Bad code, move to main to avoid tmps          */
-/*************************************************************/
-
-// moved inside constructor
+extern SymbolTable st;
+extern TypeTable tt;
+extern ConstructorTable ct;

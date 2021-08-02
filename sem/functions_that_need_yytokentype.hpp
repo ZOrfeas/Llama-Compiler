@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <cstdio>
 #include <cstdlib> 
@@ -52,9 +54,7 @@ void UnOp::sem() {
             {
                 printError("Only ref allowed");
             }
-
-            RefTypeGraph *rt_expr = dynamic_cast<RefTypeGraph *>(t_expr);
-            if (!rt_expr->dynamic)
+            if (!t_expr->isDynamic())
             {
                 printError("Must have been assigned value with new");
             }
