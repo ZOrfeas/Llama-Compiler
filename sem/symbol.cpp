@@ -36,7 +36,7 @@ SymbolTable::~SymbolTable() {
     delete Table; // delete the Table at the end
 }
 void SymbolTable::error(string msg, bool crash) {
-    std::cout << "SymbolTable:" << " ";
+    std::cout << "\033[1m\033[30mSymbolTable\033[0m: ";
     std::cout << msg << std::endl;
     if (crash) exit(1);
 
@@ -56,7 +56,7 @@ SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite) {
 }
 SymbolEntry* SymbolTable::lookup(string name, bool err) {
     if (debug)
-        log("Looking up name:" + name);
+        log("Looking up name: " + name);
     for (auto it = Table->rbegin(); it != Table->rend(); ++it) {
         if (nameInScope(name, *it)) {
             return (**it)[name];
@@ -194,7 +194,7 @@ SymbolEntry* BaseTable::lookup(string name, bool err) {
 /** TypeTable method implementations */
 /*************************************************************/
 
-TypeTable::TypeTable(bool debug): BaseTable("TypeTable", debug) {
+TypeTable::TypeTable(bool debug): BaseTable("\033[1m\033[31mTypeTable\033[0m", debug) {
     insert(new TypeEntry("int",  new IntTypeGraph()));
     insert(new TypeEntry("float", new FloatTypeGraph()));
     insert(new TypeEntry("char", new CharTypeGraph()));
@@ -217,7 +217,7 @@ TypeTable::~TypeTable() {}
 /*************************************************************/
 
 ConstructorTable::ConstructorTable(bool debug)
-: BaseTable("ConstructorTable", debug) {}
+: BaseTable("\033[1m\033[34mConstructorTable\033[0m", debug) {}
 ConstructorEntry* ConstructorTable::insertConstructor(string name, bool overwrite) {
     ConstructorTypeGraph *constrType = new ConstructorTypeGraph();
     ConstructorEntry *constructorEntry = new ConstructorEntry(name, constrType);

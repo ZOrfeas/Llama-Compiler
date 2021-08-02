@@ -828,7 +828,7 @@ public:
         : s(*s) {}
     virtual void sem() override
     {
-        TG = new ArrayTypeGraph(1, tt.lookupType("unit")->getTypeGraph());
+        TG = new ArrayTypeGraph(1, tt.lookupType("char")->getTypeGraph());
     }
     virtual void printOn(std::ostream &out) const override
     {

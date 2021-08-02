@@ -13,7 +13,7 @@ parser.hpp parser.cpp: parser.y
 
 # Add your dependencies here, e.g.
 # parser.o: parser.cpp lexer.hpp symbol.hpp
-lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
+lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp functions_that_need_yytokentype.hpp
 parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
