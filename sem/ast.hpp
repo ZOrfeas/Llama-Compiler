@@ -505,6 +505,7 @@ public:
         }
 
         // Check the type of the expression (and call sem)
+        expr->sem();
         expr->type_check(T->get_TypeGraph());
 
         // Close the scope

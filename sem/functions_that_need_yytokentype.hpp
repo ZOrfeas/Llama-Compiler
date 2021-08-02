@@ -22,6 +22,7 @@ void UnOp::sem() {
                 printError("Only int allowed");
             }
             TG = tt.lookupType("int")->getTypeGraph();
+            break;
         }
         case T_minusdot:
         case T_plusdot:
@@ -31,6 +32,7 @@ void UnOp::sem() {
                 printError("Only float allowed");
             }
             TG = tt.lookupType("float")->getTypeGraph();
+            break;
         }
         case T_not:
         {
@@ -39,6 +41,7 @@ void UnOp::sem() {
                 printError("Only bool allowed");
             }
             TG = tt.lookupType("bool")->getTypeGraph();
+            break;
         }
         case '!':
         {
@@ -47,6 +50,7 @@ void UnOp::sem() {
                 printError("Only ref allowed");
             }
             TG = t_expr;
+            break;
         }
         case T_delete:
         {
@@ -60,6 +64,7 @@ void UnOp::sem() {
             }
 
             TG = tt.lookupType("unit")->getTypeGraph();
+            break;
         }
         default:
             break;
@@ -87,6 +92,7 @@ void BinOp::sem() {
             }
 
             TG = tt.lookupType("int")->getTypeGraph();
+            break;
         }
         case T_plusdot:
         case T_minusdot:
@@ -100,6 +106,7 @@ void BinOp::sem() {
             }
 
             TG = tt.lookupType("float")->getTypeGraph();
+            break;
         }
         case T_dblbar:
         case T_dblampersand:
@@ -110,6 +117,7 @@ void BinOp::sem() {
             }
 
             TG = tt.lookupType("bool")->getTypeGraph();
+            break;
         }
         case '=':
         case T_lessgreater:
@@ -128,6 +136,7 @@ void BinOp::sem() {
 
             // The result is bool
             TG = tt.lookupType("bool")->getTypeGraph();
+            break;
         }
         case '<':
         case '>':
@@ -146,6 +155,7 @@ void BinOp::sem() {
 
             // Get the correct type for the result
             TG = t_lhs;
+            break;
         }
         case T_coloneq:
         {
@@ -158,9 +168,13 @@ void BinOp::sem() {
 
             // The result is unit
             TG = tt.lookupType("unit")->getTypeGraph();
+            break;
+        }
+        case ';':
+        {
+            TG = t_rhs; 
         }
         default:
             break;
-        }
-    
+        }    
 }
