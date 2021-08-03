@@ -1166,7 +1166,7 @@ public:
             correct_t = t->getParamType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i));
+            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
         }
 
         TG = t->getResultType();
@@ -1208,7 +1208,7 @@ public:
             correct_t = t->getFieldType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i));
+            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
         }
 
         TG = c->getTypeGraph();
@@ -1243,7 +1243,6 @@ public:
             printError("Partial array call not allowed");
         }
 
-        TypeGraph *temp_e;
         for (int i = 0; i < count; i++)
         {
             expr_list[i]->sem();
