@@ -3,6 +3,9 @@ type pile =
   | Middle
   | Right
 
+let read_int (a : unit) : int = 4
+let print_string (a : array of char) : unit = ()
+
 let print_pile (pile : pile) : unit =
   match pile with
     Left -> print_string "left"
