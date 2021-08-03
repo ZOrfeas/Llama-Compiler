@@ -557,7 +557,7 @@ public:
         : Mutable(*id, T) {}
     virtual void insert_id_to_st() override
     {
-        st.insertBasic(id, T->get_TypeGraph());
+        st.insertRef(id, T->get_TypeGraph(), true, false);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1333,7 +1333,7 @@ public:
         ConstructorEntry *c = ct.lookupConstructor(Id);
         TypeGraph *c_TypeGraph = c->getTypeGraph();
 
-        int count = t->getFieldCount();
+        int count = c_TypeGraph->getFieldCount();
         if (count != (int)pattern_list.size())
         {
             printError("Partial constructor pattern not allowed");

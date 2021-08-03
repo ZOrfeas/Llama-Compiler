@@ -155,10 +155,6 @@ BaseTable::BaseTable(string kind, bool debug) {
 BaseTable::~BaseTable() {
     if (debug)
         log("destructor called...");
-    for (auto &pair: *Table) {
-        delete pair.second;
-    }
-    delete Table;
 }
 void BaseTable::error(string msg, bool crash) {
     std::cout << kind << ":" <<" ";
@@ -209,7 +205,13 @@ TypeEntry* TypeTable::insertType(string name, bool overwrite) {
 TypeEntry* TypeTable::lookupType(string name, bool err) {
     return dynamic_cast<TypeEntry *>(lookup(name, err));
 }
-TypeTable::~TypeTable() {}
+TypeTable::~TypeTable() {
+    for (auto &pair: *Table) {
+        delete pair.second;
+    }
+    delete Table;
+
+}
 
 
 /*************************************************************/
@@ -229,7 +231,7 @@ ConstructorEntry* ConstructorTable::lookupConstructor(string name, bool err) {
 ConstructorTable::~ConstructorTable() {}
 
 /*************************************************************/
-/** SymbolEntry method implementations */
+/**          SymbolEntry method implementations              */
 /*************************************************************/
 TypeGraph* SymbolEntry::getTypeGraph() { return typeGraph; }
 SymbolEntry::SymbolEntry(std::string n, TypeGraph *t)
