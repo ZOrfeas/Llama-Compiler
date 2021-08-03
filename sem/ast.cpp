@@ -48,7 +48,7 @@ void UnOp::sem() {
                 printError("Only ref allowed");
             }
 
-            TG = t_expr;
+            TG = t_expr->getContainedType();
             break;
         }
         case T_delete:
@@ -143,7 +143,7 @@ void BinOp::sem() {
             same_type(lhs, rhs);
 
             // Get the correct type for the result
-            TG = t_lhs;
+            TG = type_bool;
             break;
         }
         case T_coloneq:
