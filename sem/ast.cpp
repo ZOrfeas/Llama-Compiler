@@ -48,9 +48,9 @@ void UnOp::sem() {
 
             // Adds constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            expr->type_check(ref_t, "Only ref allowed with !");
+            // addConstraint(t_expr, ref_t);
 
-            TG = t_expr->getContainedType();
+            TG = ref_t->getContainedType();
             break;
         }
         case T_delete:
@@ -60,7 +60,7 @@ void UnOp::sem() {
 
             // Adds constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            expr->type_check(ref_t, "Only ref allowed with delete");
+            // addConstraint(t_expr, ref_t);
             
             if (!t_expr->isDynamic())
             {
