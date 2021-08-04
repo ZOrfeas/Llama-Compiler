@@ -99,22 +99,18 @@ public:
 class UnknownType : public Type
 {
 protected:
-    std::string temp_name;
+    UnknownTypeGraph *variable_type;
 
 public:
     UnknownType()
-        : Type(category::CATEGORY_unknown) {}
+        : Type(category::CATEGORY_unknown) { variable_type = new UnknownTypeGraph(); }
     virtual TypeGraph *get_TypeGraph() override
     {
-        return tt.lookupType(temp_name)->getTypeGraph();
-    }
-    virtual std::string stringify() 
-    {
-        return temp_name;
+        return variable_type;
     }
     virtual void printOn(std::ostream &out) const override
     {
-        out << "UnknownType()";
+        out << "UnknownType(" << variable_type->stringifyType() << ")";
     }
 };
 class BasicType : public Type
@@ -152,7 +148,8 @@ public:
         FunctionTypeGraph *f;
         TypeGraph *l = lhtype->get_TypeGraph();
         TypeGraph *r = rhtype->get_TypeGraph();
-
+        
+        // No type inference needed here because FunctionType is called only if the type is given
         if (r->isFunction())
         {
             f = dynamic_cast<FunctionTypeGraph *>(r);
@@ -196,7 +193,7 @@ private:
     Type *ref_type;
 
 public:
-    RefType(Type *ref_type = new BasicType(type::TYPE_int))
+    RefType(Type *ref_type = new UnknownType())
         : Type(category::CATEGORY_ref), ref_type(ref_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
@@ -244,9 +241,15 @@ public:
     }
     void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
     {
-        if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
+        if(!TG->isUnknown()) 
         {
-            printError(msg);
+            if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
+            {
+                printError(msg);
+            }
+        } else
+        {
+            // addConstraint(TG, t);
         }
     }
     void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
@@ -498,7 +501,7 @@ public:
 class Mutable : public Def
 {
 public:
-    Mutable(std::string id, Type *T)
+    Mutable(std::string id, Type *T = new UnknownType)
         : Def(id, T) {}
 };
 class Array : public Mutable
@@ -1234,22 +1237,46 @@ public:
         : id(*id), expr_list(*expr_list) {}
     virtual void sem() override
     {
+        int args_n = (int)expr_list.size();
         ArrayEntry *a = st.lookupArray(id);
         TypeGraph *t = a->getTypeGraph();
 
-        int count = t->getDimensions();
-        if (count != (int)expr_list.size())
+        // If it is known check that the dimensions are correct
+        // and the indices provided are integers
+        if(!t->isUnknown()) 
         {
-            printError("Partial array call not allowed");
+            int count = t->getDimensions();
+            if (count != args_n)
+            {
+                printError("Partial array call not allowed");
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                expr_list[i]->sem();
+                expr_list[i]->type_check(type_int, "Array indices can only be int");
+            }
+            
+            TG = t->getContainedType();
         }
 
-        for (int i = 0; i < count; i++)
+        // If it is unknown then create the array typegraph
+        // with given amount of dimensions as a constraint
+        // and check that all given indices are integers 
+        else
         {
-            expr_list[i]->sem();
-            expr_list[i]->type_check(type_int, "Array indices can only be int");
-        }
+            UnknownTypeGraph *unknown = new UnknownTypeGraph();
+            ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
+            // addConstraint(t, correct_array);
 
-        TG = t->getContainedType();
+            for(Expr *e: expr_list) 
+            {
+                e->sem();
+                e->type_check(type_int, "Array indices can only be int");
+            }
+
+            TG = unknown;
+        } 
     }
     virtual void printOn(std::ostream &out) const override
     {

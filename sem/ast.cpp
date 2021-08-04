@@ -43,20 +43,25 @@ void UnOp::sem() {
         }
         case '!':
         {
-            if (!t_expr->isRef())
-            {
-                printError("Only ref allowed");
-            }
+            TypeGraph *unknown_t = new UnknownTypeGraph();
+            TypeGraph *ref_t = new RefTypeGraph(unknown_t);
+
+            // Adds constraint with ref of unknown type 
+            // to ensure that expr is in fact a ref
+            expr->type_check(ref_t, "Only ref allowed with !");
 
             TG = t_expr->getContainedType();
             break;
         }
         case T_delete:
         {
-            if (!t_expr->isRef())
-            {
-                printError("Only ref allowed");
-            }
+            TypeGraph *unknown_t = new UnknownTypeGraph();
+            TypeGraph *ref_t = new RefTypeGraph(unknown_t);
+
+            // Adds constraint with ref of unknown type 
+            // to ensure that expr is in fact a ref
+            expr->type_check(ref_t, "Only ref allowed with delete");
+            
             if (!t_expr->isDynamic())
             {
                 printError("Must have been assigned value with new");
