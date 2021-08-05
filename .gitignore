@@ -1,4 +1,3 @@
-.vscode/
 *.o
 tmp_*
 llexer*
@@ -10,4 +9,4 @@ lexer.*
 parser.*
 !parser.y
 #----------------
-llamac
+llamac*
