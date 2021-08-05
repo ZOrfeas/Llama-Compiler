@@ -27,7 +27,7 @@ clean:
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o
 
 distclean: clean
-	$(RM) llamac
+	$(RM) llamac llamac_d
 
 #### Build for debugging 
 debug: CXXFLAGS+=-g
