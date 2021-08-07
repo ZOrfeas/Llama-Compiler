@@ -75,6 +75,8 @@ class Type : public AST
 {
 protected:
     category c; // Shows what kind of object it is
+    TypeGraph *TG = nullptr; // If it is nullptr it hasn't got a value yet
+
 public:
     Type(category c)
         : c(c) {}
@@ -98,19 +100,16 @@ public:
 };
 class UnknownType : public Type
 {
-protected:
-    UnknownTypeGraph *variable_type;
-
 public:
     UnknownType()
-        : Type(category::CATEGORY_unknown) { variable_type = new UnknownTypeGraph(); }
+        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(); }
     virtual TypeGraph *get_TypeGraph() override
     {
-        return variable_type;
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
-        out << "UnknownType(" << variable_type->stringifyType() << ")";
+        out << "UnknownType(" << TG->stringifyType() << ")";
     }
 };
 class BasicType : public Type
@@ -128,7 +127,9 @@ public:
     }
     virtual TypeGraph *get_TypeGraph() override
     {
-        return tt.lookupType(type_string[(int)t])->getTypeGraph();
+        if(!TG) TG = tt.lookupType(type_string[(int)t])->getTypeGraph();
+        
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -145,23 +146,24 @@ public:
         : Type(category::CATEGORY_function), lhtype(lhtype), rhtype(rhtype) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        FunctionTypeGraph *f;
-        TypeGraph *l = lhtype->get_TypeGraph();
-        TypeGraph *r = rhtype->get_TypeGraph();
-        
-        // No type inference needed here because FunctionType is called only if the type is given
-        if (r->isFunction())
+        if(!TG) 
         {
-            f = dynamic_cast<FunctionTypeGraph *>(r);
+            TypeGraph *l = lhtype->get_TypeGraph();
+            TypeGraph *r = rhtype->get_TypeGraph();
+
+            // No type inference needed here because FunctionType is called only if the type is given
+            if (r->isFunction())
+            {
+                TG = r;
+            }else
+            {
+                TG = new FunctionTypeGraph(r);
+            }
+
+            TG->addParam(l);
         }
 
-        else
-        {
-            f = new FunctionTypeGraph(r);
-        }
-
-        f->addParam(l);
-        return f;
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -179,7 +181,9 @@ public:
         : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        return new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
+        if(!TG) TG = new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -197,7 +201,9 @@ public:
         : Type(category::CATEGORY_ref), ref_type(ref_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        return new RefTypeGraph(ref_type->get_TypeGraph());
+        if(!TG) TG = new RefTypeGraph(ref_type->get_TypeGraph());
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -214,7 +220,9 @@ public:
         : Type(category::CATEGORY_custom), id(*id) {}
     virtual TypeGraph *get_TypeGraph()
     {
-        return tt.lookupType(id)->getTypeGraph();
+        if(!TG) TG = tt.lookupType(id)->getTypeGraph();
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
