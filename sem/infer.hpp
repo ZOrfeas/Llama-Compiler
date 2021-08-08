@@ -17,6 +17,7 @@ public:
     /** Returns a container compatible reference wrapper to the rhs of the constraint */
     TypeGraph* getRhs();
     int getLineNo();
+    std::string stringify();
     ~Constraint();
 };
 
@@ -43,7 +44,7 @@ class Inferer {
     void trySubstitute(TypeGraph *unknownType, TypeGraph *candidateType, int lineno);
     /** performs an "occurs check" @param unknownType type to look for @param candidateType type to look in */
     bool occurs(TypeGraph *unknownType, TypeGraph *candidateType);
-    // helper for above function
+    // helper for occurs check
     bool isOrOccurs(TypeGraph *unknownType, TypeGraph *candidateType);
     // Solves and removes a constraint if possible
     void solveOne(Constraint *constraint);
@@ -58,9 +59,11 @@ public:
     std::map<std::string, TypeGraph *>* getSubstitutions();
     TypeGraph* getSubstitutedLhs(Constraint *constraint);
     TypeGraph* getSubstitutedRhs(Constraint *constraint);
-    // applies as many substitutions as possible and returns the true
-    // current typeGraph
+    TypeGraph* getSubstitutedType(TypeGraph *unknownType);
+    // applies as many substitutions as possible to the given type
+    // and returns the "true" current typeGraph it has been resolve too, thus far
     TypeGraph* tryApplySubstitutions(TypeGraph* unknownType);
+    void solveAll();
     /** Stores a new constraint
      * @param lhs pointer to lhs taken by reference
      * @param rhs pointer to rhs taken by reference

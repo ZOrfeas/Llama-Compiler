@@ -14,6 +14,11 @@ Constraint::Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno)
 : lhs(lhs), rhs(rhs), lineno(lineno) {}
 TypeGraph* Constraint::getLhs() { return lhs; }
 TypeGraph* Constraint::getRhs() { return rhs; }
+int Constraint::getLineNo() { return lineno; }
+string Constraint::stringify() {
+    return "(line " + to_string(lineno) + ")" + 
+            lhs->stringifyType() + " == " + rhs->stringifyType();
+}
 Constraint::~Constraint() {}
 
 /*******************/
@@ -100,22 +105,26 @@ bool Inferer::occurs(TypeGraph *unknownType, TypeGraph* candidateType) {
     if (candidateType->isArray() || candidateType->isRef()) {
         return isOrOccurs(unknownType, 
                   tryApplySubstitutions(candidateType->getContainedType()));
-    } else if (candidateType->isFunction()) {
+    } else if (candidateType->isFunction()) { // if candidateType is a function type
         for (int i = 0; i < candidateType->getParamCount(); i++) {
             if (isOrOccurs(unknownType, 
-                  tryApplySubstitutions(candidateType->getParamType(i))))
+                  tryApplySubstitutions(candidateType->getParamType(i)))) // check if isOrOccurs with every parameter
                 return true; 
         }
         return isOrOccurs(unknownType,
-                 tryApplySubstitutions(candidateType->getResultType()));
+                 tryApplySubstitutions(candidateType->getResultType())); // check if isOrOccurs with the result type
+    } else {
+        return false; // in any other case unknownType cannot occur in candidateType (equality has been covered)
     }
 }
 void Inferer::saveSubstitution(string unknownTmpName, TypeGraph *resolvedTypeGraph) {
     auto itr = substitutions->find(unknownTmpName);
     if (itr == substitutions->end()) 
-        error("Internal, free type name not found in substitutions map");
+        error("Internal, free type name " +
+              unknownTmpName + " not found in substitutions map");
     if (itr->second != nullptr)
-        error("Internal, free type name should not be substituted twice");
+        error("Internal, free type name " +
+              unknownTmpName + " should not be substituted twice");
     itr->second = resolvedTypeGraph;
 }
 void Inferer::trySubstitute(TypeGraph *unknownType, TypeGraph *candidateType, int lineno) {
@@ -166,9 +175,14 @@ TypeGraph* Inferer::getSubstitutedLhs(Constraint *constraint) {
 TypeGraph* Inferer::getSubstitutedRhs(Constraint *constraint) {
     return tryApplySubstitutions(constraint->getRhs());
 }
+TypeGraph* Inferer::getSubstitutedType(TypeGraph* unknownType) {
+    return tryApplySubstitutions(unknownType);
+}
 void Inferer::solveOne(Constraint *constraint) {
     TypeGraph *lhsTypeGraph = getSubstitutedLhs(constraint),
               *rhsTypeGraph = getSubstitutedRhs(constraint);
+    if (debug)
+        log("Processing constraint: " + constraint->stringify());
     if (lhsTypeGraph->equals(rhsTypeGraph)) {
         log("Constraint equates already equal types, ignoring...");    
     } else if (lhsTypeGraph->isUnknown()) {                                        // lhs is unknown
@@ -195,7 +209,16 @@ void Inferer::solveOne(Constraint *constraint) {
         addConstraint(lhsTypeGraph->getContainedType(), rhsTypeGraph->getContainedType(),
                       constraint->getLineNo(), false);
     } else {                                                                        // any other case type check/inference fails
-        error("Failed on constraint equating " + lhsTypeGraph->stringifyType() +
-              " with " + rhsTypeGraph->stringifyType());
+        error("Failed on constraint " + constraint->stringify());
     }
 }
+void Inferer::solveAll() {
+    Constraint *holder;
+    while(!constraints->empty()) {
+        holder = constraints->back();
+        constraints->pop_back();
+        solveOne(holder);
+    }
+}
+bool    debug_logs = true;
+Inferer inf(debug_logs);
