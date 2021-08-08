@@ -56,13 +56,26 @@ public:
     virtual int getConstructorCount();
     virtual void addConstructor(ConstructorTypeGraph *constructor);
     virtual std::vector<ConstructorTypeGraph *>* getConstructors();
+    virtual std::string getTmpName();
+    virtual unsigned long getId();
+    virtual bool canBeArray();
+    virtual bool canBeFunc();
     virtual ~TypeGraph() {}
 };
 /************************************************************/
+
 class UnknownTypeGraph : public TypeGraph {
+    unsigned long tmp_id;
+    static unsigned long curr; // holds next-up tmp_name
+    bool can_be_array, can_be_func;
 public:
-    UnknownTypeGraph();
     //TODO: not complete
+    UnknownTypeGraph(bool can_be_array = false, bool can_be_func = false);
+    std::string stringifyType() override;
+    unsigned long getId() override;
+    std::string getTmpName() override;
+    bool canBeArray() override;
+    bool canBeFunc() override;
     bool equals(TypeGraph *o) override; 
     ~UnknownTypeGraph() {}
 };

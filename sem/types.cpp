@@ -44,68 +44,93 @@ bool TypeGraph::isBasic() {
 bool TypeGraph::isDeletable() { return isFunction() || isArray() || isRef(); }
 
 TypeGraph* TypeGraph::getContainedType() {
-    wrongCall("getContainedType()"); return nullptr;
+    wrongCall("getContainedType()"); exit(1);
 }
 int TypeGraph::getDimensions() {
-    wrongCall("getDimensions()"); return 0;
+    wrongCall("getDimensions()"); exit(1);
 }
-void TypeGraph::setDynamic() {wrongCall("setDynamic()"); }
-void TypeGraph::setAllocated() { wrongCall("setAllocated()"); }
-void TypeGraph::resetDynamic()  { wrongCall("resetDynamic()"); }
-void TypeGraph::resetAllocated() { wrongCall("resetAllocated()"); }
+void TypeGraph::setDynamic() { wrongCall("setDynamic()"); exit(1); }
+void TypeGraph::setAllocated() { wrongCall("setAllocated()"); exit(1); }
+void TypeGraph::resetDynamic()  { wrongCall("resetDynamic()"); exit(1); }
+void TypeGraph::resetAllocated() { wrongCall("resetAllocated()"); exit(1); }
 bool TypeGraph::isAllocated() {
-    wrongCall("isAllocated()"); return false;
+    wrongCall("isAllocated()"); exit(1);
 }
 bool TypeGraph::isDynamic() {
-    wrongCall("isDynamic()"); return false;
+    wrongCall("isDynamic()"); exit(1);
 }
 std::vector<TypeGraph *>* TypeGraph::getParamTypes() {
-    wrongCall("getParamTypes()"); return nullptr;
+    wrongCall("getParamTypes()"); exit(1);
 }
 TypeGraph* TypeGraph::getResultType() {
-    wrongCall("getResultType()"); return nullptr;
+    wrongCall("getResultType()"); exit(1);
 }
 int TypeGraph::getParamCount() {
-    wrongCall("getParamCount()"); return 0;
+    wrongCall("getParamCount()"); exit(1);
 }
 void TypeGraph::addParam(TypeGraph *param, bool push_back) {
-    wrongCall("addParam()");
+    wrongCall("addParam()"); exit(1);
 }
 TypeGraph* TypeGraph::getParamType(unsigned int index) {
-    wrongCall("getParamType()"); return nullptr;
+    wrongCall("getParamType()"); exit(1);
 }
 std::vector<TypeGraph *>* TypeGraph::getFields() {
-    wrongCall("getFields()"); return nullptr;
+    wrongCall("getFields()"); exit(1);
 }
-void TypeGraph::addField(TypeGraph *field) { wrongCall("addField"); }
-void TypeGraph::setTypeGraph(CustomTypeGraph *owningType) { wrongCall("setTypeGraph()"); }
+void TypeGraph::addField(TypeGraph *field) { wrongCall("addField"); exit(1); }
+void TypeGraph::setTypeGraph(CustomTypeGraph *owningType) { wrongCall("setTypeGraph()"); exit(1); }
 CustomTypeGraph* TypeGraph::getCustomType() {
-    wrongCall("getCustomType()"); return nullptr;
+    wrongCall("getCustomType()"); exit(1);
 }
 int TypeGraph::getFieldCount() {
-    wrongCall("getFieldCount()"); return 0;
+    wrongCall("getFieldCount()"); exit(1);
 }
 TypeGraph* TypeGraph::getFieldType(unsigned int index) {
-    wrongCall("getFieldType()"); return nullptr;
+    wrongCall("getFieldType()"); exit(1);
 }
 int TypeGraph::getConstructorCount() {
-    wrongCall("getConstructorCount()"); return 0;
+    wrongCall("getConstructorCount()"); exit(1);
 }
 void TypeGraph::addConstructor(ConstructorTypeGraph *constructor) {
-    wrongCall("addConstructor()");
+    wrongCall("addConstructor()"); exit(1);
 }
 std::vector<ConstructorTypeGraph *>* TypeGraph::getConstructors() {
-    wrongCall("getConstructors()"); return nullptr;
+    wrongCall("getConstructors()"); exit(1);
+}
+std::string TypeGraph::getTmpName() {
+    wrongCall("getTmpName()"); exit(1);
+}
+unsigned long TypeGraph::getId() {
+    wrongCall("getId()"); exit(1);
+}
+bool TypeGraph::canBeArray() {
+    wrongCall("canBeArray()"); exit(1);
+}
+bool TypeGraph::canBeFunc() {
+    wrongCall("canBeFunc()"); exit(1);
 }
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
 /*************************************************************/
 
-UnknownTypeGraph::UnknownTypeGraph():
-TypeGraph(graphType::TYPE_unknown) {}
+unsigned long UnknownTypeGraph::curr = 1;
 //TODO: not complete
-bool UnknownTypeGraph::equals(TypeGraph *o) { return false; }
+UnknownTypeGraph::UnknownTypeGraph(bool can_be_array, bool can_be_func):
+TypeGraph(graphType::TYPE_unknown), tmp_id(curr++),
+can_be_array(can_be_array), can_be_func(can_be_func) {}
+std::string UnknownTypeGraph::getTmpName() {
+    return "@" + std::to_string(tmp_id);
+}
+unsigned long UnknownTypeGraph::getId() { return tmp_id; }
+std::string UnknownTypeGraph::stringifyType() {
+    return "\033[4m" + getTmpName() + "\033[0m";
+}
+bool UnknownTypeGraph::canBeArray() { return can_be_array; }
+bool UnknownTypeGraph::canBeFunc() { return can_be_func; }
+bool UnknownTypeGraph::equals(TypeGraph *o) {
+    return o->isUnknown() && tmp_id == o->getId();
+}
 
 /*************************************************************/
 /**            Basic TypeGraph and derivatives               */
