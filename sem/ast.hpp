@@ -75,6 +75,8 @@ class Type : public AST
 {
 protected:
     category c; // Shows what kind of object it is
+    TypeGraph *TG = nullptr; // If it is nullptr it hasn't got a value yet
+
 public:
     Type(category c)
         : c(c) {}
@@ -98,23 +100,16 @@ public:
 };
 class UnknownType : public Type
 {
-protected:
-    std::string temp_name;
-
 public:
     UnknownType()
-        : Type(category::CATEGORY_unknown) {}
+        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(); }
     virtual TypeGraph *get_TypeGraph() override
     {
-        return tt.lookupType(temp_name)->getTypeGraph();
-    }
-    virtual std::string stringify() 
-    {
-        return temp_name;
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
-        out << "UnknownType()";
+        out << "UnknownType(" << TG->stringifyType() << ")";
     }
 };
 class BasicType : public Type
@@ -132,7 +127,9 @@ public:
     }
     virtual TypeGraph *get_TypeGraph() override
     {
-        return tt.lookupType(type_string[(int)t])->getTypeGraph();
+        if(!TG) TG = tt.lookupType(type_string[(int)t])->getTypeGraph();
+        
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -149,22 +146,24 @@ public:
         : Type(category::CATEGORY_function), lhtype(lhtype), rhtype(rhtype) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        FunctionTypeGraph *f;
-        TypeGraph *l = lhtype->get_TypeGraph();
-        TypeGraph *r = rhtype->get_TypeGraph();
-
-        if (r->isFunction())
+        if(!TG) 
         {
-            f = dynamic_cast<FunctionTypeGraph *>(r);
+            TypeGraph *l = lhtype->get_TypeGraph();
+            TypeGraph *r = rhtype->get_TypeGraph();
+
+            // No type inference needed here because FunctionType is called only if the type is given
+            if (r->isFunction())
+            {
+                TG = r;
+            }else
+            {
+                TG = new FunctionTypeGraph(r);
+            }
+
+            TG->addParam(l);
         }
 
-        else
-        {
-            f = new FunctionTypeGraph(r);
-        }
-
-        f->addParam(l);
-        return f;
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -182,7 +181,9 @@ public:
         : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        return new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
+        if(!TG) TG = new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -196,11 +197,13 @@ private:
     Type *ref_type;
 
 public:
-    RefType(Type *ref_type = new BasicType(type::TYPE_int))
+    RefType(Type *ref_type = new UnknownType())
         : Type(category::CATEGORY_ref), ref_type(ref_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        return new RefTypeGraph(ref_type->get_TypeGraph());
+        if(!TG) TG = new RefTypeGraph(ref_type->get_TypeGraph());
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -217,7 +220,9 @@ public:
         : Type(category::CATEGORY_custom), id(*id) {}
     virtual TypeGraph *get_TypeGraph()
     {
-        return tt.lookupType(id)->getTypeGraph();
+        if(!TG) TG = tt.lookupType(id)->getTypeGraph();
+
+        return TG;
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -244,9 +249,15 @@ public:
     }
     void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
     {
-        if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
+        if(!TG->isUnknown()) 
         {
-            printError(msg);
+            if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
+            {
+                printError(msg);
+            }
+        } else
+        {
+            // addConstraint(TG, t);
         }
     }
     void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
@@ -498,7 +509,7 @@ public:
 class Mutable : public Def
 {
 public:
-    Mutable(std::string id, Type *T)
+    Mutable(std::string id, Type *T = new UnknownType)
         : Def(id, T) {}
 };
 class Array : public Mutable
@@ -1166,7 +1177,7 @@ public:
             correct_t = t->getParamType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i));
+            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
         }
 
         TG = t->getResultType();
@@ -1208,7 +1219,7 @@ public:
             correct_t = t->getFieldType(i);
 
             expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i));
+            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
         }
 
         TG = c->getTypeGraph();
@@ -1234,23 +1245,46 @@ public:
         : id(*id), expr_list(*expr_list) {}
     virtual void sem() override
     {
+        int args_n = (int)expr_list.size();
         ArrayEntry *a = st.lookupArray(id);
         TypeGraph *t = a->getTypeGraph();
 
-        int count = t->getDimensions();
-        if (count != (int)expr_list.size())
+        // If it is known check that the dimensions are correct
+        // and the indices provided are integers
+        if(!t->isUnknown()) 
         {
-            printError("Partial array call not allowed");
+            int count = t->getDimensions();
+            if (count != args_n)
+            {
+                printError("Partial array call not allowed");
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                expr_list[i]->sem();
+                expr_list[i]->type_check(type_int, "Array indices can only be int");
+            }
+            
+            TG = t->getContainedType();
         }
 
-        TypeGraph *temp_e;
-        for (int i = 0; i < count; i++)
+        // If it is unknown then create the array typegraph
+        // with given amount of dimensions as a constraint
+        // and check that all given indices are integers 
+        else
         {
-            expr_list[i]->sem();
-            expr_list[i]->type_check(type_int, "Array indices can only be int");
-        }
+            UnknownTypeGraph *unknown = new UnknownTypeGraph();
+            ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
+            // addConstraint(t, correct_array);
 
-        TG = t->getContainedType();
+            for(Expr *e: expr_list) 
+            {
+                e->sem();
+                e->type_check(type_int, "Array indices can only be int");
+            }
+
+            TG = unknown;
+        } 
     }
     virtual void printOn(std::ostream &out) const override
     {
