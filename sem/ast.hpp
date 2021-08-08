@@ -178,7 +178,7 @@ private:
     Type *elem_type;
 
 public:
-    ArrayType(int dimensions = 0, Type *elem_type = new UnknownType)
+    ArrayType(int dimensions = 1, Type *elem_type = new UnknownType)
         : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {

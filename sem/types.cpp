@@ -158,8 +158,8 @@ bool RefTypeGraph::isAllocated() { return allocated; }
 bool RefTypeGraph::isDynamic() { return dynamic; }
 bool RefTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
-    return o->getSubClass() == graphType::TYPE_ref &&
-            getContainedType()->equals(o->getContainedType());
+    return o->isRef() &&
+           getContainedType()->equals(o->getContainedType());
 }
 RefTypeGraph::~RefTypeGraph() { if (Type->isDeletable()) delete Type; }
 
@@ -187,7 +187,7 @@ void FunctionTypeGraph::addParam(TypeGraph *param, bool push_back) {
 }
 TypeGraph* FunctionTypeGraph::getParamType(unsigned int index) {
     if (index >= paramTypes->size()) {
-        std::cout << "Out of bounds param requested";
+        std::cout << "Out of bounds param requested\n";
         exit(1);
     }
     return (*paramTypes)[index];
@@ -195,8 +195,7 @@ TypeGraph* FunctionTypeGraph::getParamType(unsigned int index) {
 
 bool FunctionTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
-    if (o->getSubClass() == graphType::TYPE_function &&
-        getParamCount() == o->getParamCount()) {
+    if (o->isFunction() && getParamCount() == o->getParamCount()) {
         for (int i = 0; i < getParamCount(); i++) {
             if (!getParamType(i)->equals(o->getParamType(i)))
                 return false;
@@ -224,14 +223,15 @@ CustomTypeGraph* ConstructorTypeGraph::getCustomType() { return customType; }
 int ConstructorTypeGraph::getFieldCount() { return fields->size(); }
 TypeGraph* ConstructorTypeGraph::getFieldType(unsigned int index) {
     if (index >= fields->size()) {
-        std::cout << "Out of bounds param requested";
+        std::cout << "Out of bounds constructor field requested";
         exit(1);
     }
     return (*fields)[index];
 }
 bool ConstructorTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
-    return getCustomType()->equals(o);
+    return (o->isConstructor() || o->isCustom()) &&
+            getCustomType()->equals(o);
 }
 ConstructorTypeGraph::~ConstructorTypeGraph() {
     for (auto &field: *fields)
@@ -259,7 +259,7 @@ void CustomTypeGraph::addConstructor(ConstructorTypeGraph *constructor) {
 bool CustomTypeGraph::equals(TypeGraph *o) {
     // might be of help here
     // o->getSubClass() == graphType::TYPE_custom
-    if (o->getSubClass() == graphType::TYPE_record)
+    if (o->isConstructor())
         return this == o->getCustomType();
     return this == o;
 }

@@ -18,7 +18,7 @@ class TypeGraph {
 public:
     TypeGraph(graphType t);
     graphType const & getSubClass();
-    std::string stringifyType();
+    virtual std::string stringifyType();
     void log(std::string msg);
     bool isFunction();
     bool isArray();
