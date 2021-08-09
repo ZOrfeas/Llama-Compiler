@@ -6,6 +6,7 @@
 
 #include "symbol.hpp"
 #include "types.hpp"
+#include "infer.hpp"
 
 const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
 enum class type
@@ -155,12 +156,16 @@ public:
             if (r->isFunction())
             {
                 TG = r;
-            }else
+            }
+            else
             {
                 TG = new FunctionTypeGraph(r);
             }
 
-            TG->addParam(l);
+            // Operator -> is right associative 
+            // so the parameters will be added 
+            // from last to first
+            TG->addParam(l, false);
         }
 
         return TG;
@@ -1161,26 +1166,49 @@ public:
         : ConstantCall(id), expr_list(*expr_list) {}
     virtual void sem() override
     {
-        FunctionEntry *f = st.lookupFunction(id);
-        TypeGraph *t = f->getTypeGraph();
-
-        int count = t->getParamCount();
-        if (count != (int)expr_list.size())
+        TypeGraph *definitionTypeGraph = st.lookupFunction(id)->getTypeGraph();
+        int count;
+        if(definitionTypeGraph->isUnknown()) 
         {
-            printError("Partial function call not allowed");
-        }
+            count = (int)expr_list.size();
+            
+            // Create the correct FunctionTypeGraph as given by the call
+            UnknownTypeGraph *u = new UnknownTypeGraph(true);
+            FunctionTypeGraph *callTypeGraph = new FunctionTypeGraph(u);
+            TypeGraph *argTypeGraph;
+            for (int i = 0; i < count; i++)
+            {
+                expr_list[i]->sem();
+                argTypeGraph = expr_list[i]->get_TypeGraph();
+                callTypeGraph->addParam(argTypeGraph, true);
+            }
 
-        std::string err = "Type mismatch on parameter No. ";
-        TypeGraph *correct_t;
-        for (int i = 0; i < count; i++)
+            inf.addConstraint(definitionTypeGraph, callTypeGraph, line_number);
+
+            TG = u;
+        } 
+        else
         {
-            correct_t = t->getParamType(i);
+            count = definitionTypeGraph->getParamCount();
 
-            expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
+            // Check whether the call matches the definitions
+            if (count != (int)expr_list.size())
+            {
+                printError("Partial function call not allowed");
+            }
+
+            std::string err = "Type mismatch on parameter No. ";
+            TypeGraph *correct_t;
+            for (int i = 0; i < count; i++)
+            {
+                correct_t = definitionTypeGraph->getParamType(i);
+
+                expr_list[i]->sem();
+                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
+            }
+
+            TG = definitionTypeGraph->getResultType();
         }
-
-        TG = t->getResultType();
     }
     virtual void printOn(std::ostream &out) const override
     {
