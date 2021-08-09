@@ -56,6 +56,20 @@ public:
     virtual void sem()
     {
     }
+    virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
+    {
+        if (!t1->isUnknown() && !t2->isUnknown())
+        {
+            if (!t1->equals(t2))
+            {
+                printError(msg);
+            }
+        }
+        else
+        {
+            inf.addConstraint(t1, t2, line_number);
+        }
+    }
     virtual void printError(std::string s)
     {
         std::cout << "Error at line " << line_number << ": " << s << std::endl;
@@ -256,19 +270,9 @@ public:
     {
         return TG;
     }
-    void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
+    void type_check(TypeGraph *t, std::string msg = "Type mismatch")
     {
-        if (!TG->isUnknown() && !t->isUnknown())
-        {
-            if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
-            {
-                printError(msg);
-            }
-        }
-        else
-        {
-            inf.addConstraint(TG, t, line_number);
-        }
+        checkTypeGraphs(TG, t, msg);
     }
     friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
     {
@@ -1313,20 +1317,6 @@ public:
 class Pattern : public AST
 {
 public:
-    virtual void type_check(TypeGraph *t1, TypeGraph *t2, std::string msg = "Pattern type doesn't match expression type") 
-    {
-        if(!t1->isUnknown() && !t2->isUnknown()) 
-        {
-            if (!t1->equals(t2))
-            {
-                printError(msg);
-            }
-        }
-        else 
-        {
-            inf.addConstraint(t1, t2, line_number);
-        }
-    }
     // Checks whether the pattern is valid for TypeGraph *t
     virtual void checkPatternTypeGraph(TypeGraph *t)
     {
@@ -1342,7 +1332,7 @@ public:
         : literal(l) {}
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
-        type_check(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
+        checkTypeGraphs(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1381,7 +1371,8 @@ public:
         ConstructorEntry *c = ct.lookupConstructor(Id);
         TypeGraph *c_TypeGraph = c->getTypeGraph();
 
-        type_check(t, c_TypeGraph, "Constructor is not of the same type as the expression to match");
+        // Check that toMatch is of the same type as constructor or force it to be
+        checkTypeGraphs(t, c_TypeGraph, "Constructor is not of the same type as the expression to match");
 
         int count = c_TypeGraph->getFieldCount();
         if (count != (int)pattern_list.size())
@@ -1483,32 +1474,21 @@ public:
             c->set_correctPatternTypeGraph(t);
             c->sem();
 
-            // Check that all right hand expressions are of the same type
-            // or add constraints to force them
             if (first)
             {
                 prev = c->get_exprTypeGraph();
                 first = false;
                 continue;
             }
-            else 
+            else
             {
                 curr = c->get_exprTypeGraph();
 
-                if (!prev->isUnknown() && !curr->isUnknown()) 
-                {
-                    if (!prev->equals(curr)) 
-                    {
-                        printError("Results of match have different types");
-                    }
-                }
-                else 
-                {
-                    inf.addConstraint(prev, curr, line_number);
-                }
+                // Check that they are of the same type or force them to be
+                checkTypeGraphs(prev, curr, "Results of match have different types");
 
                 // Move prev
-                prev = curr; 
+                prev = curr;
             }
         }
 

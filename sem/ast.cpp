@@ -153,7 +153,7 @@ void BinOp::sem() {
         {
             // The lhs must be a ref of the same type as the rhs
             RefTypeGraph *correct_lhs = new RefTypeGraph(t_rhs);
-            lhs->type_check(correct_lhs);
+            lhs->type_check(correct_lhs, "Must be a ref of " + t_rhs->stringifyType());
 
             // Cleanup NOTE: If the new TypeGraph is 
             // used for inference it should not be deleted
