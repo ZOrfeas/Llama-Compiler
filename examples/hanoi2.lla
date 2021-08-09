@@ -1,3 +1,5 @@
+let print_string a = ()
+
 type pile = Left | Middle | Right
 let print_pile pile =
     match pile with

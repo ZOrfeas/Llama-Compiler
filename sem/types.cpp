@@ -109,6 +109,12 @@ bool TypeGraph::canBeArray() {
 bool TypeGraph::canBeFunc() {
     wrongCall("canBeFunc()"); exit(1);
 }
+bool TypeGraph::onlyIntCharFloat() {
+    wrongCall("onlyIntCharFloat()"); exit(1);
+}
+void TypeGraph::setIntCharFloat() {
+    wrongCall("setIntCharFloat()"); exit(1);
+}
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
@@ -116,9 +122,9 @@ bool TypeGraph::canBeFunc() {
 
 unsigned long UnknownTypeGraph::curr = 1;
 //TODO: not complete
-UnknownTypeGraph::UnknownTypeGraph(bool can_be_array, bool can_be_func):
+UnknownTypeGraph::UnknownTypeGraph(bool can_be_array, bool can_be_func, bool only_int_char_float):
 TypeGraph(graphType::TYPE_unknown), tmp_id(curr++),
-can_be_array(can_be_array), can_be_func(can_be_func) {}
+can_be_array(can_be_array), can_be_func(can_be_func), only_int_char_float(only_int_char_float) {}
 std::string UnknownTypeGraph::getTmpName() {
     return "@" + std::to_string(tmp_id);
 }
@@ -128,6 +134,8 @@ std::string UnknownTypeGraph::stringifyType() {
 }
 bool UnknownTypeGraph::canBeArray() { return can_be_array; }
 bool UnknownTypeGraph::canBeFunc() { return can_be_func; }
+bool UnknownTypeGraph::onlyIntCharFloat() { return only_int_char_float; }
+void UnknownTypeGraph::setIntCharFloat() { only_int_char_float = true; }
 bool UnknownTypeGraph::equals(TypeGraph *o) {
     return o->isUnknown() && tmp_id == o->getId();
 }

@@ -1,0 +1,5 @@
+let f a b = 
+    let c = new int
+    in c := a + 1; b
+
+let main = 1.0 +. f 1 1.5

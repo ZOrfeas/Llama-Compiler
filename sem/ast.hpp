@@ -103,7 +103,7 @@ class UnknownType : public Type
 {
 public:
     UnknownType()
-        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(); }
+        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(true, true); }
     virtual TypeGraph *get_TypeGraph() override
     {
         return TG;
@@ -254,7 +254,7 @@ public:
     }
     void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
     {
-        if(!TG->isUnknown()) 
+        if(!TG->isUnknown() && !t->isUnknown()) 
         {
             if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
             {
@@ -1005,7 +1005,7 @@ public:
     }
     virtual void printOn(std::ostream &out) const override
     {
-        out << "New(" << *T << ")";
+        out << "New(" << *new_type << ")";
     }
 };
 
@@ -1167,7 +1167,7 @@ public:
         : ConstantCall(id), expr_list(*expr_list) {}
     virtual void sem() override
     {
-        TypeGraph *definitionTypeGraph = st.lookupFunction(id)->getTypeGraph();
+        TypeGraph *definitionTypeGraph = st.lookup(id)->getTypeGraph();
         int count;
         if(definitionTypeGraph->isUnknown()) 
         {
@@ -1187,7 +1187,7 @@ public:
 
             TG = resultTypeGraph;
         } 
-        else
+        else if(definitionTypeGraph->isFunction())
         {
             // Check whether the call matches the definitions
             count = definitionTypeGraph->getParamCount();
@@ -1207,6 +1207,10 @@ public:
             }
 
             TG = definitionTypeGraph->getResultType();
+        }
+        else
+        {
+            printError(id + " already declared as non-function");
         }
     }
     virtual void printOn(std::ostream &out) const override
@@ -1300,7 +1304,7 @@ public:
         // and check that all given indices are integers 
         else
         {
-            TypeGraph *unknown = new UnknownTypeGraph();
+            TypeGraph *unknown = new UnknownTypeGraph(false, true);
             ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
             inf.addConstraint(t, correct_array, line_number);
 

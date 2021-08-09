@@ -1,6 +1,7 @@
+let print_string a = ()
+let read_int a = 5
+
 let main =
-(* \test ( 
-    \(*\\sas *) hoho*)
     let move source target = 
         print_string "Moving from: ";
         print_string source;

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/llamac_d",
-            "args": ["<" , "../examples/match_typed.lla"],
+            "args": ["<" , "../examples/new.lla"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

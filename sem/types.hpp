@@ -60,6 +60,8 @@ public:
     virtual unsigned long getId();
     virtual bool canBeArray();
     virtual bool canBeFunc();
+    virtual bool onlyIntCharFloat();
+    virtual void setIntCharFloat();
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -67,15 +69,18 @@ public:
 class UnknownTypeGraph : public TypeGraph {
     unsigned long tmp_id;
     static unsigned long curr; // holds next-up tmp_name
-    bool can_be_array, can_be_func;
+    bool can_be_array, can_be_func, only_int_char_float;
 public:
     //TODO: not complete
-    UnknownTypeGraph(bool can_be_array = false, bool can_be_func = false);
+    UnknownTypeGraph(bool can_be_array = false, bool can_be_func = false,
+        bool only_int_char_float = false);
     std::string stringifyType() override;
     unsigned long getId() override;
     std::string getTmpName() override;
     bool canBeArray() override;
     bool canBeFunc() override;
+    bool onlyIntCharFloat() override;
+    void setIntCharFloat() override;
     bool equals(TypeGraph *o) override; 
     ~UnknownTypeGraph() {}
 };

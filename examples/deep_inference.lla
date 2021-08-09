@@ -1,0 +1,3 @@
+let f a b = a b
+let g a = a ; 1.0
+let main = f g 1

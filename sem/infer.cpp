@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "infer.hpp"
 
 using std::vector;
@@ -17,7 +18,8 @@ TypeGraph* Constraint::getRhs() { return rhs; }
 int Constraint::getLineNo() { return lineno; }
 string Constraint::stringify() {
     return "(line " + to_string(lineno) + ")" + 
-            lhs->stringifyType() + " == " + rhs->stringifyType();
+            inf.tryApplySubstitutions(lhs)->stringifyType() + 
+            " == " + inf.tryApplySubstitutions(rhs)->stringifyType();
 }
 Constraint::~Constraint() {}
 
@@ -66,12 +68,7 @@ void Inferer::getFreeTypes(TypeGraph *fullType, vector<string> *names) {
 void Inferer::initSubstitutions(vector<string> *names) {
     pair<map<string, TypeGraph *>::iterator, bool> res; 
     for (auto &name: *names) {
-        res = substitutions->insert({name, nullptr});
-        if (!res.second) { // if insertion failed, it already existed
-            std::cout << "Same free type variable found twice. "
-                      << "Exiting...\n";
-            exit(1);
-        }
+        substitutions->insert({name, nullptr});
     }
 }
 void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,
@@ -96,7 +93,8 @@ void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,
 bool Inferer::isValidSubstitution(TypeGraph *unknownType, TypeGraph* candidateType) {
     bool invalid = (
         (!unknownType->canBeArray() && candidateType->isArray()) ||
-        (!unknownType->canBeFunc() && candidateType->isFunction()) 
+        (!unknownType->canBeFunc() && candidateType->isFunction()) ||
+        (unknownType->onlyIntCharFloat() && !candidateType->isInt() && !candidateType->isChar() && !candidateType->isFloat())
     );
     return !invalid;
 }
@@ -160,6 +158,7 @@ TypeGraph* Inferer::isUnknown_Exists_HasSubstitution(TypeGraph *unknonwnType) {
         error("Internal, free type name not found in substitutions map");
     return itr->second;
 }
+//TODO: Fiercely test
 TypeGraph* Inferer::tryApplySubstitutions(TypeGraph* type) {
     vector<string> toChange;
     TypeGraph *next, *current = type;
@@ -216,6 +215,7 @@ void Inferer::solveOne(Constraint *constraint) {
     }
 }
 void Inferer::solveAll() {
+    std::reverse(constraints->begin(), constraints->end());
     Constraint *holder;
     while(!constraints->empty()) {
         holder = constraints->back();
