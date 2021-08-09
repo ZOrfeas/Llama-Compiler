@@ -65,8 +65,8 @@ public:
     TypeGraph* tryApplySubstitutions(TypeGraph* unknownType);
     void solveAll();
     /** Stores a new constraint
-     * @param lhs pointer to lhs taken by reference
-     * @param rhs pointer to rhs taken by reference
+     * @param lhs pointer to lhs
+     * @param rhs pointer to rhs
      * @param extract_names controls if free type names are searched and saved
      */
     void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,

@@ -18,10 +18,11 @@ parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
 ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
+infer.o: infer.cpp infer.hpp types.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o ast.o symbol.o types.o
-	$(CXX) $(CXXFLAGS) -o llamac lexer.o parser.o symbol.o types.o ast.o 
+compiler: lexer.o parser.o ast.o symbol.o types.o infer.o
+	$(CXX) $(CXXFLAGS) -o llamac lexer.o parser.o symbol.o types.o ast.o infer.o
 
 clean:
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o
@@ -42,7 +43,9 @@ symbol_d.o: symbol.cpp symbol.hpp
 	$(CXX) $(CXXFLAGS) -c -o symbol_d.o symbol.cpp
 types_d.o: types.cpp types.hpp
 	$(CXX) $(CXXFLAGS) -c -o types_d.o types.cpp
+infer_d.o: infer.cpp infer.hpp types.hpp
+	$(CXX) $(CXXFLAGS) -c -o infer_d.o infer.cpp
 
-debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o
-	$(CXX) $(CXXFLAGS) -o llamac_d lexer_d.o parser_d.o symbol_d.o types_d.o ast_d.o 
+debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o infer_d.o
+	$(CXX) $(CXXFLAGS) -o llamac_d lexer_d.o parser_d.o symbol_d.o types_d.o ast_d.o infer_d.o
 

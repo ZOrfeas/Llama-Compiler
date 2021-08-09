@@ -27,6 +27,9 @@ Constraint::~Constraint() {}
 
 Inferer::Inferer(bool debug): constraints(new vector<Constraint *>()),
 substitutions(new map<string, TypeGraph *>()), debug(debug) {}
+Inferer::~Inferer() {
+    //TODO: Figure out what needs to be deleted
+}
 void Inferer::log(string msg) {
     std::cout << "\033[1m\033[32mInferer\033[0m: ";
     std::cout << msg << std::endl;
@@ -160,7 +163,7 @@ TypeGraph* Inferer::isUnknown_Exists_HasSubstitution(TypeGraph *unknonwnType) {
 TypeGraph* Inferer::tryApplySubstitutions(TypeGraph* type) {
     vector<string> toChange;
     TypeGraph *next, *current = type;
-    while (next = isUnknown_Exists_HasSubstitution(current)){
+    while ((next = isUnknown_Exists_HasSubstitution(current))){
         toChange.push_back(current->getTmpName());
         current = next;
     }
@@ -220,5 +223,5 @@ void Inferer::solveAll() {
         solveOne(holder);
     }
 }
-bool    debug_logs = true;
-Inferer inf(debug_logs);
+bool    inferer_logs = true;
+Inferer inf(inferer_logs);

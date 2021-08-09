@@ -308,7 +308,7 @@ void ConstructorEntry::addType(TypeGraph *field) {
     getTypeGraph()->addField(field);
 }
 
-bool             debug_logs = true;
-SymbolTable      st(debug_logs);
-TypeTable        tt(debug_logs);
-ConstructorTable ct(debug_logs);
+bool             table_logs = true;
+SymbolTable      st(table_logs);
+TypeTable        tt(table_logs);
+ConstructorTable ct(table_logs);
