@@ -75,7 +75,7 @@ inline std::ostream &operator<<(std::ostream &out, const AST &t)
 class Type : public AST
 {
 protected:
-    category c; // Shows what kind of object it is
+    category c;              // Shows what kind of object it is
     TypeGraph *TG = nullptr; // If it is nullptr it hasn't got a value yet
 
 public:
@@ -103,7 +103,7 @@ class UnknownType : public Type
 {
 public:
     UnknownType()
-        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(true, true); }
+        : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(true, true, false); }
     virtual TypeGraph *get_TypeGraph() override
     {
         return TG;
@@ -128,8 +128,9 @@ public:
     }
     virtual TypeGraph *get_TypeGraph() override
     {
-        if(!TG) TG = tt.lookupType(type_string[(int)t])->getTypeGraph();
-        
+        if (!TG)
+            TG = tt.lookupType(type_string[(int)t])->getTypeGraph();
+
         return TG;
     }
     virtual void printOn(std::ostream &out) const override
@@ -147,7 +148,7 @@ public:
         : Type(category::CATEGORY_function), lhtype(lhtype), rhtype(rhtype) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        if(!TG) 
+        if (!TG)
         {
             TypeGraph *l = lhtype->get_TypeGraph();
             TypeGraph *r = rhtype->get_TypeGraph();
@@ -162,8 +163,8 @@ public:
                 TG = new FunctionTypeGraph(r);
             }
 
-            // Operator -> is right associative 
-            // so the parameters will be added 
+            // Operator -> is right associative
+            // so the parameters will be added
             // from last to first
             TG->addParam(l, false);
         }
@@ -186,7 +187,8 @@ public:
         : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        if(!TG) TG = new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
+        if (!TG)
+            TG = new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
 
         return TG;
     }
@@ -206,7 +208,8 @@ public:
         : Type(category::CATEGORY_ref), ref_type(ref_type) {}
     virtual TypeGraph *get_TypeGraph() override
     {
-        if(!TG) TG = new RefTypeGraph(ref_type->get_TypeGraph());
+        if (!TG)
+            TG = new RefTypeGraph(ref_type->get_TypeGraph());
 
         return TG;
     }
@@ -225,7 +228,8 @@ public:
         : Type(category::CATEGORY_custom), id(*id) {}
     virtual TypeGraph *get_TypeGraph()
     {
-        if(!TG) TG = tt.lookupType(id)->getTypeGraph();
+        if (!TG)
+            TG = tt.lookupType(id)->getTypeGraph();
 
         return TG;
     }
@@ -254,48 +258,16 @@ public:
     }
     void type_check(TypeGraph *t, std::string msg = "Type mismatch", bool negation = false)
     {
-        if(!TG->isUnknown() && !t->isUnknown()) 
+        if (!TG->isUnknown() && !t->isUnknown())
         {
             if ((!negation && !TG->equals(t)) || (negation && TG->equals(t)))
             {
                 printError(msg);
             }
-        } 
+        }
         else
         {
             inf.addConstraint(TG, t, line_number);
-        }
-    }
-    void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
-    {
-        bool flag;
-
-        if (!negation)
-        {
-            flag = false;
-
-            // TG must be in the list
-            for (TypeGraph *t : TypeGraph_list)
-            {
-                if (TG->equals(t))
-                    flag = true;
-            }
-        }
-        else
-        {
-            flag = true;
-
-            // TG must not be in the list
-            for (TypeGraph *t : TypeGraph_list)
-            {
-                if (TG->equals(t))
-                    flag = false;
-            }
-        }
-
-        if (!flag)
-        {
-            printError(msg);
         }
     }
     friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
@@ -1169,11 +1141,11 @@ public:
     {
         TypeGraph *definitionTypeGraph = st.lookup(id)->getTypeGraph();
         int count;
-        if(definitionTypeGraph->isUnknown()) 
+        if (definitionTypeGraph->isUnknown())
         {
             // Create the correct FunctionTypeGraph as given by the call
             count = (int)expr_list.size();
-            UnknownTypeGraph *resultTypeGraph = new UnknownTypeGraph(true);
+            UnknownTypeGraph *resultTypeGraph = new UnknownTypeGraph(true, false, false);
             FunctionTypeGraph *callTypeGraph = new FunctionTypeGraph(resultTypeGraph);
             TypeGraph *argTypeGraph;
             for (int i = 0; i < count; i++)
@@ -1186,8 +1158,8 @@ public:
             inf.addConstraint(definitionTypeGraph, callTypeGraph, line_number);
 
             TG = resultTypeGraph;
-        } 
-        else if(definitionTypeGraph->isFunction())
+        }
+        else if (definitionTypeGraph->isFunction())
         {
             // Check whether the call matches the definitions
             count = definitionTypeGraph->getParamCount();
@@ -1282,7 +1254,7 @@ public:
 
         // If it is known check that the dimensions are correct
         // and the indices provided are integers
-        if(!t->isUnknown()) 
+        if (!t->isUnknown())
         {
             int count = t->getDimensions();
             if (count != args_n)
@@ -1295,27 +1267,27 @@ public:
                 expr_list[i]->sem();
                 expr_list[i]->type_check(type_int, "Array indices can only be int");
             }
-            
+
             TG = t->getContainedType();
         }
 
         // If it is unknown then create the array typegraph
         // with given amount of dimensions as a constraint
-        // and check that all given indices are integers 
+        // and check that all given indices are integers
         else
         {
-            TypeGraph *unknown = new UnknownTypeGraph(false, true);
-            ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
+            TypeGraph *elemTypeGraph = new UnknownTypeGraph(false, true, false);
+            ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, elemTypeGraph);
             inf.addConstraint(t, correct_array, line_number);
 
-            for(Expr *e: expr_list) 
+            for (Expr *e : expr_list)
             {
                 e->sem();
                 e->type_check(type_int, "Array indices can only be int");
             }
 
-            TG = unknown;
-        } 
+            TG = elemTypeGraph;
+        }
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1341,6 +1313,20 @@ public:
 class Pattern : public AST
 {
 public:
+    virtual void type_check(TypeGraph *t1, TypeGraph *t2, std::string msg = "Pattern type doesn't match expression type") 
+    {
+        if(!t1->isUnknown() && !t2->isUnknown()) 
+        {
+            if (!t1->equals(t2))
+            {
+                printError(msg);
+            }
+        }
+        else 
+        {
+            inf.addConstraint(t1, t2, line_number);
+        }
+    }
     // Checks whether the pattern is valid for TypeGraph *t
     virtual void checkPatternTypeGraph(TypeGraph *t)
     {
@@ -1356,10 +1342,7 @@ public:
         : literal(l) {}
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
-        if (!t->equals(literal->get_TypeGraph()))
-        {
-            printError("Literal is not a valid pattern for given type");
-        }
+        type_check(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1397,6 +1380,8 @@ public:
     {
         ConstructorEntry *c = ct.lookupConstructor(Id);
         TypeGraph *c_TypeGraph = c->getTypeGraph();
+
+        type_check(t, c_TypeGraph, "Constructor is not of the same type as the expression to match");
 
         int count = c_TypeGraph->getFieldCount();
         if (count != (int)pattern_list.size())
@@ -1487,7 +1472,7 @@ public:
         TypeGraph *t = toMatch->get_TypeGraph();
 
         // Will be used during the loop to check all possible results
-        TypeGraph *temp;
+        TypeGraph *prev, *curr;
 
         // On the first loop temp will be assigned a value
         bool first = true;
@@ -1498,24 +1483,38 @@ public:
             c->set_correctPatternTypeGraph(t);
             c->sem();
 
+            // Check that all right hand expressions are of the same type
+            // or add constraints to force them
             if (first)
             {
-                temp = c->get_exprTypeGraph();
+                prev = c->get_exprTypeGraph();
                 first = false;
                 continue;
             }
-            else if (temp->equals(c->get_exprTypeGraph()))
+            else 
             {
-                temp = c->get_exprTypeGraph();
-            }
-            else
-            {
-                printError("Results of match have different types");
+                curr = c->get_exprTypeGraph();
+
+                if (!prev->isUnknown() && !curr->isUnknown()) 
+                {
+                    if (!prev->equals(curr)) 
+                    {
+                        printError("Results of match have different types");
+                    }
+                }
+                else 
+                {
+                    inf.addConstraint(prev, curr, line_number);
+                }
+
+                // Move prev
+                prev = curr; 
             }
         }
 
         // Reached the end so all the results have the same type
-        TG = temp;
+        // or the constraints will force them to be
+        TG = curr;
     }
     virtual void printOn(std::ostream &out) const override
     {

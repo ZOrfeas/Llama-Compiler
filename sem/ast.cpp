@@ -45,7 +45,7 @@ void UnOp::sem() {
         {
             // Add constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            TypeGraph *unknown = new UnknownTypeGraph();
+            TypeGraph *unknown = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown);
             inf.addConstraint(t_expr, ref_t, line_number);
 
@@ -56,7 +56,7 @@ void UnOp::sem() {
         {
             // Adds constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            TypeGraph *unknown_t = new UnknownTypeGraph();
+            TypeGraph *unknown_t = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown_t);
             inf.addConstraint(t_expr, ref_t, line_number);
             
@@ -138,9 +138,9 @@ void BinOp::sem() {
         case T_leq:
         case T_geq:
         {
-            std::vector<TypeGraph *> type_char_int_float = { type_char, type_int, type_float };
-            lhs->type_check(type_char_int_float, "Only char, int and float allowed");
-            rhs->type_check(type_char_int_float, "Only char, int and float allowed");
+            // lhs and rhs can be one of int, char, float
+            lhs->get_TypeGraph()->setIntCharFloat();
+            rhs->get_TypeGraph()->setIntCharFloat();
 
             // Check that they are of the same type
             same_type(lhs, rhs);
