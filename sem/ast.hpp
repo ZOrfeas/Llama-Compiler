@@ -260,9 +260,10 @@ public:
             {
                 printError(msg);
             }
-        } else
+        } 
+        else
         {
-            // addConstraint(TG, t);
+            inf.addConstraint(TG, t, line_number);
         }
     }
     void type_check(std::vector<TypeGraph *> TypeGraph_list, std::string msg = "Type mismatch", bool negation = false)
@@ -1170,11 +1171,10 @@ public:
         int count;
         if(definitionTypeGraph->isUnknown()) 
         {
-            count = (int)expr_list.size();
-            
             // Create the correct FunctionTypeGraph as given by the call
-            UnknownTypeGraph *u = new UnknownTypeGraph(true);
-            FunctionTypeGraph *callTypeGraph = new FunctionTypeGraph(u);
+            count = (int)expr_list.size();
+            UnknownTypeGraph *resultTypeGraph = new UnknownTypeGraph(true);
+            FunctionTypeGraph *callTypeGraph = new FunctionTypeGraph(resultTypeGraph);
             TypeGraph *argTypeGraph;
             for (int i = 0; i < count; i++)
             {
@@ -1185,13 +1185,12 @@ public:
 
             inf.addConstraint(definitionTypeGraph, callTypeGraph, line_number);
 
-            TG = u;
+            TG = resultTypeGraph;
         } 
         else
         {
-            count = definitionTypeGraph->getParamCount();
-
             // Check whether the call matches the definitions
+            count = definitionTypeGraph->getParamCount();
             if (count != (int)expr_list.size())
             {
                 printError("Partial function call not allowed");
@@ -1303,7 +1302,7 @@ public:
         {
             TypeGraph *unknown = new UnknownTypeGraph();
             ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
-            // addConstraint(t, correct_array);
+            inf.addConstraint(t, correct_array, line_number);
 
             for(Expr *e: expr_list) 
             {

@@ -43,24 +43,22 @@ void UnOp::sem() {
         }
         case '!':
         {
-            TypeGraph *unknown_t = new UnknownTypeGraph();
-            TypeGraph *ref_t = new RefTypeGraph(unknown_t);
-
-            // Adds constraint with ref of unknown type 
+            // Add constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            // addConstraint(t_expr, ref_t);
+            TypeGraph *unknown = new UnknownTypeGraph();
+            TypeGraph *ref_t = new RefTypeGraph(unknown);
+            inf.addConstraint(t_expr, ref_t, line_number);
 
             TG = ref_t->getContainedType();
             break;
         }
         case T_delete:
         {
-            TypeGraph *unknown_t = new UnknownTypeGraph();
-            TypeGraph *ref_t = new RefTypeGraph(unknown_t);
-
             // Adds constraint with ref of unknown type 
             // to ensure that expr is in fact a ref
-            // addConstraint(t_expr, ref_t);
+            TypeGraph *unknown_t = new UnknownTypeGraph();
+            TypeGraph *ref_t = new RefTypeGraph(unknown_t);
+            inf.addConstraint(t_expr, ref_t, line_number);
             
             if (!t_expr->isDynamic())
             {
@@ -157,8 +155,9 @@ void BinOp::sem() {
             RefTypeGraph *correct_lhs = new RefTypeGraph(t_rhs);
             lhs->type_check(correct_lhs);
 
-            // Cleanup
-            delete correct_lhs;
+            // Cleanup NOTE: If the new TypeGraph is 
+            // used for inference it should not be deleted
+            // delete correct_lhs;
 
             // The result is unit
             TG = type_unit;
