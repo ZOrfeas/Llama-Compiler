@@ -198,7 +198,7 @@ TypeTable::TypeTable(bool debug): BaseTable("\033[1m\033[31mTypeTable\033[0m", d
     insert(new TypeEntry("bool" , new BoolTypeGraph()));
 }
 TypeEntry* TypeTable::insertType(string name, bool overwrite) {
-    CustomTypeGraph *customType = new CustomTypeGraph();
+    CustomTypeGraph *customType = new CustomTypeGraph(name);
     TypeEntry *typeEntry = new TypeEntry(name, customType);
     return dynamic_cast<TypeEntry *>(insert(typeEntry, overwrite));
 }

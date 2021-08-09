@@ -252,7 +252,7 @@ type
 ;
 
 bracket_star_opt
-: %empty                            { $$ = 0; }
+: %empty                            { $$ = 1; }
 | '[' '*' comma_star_opt_list ']'   { $$ = 1 + $3; }
 ;
 
