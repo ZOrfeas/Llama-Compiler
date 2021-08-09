@@ -1273,7 +1273,7 @@ public:
         // and check that all given indices are integers 
         else
         {
-            UnknownTypeGraph *unknown = new UnknownTypeGraph();
+            TypeGraph *unknown = new UnknownTypeGraph();
             ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, unknown); 
             // addConstraint(t, correct_array);
 
