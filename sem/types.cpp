@@ -42,6 +42,9 @@ bool TypeGraph::isBasic() {
     return isInt() || isUnit() || isBool() || isChar() || isFloat();
 }
 bool TypeGraph::isDeletable() { return isFunction() || isArray() || isRef(); }
+bool TypeGraph::isUnknownRefOrArray() {
+    return (isRef() || isArray()) && (getContainedType()->isUnknown());
+}
 
 TypeGraph* TypeGraph::getContainedType() {
     wrongCall("getContainedType()"); exit(1);
@@ -115,6 +118,9 @@ bool TypeGraph::onlyIntCharFloat() {
 void TypeGraph::setIntCharFloat() {
     wrongCall("setIntCharFloat()"); exit(1);
 }
+void TypeGraph::copyConstraintFlags(TypeGraph *o) {
+    wrongCall("copyConstraintFlags()"); exit(1);
+}
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
@@ -136,6 +142,15 @@ bool UnknownTypeGraph::canBeArray() { return can_be_array; }
 bool UnknownTypeGraph::canBeFunc() { return can_be_func; }
 bool UnknownTypeGraph::onlyIntCharFloat() { return only_int_char_float; }
 void UnknownTypeGraph::setIntCharFloat() { only_int_char_float = true; }
+void UnknownTypeGraph::copyConstraintFlags(TypeGraph *o) {
+    if (!o->isUnknown()) {
+        log("copyConstraintFlags() called with not unknown argument type");
+        exit(1);
+    }
+    can_be_array = can_be_array && o->canBeArray();
+    can_be_func = can_be_func && o->canBeFunc();
+    only_int_char_float = only_int_char_float || o->onlyIntCharFloat();
+}
 bool UnknownTypeGraph::equals(TypeGraph *o) {
     return o->isUnknown() && tmp_id == o->getId();
 }

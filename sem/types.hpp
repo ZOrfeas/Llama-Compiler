@@ -33,6 +33,7 @@ public:
     bool isUnknown();
     bool isBasic();
     bool isDeletable();
+    bool isUnknownRefOrArray();
     virtual bool equals(TypeGraph *o) = 0;
     virtual TypeGraph* getContainedType();
     virtual int getDimensions();
@@ -62,6 +63,7 @@ public:
     virtual bool canBeFunc();
     virtual bool onlyIntCharFloat();
     virtual void setIntCharFloat();
+    virtual void copyConstraintFlags(TypeGraph *o);
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -81,7 +83,8 @@ public:
     bool canBeFunc() override;
     bool onlyIntCharFloat() override;
     void setIntCharFloat() override;
-    bool equals(TypeGraph *o) override; 
+    bool equals(TypeGraph *o) override;
+    void copyConstraintFlags(TypeGraph *o) override;
     ~UnknownTypeGraph() {}
 };
 /************************************************************/

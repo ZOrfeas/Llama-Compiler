@@ -1,3 +1,8 @@
+let print_string a = ()
+let read_int a = 2
+let print_int a = ()
+let incr a = a := !a + 1
+
 let rec prime n =
     if n < 0 then prime (-n)
     else if n < 2 then false

@@ -17,9 +17,10 @@ TypeGraph* Constraint::getLhs() { return lhs; }
 TypeGraph* Constraint::getRhs() { return rhs; }
 int Constraint::getLineNo() { return lineno; }
 string Constraint::stringify() {
-    return "(line " + to_string(lineno) + ")" + 
+    return "(line " + to_string(lineno) + ") " + 
             inf.tryApplySubstitutions(lhs)->stringifyType() + 
-            " == " + inf.tryApplySubstitutions(rhs)->stringifyType();
+            " == " + inf.tryApplySubstitutions(rhs)->stringifyType() +
+            " (orig. " + lhs->stringifyType() + " == " + rhs->stringifyType() + ")";
 }
 Constraint::~Constraint() {}
 
@@ -94,7 +95,8 @@ bool Inferer::isValidSubstitution(TypeGraph *unknownType, TypeGraph* candidateTy
     bool invalid = (
         (!unknownType->canBeArray() && candidateType->isArray()) ||
         (!unknownType->canBeFunc() && candidateType->isFunction()) ||
-        (unknownType->onlyIntCharFloat() && !candidateType->isInt() && !candidateType->isChar() && !candidateType->isFloat())
+        (unknownType->onlyIntCharFloat() && !candidateType->isUnknown() && 
+            !candidateType->isInt() && !candidateType->isChar() && !candidateType->isFloat())
     );
     return !invalid;
 }
@@ -139,6 +141,8 @@ void Inferer::trySubstitute(TypeGraph *unknownType, TypeGraph *candidateType, in
     if (occurs(unknownType, candidateType)) // Recursive unknown type found, exit
         error("Constraint at line" + to_string(lineno) +
               " implied recursive unknown type (occurs check)");
+    if (candidateType->isUnknown())
+        candidateType->copyConstraintFlags(unknownType);
     saveSubstitution(unknownType->getTmpName(), candidateType);
 }
 // utility function to not bloat the main solveOne

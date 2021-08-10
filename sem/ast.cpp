@@ -139,8 +139,10 @@ void BinOp::sem() {
         case T_geq:
         {
             // lhs and rhs can be one of int, char, float
-            lhs->get_TypeGraph()->setIntCharFloat();
-            rhs->get_TypeGraph()->setIntCharFloat();
+            if (lhs->get_TypeGraph()->isUnknown())
+                lhs->get_TypeGraph()->setIntCharFloat();
+            if (rhs->get_TypeGraph()->isUnknown())
+                rhs->get_TypeGraph()->setIntCharFloat();
 
             // Check that they are of the same type
             same_type(lhs, rhs);
