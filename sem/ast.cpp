@@ -6,6 +6,8 @@
 #include "ast.hpp"
 #include "parser.hpp"
 
+std::vector<Identifier *> AST_identifier_list = {};
+
 TypeGraph *type_unit = tt.lookupType("unit")->getTypeGraph();
 TypeGraph *type_int = tt.lookupType("int")->getTypeGraph();
 TypeGraph *type_float = tt.lookupType("float")->getTypeGraph();

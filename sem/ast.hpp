@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <iomanip>
 
 #include "symbol.hpp"
 #include "types.hpp"
@@ -36,6 +37,34 @@ extern TypeGraph *type_int;
 extern TypeGraph *type_float;
 extern TypeGraph *type_bool;
 extern TypeGraph *type_char;
+
+/********************************************************************/
+
+class Identifier
+{
+protected:
+    std::string id;
+    TypeGraph *TG;
+    int line;
+public:
+    Identifier(std::string id, int line)
+     : id(id), line(line) { TG = st.lookup(id)->getTypeGraph(); }
+    static void printTableLine() 
+    {
+
+    }
+    void printIdLine(int lineWidth, int idWidth, int typeWidth)  
+    {
+        TypeGraph *correctTypeGraph = TG->isUnknown() ? inf.tryApplySubstitutions(TG) : TG;
+
+        std::cout   << std::left << std::setw(lineWidth) << line
+                    << std::left << std::setw(idWidth) << id
+                    << std::left << std::setw(typeWidth) << correctTypeGraph->stringifyType() 
+                    << std::endl;
+    }
+};
+
+extern std::vector<Identifier *> AST_identifier_list;
 
 /********************************************************************/
 
@@ -74,6 +103,37 @@ public:
     {
         std::cout << "Error at line " << line_number << ": " << s << std::endl;
         exit(1);
+    }
+    virtual void insertBasicToSymbolTable(std::string id, TypeGraph *t) 
+    {
+        st.insertBasic(id, t);
+    }
+    virtual void insertRefToSymbolTable(std::string id, TypeGraph *t) 
+    {   
+        st.insertRef(id, t, true, false);   
+    }
+    virtual void insertArrayToSymbolTable(std::string id, TypeGraph *contained_type, int d) 
+    {
+        st.insertArray(id, contained_type, d);
+    }
+    virtual FunctionEntry *insertFunctionToSymbolTable(std::string id, TypeGraph *t) 
+    {
+        return st.insertFunction(id, t);
+    }
+    virtual void printIdTypeGraphs() 
+    {
+        int lineWidth = 4;
+        int idWidth = 14;
+        int typeWidth = 8;
+
+        for (auto ident: AST_identifier_list)
+        {
+            ident->printIdLine(lineWidth, idWidth, typeWidth);
+        }
+    }
+    virtual void addToIdList(std::string id) 
+    {
+        AST_identifier_list.push_back(new Identifier(id, line_number));
     }
 };
 
@@ -294,12 +354,6 @@ public:
     }
 };
 
-class Identifier : public Expr
-{
-protected:
-    std::string name;
-};
-
 /********************************************************************/
 
 class Constr : public AST
@@ -348,7 +402,9 @@ public:
     /*SymbolEntry* get_SymbolEntry() { return new SymbolEntry(id, T->get_TypeGraph()); }*/
     void insert_id_to_st()
     {
-        st.insertBasic(id, T->get_TypeGraph());
+        insertBasicToSymbolTable(id, T->get_TypeGraph());
+
+        addToIdList(id);
     }
     TypeGraph *get_TypeGraph()
     {
@@ -447,7 +503,9 @@ public:
     }
     virtual void insert_id_to_st() override
     {
-        st.insertBasic(id, T->get_TypeGraph());
+        insertBasicToSymbolTable(id, T->get_TypeGraph());
+
+        addToIdList(id);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -484,13 +542,15 @@ public:
     virtual void insert_id_to_st() override
     {
         // Insert Function id to symbol table
-        FunctionEntry *F = st.insertFunction(id, T->get_TypeGraph());
+        FunctionEntry *F = insertFunctionToSymbolTable(id, T->get_TypeGraph());
 
         // Add the parameters to the entry
         for (Par *p : par_list)
         {
             F->addParam(p->get_TypeGraph());
         }
+
+        addToIdList(id);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -536,14 +596,16 @@ public:
 
         if(!t->isUnknown())
         {
-            st.insertArray(id, contained_type, d);
+            insertArrayToSymbolTable(id, contained_type, d);
         }
         else
         {
             TypeGraph *unknown_contained_type = new UnknownTypeGraph(false, true, false);
-            st.insertArray(id, unknown_contained_type, d);
+            insertArrayToSymbolTable(id, unknown_contained_type, d);
             inf.addConstraint(unknown_contained_type, contained_type, line_number);
         }
+
+        addToIdList(id);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -578,14 +640,16 @@ public:
 
         if(!t->isUnknown()) 
         {
-            st.insertRef(id, t, true, false);
+            insertRefToSymbolTable(id, t);
         }
         else
         {
             TypeGraph *unknown_ref_type = new UnknownTypeGraph(false, true, false);
-            st.insertBasic(id, unknown_ref_type);
+            insertBasicToSymbolTable(id, unknown_ref_type);
             inf.addConstraint(unknown_ref_type, ref_type, line_number);
         }
+
+        addToIdList(id);
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -782,6 +846,7 @@ public:
     }
 };
 
+/*
 class Id_upper : public Identifier
 {
 public:
@@ -806,6 +871,7 @@ public:
         out << "id(" << name << ")";
     }
 };
+*/
 
 class Literal : public Expr
 {
@@ -1055,7 +1121,8 @@ public:
     {
         // Create new scope for counter and add it
         st.openScope();
-        st.insertBasic(id, type_int);
+        insertBasicToSymbolTable(id, type_int);
+        addToIdList(id);
 
         // Typecheck start, finish, body
         start->sem();
@@ -1386,7 +1453,9 @@ public:
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         // Insert a new symbol with name id and type the same as that of e
-        st.insertBasic(id, t);
+        insertBasicToSymbolTable(id, t);
+
+        addToIdList(id);
     }
     virtual void printOn(std::ostream &out) const override
     {

@@ -145,7 +145,7 @@
 
 %%
 program 
-: program_list                      { $$ = $1; std::cout << *$$ << std::endl; $$->sem(); inf.solveAll(false); } 
+: program_list                      { $$ = $1; std::cout << *$$ << std::endl; $$->sem(); inf.solveAll(false); $$->printIdTypeGraphs(); } 
 ;
 
 program_list
