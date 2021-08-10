@@ -3,7 +3,8 @@
 Implementation of a compiler for the functional programming language Llama
 
 ## Compile
-tbd
+- `make` to create a production version
+- `make debug` to compile with debugging information
 
 ## Built with
 | Component | Tools |
