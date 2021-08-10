@@ -122,6 +122,9 @@ void TypeGraph::setIntCharFloat() {
 void TypeGraph::copyConstraintFlags(TypeGraph *o) {
     wrongCall("copyConstraintFlags()"); exit(1);
 }
+void TypeGraph::changeInner(TypeGraph* replacement, unsigned int index) {
+    wrongCall("changeInner()"); exit(1);
+}
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
@@ -215,6 +218,9 @@ bool ArrayTypeGraph::equals(TypeGraph *o) {
     return o->isArray() &&
            getContainedType()->equals(o->getContainedType());
 }
+void ArrayTypeGraph::changeInner(TypeGraph *replacement, unsigned int index) {
+    Type = replacement;
+}
 ArrayTypeGraph::~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 
 /*************************************************************/
@@ -240,6 +246,9 @@ bool RefTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
     return o->isRef() &&
            getContainedType()->equals(o->getContainedType());
+}
+void RefTypeGraph::changeInner(TypeGraph *replacement, unsigned int index) {
+    Type = replacement;
 }
 RefTypeGraph::~RefTypeGraph() { if (Type->isDeletable()) delete Type; }
 
@@ -310,6 +319,16 @@ bool FunctionTypeGraph::equals(TypeGraph *o) {
         return getResultType()->equals(o->getResultType());
     }
     return false;
+}
+void FunctionTypeGraph::changeInner(TypeGraph *replacement, unsigned int index) {
+    if (index > paramTypes->size()) {
+        std::cout << "Out of bounds param requested\n";
+        exit(1);
+    } else if (index == paramTypes->size()) { // no reason this is chosen
+        resultType = replacement;
+    } else {
+        (*paramTypes)[index] = replacement;
+    }
 }
 FunctionTypeGraph::~FunctionTypeGraph() {
     for (auto &paramType: *paramTypes) 

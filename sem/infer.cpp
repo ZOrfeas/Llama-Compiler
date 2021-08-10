@@ -174,6 +174,21 @@ TypeGraph* Inferer::tryApplySubstitutions(TypeGraph* type) {
     }
     return current;
 }
+TypeGraph* Inferer::deepSubstitute(TypeGraph* type) {
+    TypeGraph *temp = tryApplySubstitutions(type);
+    if (!temp->isFunction() && !temp->isArray() && !temp->isRef()) {
+        return temp;
+    } else if (type->isArray() || type->isRef()) {
+        type->changeInner(deepSubstitute(type->getContainedType()));
+        return type;
+    } else { // if isFunction()
+        for (int i = 0; i < type->getParamCount(); i++) {
+            type->changeInner(deepSubstitute(type->getParamType(i)), i);
+        }
+        type->changeInner(deepSubstitute(type->getResultType()), type->getParamCount());
+        return type;
+    }
+}
 TypeGraph* Inferer::getSubstitutedLhs(Constraint *constraint) {
     return tryApplySubstitutions(constraint->getLhs());
 }

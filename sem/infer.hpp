@@ -63,6 +63,7 @@ public:
     // applies as many substitutions as possible to the given type
     // and returns the "true" current typeGraph it has been resolve too, thus far
     TypeGraph* tryApplySubstitutions(TypeGraph* unknownType);
+    TypeGraph* deepSubstitute(TypeGraph* unknownType);
     void solveAll(bool err = true);
     /** Stores a new constraint
      * @param lhs pointer to lhs
