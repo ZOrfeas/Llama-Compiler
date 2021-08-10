@@ -274,6 +274,20 @@ public:
     {
         checkTypeGraphs(TG, t, msg);
     }
+    void checkIntCharFloat(std::string msg = "Must be int, char or float")
+    {
+        if(!TG->isUnknown()) 
+        {
+            if(!TG->equals(type_int) && !TG->equals(type_char) && !TG->equals(type_float))
+            {
+                printError(msg);
+            }
+        }
+        else
+        {
+            TG->setIntCharFloat();
+        }
+    }
     friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
     {
         e1->type_check(e2->TG, msg);
@@ -517,10 +531,19 @@ public:
     virtual void insert_id_to_st()
     {
         int d = get_dimensions();
+        TypeGraph *t = T->get_TypeGraph();
+        RefTypeGraph *contained_type = new RefTypeGraph(t, true, false);
 
-        RefTypeGraph *contained_type = new RefTypeGraph(T->get_TypeGraph());
-
-        st.insertArray(id, contained_type, d);
+        if(!t->isUnknown())
+        {
+            st.insertArray(id, contained_type, d);
+        }
+        else
+        {
+            TypeGraph *unknown_contained_type = new UnknownTypeGraph(false, true, false);
+            st.insertArray(id, unknown_contained_type, d);
+            inf.addConstraint(unknown_contained_type, contained_type, line_number);
+        }
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -550,7 +573,19 @@ public:
         : Mutable(*id, T) {}
     virtual void insert_id_to_st() override
     {
-        st.insertRef(id, T->get_TypeGraph(), true, false);
+        TypeGraph *t = T->get_TypeGraph();
+        TypeGraph *ref_type = new RefTypeGraph(t, true, false);
+
+        if(!t->isUnknown()) 
+        {
+            st.insertRef(id, t, true, false);
+        }
+        else
+        {
+            TypeGraph *unknown_ref_type = new UnknownTypeGraph(false, true, false);
+            st.insertBasic(id, unknown_ref_type);
+            inf.addConstraint(unknown_ref_type, ref_type, line_number);
+        }
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1053,10 +1088,11 @@ public:
         cond->sem();
         cond->type_check(type_bool, "Condition of if must be bool");
 
-        // If there is no else just semantically analyse body
+        // If there is no else just semantically analyse body (must be unit)
         if (else_body == nullptr)
         {
             body->sem();
+            body->type_check(type_unit, "Return type of if must be unit since there is no else");
         }
 
         // If there is else then check if the types match
@@ -1067,7 +1103,7 @@ public:
             same_type(body, else_body, "Return value of if and else must be same type");
         }
 
-        // The type of the body is the type of the If
+        // The type of the body is always the type of the If
         TG = body->get_TypeGraph();
     }
     virtual void printOn(std::ostream &out) const override
