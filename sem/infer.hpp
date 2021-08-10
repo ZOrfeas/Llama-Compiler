@@ -28,11 +28,11 @@ class Inferer {
     // Maps free type variables with what they should become
     // Fills up while inference runs
     std::map<std::string, TypeGraph *> *substitutions;
-    // Finds free type names and fills vector with them
-    // always called when there should be no substitutions yet
-    void getFreeTypes(TypeGraph *fullType, std::vector<std::string> *names);
-    // Initializes empty substitutions for every free type name
-    void initSubstitutions(std::vector<std::string> *names);
+    // // Finds free type names and fills vector with them
+    // // always called when there should be no substitutions yet
+    // void getFreeTypes(TypeGraph *fullType, std::vector<std::string> *names);
+    // // Initializes empty substitutions for every free type name
+    // void initSubstitutions(std::vector<std::string> *names);
     // checks if substitution would ignore any restraints
     bool isValidSubstitution(TypeGraph *unknownType, TypeGraph *candidateType);
     // looks up if it is unknown, the name is valid, and has been substituted,
@@ -63,14 +63,15 @@ public:
     // applies as many substitutions as possible to the given type
     // and returns the "true" current typeGraph it has been resolve too, thus far
     TypeGraph* tryApplySubstitutions(TypeGraph* unknownType);
-    void solveAll();
+    void solveAll(bool err = true);
     /** Stores a new constraint
      * @param lhs pointer to lhs
      * @param rhs pointer to rhs
      * @param extract_names controls if free type names are searched and saved
      */
-    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,
-      bool extract_names = true);
+    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
+    void initSubstitution(std::string name);
+    void checkAllSubstituted(bool err = true);
     ~Inferer();
 };
 

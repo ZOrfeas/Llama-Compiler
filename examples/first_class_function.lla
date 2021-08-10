@@ -1,0 +1,11 @@
+let incr a = a := !a + 1
+let print_int a = ()
+
+let f = 
+    let mutable a in a := 0;
+    let g x = 
+        incr a;
+        !a
+    in g
+
+let main = print_int (f ())

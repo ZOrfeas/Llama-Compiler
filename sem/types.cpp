@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "types.hpp"
+#include "infer.hpp"
 
 /*************************************************************/
 /**                    Base TypeGraph                        */
@@ -130,7 +131,9 @@ unsigned long UnknownTypeGraph::curr = 1;
 //TODO: not complete
 UnknownTypeGraph::UnknownTypeGraph(bool can_be_array, bool can_be_func, bool only_int_char_float):
 TypeGraph(graphType::TYPE_unknown), tmp_id(curr++),
-can_be_array(can_be_array), can_be_func(can_be_func), only_int_char_float(only_int_char_float) {}
+can_be_array(can_be_array), can_be_func(can_be_func), only_int_char_float(only_int_char_float) {
+    inf.initSubstitution(getTmpName());
+}
 std::string UnknownTypeGraph::getTmpName() {
     return "@" + std::to_string(tmp_id);
 }
