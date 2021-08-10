@@ -55,7 +55,7 @@ public:
     }
     void printIdLine(int lineWidth, int idWidth, int typeWidth)  
     {
-        TypeGraph *correctTypeGraph = TG->isUnknown() ? inf.deepSubstitute(TG) : TG;
+        TypeGraph *correctTypeGraph = inf.deepSubstitute(TG);
 
         std::cout   << std::left << std::setw(lineWidth) << line
                     << std::left << std::setw(idWidth) << id
