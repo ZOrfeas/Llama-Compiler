@@ -64,6 +64,7 @@ public:
     virtual bool onlyIntCharFloat();
     virtual void setIntCharFloat();
     virtual void copyConstraintFlags(TypeGraph *o);
+    virtual void changeInner(TypeGraph *replacement, unsigned int index = 0);
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -137,6 +138,7 @@ public:
     TypeGraph* getContainedType();
     bool equals(TypeGraph *o);
     int getDimensions() override;
+    void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
     ~ArrayTypeGraph();
 };
 class RefTypeGraph : public TypeGraph {
@@ -154,6 +156,7 @@ public:
     bool isAllocated() override;
     bool isDynamic() override;
     bool equals(TypeGraph *o) override;
+    void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
     ~RefTypeGraph();
 };
 class FunctionTypeGraph : public TypeGraph {
@@ -171,6 +174,7 @@ public:
     void addParam(TypeGraph *param, bool push_back = true) override;
     TypeGraph* getParamType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
+    void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
     ~FunctionTypeGraph();
 };
 
