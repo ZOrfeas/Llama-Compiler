@@ -77,5 +77,6 @@ public:
 };
 
 extern Inferer inf;
+extern bool inferer_logs;
 
 #endif // __INFER_HPP__

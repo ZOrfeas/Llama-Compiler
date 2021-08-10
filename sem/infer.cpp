@@ -204,7 +204,7 @@ void Inferer::solveOne(Constraint *constraint) {
     if (debug)
         log("Processing constraint: " + constraint->stringify());
     if (lhsTypeGraph->equals(rhsTypeGraph)) {
-        log("Constraint equates already equal types, ignoring...");    
+        if(debug) log("Constraint equates already equal types, ignoring...");    
     } else if (lhsTypeGraph->isUnknown()) {                                        // lhs is unknown
         trySubstitute(lhsTypeGraph, rhsTypeGraph, constraint->getLineNo());
     } else if (rhsTypeGraph->isUnknown()) {                                         // rhs is unknown
@@ -237,7 +237,7 @@ void Inferer::initSubstitution(string name) {
 }
 void Inferer::checkAllSubstituted(bool err) {
     bool success = true;
-    log("Validating all unknown types where successfuly infered...");
+    if(debug) log("Validating all unknown types where successfuly infered...");
     for (auto &pair: (*substitutions)) {
         if (!pair.second || tryApplySubstitutions(pair.second)->isUnknown()) {
             log("Type " + pair.first + " could not be infered");
@@ -246,7 +246,7 @@ void Inferer::checkAllSubstituted(bool err) {
         } 
     }
     if (success)
-        log("Inference successful");
+        if(debug) log("Inference successful");
 }
 void Inferer::solveAll(bool err) {
     std::reverse(constraints->begin(), constraints->end());
@@ -258,5 +258,5 @@ void Inferer::solveAll(bool err) {
     }
     checkAllSubstituted(err);
 }
-bool    inferer_logs = true;
+bool    inferer_logs;
 Inferer inf(inferer_logs);

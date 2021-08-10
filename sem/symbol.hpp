@@ -165,3 +165,4 @@ public:
 extern SymbolTable st;
 extern TypeTable tt;
 extern ConstructorTable ct;
+extern bool table_logs;

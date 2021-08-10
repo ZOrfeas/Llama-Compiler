@@ -1,11 +1,16 @@
 %{
+#include <ctype.h>
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
+#include <getopt.h>
 #include <vector>
 
 #include "lexer.hpp"
 #include "symbol.hpp"
 #include "ast.hpp"
+
+void compilerHandler(Program *p);
 
 // #define YYERROR_VERBOSE 1 // comment out to disable verbose error report
 // #define YYDEBUG 1 // comment out to disable debug feature compilation
@@ -145,7 +150,7 @@
 
 %%
 program 
-: program_list                      { $$ = $1; std::cout << *$$ << std::endl; $$->sem(); inf.solveAll(false); $$->printIdTypeGraphs(); } 
+: program_list                      { $$ = $1; compilerHandler($$); } 
 ;
 
 program_list
@@ -390,14 +395,96 @@ pattern_list
 
 %%
 
+bool tableLogs, inferenceLogs, printTable, printAST, printObjectCode, printFinalCode, printSuccess;
+
 void yyerror(const char *msg) {
     printf("Error at line %d: %s\n", yylineno, msg);
     exit(1);
 }
 
-int main() {
+void compilerHandler(Program *p) {
+    table_logs = tableLogs;
+    inferer_logs = inferenceLogs;
+
+    if(printAST) 
+    {   
+        std::cout << "************* AST **********************" << std::endl;
+        std::cout << std::endl;
+        std::cout << *p << std::endl;
+        std::cout << std::endl; 
+        std::cout << "****************************************" << std::endl;
+        std::cout << std::endl;
+    }
+
+    p->sem(); 
+
+    inf.solveAll(false); 
+
+    if(printTable) 
+    {   
+        std::cout << "* Table of identifiers and their types *" << std::endl;
+        std::cout << std::endl;
+        p->printIdTypeGraphs();
+        std::cout << std::endl;
+        std::cout << "****************************************" << std::endl;
+        std::cout << std::endl;
+    }
+}
+
+int main(int argc, char **argv) {
+    enum option_enum 
+    {   OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
+        OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
+        OPTION_printSuccess
+    };
+
+    tableLogs = inferenceLogs = printTable = printAST = printObjectCode = printFinalCode = printSuccess = false;
+    
+    int option_index = 0;
+    struct option long_options[] = {
+            {"tableLogs",       no_argument, NULL, OPTION_tableLogs         },
+            {"inferenceLogs",   no_argument, NULL, OPTION_inferenceLogs     },
+            {"printTable",      no_argument, NULL, OPTION_printTable        },
+            {"printAST",        no_argument, NULL, OPTION_printAST          },
+            {"printObjectCode", no_argument, NULL, OPTION_printObjectCode   },
+            {"printFinalCode",  no_argument, NULL, OPTION_printFinalCode    },
+            {"printSuccess",    no_argument, NULL, OPTION_printSuccess      }
+        };
+    
+    int c;
+    while((c = getopt_long(argc, argv, "", long_options, &option_index)) != -1) 
+    {
+        switch(c)
+        {
+            case OPTION_tableLogs:
+                tableLogs = true;
+                break;
+            case OPTION_inferenceLogs:
+                inferenceLogs = true;
+                break;
+            case OPTION_printTable:
+                printTable = true;
+                break;
+            case OPTION_printAST:
+                printAST = true;
+                break;
+            case OPTION_printObjectCode:
+                printObjectCode = true;
+                break;
+            case OPTION_printFinalCode:
+                printFinalCode = true;
+                break;
+            case OPTION_printSuccess:
+                printSuccess = true;
+                break;
+            default:
+                break;
+        }
+    }
+
     // yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
-    if (result == 0) printf("Success\n");
+    
+    if (result == 0 && printSuccess) printf("Success\n");
     return result;
 }
