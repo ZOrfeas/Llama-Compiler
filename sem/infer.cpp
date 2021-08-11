@@ -138,7 +138,7 @@ void Inferer::trySubstitute(TypeGraph *unknownType, TypeGraph *candidateType, in
         error("Substitution at line " + to_string(lineno) +
               " violated constraint");
     if (occurs(unknownType, candidateType)) // Recursive unknown type found, exit
-        error("Constraint at line" + to_string(lineno) +
+        error("Constraint at line " + to_string(lineno) +
               " implied recursive unknown type (occurs check)");
     if (candidateType->isUnknown())
         candidateType->copyConstraintFlags(unknownType);
