@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <getopt.h>
+#include <iomanip>
 #include <vector>
 
 #include "lexer.hpp"
@@ -396,11 +397,75 @@ pattern_list
 
 %%
 
-bool tableLogs, inferenceLogs, printTable, printAST, printObjectCode, printFinalCode, printSuccess;
+bool    syntaxAnalysis, semAnalysis, inferenceAnalysis, compile, 
+        tableLogs, inferenceLogs, printTable, printAST, 
+        printObjectCode, printFinalCode, 
+        printSuccess, help;
+
+enum option_enum 
+    {   
+        OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
+        OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
+        OPTION_printSuccess, OPTION_help
+    };
+
+std::vector<int> option_values = 
+{
+    0, 1, 2, 3
+};
+std::vector<option_enum> long_option_values = 
+{
+    OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
+    OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
+    OPTION_printSuccess, OPTION_help
+};
+
+std::string option_string[] = 
+{
+    "s", "a", "i", "c"
+};
+std::string long_option_string[] = 
+{   
+    "tableLogs",      
+    "inferenceLogs",  
+    "printTable",     
+    "printAST",       
+    "printObjectCode",
+    "printFinalCode", 
+    "printSuccess",   
+    "help",           
+};
+
+std::string option_description[] = 
+{
+    "Checks only if the program is syntactically correct",
+    "Checks if the program is also semantically correct",
+    "Performs inference to resolve unknown types",
+    "Produces code"
+};
+std::string long_option_description[] = 
+{
+    "Shows symbol, type and constructor table logs",
+    "Shows inference logs", 
+    "Prints table with the names of variables and functions and their types",
+    "Prints the whole AST produced by the syntactical analysis",
+    "Prints object code",
+    "Prints final code",
+    "Prints success message as opposed to being silent when compilation succeeds",
+    "Shows all options and their funcionality"
+};
 
 void yyerror(const char *msg) {
     printf("Error at line %d: %s\n", yylineno, msg);
     exit(1);
+}
+
+void printHeader(std::string s)
+{
+    int stars = 20;
+    std::cout   << std::setfill('*') << std::setw(stars) << " " << s << " " 
+                << std::setfill('*') << std::setw(stars) << " " << std::endl
+                << std::endl; 
 }
 
 //bool table_logs, inferer_logs;
@@ -409,6 +474,7 @@ void compilerHandler(Program *p) {
     {
         inf.enable_logs();
     }
+
     if (tableLogs) 
     {
         st.enable_logs();
@@ -416,39 +482,39 @@ void compilerHandler(Program *p) {
         ct.enable_logs();
     }
     
-    if(printAST) 
-    {   
-        std::cout << "************* AST **********************" << std::endl;
-        std::cout << std::endl;
-        std::cout << *p << std::endl;
-        std::cout << std::endl; 
-        std::cout << "****************************************" << std::endl;
-        std::cout << std::endl;
+    if(syntaxAnalysis)
+    {
+        if(printAST) 
+        {   
+            printHeader("AST");
+            std::cout << *p << std::endl << std::endl;
+        }
+    }
+    
+    if(semAnalysis)
+    {
+        p->sem(); 
     }
 
-    p->sem(); 
+    if(inferenceAnalysis) 
+    {
+        inf.solveAll(false);
+        if(printTable) 
+        {   
+            printHeader("Types of identifiers");
+            p->printIdTypeGraphs();
+            std::cout << std::endl;
+        }
+    } 
 
-    inf.solveAll(false); 
-
-    if(printTable) 
-    {   
-        std::cout << "* Table of identifiers and their types *" << std::endl;
-        std::cout << std::endl;
-        p->printIdTypeGraphs();
-        std::cout << std::endl;
-        std::cout << "****************************************" << std::endl;
-        std::cout << std::endl;
-    }
+    if(compile) {}
 }
 
 int main(int argc, char **argv) {
-    enum option_enum 
-    {   OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
-        OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
-        OPTION_printSuccess
-    };
-
-    tableLogs = inferenceLogs = printTable = printAST = printObjectCode = printFinalCode = printSuccess = false;
+    syntaxAnalysis = semAnalysis = inferenceAnalysis = compile = 
+    tableLogs = inferenceLogs = printTable = 
+    printAST = printObjectCode = printFinalCode = 
+    printSuccess = help = false;
     
     int option_index = 0;
     struct option long_options[] = {
@@ -458,11 +524,12 @@ int main(int argc, char **argv) {
             {"printAST",        no_argument, NULL, OPTION_printAST          },
             {"printObjectCode", no_argument, NULL, OPTION_printObjectCode   },
             {"printFinalCode",  no_argument, NULL, OPTION_printFinalCode    },
-            {"printSuccess",    no_argument, NULL, OPTION_printSuccess      }
+            {"printSuccess",    no_argument, NULL, OPTION_printSuccess      },
+            {"help",            no_argument, NULL, OPTION_help              }
         };
     
     int c;
-    while((c = getopt_long(argc, argv, "", long_options, &option_index)) != -1) 
+    while((c = getopt_long(argc, argv, "saic", long_options, &option_index)) != -1)
     {
         switch(c)
         {
@@ -487,7 +554,44 @@ int main(int argc, char **argv) {
             case OPTION_printSuccess:
                 printSuccess = true;
                 break;
+            case OPTION_help:
+                for(auto i: option_values)
+                {
+                    std::cout << std::left << std::setfill(' ') << std::setw(20) << "-" + option_string[i]
+                          << std::left << option_description[i]
+                          << std::endl;
+                }
+                for(auto i: long_option_values)
+                {
+                    std::cout << std::left << std::setfill(' ') << std::setw(20) << "--" + long_option_string[i]
+                          << std::left << long_option_description[i]
+                          << std::endl;
+                }
+                exit(0);
+                break;
+            case 's':
+                syntaxAnalysis = true;
+                break;
+            case 'a':
+                syntaxAnalysis = true;
+                semAnalysis = true;
+                break;
+            case 'i':
+                syntaxAnalysis = true;
+                semAnalysis = true;
+                inferenceAnalysis = true;
+                break;
+            case 'c':
+                syntaxAnalysis = true;
+                semAnalysis = true;
+                inferenceAnalysis = true;
+                compile = true;
+                break;
             default:
+                syntaxAnalysis = true;
+                semAnalysis = true;
+                inferenceAnalysis = true;
+                compile = true;
                 break;
         }
     }

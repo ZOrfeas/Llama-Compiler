@@ -30,6 +30,8 @@ enum class category
 
 void yyerror(const char *msg);
 
+void printColorString(std::string s, int width, int format = 0, int color = 37); 
+
 /* TypeGraphs of basic types useful for type checking ***************/
 
 extern TypeGraph *type_unit;
@@ -49,18 +51,14 @@ protected:
 public:
     Identifier(std::string id, int line)
      : id(id), line(line) { TG = st.lookup(id)->getTypeGraph(); }
-    static void printTableLine() 
-    {
-
-    }
     void printIdLine(int lineWidth, int idWidth, int typeWidth)  
     {
         TypeGraph *correctTypeGraph = inf.deepSubstitute(TG);
 
-        std::cout   << std::left << std::setw(lineWidth) << line
-                    << std::left << std::setw(idWidth) << id
-                    << std::left << std::setw(typeWidth) << correctTypeGraph->stringifyType() 
-                    << std::endl;
+        printColorString(id, idWidth, 1, 35);
+        printColorString(correctTypeGraph->stringifyType(), typeWidth);
+        printColorString(std::to_string(line), lineWidth);
+        std::cout << std::endl;
     }
 };
 
@@ -122,9 +120,14 @@ public:
     }
     virtual void printIdTypeGraphs() 
     {
-        int lineWidth = 4;
-        int idWidth = 14;
-        int typeWidth = 8;
+        int idWidth = 6;
+        int typeWidth = 30;
+        int lineWidth = 10;
+
+        printColorString("Name", idWidth, 1, 31);
+        printColorString("Type", typeWidth, 1, 31);
+        printColorString("Line", lineWidth, 1, 31);
+        std::cout << std::endl;
 
         for (auto ident: AST_identifier_list)
         {
