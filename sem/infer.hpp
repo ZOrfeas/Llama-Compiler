@@ -73,10 +73,10 @@ public:
     void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
     void initSubstitution(std::string name);
     void checkAllSubstituted(bool err = true);
+    void enable_logs();
     ~Inferer();
 };
 
 extern Inferer inf;
-extern bool inferer_logs;
 
 #endif // __INFER_HPP__

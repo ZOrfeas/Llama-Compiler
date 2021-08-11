@@ -258,5 +258,8 @@ void Inferer::solveAll(bool err) {
     }
     checkAllSubstituted(err);
 }
-bool    inferer_logs;
+
+void Inferer::enable_logs() { debug = true; }
+
+bool    inferer_logs = false;
 Inferer inf(inferer_logs);

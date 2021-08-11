@@ -42,6 +42,7 @@ void SymbolTable::error(string msg, bool crash) {
 
 }
 void SymbolTable::log(string msg) {error(msg, false);}
+void SymbolTable::enable_logs() { debug = true; }
 
 SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite) {
     if (debug) 
@@ -162,6 +163,7 @@ void BaseTable::error(string msg, bool crash) {
     if (crash) exit(1);
 }
 void BaseTable::log(string msg) {error(msg, false);}
+void BaseTable::enable_logs() { debug = true; }
 
 SymbolEntry* BaseTable::insert(SymbolEntry *entry, bool overwrite) {
     if (debug)
@@ -308,7 +310,7 @@ void ConstructorEntry::addType(TypeGraph *field) {
     getTypeGraph()->addField(field);
 }
 
-bool             table_logs;
+bool             table_logs = false;
 SymbolTable      st(table_logs);
 TypeTable        tt(table_logs);
 ConstructorTable ct(table_logs);

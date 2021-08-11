@@ -9,6 +9,7 @@
 #include "lexer.hpp"
 #include "symbol.hpp"
 #include "ast.hpp"
+#include "infer.hpp"
 
 void compilerHandler(Program *p);
 
@@ -402,10 +403,19 @@ void yyerror(const char *msg) {
     exit(1);
 }
 
+//bool table_logs, inferer_logs;
 void compilerHandler(Program *p) {
-    table_logs = tableLogs;
-    inferer_logs = inferenceLogs;
-
+    if (inferenceLogs) 
+    {
+        inf.enable_logs();
+    }
+    if (tableLogs) 
+    {
+        st.enable_logs();
+        tt.enable_logs();
+        ct.enable_logs();
+    }
+    
     if(printAST) 
     {   
         std::cout << "************* AST **********************" << std::endl;

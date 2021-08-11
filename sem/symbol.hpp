@@ -116,6 +116,7 @@ public:
     ArrayEntry* lookupArray(std::string name, bool err = true);
     /** Looks up a name associated with a reference type (dereferencable via '!') */
     RefEntry* lookupRef(std::string name, bool err = true);
+    void enable_logs();
     ~SymbolTable();
 };
 
@@ -133,6 +134,7 @@ public:
     BaseTable(std::string kind = "BaseTable", bool debug = false);
     SymbolEntry *lookup(std::string name, bool err = true);
     SymbolEntry* insert(SymbolEntry *entry, bool overwrite = false);
+    void enable_logs();
     virtual ~BaseTable();
 };
 
@@ -165,4 +167,3 @@ public:
 extern SymbolTable st;
 extern TypeTable tt;
 extern ConstructorTable ct;
-extern bool table_logs;
