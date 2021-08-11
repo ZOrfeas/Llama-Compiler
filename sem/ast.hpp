@@ -580,7 +580,8 @@ public:
     {
         // All dimension sizes are of type integer
         for (Expr *e : expr_list)
-        {
+        {   
+            e->sem();
             e->type_check(type_int, "Array dimension sizes must be int");
         }
     }
@@ -596,6 +597,10 @@ public:
 
         if(!t->isUnknown())
         {
+            if (t->isArray())
+            {
+                printError("Array cannot contain arrays");
+            }
             insertArrayToSymbolTable(id, contained_type, d);
         }
         else
@@ -625,7 +630,7 @@ public:
                 out << *e;
             }
         }
-        out << ", " << *T << ")";
+        out << "], " << *T << ")";
     }
 };
 class Variable : public Mutable
@@ -1096,6 +1101,8 @@ public:
         : cond(e1), body(e2) {}
     virtual void sem() override
     {
+        cond->sem();
+        body->sem();
         // Typecheck
         cond->type_check(type_bool, "While condition must be bool");
         body->type_check(type_unit, "While body must be unit");
@@ -1435,6 +1442,7 @@ public:
         : literal(l) {}
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
+        literal->sem();
         checkTypeGraphs(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
     }
     virtual void printOn(std::ostream &out) const override

@@ -1,0 +1,12 @@
+type pile = Left of int | Right of float | Middle
+type pileofpile = Hoho of pile pile | Hihi of pile
+let print_string str = ()
+
+let main = let bigPile = Hoho Middle Middle
+	in match bigPile with
+	  Hoho Left 2 Left 2 -> print_string "1"
+	| Hoho (Left 2) (Right 5.0) -> print_string "2"
+	end
+
+
+	 

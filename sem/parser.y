@@ -386,7 +386,7 @@ pattern
 | T_idlower                             { $$ = new PatternId($1);        }
 | T_idupper                             { $$ = new PatternConstr($1);     }
 | '(' pattern ')'                       { $$ = $2;                          }
-| '(' T_idupper pattern_list ')'        { $$ = new PatternConstr($2, $3); }
+|  T_idupper pattern_list         { $$ = new PatternConstr($1, $2); }
 ;
 
 pattern_list

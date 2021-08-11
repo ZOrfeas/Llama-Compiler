@@ -1,12 +1,12 @@
-let d (g : float) g bar e = (let rec mutable g[2.56,true] : array of bool
-and c d : float = 18
+let d (g : float) g bar e = (let rec mutable g[1,2] : bool
+and c d : float = 18.0
 and bar main bar = 26
 and bar (main : unit) = '\''
-and e bar c d g = 42.0 in "bar" + (while '\n' do 20 done))
+and e bar c d g = 42.0 in 2 + ((while true do () done);1))
 and main = begin match dim g with
   3.14 -> if 20 then true else 42.0
 | g -> if "Name:\t\"DouglasAdams\"\nValue:\t42\n" then 2.56
-| A (+.2.56) Nil 42.0 -> new char
+| (A (+.2.56) (Nil 42.0)) -> new char
 end
  end
 and g e (main : bool) foo = new char -> array of float ref

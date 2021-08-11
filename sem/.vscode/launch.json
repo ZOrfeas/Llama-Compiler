@@ -9,7 +9,12 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/llamac_d",
-            "args": ["<" , "../examples/new.lla"],
+            "args": [ 
+                "--printAST",
+                "--tableLogs",
+                "--inferenceLogs",
+                "<" , "../examples/match_many_patterns.lla"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

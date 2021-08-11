@@ -1,0 +1,2 @@
+let rec mutable g[2,2] : bool
+and c d : float = 18.0 +. d

@@ -230,8 +230,8 @@ ArrayTypeGraph::~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 RefTypeGraph::RefTypeGraph(TypeGraph *refType, bool allocated, bool dynamic)
 : TypeGraph(graphType::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
 std::string RefTypeGraph::stringifyType() {
-    return "\033[4m" +
-           getContainedType()->stringifyType() +
+    return getContainedType()->stringifyType() +
+           "\033[4m" +
            " ref" + 
            "\033[0m";
 }
