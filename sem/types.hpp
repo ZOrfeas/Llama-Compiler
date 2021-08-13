@@ -65,6 +65,7 @@ public:
     virtual void setIntCharFloat();
     virtual void copyConstraintFlags(TypeGraph *o);
     virtual void changeInner(TypeGraph *replacement, unsigned int index = 0);
+    virtual std::string stringifyTypeClean();
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -78,6 +79,7 @@ public:
     UnknownTypeGraph(bool can_be_array = false, bool can_be_func = false,
         bool only_int_char_float = false);
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     unsigned long getId() override;
     std::string getTmpName() override;
     bool canBeArray() override;
@@ -99,31 +101,26 @@ public:
 class UnitTypeGraph : public BasicTypeGraph {
 public:
     UnitTypeGraph();
-    std::string stringifyType() override;
     ~UnitTypeGraph() {}
 };
 class IntTypeGraph : public BasicTypeGraph {
 public:
     IntTypeGraph();
-    std::string stringifyType() override;
     ~IntTypeGraph() {}
 };
 class CharTypeGraph : public BasicTypeGraph {
 public:
     CharTypeGraph();
-    std::string stringifyType() override;
     ~CharTypeGraph() {}
 };
 class BoolTypeGraph : public BasicTypeGraph {
 public:
     BoolTypeGraph();
-    std::string stringifyType() override;
     ~BoolTypeGraph() {}
 };
 class FloatTypeGraph : public BasicTypeGraph {
 public:
     FloatTypeGraph();
-    std::string stringifyType() override;
     ~FloatTypeGraph() {}
 };
 /** Complex Type Graphs */
@@ -135,6 +132,7 @@ class ArrayTypeGraph : public TypeGraph {
 public:
     ArrayTypeGraph(int dimensions, TypeGraph *containedType);
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     TypeGraph* getContainedType();
     bool equals(TypeGraph *o);
     int getDimensions() override;
@@ -148,6 +146,7 @@ public:
     RefTypeGraph(TypeGraph *refType,
         bool allocated = false, bool dynamic = false);
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     TypeGraph* getContainedType() override;
     void setAllocated() override;
     void setDynamic() override;
@@ -166,6 +165,7 @@ class FunctionTypeGraph : public TypeGraph {
 public:
     FunctionTypeGraph(TypeGraph *resultType);
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     std::vector<TypeGraph *>* getParamTypes() override;
     TypeGraph* getResultType() override;
     int getParamCount() override;
@@ -185,6 +185,7 @@ class ConstructorTypeGraph : public TypeGraph {
 public:
     ConstructorTypeGraph();
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     std::vector<TypeGraph *>* getFields() override;
     void addField(TypeGraph *field) override;
     void setTypeGraph(CustomTypeGraph *owningType) override;
@@ -201,6 +202,7 @@ public:
     CustomTypeGraph(std::string name, 
                     std::vector<ConstructorTypeGraph *> *constructors = new std::vector<ConstructorTypeGraph *>());
     std::string stringifyType() override;
+    std::string stringifyTypeClean() override;
     std::vector<ConstructorTypeGraph *>* getConstructors() override;
     int getConstructorCount() override;
     void addConstructor(ConstructorTypeGraph *constructor) override;

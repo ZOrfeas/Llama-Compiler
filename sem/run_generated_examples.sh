@@ -11,10 +11,10 @@ segmentation="Segmentation fault"
 
 for i in $(seq 1 $1)
 do
-    if ./llamac < ../generated_examples/p$i.lla | grep -q "Error" 
+    if ./llamac -s < ../generated_examples/p$i.lla | grep -q "Error" 
     then 
         let "erCount+=1"; erFiles+=(p$i.lla)
-    elif ./llamac < ../generated_examples/p$i.lla | grep -q "Segmentation fault"
+    elif ./llamac -s < ../generated_examples/p$i.lla | grep -q "Segmentation fault"
     then 
         let "segCount+=1"; segFiles+=(p$i.lla)
     fi

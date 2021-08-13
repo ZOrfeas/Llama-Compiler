@@ -56,7 +56,7 @@ public:
         TypeGraph *correctTypeGraph = inf.deepSubstitute(TG);
 
         printColorString(id, idWidth, 1, 35);
-        printColorString(correctTypeGraph->stringifyType(), typeWidth);
+        printColorString(correctTypeGraph->stringifyTypeClean(), typeWidth);
         printColorString(std::to_string(line), lineWidth);
         std::cout << std::endl;
     }
@@ -117,6 +117,63 @@ public:
     virtual FunctionEntry *insertFunctionToSymbolTable(std::string id, TypeGraph *t) 
     {
         return st.insertFunction(id, t);
+    }
+    virtual void insertTypeToTypeTable(std::string id) 
+    {
+        if(!tt.insertType(id))
+        {
+            printError("Type " + id + " has already been defined");
+        }
+    }
+    virtual ConstructorEntry *insertConstructorToConstructorTable(std::string Id)
+    {
+        ConstructorEntry *c = ct.insertConstructor(Id);
+        if(!c) 
+        {
+            printError("Constructor " + Id + " already belongs to other type");
+        }
+        
+        return c;
+    }
+    virtual SymbolEntry *lookupBasicFromSymbolTable(std::string id) 
+    {
+        SymbolEntry *s = st.lookup(id, false);
+        if(!s) 
+        {
+            printError("Identifier " + id + " not found");
+        }
+
+        return s;
+    }
+    virtual ArrayEntry *lookupArrayFromSymbolTable(std::string id)
+    {
+        ArrayEntry *s = st.lookupArray(id, false);
+        if(!s) 
+        {
+            printError("Array identifier " + id + " not found");
+        }
+        
+        return s;
+    }
+    virtual TypeEntry *lookupTypeFromTypeTable(std::string id)
+    {
+        TypeEntry *t = tt.lookupType(id, false);
+        if(!t) 
+        {
+            printError("Type " + id + " not found");
+        }
+
+        return t;
+    }
+    virtual ConstructorEntry *lookupConstructorFromContstructorTable(std::string Id) 
+    {
+        ConstructorEntry *c = ct.lookupConstructor(Id, false);
+        if(!c)
+        {
+            printError("Constructor " + Id + " not found");
+        }
+        
+        return c;
     }
     virtual void printIdTypeGraphs() 
     {
@@ -206,7 +263,7 @@ public:
     virtual TypeGraph *get_TypeGraph() override
     {
         if (!TG)
-            TG = tt.lookupType(type_string[(int)t])->getTypeGraph();
+            TG = lookupTypeFromTypeTable(type_string[(int)t])->getTypeGraph();
 
         return TG;
     }
@@ -306,7 +363,7 @@ public:
     virtual TypeGraph *get_TypeGraph()
     {
         if (!TG)
-            TG = tt.lookupType(id)->getTypeGraph();
+            TG = lookupTypeFromTypeTable(id)->getTypeGraph();
 
         return TG;
     }
@@ -370,7 +427,7 @@ public:
         : Id(*Id), type_list(*t) {}
     void add_Id_to_ct(TypeEntry *te)
     {
-        ConstructorEntry *c = ct.insertConstructor(Id);
+        ConstructorEntry *c = insertConstructorToConstructorTable(Id);
         for (Type *t : type_list)
         {
             c->addType(t->get_TypeGraph());
@@ -447,11 +504,11 @@ public:
     virtual void insert_id_to_tt() override
     {
         // Insert custom type to type table
-        tt.insertType(id);
+        insertTypeToTypeTable(id);
     }
     virtual void sem() override
     {
-        TypeEntry *t = tt.lookupType(id);
+        TypeEntry *t = lookupTypeFromTypeTable(id);
 
         for (Constr *c : constr_list)
         {
@@ -1206,7 +1263,7 @@ public:
     virtual void sem() override
     {
         // Lookup the array
-        ArrayEntry *arr = st.lookupArray(id);
+        ArrayEntry *arr = lookupArrayFromSymbolTable(id);
 
         // Get the number of the dimension
         int i = dim->get_int();
@@ -1238,7 +1295,7 @@ public:
         : id(*id) {}
     virtual void sem() override
     {
-        SymbolEntry *s = st.lookup(id);
+        SymbolEntry *s = lookupBasicFromSymbolTable(id);
         TG = s->getTypeGraph();
     }
     virtual void printOn(std::ostream &out) const override
@@ -1256,7 +1313,7 @@ public:
         : ConstantCall(id), expr_list(*expr_list) {}
     virtual void sem() override
     {
-        TypeGraph *definitionTypeGraph = st.lookup(id)->getTypeGraph();
+        TypeGraph *definitionTypeGraph = lookupBasicFromSymbolTable(id)->getTypeGraph();
         int count;
         if (definitionTypeGraph->isUnknown())
         {
@@ -1323,7 +1380,7 @@ public:
         : Id(*Id), expr_list(*expr_list) {}
     virtual void sem()
     {
-        ConstructorEntry *c = ct.lookupConstructor(Id);
+        ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
         TypeGraph *t = c->getTypeGraph();
 
         int count = t->getFieldCount();
@@ -1366,7 +1423,7 @@ public:
     virtual void sem() override
     {
         int args_n = (int)expr_list.size();
-        ArrayEntry *a = st.lookupArray(id);
+        ArrayEntry *a = lookupArrayFromSymbolTable(id);
         TypeGraph *t = a->getTypeGraph();
 
         // If it is known check that the dimensions are correct
@@ -1484,7 +1541,7 @@ public:
         : Id(*Id), pattern_list(*p_list) {}
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
-        ConstructorEntry *c = ct.lookupConstructor(Id);
+        ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
         TypeGraph *c_TypeGraph = c->getTypeGraph();
 
         // Check that toMatch is of the same type as constructor or force it to be

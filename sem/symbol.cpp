@@ -35,13 +35,14 @@ SymbolTable::~SymbolTable() {
         ; // do nothing while deleting scopes
     delete Table; // delete the Table at the end
 }
+//! Deprecated 
 void SymbolTable::error(string msg, bool crash) {
     std::cout << "\033[1m\033[30mSymbolTable\033[0m: ";
     std::cout << msg << std::endl;
     if (crash) exit(1);
 
 }
-void SymbolTable::log(string msg) {error(msg, false);}
+void SymbolTable::log(string msg) { error(msg, false); }
 void SymbolTable::enable_logs() { debug = true; }
 
 SymbolEntry* SymbolTable::insert(SymbolEntry *entry, bool overwrite) {
@@ -63,7 +64,8 @@ SymbolEntry* SymbolTable::lookup(string name, bool err) {
             return (**it)[name];
         }
     }
-    error("Symbol " + name + " not found", err);
+    if (debug)
+        log("Symbol " + name + " not found");
     return nullptr;
 }
 
@@ -124,7 +126,8 @@ FunctionEntry* SymbolTable::lookupFunction(string name, bool err) {
         if (candidate->getTypeGraph()->isFunction()) 
             return dynamic_cast<FunctionEntry *>(candidate);
     }
-    error("Function " + name + " not found", err);
+    if (debug)
+        log("Function " + name + " not found");
     return nullptr;
 }
 ArrayEntry* SymbolTable::lookupArray(string name, bool err) {
@@ -132,7 +135,8 @@ ArrayEntry* SymbolTable::lookupArray(string name, bool err) {
         if (candidate->getTypeGraph()->isArray()) 
             return dynamic_cast<ArrayEntry *>(candidate);
     }
-    error("Array " + name + " not found", err);
+    if (debug)
+        log("Array " + name + " not found");
     return nullptr;
 }
 RefEntry* SymbolTable::lookupRef(string name, bool err) {
@@ -140,7 +144,7 @@ RefEntry* SymbolTable::lookupRef(string name, bool err) {
         if (candidate->getTypeGraph()->isRef())
             return dynamic_cast<RefEntry *>(candidate);
     } else
-    error("Ref " + name + " not found", err);
+        log("Ref " + name + " not found");
     return nullptr;
 }
 
@@ -157,20 +161,22 @@ BaseTable::~BaseTable() {
     if (debug)
         log("destructor called...");
 }
+//! Deprecated
 void BaseTable::error(string msg, bool crash) {
     std::cout << kind << ":" <<" ";
     std::cout << msg << std::endl;
     if (crash) exit(1);
 }
-void BaseTable::log(string msg) {error(msg, false);}
+void BaseTable::log(string msg) { error(msg, false); }
 void BaseTable::enable_logs() { debug = true; }
 
 SymbolEntry* BaseTable::insert(SymbolEntry *entry, bool overwrite) {
     if (debug)
         log("Inserting " + entry->getTypeGraph()->stringifyType() + " with name " + entry->name);
     if (nameInScope(entry->name, Table) && !overwrite) {
-        string msg = "Name" + entry->name + "declared twice";
-        error(msg);
+        string msg = "Name " + entry->name + " declared twice";
+        if (debug)
+            log(msg);
         return nullptr;
     } else {
         // creates or updates existing
@@ -184,7 +190,8 @@ SymbolEntry* BaseTable::lookup(string name, bool err) {
     if (nameInScope(name, Table)) {
         return (*Table)[name];
     }
-    error("Name " + name + " not found", err);
+    if (debug)
+        log("Name " + name + " not found");
     return nullptr;
 }
 

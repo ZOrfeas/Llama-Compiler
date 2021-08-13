@@ -481,7 +481,7 @@ void compilerHandler(Program *p) {
         tt.enable_logs();
         ct.enable_logs();
     }
-    
+
     if(syntaxAnalysis)
     {
         if(printAST) 
@@ -529,8 +529,10 @@ int main(int argc, char **argv) {
         };
     
     int c;
+    bool noArgs = true;
     while((c = getopt_long(argc, argv, "saic", long_options, &option_index)) != -1)
-    {
+    {   
+        noArgs = false;
         switch(c)
         {
             case OPTION_tableLogs:
@@ -588,12 +590,17 @@ int main(int argc, char **argv) {
                 compile = true;
                 break;
             default:
-                syntaxAnalysis = true;
-                semAnalysis = true;
-                inferenceAnalysis = true;
-                compile = true;
                 break;
         }
+    }
+
+    // If no arguments are given then compile
+    if(c == -1 && noArgs) 
+    {
+        syntaxAnalysis = true;
+        semAnalysis = true;
+        inferenceAnalysis = true;
+        compile = true;
     }
 
     // yydebug = 1; // default val is zero so just comment this to disable

@@ -15,14 +15,14 @@ void TypeGraph::wrongCall(std::string functionName) {
 TypeGraph::TypeGraph(graphType t): t(t) {}
 graphType const & TypeGraph::getSubClass() { return t; }
 std::string TypeGraph::stringifyType() {
+    return "\033[4m" + stringifyTypeClean() + "\033[0m";
+}
+std::string TypeGraph::stringifyTypeClean() {
     static const std::string graph_type_string[] = {
      "unknown", "unit", "int", "float", "bool",
      "char", "ref", "array", "function", "custom", "constructor"
     };
-    // std::cout << "debugging...: ";
-    // std::cout << "test " << (int)t << " "
-    //           << graph_type_string[2] << "\n";
-    return "\033[4m" + graph_type_string[(int)(t)] + "\033[0m";
+    return graph_type_string[(int)(t)];
 }
 void TypeGraph::log(std::string msg) {
     std::cout << "TypeGraph of type " << stringifyType()
@@ -144,6 +144,9 @@ unsigned long UnknownTypeGraph::getId() { return tmp_id; }
 std::string UnknownTypeGraph::stringifyType() {
     return "\033[4m" + getTmpName() + "\033[0m";
 }
+std::string UnknownTypeGraph::stringifyTypeClean() {
+    return getTmpName();
+}
 bool UnknownTypeGraph::canBeArray() { return can_be_array; }
 bool UnknownTypeGraph::canBeFunc() { return can_be_func; }
 bool UnknownTypeGraph::onlyIntCharFloat() { return only_int_char_float; }
@@ -170,21 +173,17 @@ bool BasicTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
     return getSubClass() == o->getSubClass();
 }
+
 UnitTypeGraph::UnitTypeGraph()
 : BasicTypeGraph(graphType::TYPE_unit) {}
-std::string UnitTypeGraph::stringifyType() { return "\033[4munit\033[0m"; }
 IntTypeGraph::IntTypeGraph()
 : BasicTypeGraph(graphType::TYPE_int) {}
-std::string IntTypeGraph::stringifyType() { return "\033[4mint\033[0m"; }
 CharTypeGraph::CharTypeGraph()
 : BasicTypeGraph(graphType::TYPE_char) {}
-std::string CharTypeGraph::stringifyType() { return "\033[4mchar\033[0m"; }
 BoolTypeGraph::BoolTypeGraph()
 : BasicTypeGraph(graphType::TYPE_bool) {}
-std::string BoolTypeGraph::stringifyType() { return "\033[4mbool\033[0m"; }
 FloatTypeGraph::FloatTypeGraph()
 : BasicTypeGraph(graphType::TYPE_float) {}
-std::string FloatTypeGraph::stringifyType() { return "\033[4mfloat\033[0m"; }
 
 /*************************************************************/
 /**                    Array TypeGraph                       */
@@ -207,9 +206,12 @@ std::string ArrayTypeGraph::stringifyDimensions() {
 }
 std::string ArrayTypeGraph::stringifyType() {
     return "\033[4m" + 
-           stringifyDimensions() + " " +
-           getContainedType()->stringifyType() +
+           stringifyTypeClean() +
            "\033[0m";
+}
+std::string ArrayTypeGraph::stringifyTypeClean() {
+    return stringifyDimensions() + " " +
+           getContainedType()->stringifyTypeClean();
 }
 TypeGraph* ArrayTypeGraph::getContainedType() { return Type; }
 int ArrayTypeGraph::getDimensions() { return dimensions; }
@@ -230,10 +232,12 @@ ArrayTypeGraph::~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 RefTypeGraph::RefTypeGraph(TypeGraph *refType, bool allocated, bool dynamic)
 : TypeGraph(graphType::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
 std::string RefTypeGraph::stringifyType() {
-    return getContainedType()->stringifyType() +
-           "\033[4m" +
-           " ref" + 
+    return "\033[4m" +
+           stringifyTypeClean() + 
            "\033[0m";
+}
+std::string RefTypeGraph::stringifyTypeClean() {
+    return getContainedType()->stringifyTypeClean() + " ref";
 }
 TypeGraph* RefTypeGraph::getContainedType() { return Type; }
 void RefTypeGraph::setAllocated() { allocated = true; }
@@ -263,7 +267,7 @@ std::string FunctionTypeGraph::stringifyParams() {
     if (getParamCount() == 0) {
         return "someFunction";
     }
-    std::string retVal = getParamType(0)->stringifyType();
+    std::string retVal = getParamType(0)->stringifyTypeClean();
     std::string temp;
     if (getParamType(0)->isFunction()) {
         retVal.push_back(')');
@@ -271,7 +275,7 @@ std::string FunctionTypeGraph::stringifyParams() {
     }
     for (int i = 0; i < getParamCount(); i++) {
         if (i == 0) continue;
-        temp = getParamType(i)->stringifyType();
+        temp = getParamType(i)->stringifyTypeClean();
         if (getParamType(1)->isFunction()) {
             temp.push_back(')');
             temp.insert(temp.begin(), '(');
@@ -282,9 +286,12 @@ std::string FunctionTypeGraph::stringifyParams() {
 }
 std::string FunctionTypeGraph::stringifyType() {
     return "\033[4m" +
-           stringifyParams() + " -> " +
-           getResultType()->stringifyType() +
+            stringifyTypeClean() +
            "\033[0m";
+}
+std::string FunctionTypeGraph::stringifyTypeClean() {
+    return stringifyParams() + " -> " +
+           getResultType()->stringifyTypeClean();
 }
 std::vector<TypeGraph *>* FunctionTypeGraph::getParamTypes() {
     return paramTypes;
@@ -343,12 +350,13 @@ FunctionTypeGraph::~FunctionTypeGraph() {
 ConstructorTypeGraph::ConstructorTypeGraph(): TypeGraph(graphType::TYPE_record),
 fields(new std::vector<TypeGraph *>()), customType(nullptr) {}
 std::string ConstructorTypeGraph::stringifyType() {
+    return "\033[4m" + stringifyTypeClean() + "\033[0m";
+}
+std::string ConstructorTypeGraph::stringifyTypeClean() {
     if (getCustomType() == nullptr) {
-        return TypeGraph::stringifyType();
+        return TypeGraph::stringifyTypeClean();
     } else {
-    return "\033[4m" +
-           getCustomType()->stringifyType() + 
-           "\033[0m";
+        return getCustomType()->stringifyTypeClean();
     }
 }
 std::vector<TypeGraph *>* ConstructorTypeGraph::getFields() { return fields; }
@@ -382,8 +390,11 @@ CustomTypeGraph::CustomTypeGraph(std::string name, std::vector<ConstructorTypeGr
 : TypeGraph(graphType::TYPE_custom), name(name), constructors(constructors) {}
 std::string CustomTypeGraph::stringifyType() {
     return "\033[4m" +
-           name + "(user-defined)"
+           stringifyTypeClean() +
            "\033[0m";
+}
+std::string CustomTypeGraph::stringifyTypeClean() {
+    return name + "(user-defined)";
 }
 std::vector<ConstructorTypeGraph *>* CustomTypeGraph::getConstructors() {
     return constructors;
