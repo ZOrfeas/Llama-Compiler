@@ -557,6 +557,9 @@ int main(int argc, char **argv) {
                 printSuccess = true;
                 break;
             case OPTION_help:
+                std::cout << "Usage ./llamac -[short options] --[long options] < file" << std::endl;
+                std::cout << std::endl;
+
                 for(auto i: option_values)
                 {
                     std::cout << std::left << std::setfill(' ') << std::setw(20) << "-" + option_string[i]
