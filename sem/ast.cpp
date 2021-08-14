@@ -16,7 +16,8 @@ TypeGraph *type_char = tt.lookupType("char")->getTypeGraph();
 
 void printColorString(std::string s, int width, int format, int color)
 {   
-    std::string intro = "\033[" + std::to_string(format) + ";" + std::to_string(color) + "m";
+    std::string intro = (format == 0) ? "\033[0m" 
+                                      : "\033[" + std::to_string(format) + ";" + std::to_string(color) + "m";
     std::string outro = "\033[0m";
     
     std::cout   << intro

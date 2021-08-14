@@ -486,8 +486,9 @@ void compilerHandler(Program *p) {
     {
         if(printAST) 
         {   
-            printHeader("AST");
-            std::cout << *p << std::endl << std::endl;
+            //printHeader("AST");
+            std::cout << *p << std::endl; 
+            std::cout << std::endl;
         }
     }
     
@@ -501,7 +502,7 @@ void compilerHandler(Program *p) {
         inf.solveAll(false);
         if(printTable) 
         {   
-            printHeader("Types of identifiers");
+            //printHeader("Types of identifiers");
             p->printIdTypeGraphs();
             std::cout << std::endl;
         }
@@ -529,10 +530,9 @@ int main(int argc, char **argv) {
         };
     
     int c;
-    bool noArgs = true;
+    bool noShortOptions = true; // If there are no short options then run all stages
     while((c = getopt_long(argc, argv, "saic", long_options, &option_index)) != -1)
     {   
-        noArgs = false;
         switch(c)
         {
             case OPTION_tableLogs:
@@ -571,23 +571,15 @@ int main(int argc, char **argv) {
                 }
                 exit(0);
                 break;
+            case 'c':
+                compile = true;
+            case 'i':
+                inferenceAnalysis = true;
+            case 'a':
+                semAnalysis = true;
             case 's':
                 syntaxAnalysis = true;
-                break;
-            case 'a':
-                syntaxAnalysis = true;
-                semAnalysis = true;
-                break;
-            case 'i':
-                syntaxAnalysis = true;
-                semAnalysis = true;
-                inferenceAnalysis = true;
-                break;
-            case 'c':
-                syntaxAnalysis = true;
-                semAnalysis = true;
-                inferenceAnalysis = true;
-                compile = true;
+                noShortOptions = false;
                 break;
             default:
                 break;
@@ -595,7 +587,7 @@ int main(int argc, char **argv) {
     }
 
     // If no arguments are given then compile
-    if(c == -1 && noArgs) 
+    if(noShortOptions) 
     {
         syntaxAnalysis = true;
         semAnalysis = true;

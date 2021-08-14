@@ -51,13 +51,24 @@ protected:
 public:
     Identifier(std::string id, int line)
      : id(id), line(line) { TG = st.lookup(id)->getTypeGraph(); }
-    void printIdLine(int lineWidth, int idWidth, int typeWidth)  
+    std::string getName() 
+    {
+        return id;
+    }
+    std::string getTypeString() 
     {
         TypeGraph *correctTypeGraph = inf.deepSubstitute(TG);
-
-        printColorString(id, idWidth, 1, 35);
-        printColorString(correctTypeGraph->stringifyTypeClean(), typeWidth);
-        printColorString(std::to_string(line), lineWidth);
+        return correctTypeGraph->stringifyTypeClean();
+    }
+    std::string getLine()
+    {
+        return std::to_string(line);
+    }
+    void printIdLine(int lineWidth, int idWidth, int typeWidth)  
+    {
+        printColorString(getName(), idWidth, 1, 35);
+        printColorString(getTypeString(), typeWidth);
+        printColorString(getLine(), lineWidth);
         std::cout << std::endl;
     }
 };
@@ -97,9 +108,11 @@ public:
             inf.addConstraint(t1, t2, line_number);
         }
     }
-    virtual void printError(std::string s)
-    {
-        std::cout << "Error at line " << line_number << ": " << s << std::endl;
+    virtual void printError(std::string msg)
+    {   
+        std::string intro = "Error at line " + std::to_string(line_number) + ": ";
+        printColorString(intro, intro.size(), 1, 31);
+        std::cout << msg << std::endl;
         exit(1);
     }
     virtual void insertBasicToSymbolTable(std::string id, TypeGraph *t) 
@@ -177,15 +190,33 @@ public:
     }
     virtual void printIdTypeGraphs() 
     {
-        int idWidth = 6;
-        int typeWidth = 30;
-        int lineWidth = 10;
+        // Find the maximum size of the ids, type and line strings
+        // in order to decide the padding
+        int margin = 2;
+        int idWidth = 4, typeWidth = 8, lineWidth = 3;
+        std::string name, typeString, line;
+        for(auto ident: AST_identifier_list)
+        {
+            name = ident->getName();
+            typeString = ident->getTypeString();
+            line = ident->getLine();
 
-        printColorString("Name", idWidth, 1, 31);
-        printColorString("Type", typeWidth, 1, 31);
-        printColorString("Line", lineWidth, 1, 31);
+            if(idWidth < (int)name.size()) idWidth = name.size();
+            if(typeWidth < (int)typeString.size()) typeWidth = typeString.size();
+            if(lineWidth < (int)line.size()) lineWidth = line.size();
+        }
+        idWidth += margin;
+        typeWidth += margin;
+        lineWidth += margin;
+
+        // Print the header of the table
+        int colorANSI = 34 , formatANSI = 4;
+        printColorString("Name", idWidth, formatANSI, colorANSI);
+        printColorString("Type", typeWidth, formatANSI, colorANSI);
+        printColorString("Line", lineWidth, formatANSI, colorANSI);
         std::cout << std::endl;
 
+        // Print every line
         for (auto ident: AST_identifier_list)
         {
             ident->printIdLine(lineWidth, idWidth, typeWidth);
