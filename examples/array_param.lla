@@ -1,8 +1,9 @@
 let print_int a = ()
-let f a b = dim 2 a + b
+let f a b = a[2,2] + b
 
 let mutable x[10,10]
-let b = x[1,2] := 1
+let b = x[2,2] := 1
 let main =
 	let i = 5
-	in print_int i
+	in let temp = f x 2
+		in print_int temp

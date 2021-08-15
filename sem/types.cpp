@@ -211,7 +211,7 @@ std::string ArrayTypeGraph::stringifyType() {
 }
 std::string ArrayTypeGraph::stringifyTypeClean() {
     return stringifyDimensions() + " " +
-           getContainedType()->getContainedType()->stringifyTypeClean();
+           getContainedType()->stringifyTypeClean();
 }
 TypeGraph* ArrayTypeGraph::getContainedType() { return Type; }
 int ArrayTypeGraph::getDimensions() { return dimensions; }

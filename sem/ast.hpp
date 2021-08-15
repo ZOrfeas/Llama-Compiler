@@ -423,7 +423,7 @@ public:
     }
     void type_check(TypeGraph *t, std::string msg = "Type mismatch")
     {
-        checkTypeGraphs(TG, t, msg);
+        checkTypeGraphs(TG, t, msg + ", " + TG->stringifyTypeClean() + " given.");
     }
     void checkIntCharFloat(std::string msg = "Must be int, char or float")
     {
