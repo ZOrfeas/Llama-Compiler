@@ -143,7 +143,8 @@ public:
         ConstructorEntry *c = ct.insertConstructor(Id);
         if(!c) 
         {
-            printError("Constructor " + Id + " already belongs to other type");
+            std::string type = lookupConstructorFromContstructorTable(Id)->getTypeGraph()->getCustomType()->stringifyTypeClean();
+            printError("Constructor " + Id + " already belongs to type " + type);
         }
         
         return c;

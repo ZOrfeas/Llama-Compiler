@@ -14,8 +14,8 @@ parser.hpp parser.cpp: parser.y
 # Add your dependencies here, e.g.
 # parser.o: parser.cpp lexer.hpp symbol.hpp
 lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
-parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
-ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp
+parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp infer.hpp
+ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
 infer.o: infer.cpp infer.hpp types.hpp
@@ -35,13 +35,13 @@ debug: CXXFLAGS+=-g
 
 lexer_d.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
 	$(CXX) $(CXXFLAGS) -c -o lexer_d.o lexer.cpp
-parser_d.o: parser.cpp lexer.hpp symbol.hpp ast.hpp
+parser_d.o: parser.cpp lexer.hpp symbol.hpp ast.hpp infer.hpp
 	$(CXX) $(CXXFLAGS) -c -o parser_d.o parser.cpp
-ast_d.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp
+ast_d.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
 	$(CXX) $(CXXFLAGS) -c -o ast_d.o ast.cpp
-symbol_d.o: symbol.cpp symbol.hpp
+symbol_d.o: symbol.cpp symbol.hpp types.hpp
 	$(CXX) $(CXXFLAGS) -c -o symbol_d.o symbol.cpp
-types_d.o: types.cpp types.hpp
+types_d.o: types.cpp types.hpp infer.hpp
 	$(CXX) $(CXXFLAGS) -c -o types_d.o types.cpp
 infer_d.o: infer.cpp infer.hpp types.hpp
 	$(CXX) $(CXXFLAGS) -c -o infer_d.o infer.cpp
