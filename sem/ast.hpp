@@ -982,7 +982,7 @@ public:
         : s(*s) {}
     virtual void sem() override
     {
-        TG = new ArrayTypeGraph(1, type_char);
+        TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
     }
     virtual void printOn(std::ostream &out) const override
     {
@@ -1298,7 +1298,8 @@ public:
 
         // Get the number of the dimension
         int i = dim->get_int();
-
+        // std::cout << i << "\n";
+        // std::cout << arr->getTypeGraph()->getDimensions() << "\n";
         // Check if i is withing the correct bounds
         if (i < 1 && i > arr->getTypeGraph()->getDimensions())
         {
@@ -1454,7 +1455,7 @@ public:
     virtual void sem() override
     {
         int args_n = (int)expr_list.size();
-        ArrayEntry *a = lookupArrayFromSymbolTable(id);
+        SymbolEntry *a = lookupBasicFromSymbolTable(id);
         TypeGraph *t = a->getTypeGraph();
 
         // If it is known check that the dimensions are correct
@@ -1481,7 +1482,7 @@ public:
         // and check that all given indices are integers
         else
         {
-            TypeGraph *elemTypeGraph = new UnknownTypeGraph(false, true, false);
+            TypeGraph *elemTypeGraph = new RefTypeGraph(new UnknownTypeGraph(false, true, false));
             ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, elemTypeGraph);
             inf.addConstraint(t, correct_array, line_number);
 

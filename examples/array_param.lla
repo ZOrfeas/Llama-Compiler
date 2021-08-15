@@ -1,0 +1,8 @@
+let print_int a = ()
+let f a b = dim 2 a + b
+
+let mutable x[10,10]
+let b = x[1,2] := 1
+let main =
+	let i = 5
+	in print_int i
