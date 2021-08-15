@@ -110,9 +110,8 @@ ArrayEntry* SymbolTable::insertArray(string name, TypeGraph *containedT, int dim
     ArrayEntry* arrEntry = new ArrayEntry(name, arrType);
     return dynamic_cast<ArrayEntry *>(insert(arrEntry, overwrite));
 }
-RefEntry* SymbolTable::insertRef(string name, TypeGraph *pointedT,
-                                    bool allocated, bool dynamic, bool overwrite) {
-    RefTypeGraph* refType = new RefTypeGraph(pointedT, allocated, dynamic);
+RefEntry* SymbolTable::insertRef(string name, TypeGraph *pointedT, bool overwrite) {
+    RefTypeGraph* refType = new RefTypeGraph(pointedT);
     RefEntry* refEntry = new RefEntry(name,refType);
     return dynamic_cast<RefEntry *>(insert(refEntry, overwrite));
 }
@@ -279,13 +278,6 @@ RefEntry::RefEntry(std::string n, TypeGraph *t)
 //               << std::endl;
 //     exit(1);
 // }
-bool RefEntry::isDynamic() { return getTypeGraph()->isDynamic(); }
-bool RefEntry::isAllocated() { return getTypeGraph()->isAllocated(); }
-void RefEntry::setDynamic() { getTypeGraph()->setDynamic(); }
-void RefEntry::setAllocated() { getTypeGraph()->setAllocated(); }
-void RefEntry::resetDynamic() { getTypeGraph()->resetDynamic(); }
-void RefEntry::resetAllocated() { getTypeGraph()->resetAllocated(); }
-
 
 TypeEntry::TypeEntry(std::string n, TypeGraph *t)
     :SymbolEntry(n,t),

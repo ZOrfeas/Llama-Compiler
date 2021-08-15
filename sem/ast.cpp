@@ -74,11 +74,6 @@ void UnOp::sem() {
             TypeGraph *ref_t = new RefTypeGraph(unknown_t);
             inf.addConstraint(t_expr, ref_t, line_number);
             
-            if (!t_expr->isDynamic())
-            {
-                printError("Must have been assigned value with new");
-            }
-
             TG = type_unit;
             break;
         }

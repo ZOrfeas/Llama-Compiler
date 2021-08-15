@@ -121,7 +121,7 @@ public:
     }
     virtual void insertRefToSymbolTable(std::string id, TypeGraph *t) 
     {   
-        st.insertRef(id, t, true, false);   
+        st.insertRef(id, t);   
     }
     virtual void insertArrayToSymbolTable(std::string id, TypeGraph *contained_type, int d) 
     {
@@ -684,7 +684,7 @@ public:
     {
         int d = get_dimensions();
         TypeGraph *t = T->get_TypeGraph();
-        RefTypeGraph *contained_type = new RefTypeGraph(t, true, false);
+        RefTypeGraph *contained_type = new RefTypeGraph(t);
 
         if(!t->isUnknown())
         {
@@ -732,7 +732,7 @@ public:
     virtual void insert_id_to_st() override
     {
         TypeGraph *t = T->get_TypeGraph();
-        TypeGraph *ref_type = new RefTypeGraph(t, true, false);
+        TypeGraph *ref_type = new RefTypeGraph(t);
 
         if(!t->isUnknown()) 
         {
@@ -1174,7 +1174,7 @@ public:
             printError("Array type cannot be allocated with new");
         }
 
-        TG = new RefTypeGraph(t, true, true);
+        TG = new RefTypeGraph(t);
     }
     virtual void printOn(std::ostream &out) const override
     {

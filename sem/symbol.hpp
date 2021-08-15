@@ -104,8 +104,7 @@ public:
     ArrayEntry* insertArray(std::string name, TypeGraph *containedT, int dimensions,
                              bool overwrite = true);
     /** Inserts an id with RefTypeGraph of the provided type and specifications */
-    RefEntry* insertRef(std::string name, TypeGraph *pointedT, bool allocated,
-                           bool dynamic, bool overwrite = true);
+    RefEntry* insertRef(std::string name, TypeGraph *pointedT, bool overwrite = true);
 //! Lookup wrappers
     /** Looks up the existence of an identifier 
      *  If not found and err = true, exits, otherwise returns nullptr */

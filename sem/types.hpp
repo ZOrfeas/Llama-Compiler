@@ -37,12 +37,6 @@ public:
     virtual bool equals(TypeGraph *o) = 0;
     virtual TypeGraph* getContainedType();
     virtual int getDimensions();
-    virtual void setDynamic();
-    virtual void setAllocated();
-    virtual void resetDynamic();
-    virtual void resetAllocated();
-    virtual bool isAllocated();
-    virtual bool isDynamic();
     virtual std::vector<TypeGraph *>* getParamTypes();
     virtual TypeGraph* getResultType();
     virtual int getParamCount();
@@ -141,19 +135,11 @@ public:
 };
 class RefTypeGraph : public TypeGraph {
     TypeGraph *Type;
-    bool allocated, dynamic;
 public:
-    RefTypeGraph(TypeGraph *refType,
-        bool allocated = false, bool dynamic = false);
+    RefTypeGraph(TypeGraph *refType);
     std::string stringifyType() override;
     std::string stringifyTypeClean() override;
     TypeGraph* getContainedType() override;
-    void setAllocated() override;
-    void setDynamic() override;
-    void resetAllocated() override;
-    void resetDynamic() override;
-    bool isAllocated() override;
-    bool isDynamic() override;
     bool equals(TypeGraph *o) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
     ~RefTypeGraph();

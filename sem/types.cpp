@@ -53,16 +53,6 @@ TypeGraph* TypeGraph::getContainedType() {
 int TypeGraph::getDimensions() {
     wrongCall("getDimensions()"); exit(1);
 }
-void TypeGraph::setDynamic() { wrongCall("setDynamic()"); exit(1); }
-void TypeGraph::setAllocated() { wrongCall("setAllocated()"); exit(1); }
-void TypeGraph::resetDynamic()  { wrongCall("resetDynamic()"); exit(1); }
-void TypeGraph::resetAllocated() { wrongCall("resetAllocated()"); exit(1); }
-bool TypeGraph::isAllocated() {
-    wrongCall("isAllocated()"); exit(1);
-}
-bool TypeGraph::isDynamic() {
-    wrongCall("isDynamic()"); exit(1);
-}
 std::vector<TypeGraph *>* TypeGraph::getParamTypes() {
     wrongCall("getParamTypes()"); exit(1);
 }
@@ -229,8 +219,8 @@ ArrayTypeGraph::~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 /**                    Ref TypeGraph                         */
 /*************************************************************/
 
-RefTypeGraph::RefTypeGraph(TypeGraph *refType, bool allocated, bool dynamic)
-: TypeGraph(graphType::TYPE_ref), Type(refType), allocated(allocated), dynamic(dynamic) {}
+RefTypeGraph::RefTypeGraph(TypeGraph *refType)
+: TypeGraph(graphType::TYPE_ref), Type(refType) {}
 std::string RefTypeGraph::stringifyType() {
     return "\033[4m" +
            stringifyTypeClean() + 
@@ -240,12 +230,6 @@ std::string RefTypeGraph::stringifyTypeClean() {
     return getContainedType()->stringifyTypeClean() + " ref";
 }
 TypeGraph* RefTypeGraph::getContainedType() { return Type; }
-void RefTypeGraph::setAllocated() { allocated = true; }
-void RefTypeGraph::setDynamic() { dynamic = true; }
-void RefTypeGraph::resetAllocated() { allocated = false; }
-void RefTypeGraph::resetDynamic() { dynamic = false; }
-bool RefTypeGraph::isAllocated() { return allocated; }
-bool RefTypeGraph::isDynamic() { return dynamic; }
 bool RefTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
     return o->isRef() &&
@@ -394,7 +378,7 @@ std::string CustomTypeGraph::stringifyType() {
            "\033[0m";
 }
 std::string CustomTypeGraph::stringifyTypeClean() {
-    return name + "(user-defined)";
+    return name;
 }
 std::vector<ConstructorTypeGraph *>* CustomTypeGraph::getConstructors() {
     return constructors;

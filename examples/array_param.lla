@@ -1,5 +1,5 @@
 let print_int a = ()
-let f a b = a[2,2] + b
+let f a b = !a[2,2] + b
 
 let mutable x[10,10]
 let b = x[2,2] := 1
