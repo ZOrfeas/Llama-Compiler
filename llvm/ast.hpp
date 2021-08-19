@@ -16,7 +16,7 @@
 #include "symbol.hpp"
 #include "types.hpp"
 #include "infer.hpp"
-
+ 
 const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
 enum class type
 {
