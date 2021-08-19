@@ -1,0 +1,35 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build project with optimizations",
+            "command": "make",
+            "args": [],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Builds production version"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build project for debugging",
+            "command": "make",
+            "args": ["debug"],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher" : [
+                "$gcc"
+            ],
+            "group": "build"
+        }
+    ],
+    "version": "2.0.0"
+}
