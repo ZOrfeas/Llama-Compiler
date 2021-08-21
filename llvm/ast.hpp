@@ -95,12 +95,13 @@ public:
     {
         line_number = yylineno;
     }
-    virtual ~AST()
-    {
-    }
+    virtual ~AST() {}
     virtual void printOn(std::ostream &out) const = 0;
-    virtual void sem()
+    virtual void sem() {}
+    virtual llvm::Value* compile() { return nullptr; }
+    void init_compile(const char *programName, bool optimize=false)
     {
+        //TODO: Fill initializations
     }
     virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     {
@@ -475,6 +476,7 @@ public:
 
         te->addConstructor(c);
     }
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Constr(" << Id;
@@ -555,6 +557,7 @@ public:
             c->add_Id_to_ct(t);
         }
     }
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Tdef(" << id << ", ";
@@ -607,6 +610,9 @@ public:
 
         addToIdList(id);
     }
+    // - if it is a true Constant definition stores the result of the expr->codegen()
+    // - Danger if it's a copy of an already existing function or other edge cases
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
@@ -652,6 +658,10 @@ public:
 
         addToIdList(id);
     }
+    // - Generates the function prototype
+    // - creates a scope, inserts the paramete names and values
+    // - calls expr->codegen()
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Function(" << id;
@@ -712,6 +722,9 @@ public:
 
         addToIdList(id);
     }
+    // if possible, declares an array of arrays equal to get_dimensions(),
+    // each of which is the size of the Value* returned by the relevant expr from expr_list
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Array(" << id;
@@ -756,6 +769,8 @@ public:
 
         addToIdList(id);
     }
+    // alloca's the necessary space for a var of its TYPE
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Variable(" << id << ", " << *T << ", "
@@ -812,6 +827,9 @@ public:
             }
         }
     }
+    // in order compile the definitions contained 
+    // (recursive or not is irrelevant for functions if prototypes are used properly)
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Let(";
@@ -854,6 +872,9 @@ public:
             td->sem();
         }
     }
+    // in order create the types defined 
+    // (Struct for big type, with pointers to constr types and enum ?)
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Type(";
@@ -897,6 +918,8 @@ public:
     {
         definition_list.push_back(d);
     }
+    // in order compile all the contained definitions
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Definition(";
@@ -945,6 +968,8 @@ public:
         // The type of the LetIn is the same as that of the expression
         TG = expr->get_TypeGraph();
     }
+    // open scope, do the definition, compile the expression, return its result Value*
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "LetIN(" << *letdef << ", " << *expr << ")";
@@ -993,6 +1018,8 @@ public:
     {
         TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
     }
+    // generate a char array constant(?) and return its Value*
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "String(" << s << ")";
@@ -1059,6 +1086,9 @@ public:
 
         return ans;
     }
+    // Generate a char constant (byte) and return its Value*
+    // possibly llvm accepts escape sequences as they are so we may need to reconstruct them
+    virtual llvm::Value* compile() override;
     virtual void sem() override
     {
         TG = type_char;
@@ -1080,6 +1110,8 @@ public:
     {
         TG = type_bool;
     }
+    // Generate a bool (bit?) constant and return its Value*
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Bool(" << b << ")";
@@ -1097,6 +1129,8 @@ public:
     {
         TG = type_float;
     }
+    // generate a float constant and return its Value*
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Float(" << d << ")";
@@ -1118,6 +1152,8 @@ public:
     {
         TG = type_int;
     }
+    // generate an int constant (check size) and return its Value*
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Int(" << n << ")";
@@ -1131,6 +1167,10 @@ public:
     {
         TG = type_unit;
     }
+    // There is something called empty struct type {} in llvm
+    // (http://nondot.org/~sabre/LLVMNotes/EliminatingVoid.txt#:~:text=The%20'void'%20type%20in%20llvm,return%20value%20of%20a%20function.&text=In%20the%20LLVM%20IR%2C%20instead,'%3A%20the%20empty%20struct%20type.)
+    // could be what we want to use
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Unit";
@@ -1147,6 +1187,8 @@ public:
     BinOp(Expr *e1, int op, Expr *e2)
         : lhs(e1), rhs(e2), op(op) {}
     virtual void sem() override;
+    // switch-case for every possible operator
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
@@ -1162,6 +1204,8 @@ public:
     UnOp(int op, Expr *e)
         : expr(e), op(op) {}
     virtual void sem() override;
+    // switch-case for every possible operator
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "UnOp(" << op << ", " << *expr << ")";
@@ -1185,6 +1229,8 @@ public:
 
         TG = new RefTypeGraph(t);
     }
+    // malloc's a new spot in memory and returns its value (probably :) )
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "New(" << *new_type << ")";
@@ -1209,6 +1255,10 @@ public:
 
         TG = type_unit;
     }
+    // compiles the loop, take note of the condition.
+    // phi node may be necessary, avoidable if we can be sure
+    // that the condition is "constant" (pointer dereference, or some shit)
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "While(" << *cond << ", " << *body << ")";
@@ -1245,6 +1295,8 @@ public:
 
         TG = type_unit;
     }
+    // could possibly alloc a variable to use for the loop
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
@@ -1280,6 +1332,9 @@ public:
         // The type of the body is always the type of the If
         TG = body->get_TypeGraph();
     }
+    // again think about phi nodes, otherwise its a simple if compilation,
+    // noteworthy: no 'else' means else branch just jumps to end
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "If(" << *cond << ", " << *body;
@@ -1317,6 +1372,9 @@ public:
 
         TG = type_int;
     }
+    // llvm may have our backs, may store some runtime (or at least the expression)
+    // info about the length of an array (through its type system)
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Dim(";
@@ -1339,6 +1397,8 @@ public:
         SymbolEntry *s = lookupBasicFromSymbolTable(id);
         TG = s->getTypeGraph();
     }
+    // lookup and return the Value* stored
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "ConstantCall(" << id << ")";
@@ -1400,6 +1460,8 @@ public:
             printError(id + " already declared as non-function");
         }
     }
+    // get the function prototype and call it, return the Value* of the call
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "FunctionCall(" << id;
@@ -1442,6 +1504,8 @@ public:
 
         TG = c->getTypeGraph();
     }
+    // creates a struct (emplaces it in the big struct sets the enum?)
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "ConstructorCall(" << Id;
@@ -1504,6 +1568,8 @@ public:
             TG = elemTypeGraph;
         }
     }
+    // pretty straight-forward probably at this point
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "ArrayAccess(" << id << "[";
@@ -1654,6 +1720,11 @@ public:
     {
         return expr->get_TypeGraph();
     }
+    // Could be implemented kinda like an if-else, very simply in fact for 
+    // cases without custom types. 
+    // For custom types check the enum to match the constructor call each time,
+    // if it matches dereference once and check the inner values recursively
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Clause(" << *pattern << ", " << *expr << ")";
@@ -1710,6 +1781,8 @@ public:
         // or the constraints will force them to be
         TG = curr;
     }
+    // generate code for each clause, return the value of its result
+    virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Match(" << *toMatch;

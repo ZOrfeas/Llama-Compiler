@@ -1,0 +1,3 @@
+let test a b c = a; let b = "kostas" in b; c
+
+let main = test 1 1 1
