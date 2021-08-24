@@ -20,9 +20,10 @@ ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
 infer.o: infer.cpp infer.hpp types.hpp
+genIR.o: genIR.cpp ast.hpp infer.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o symbol.o types.o symbol.o ast.o infer.o
+compiler: lexer.o parser.o symbol.o types.o symbol.o ast.o infer.o genIR.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
 
 clean:
@@ -46,7 +47,9 @@ types_d.o: types.cpp types.hpp infer.hpp
 	$(CXX) $(CXXFLAGS) -c -o types_d.o types.cpp
 infer_d.o: infer.cpp infer.hpp types.hpp
 	$(CXX) $(CXXFLAGS) -c -o infer_d.o infer.cpp
+genIR_d.o: genIR.cpp ast.hpp infer.hpp
+	$(CXX) $(CXXFLAGS) -c -o genIR_d.o genIR.cpp
 
-debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o infer_d.o
+debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o infer_d.o genIR_d.o
 	$(CXX) $(CXXFLAGS) -o llamac_d lexer_d.o parser_d.o symbol_d.o types_d.o ast_d.o infer_d.o
 

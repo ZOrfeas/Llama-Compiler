@@ -407,45 +407,45 @@ CustomTypeGraph::~CustomTypeGraph() {
 /**                     LLVM Functions                       */
 /*************************************************************/
 
-llvm::Type* TypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::Type* TypeGraph::getLLVMType(llvm::Module *TheModule)
 {
 }
-llvm::Type* UnknownTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::Type* UnknownTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     TypeGraph *correctTypeGraph = inf.deepSubstitute(this);
     return correctTypeGraph->getLLVMType(TheModule);
 }
-llvm::Type* UnitTypeGraph::getLLVMType(llvm::Module &TheModule) 
+llvm::Type* UnitTypeGraph::getLLVMType(llvm::Module *TheModule) 
 {
-    return llvm::Type::getVoidTy(TheModule.getContext());
+    return llvm::Type::getVoidTy(TheModule->getContext());
 }
-llvm::IntegerType* IntTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::IntegerType* IntTypeGraph::getLLVMType(llvm::Module *TheModule)
 { 
-    return llvm::Type::getInt32Ty(TheModule.getContext());
+    return llvm::Type::getInt32Ty(TheModule->getContext());
 }
-llvm::IntegerType* CharTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::IntegerType* CharTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    return llvm::Type::getInt8Ty(TheModule.getContext());
+    return llvm::Type::getInt8Ty(TheModule->getContext());
 }
-llvm::IntegerType* BoolTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::IntegerType* BoolTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    return llvm::Type::getInt1Ty(TheModule.getContext());
+    return llvm::Type::getInt1Ty(TheModule->getContext());
 }
-llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    return llvm::Type::getFloatTy(TheModule.getContext());
+    return llvm::Type::getFloatTy(TheModule->getContext());
 }
-llvm::ArrayType* ArrayTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::ArrayType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     llvm::Type *elemLLVMType = this->Type->getLLVMType(TheModule);
     return llvm::ArrayType::get(elemLLVMType, dimensions);
 }
-llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     llvm::Type *containedLLVMType = this->Type->getLLVMType(TheModule);
     return llvm::PointerType::getUnqual(containedLLVMType);
 }
-llvm::FunctionType* FunctionTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::FunctionType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     llvm::Type *LLVMResultType = resultType->getLLVMType(TheModule);
 
@@ -457,7 +457,7 @@ llvm::FunctionType* FunctionTypeGraph::getLLVMType(llvm::Module &TheModule)
 
     return llvm::FunctionType::get(LLVMResultType, LLVMParamTypes, false);
 }
-llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     std::vector<llvm::Type *> LLVMTypeList = {};
     for(auto f: *fields)
@@ -465,16 +465,16 @@ llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module &TheModule)
         LLVMTypeList.push_back(f->getLLVMType(TheModule));
     }
 
-    return llvm::StructType::get(TheModule.getContext(), LLVMTypeList);
+    return llvm::StructType::get(TheModule->getContext(), LLVMTypeList);
 }
 /*
     Custom Types will be implemented as a struct
     containing a single field that corresponds to the
     largest constructor type. Essentially implements a union
 */
-llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module &TheModule)
+llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    const llvm::DataLayout &TheDataLayout = TheModule.getDataLayout();
+    const llvm::DataLayout &TheDataLayout = TheModule->getDataLayout();
     
     std::vector<llvm::StructType *> LLVMConstructorTypes = {};
     llvm::StructType *LLVMLargestStructType, *LLVMTempType;
@@ -499,7 +499,7 @@ llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module &TheModule)
 
     std::vector<llvm::Type *> LLVMStructType = { LLVMLargestStructType };
     
-    llvm::StructType *LLVMCustomType = llvm::StructType::create(TheModule.getContext(), name);
+    llvm::StructType *LLVMCustomType = llvm::StructType::create(TheModule->getContext(), name);
     LLVMCustomType->setBody(LLVMStructType);
     
     return LLVMCustomType;

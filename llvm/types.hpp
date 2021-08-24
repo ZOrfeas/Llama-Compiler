@@ -63,7 +63,7 @@ public:
     virtual void copyConstraintFlags(TypeGraph *o);
     virtual void changeInner(TypeGraph *replacement, unsigned int index = 0);
     virtual std::string stringifyTypeClean();
-    virtual llvm::Type* getLLVMType(llvm::Module &TheModule) = 0;
+    virtual llvm::Type* getLLVMType(llvm::Module *TheModule) = 0;
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -86,7 +86,7 @@ public:
     void setIntCharFloat() override;
     bool equals(TypeGraph *o) override;
     void copyConstraintFlags(TypeGraph *o) override;
-    virtual llvm::Type* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::Type* getLLVMType(llvm::Module *TheModule) override;
     ~UnknownTypeGraph() {}
 };
 /************************************************************/
@@ -100,31 +100,31 @@ public:
 class UnitTypeGraph : public BasicTypeGraph {
 public:
     UnitTypeGraph();
-    virtual llvm::Type* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::Type* getLLVMType(llvm::Module *TheModule) override;
     ~UnitTypeGraph() {}
 };
 class IntTypeGraph : public BasicTypeGraph {
 public:
     IntTypeGraph();
-    virtual llvm::IntegerType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::IntegerType* getLLVMType(llvm::Module *TheModule) override;
     ~IntTypeGraph() {}
 };
 class CharTypeGraph : public BasicTypeGraph {
 public:
     CharTypeGraph();
-    virtual llvm::IntegerType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::IntegerType* getLLVMType(llvm::Module *TheModule) override;
     ~CharTypeGraph() {}
 };
 class BoolTypeGraph : public BasicTypeGraph {
 public:
     BoolTypeGraph();
-    virtual llvm::IntegerType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::IntegerType* getLLVMType(llvm::Module *TheModule) override;
     ~BoolTypeGraph() {}
 };
 class FloatTypeGraph : public BasicTypeGraph {
 public:
     FloatTypeGraph();
-    virtual llvm::Type* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::Type* getLLVMType(llvm::Module *TheModule) override;
     ~FloatTypeGraph() {}
 };
 /** Complex Type Graphs */
@@ -141,7 +141,7 @@ public:
     bool equals(TypeGraph *o);
     int getDimensions() override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
-    virtual llvm::ArrayType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::ArrayType* getLLVMType(llvm::Module *TheModule) override;
     ~ArrayTypeGraph();
 };
 class RefTypeGraph : public TypeGraph {
@@ -153,7 +153,7 @@ public:
     TypeGraph* getContainedType() override;
     bool equals(TypeGraph *o) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
-    virtual llvm::PointerType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
     ~RefTypeGraph();
 };
 class FunctionTypeGraph : public TypeGraph {
@@ -173,7 +173,7 @@ public:
     TypeGraph* getParamType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
-    virtual llvm::FunctionType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::FunctionType* getLLVMType(llvm::Module *TheModule) override;
     ~FunctionTypeGraph();
 };
 
@@ -192,7 +192,7 @@ public:
     int getFieldCount() override;
     TypeGraph* getFieldType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
-    virtual llvm::StructType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~ConstructorTypeGraph();
 };
 class CustomTypeGraph : public TypeGraph {
@@ -208,7 +208,7 @@ public:
     void addConstructor(ConstructorTypeGraph *constructor) override;
     //! possibly too strict. keep an eye out
     bool equals(TypeGraph *o) override;
-    virtual llvm::StructType* getLLVMType(llvm::Module &TheModule) override;
+    virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~CustomTypeGraph();
 };
 

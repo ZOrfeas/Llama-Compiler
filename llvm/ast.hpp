@@ -89,6 +89,17 @@ class AST
 {
 protected:
     int line_number;
+    static llvm::LLVMContext TheContext;
+    static llvm::IRBuilder<> Builder;
+    static llvm::Module *TheModule;
+    static llvm::legacy::FunctionPassManager *TheFPM;
+
+    static llvm::Type *i1;
+    static llvm::Type *i8;
+    static llvm::Type *i32;
+    static llvm::Type *flt;
+    static llvm::Type *unit;
+    // static llvm::Type *str;
 
 public:
     AST()
@@ -99,10 +110,7 @@ public:
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem() {}
     virtual llvm::Value* compile() { return nullptr; }
-    void init_compile(const char *programName, bool optimize=false)
-    {
-        //TODO: Fill initializations
-    }
+    void start_compilation(const char *programName, bool optimize=false);
     virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     {
         if (!t1->isUnknown() && !t2->isUnknown())
