@@ -101,6 +101,10 @@ protected:
     static llvm::Type *unit;
     // static llvm::Type *str;
 
+    static llvm::ConstantInt* c1(bool b);
+    static llvm::ConstantInt* c32(int n);
+    static llvm::ConstantFP* f64(double d);
+
 public:
     AST()
     {
