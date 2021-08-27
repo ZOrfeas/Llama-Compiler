@@ -13,6 +13,51 @@
 #include "ast.hpp"
 #include "infer.hpp"
 #include "parser.hpp"
+#include <map>
+#include <vector>
+#include <string>
+#include <utility>      // std::pair, std::make_pair
+
+/*********************************/
+/**        Symbol-Tables         */
+/*********************************/
+
+/** @param T is the Type the table will will hold pointers of */
+template<class T>
+class LLTable {
+    std::vector<std::map<std::string, *T>*> *table;
+    bool nameInScope(std::string name, std::map<std::string, *T> *scope) {
+        return (scope->find(name) != scope->end());
+    }
+public:
+    LLTable(): table(new std::vector<std::map<std::string, *T>*>()) {
+        openScope(); // open first (global) scope
+    }
+    void insert(std::pair<std::string, *T> entry) {
+        (*table->back())[entry.first] = entry.second;
+    }
+    T* operator [] (std::string name) {
+        for (auto it = table->rbegin(); it != table->rend(); it++) {
+            if (nameInScope(name, *it))
+                return (**it)[name];
+        }
+        return nullptr;
+    }
+    void openScope() { 
+        table->push_back(new std::map<std::string, *T>());
+    }
+    void closeScope() {
+        if (table->size() != 0) {
+            std::map<std::string, *T> *poppedScope = table->back();
+            Table->pop_back();
+            delete poppedScope;
+        }
+    }
+    ~LLTable() {}
+};
+LLTable<llvm::Value> LLValues;
+LLTable<llvm::Function> LLFunctions;
+LLTable<llvm::AllocaInst> LLVariables;
 
 /*********************************/
 /**          Utilities           */
@@ -90,7 +135,9 @@ llvm::Value* Typedef::compile() {
 
 }
 llvm::Value* Program::compile() {
-    
+    for (auto def : definition_list) {
+        def->compile();
+    }
 }
 /*********************************/
 /**        Expressions           */
