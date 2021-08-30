@@ -393,7 +393,14 @@ llvm::Value* FunctionCall::compile() {
     llvm::Value *tempVal = LLValues[id]; // this'll be a Function, due to sem (hopefully)
     std::vector<llvm::Value *> argsGiven;
     for (auto &arg : expr_list) {
-        argsGiven.push_back(arg->compile());
+        llvm::Value *paramVal = arg->compile();
+        // pseudo-calling convention for functions as parameters
+        if (inf.deepSubstitute(arg->get_TypeGraph())->isFunction()) {
+            llvm::Value *funcPtr = Builder.CreateAlloca(paramVal->getType(), nullptr, "funcptrtmp");
+            Builder.CreateStore(paramVal, funcPtr);
+            paramVal = funcPtr; // this'll be a ptr containing the function address
+        } 
+        argsGiven.push_back(paramVal);
     }
     return Builder.CreateCall(tempVal, argsGiven, "funccalltmp");
 }
