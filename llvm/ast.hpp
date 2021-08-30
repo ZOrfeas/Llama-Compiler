@@ -98,12 +98,14 @@ protected:
     static llvm::Type *i8;
     static llvm::Type *i32;
     static llvm::Type *flt;
-    static llvm::Type *unit;
+    static llvm::Type *unitType;
     // static llvm::Type *str;
 
     static llvm::ConstantInt* c1(bool b);
+    static llvm::ConstantInt* c8(char c);
     static llvm::ConstantInt* c32(int n);
     static llvm::ConstantFP* f64(double d);
+    static llvm::Constant* unitVal();
 
 public:
     AST()
@@ -524,6 +526,7 @@ public:
     {
         return T->get_TypeGraph();
     }
+    std::string getId() {return id;}
     virtual void printOn(std::ostream &out) const override
     {
         out << "Par(" << id << ", " << *T << ")";
@@ -734,8 +737,10 @@ public:
 
         addToIdList(id);
     }
-    // if possible, declares an array of arrays equal to get_dimensions(),
-    // each of which is the size of the Value* returned by the relevant expr from expr_list
+    // creates a *Value of a struct type. One such type is created/exists for every
+    // arrayType (contents and dimensions only differentiate them),
+    // these struct types contain a pointer to the contained type,
+    // and the length of every dimension (could be done as independent fields, or in an array)
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
@@ -840,7 +845,7 @@ public:
         }
     }
     // in order compile the definitions contained 
-    // (recursive or not is irrelevant for functions if prototypes are used properly)
+    // (recursive or not is irrelevant for functions if prototypes are defined at the start)
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
@@ -1409,7 +1414,7 @@ public:
         SymbolEntry *s = lookupBasicFromSymbolTable(id);
         TG = s->getTypeGraph();
     }
-    // lookup and return the Value* stored
+    // lookup and return the Value* stored, special case if it's a function
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
@@ -1580,7 +1585,9 @@ public:
             TG = elemTypeGraph;
         }
     }
-    // pretty straight-forward probably at this point
+    // since inside the struct a simple array is contained,
+    // perform the calculation of the actual address before dereferencing
+    // (We could if we wanted to, check bounds at runtime and exit with error code)
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {

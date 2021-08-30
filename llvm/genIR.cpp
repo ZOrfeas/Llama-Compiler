@@ -65,11 +65,17 @@ LLTable<llvm::AllocaInst> LLVariables;
 llvm::ConstantInt* AST::c1(bool b) {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(1, b, false));
 }
+llvm::ConstantInt* AST::c8(char c) {
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, true));
+}
 llvm::ConstantInt* AST::c32(int n) {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, true));
 }
 llvm::ConstantFP* AST::f64(double d) {
     return llvm::ConstantFP::get(TheContext, llvm::APFloat(d));
+}
+llvm::Constant* AST::unitVal() {
+    return llvm::Constant::getNullValue(unitType);
 }
 
 /*********************************/
@@ -84,7 +90,7 @@ llvm::Type *AST::i1;
 llvm::Type *AST::i8;
 llvm::Type *AST::i32;
 llvm::Type *AST::flt;
-llvm::Type *AST::unit;
+llvm::Type *AST::unitType;
 
 void AST::start_compilation(const char *programName, bool optimize) {
     TheModule = new llvm::Module(programName, TheContext);
@@ -101,7 +107,7 @@ void AST::start_compilation(const char *programName, bool optimize) {
     i8  = type_char->getLLVMType(TheModule);
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
-    unit = type_unit->getLLVMType(TheModule);
+    unitType = type_unit->getLLVMType(TheModule);
 // TODO: More initializations here
 
 }
@@ -150,20 +156,21 @@ llvm::Value* String_literal::compile() {
 
 }
 llvm::Value* Char_literal::compile() {
-    return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, true));
+    return c8(c);
 }
 llvm::Value* Bool_literal::compile() {
-    return llvm::ConstantInt::get(TheContext, llvm::APInt(1, b, true));
+    return c1(b);
 }
 llvm::Value* Float_literal::compile() {
     //! Possibly wrong, make sure size and stuff are ok
-    return llvm::ConstantFP::get(TheContext, llvm::APFloat(d));
+    return f64(d);
 }
 llvm::Value* Int_literal::compile() {
-    return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, true));
+    return c32(n);
 }
 llvm::Value* Unit_literal::compile() {
-
+    //! Possibly wrong, null value of type void seems dangerous
+    return unitVal();
 }
 
 // Operators

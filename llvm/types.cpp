@@ -407,8 +407,8 @@ CustomTypeGraph::~CustomTypeGraph() {
 /**                     LLVM Functions                       */
 /*************************************************************/
 
-llvm::Type* TypeGraph::getLLVMType(llvm::Module *TheModule)
-{
+llvm::Type* TypeGraph::getLLVMType(llvm::Module *TheModule){
+    return nullptr;
 }
 llvm::Type* UnknownTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
