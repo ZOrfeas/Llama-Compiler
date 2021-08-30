@@ -154,9 +154,9 @@ llvm::Value* Function::compile() {
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     std::vector<llvm::Type *> paramTypes;
     for (auto &param: par_list) {
-        paramTypes.push_back(inf.deepSubstitute(param->get_TypeGraph())->getLLVMType(TheModule));
+        paramTypes.push_back(param->get_TypeGraph()->getLLVMType(TheModule));
     }
-    llvm::Type *resultType = inf.deepSubstitute(T->get_TypeGraph())->getLLVMType(TheModule);
+    llvm::Type *resultType = T->get_TypeGraph()->getLLVMType(TheModule);
     llvm::FunctionType *newFuncType = llvm::FunctionType::get(resultType, paramTypes, false);
     llvm::Function *newFunction = llvm::Function::Create(newFuncType, llvm::Function::InternalLinkage,
                                                          id, TheModule);
