@@ -25,18 +25,21 @@
 /** @param T is the Type the table will will hold pointers of */
 template<class T>
 class LLTable {
-    std::vector<std::map<std::string, *T>*> *table;
-    bool nameInScope(std::string name, std::map<std::string, *T> *scope) {
+    std::vector<std::map<std::string, T>*> *table;
+    bool nameInScope(std::string name, std::map<std::string, T> *scope) {
         return (scope->find(name) != scope->end());
     }
 public:
-    LLTable(): table(new std::vector<std::map<std::string, *T>*>()) {
+    LLTable(): table(new std::vector<std::map<std::string, T>*>()) {
         openScope(); // open first (global) scope
     }
-    void insert(std::pair<std::string, *T> entry) {
+    /** Can be called with the implicit pair constructor
+     * e.g.: insert({"a_name", a_pointer})
+    */
+    void insert(std::pair<std::string, T> entry) {
         (*table->back())[entry.first] = entry.second;
     }
-    T* operator [] (std::string name) {
+    T operator [] (std::string name) {
         for (auto it = table->rbegin(); it != table->rend(); it++) {
             if (nameInScope(name, *it))
                 return (**it)[name];
@@ -44,20 +47,32 @@ public:
         return nullptr;
     }
     void openScope() { 
-        table->push_back(new std::map<std::string, *T>());
+        table->push_back(new std::map<std::string, T>());
     }
     void closeScope() {
         if (table->size() != 0) {
-            std::map<std::string, *T> *poppedScope = table->back();
-            Table->pop_back();
+            std::map<std::string, T> *poppedScope = table->back();
+            table->pop_back();
             delete poppedScope;
         }
     }
     ~LLTable() {}
 };
-LLTable<llvm::Value> LLValues;
-LLTable<llvm::Function> LLFunctions;
-LLTable<llvm::AllocaInst> LLVariables;
+LLTable<llvm::Value*> LLValues;
+// this can help with the function pointer stuff (member function getType())
+// LLTable<llvm::Function*> LLFunctions; 
+// LLTable<llvm::AllocaInst> LLAllocas;
+
+void openScopeOfAll() {
+    LLValues.openScope();
+    // LLFunctions.openScope();
+    // LLAllocas.openScope();
+}
+void closeScopeOfAll() {
+    LLValues.closeScope();
+    // LLFunctions.closeScope();
+    // LLAllocas.closeScope();
+}
 
 /*********************************/
 /**          Utilities           */
@@ -123,9 +138,53 @@ llvm::Value* Tdef::compile() {
 
 }
 llvm::Value* Constant::compile() {
-
+    llvm::Value* exprVal = expr->compile();
+    LLValues.insert({id, exprVal});
+    // // if (inf.deepSubstitute(expr->get_TypeGraph())->isFunction()) {
+    // //     if(auto *exprFunc = llvm::dyn_cast<llvm::Function>(exprVal)) {
+    // //         LLFunctions.insert({id, exprFunc});
+    // //     } else {
+    // //         std::cout << "function transfer action did not give an llvm::Function thing\n";
+    // //         exit(1);
+    // //     }
+    // // }
 }
 llvm::Value* Function::compile() {
+    llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
+    std::vector<llvm::Type *> paramTypes;
+    for (auto &param: par_list) {
+        paramTypes.push_back(inf.deepSubstitute(param->get_TypeGraph())->getLLVMType(TheModule));
+    }
+    llvm::Type *resultType = inf.deepSubstitute(T->get_TypeGraph())->getLLVMType(TheModule);
+    llvm::FunctionType *newFuncType = llvm::FunctionType::get(resultType, paramTypes, false);
+    llvm::Function *newFunction = llvm::Function::Create(newFuncType, llvm::Function::InternalLinkage,
+                                                         id, TheModule);
+    LLValues.insert({id, newFunction});
+    // // LLFunctions.insert({id, newFunction});
+    openScopeOfAll();
+    llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", newFunction);
+    Builder.SetInsertPoint(newBB);
+    int i = 0;
+    for (auto &arg : newFunction->args()) {
+        llvm::Value *paramVal = &arg;
+        // if this argument is a function pointer, create a boilerplate param and put it in
+        if (inf.deepSubstitute(par_list[i]->get_TypeGraph())->isFunction()) {
+            paramVal = Builder.CreateLoad(paramVal, "funcptrdereftmp");
+            // // if (auto *funcVal = llvm::dyn_cast<llvm::Function>(paramVal)) {
+            // //     LLFunctions.insert({par_list[i]->getId(), funcVal});
+            // // } else { // this is an internal error most likely
+            // //     std::cout << "function load did not give an llvm::Function thing\n";
+            // //     exit(1);
+            // // }
+        }
+        LLValues.insert({par_list[i]->getId(), paramVal});
+    }
+    Builder.CreateRet(expr->compile());
+    bool bad = llvm::verifyFunction(*newFunction);
+    // again, this is an internal error most likely
+    if (bad) { std::cout << "Func verification failed\n"; exit(1); }
+    Builder.SetInsertPoint(prevBB);
+    return nullptr; // doesn't matter what it returns, its a definition not an expression
 
 }
 llvm::Value* Array::compile() {
@@ -303,9 +362,13 @@ llvm::Value* UnOp::compile() {
 // Misc
 
 llvm::Value* LetIn::compile() {
-
+    llvm::Value* retVal;
+    openScopeOfAll();
+    letdef->compile();
+    retVal = expr->compile();
+    closeScopeOfAll();
+    return retVal;    
 }
-
 llvm::Value* New::compile() {
 
 }
@@ -322,10 +385,15 @@ llvm::Value* Dim::compile() {
 
 }
 llvm::Value* ConstantCall::compile() {
-
+    return LLValues[id];
 }
 llvm::Value* FunctionCall::compile() {
-
+    llvm::Value *tempVal = LLValues[id]; // this'll be a Function, due to sem (hopefully)
+    std::vector<llvm::Value *> argsGiven;
+    for (auto &arg : expr_list) {
+        argsGiven.push_back(arg->compile());
+    }
+    return Builder.CreateCall(tempVal, argsGiven, "funccalltmp");
 }
 llvm::Value* ConstructorCall::compile() {
 

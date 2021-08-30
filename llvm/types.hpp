@@ -173,7 +173,7 @@ public:
     TypeGraph* getParamType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
-    virtual llvm::FunctionType* getLLVMType(llvm::Module *TheModule) override;
+    virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
     ~FunctionTypeGraph();
 };
 

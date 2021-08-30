@@ -417,7 +417,13 @@ llvm::Type* UnknownTypeGraph::getLLVMType(llvm::Module *TheModule)
 }
 llvm::Type* UnitTypeGraph::getLLVMType(llvm::Module *TheModule) 
 {
-    return llvm::Type::getVoidTy(TheModule->getContext());
+    if (llvm::Type* unitType = TheModule->getTypeByName("unit")) {
+        return unitType;
+    } else {
+        llvm::StructType* newUnitType = llvm::StructType::create(TheModule->getContext());
+        newUnitType->setName("unit");
+        return newUnitType;
+    }
 }
 llvm::IntegerType* IntTypeGraph::getLLVMType(llvm::Module *TheModule)
 { 
@@ -445,7 +451,7 @@ llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
     llvm::Type *containedLLVMType = this->Type->getLLVMType(TheModule);
     return llvm::PointerType::getUnqual(containedLLVMType);
 }
-llvm::FunctionType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
+llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     llvm::Type *LLVMResultType = resultType->getLLVMType(TheModule);
 
@@ -454,8 +460,11 @@ llvm::FunctionType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
     {
         LLVMParamTypes.push_back(p->getLLVMType(TheModule));
     }
-
-    return llvm::FunctionType::get(LLVMResultType, LLVMParamTypes, false);
+    llvm::FunctionType *tempType = llvm::FunctionType::get(LLVMResultType, LLVMParamTypes, false);
+    llvm::Function *temp = llvm::Function::Create(tempType, llvm::Function::InternalLinkage, "tempTypeCreator", TheModule);
+    // above seem necessary, cause llvm::FunctionType is different from Function->getType()
+    // This returns a pointer of the function type
+    return llvm::PointerType::getUnqual(temp->getType());
 }
 llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
