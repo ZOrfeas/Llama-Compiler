@@ -139,6 +139,7 @@ llvm::Value* Tdef::compile() {
 }
 llvm::Value* Constant::compile() {
     llvm::Value* exprVal = expr->compile();
+    exprVal->setName(id);
     LLValues.insert({id, exprVal});
     // // if (inf.deepSubstitute(expr->get_TypeGraph())->isFunction()) {
     // //     if(auto *exprFunc = llvm::dyn_cast<llvm::Function>(exprVal)) {
@@ -177,7 +178,8 @@ llvm::Value* Function::compile() {
             // //     exit(1);
             // // }
         }
-        LLValues.insert({par_list[i]->getId(), paramVal});
+        paramVal->setName(par_list[i]->getId());
+        LLValues.insert({paramVal->getName(), paramVal});
     }
     Builder.CreateRet(expr->compile());
     bool bad = llvm::verifyFunction(*newFunction);
