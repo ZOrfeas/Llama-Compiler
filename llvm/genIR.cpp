@@ -93,6 +93,17 @@ llvm::Constant* AST::unitVal() {
     return llvm::Constant::getNullValue(unitType);
 }
 
+// Get's a function with unit parameters and/or result type and creates an adapter with void
+// This is necessary to create linkable object files with these functions available
+void createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc) {
+
+}
+// Get's a function with void parameter and/or result type and creates an adapter with unit
+// This is necessary to link with external, ready libraries
+void createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc) {
+
+}
+
 /*********************************/
 /**       Initializations        */
 /*********************************/
@@ -141,45 +152,23 @@ llvm::Value* Constant::compile() {
     llvm::Value* exprVal = expr->compile();
     exprVal->setName(id);
     LLValues.insert({id, exprVal});
-    // // if (inf.deepSubstitute(expr->get_TypeGraph())->isFunction()) {
-    // //     if(auto *exprFunc = llvm::dyn_cast<llvm::Function>(exprVal)) {
-    // //         LLFunctions.insert({id, exprFunc});
-    // //     } else {
-    // //         std::cout << "function transfer action did not give an llvm::Function thing\n";
-    // //         exit(1);
-    // //     }
-    // // }
 }
 llvm::Value* Function::compile() {
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
-    std::vector<llvm::Type *> paramTypes;
-    for (auto &param: par_list) {
-        paramTypes.push_back(param->get_TypeGraph()->getLLVMType(TheModule));
-    }
-    llvm::Type *resultType = T->get_TypeGraph()->getLLVMType(TheModule);
-    llvm::FunctionType *newFuncType = llvm::FunctionType::get(resultType, paramTypes, false);
-    llvm::Function *newFunction = llvm::Function::Create(newFuncType, llvm::Function::InternalLinkage,
-                                                         id, TheModule);
+    llvm::Function *newFunction;
+    if (llvm::FunctionType *newFuncType = 
+     llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType())) {
+        newFunction = llvm::Function::Create(newFuncType, llvm::Function::InternalLinkage,
+                                             id, TheModule);
+    } else { std::cout << "Internal error, FunctionType dyn_cast failed\n"; exit(1); }
     LLValues.insert({id, newFunction});
-    // // LLFunctions.insert({id, newFunction});
     openScopeOfAll();
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", newFunction);
     Builder.SetInsertPoint(newBB);
     int i = 0;
     for (auto &arg : newFunction->args()) {
-        llvm::Value *paramVal = &arg;
-        // if this argument is a function pointer, create a boilerplate param and put it in
-        if (inf.deepSubstitute(par_list[i]->get_TypeGraph())->isFunction()) {
-            paramVal = Builder.CreateLoad(paramVal, "funcptrdereftmp");
-            // // if (auto *funcVal = llvm::dyn_cast<llvm::Function>(paramVal)) {
-            // //     LLFunctions.insert({par_list[i]->getId(), funcVal});
-            // // } else { // this is an internal error most likely
-            // //     std::cout << "function load did not give an llvm::Function thing\n";
-            // //     exit(1);
-            // // }
-        }
-        paramVal->setName(par_list[i]->getId());
-        LLValues.insert({paramVal->getName(), paramVal});
+        arg.setName(par_list[i]->getId());
+        LLValues.insert({par_list[i]->getId(), &arg});
     }
     Builder.CreateRet(expr->compile());
     bool bad = llvm::verifyFunction(*newFunction);
@@ -357,7 +346,10 @@ llvm::Value* UnOp::compile() {
     case T_minusdot: return Builder.CreateFSub(f64(0.0), exprVal, "floatnegtmp");
     case T_not: return Builder.CreateNot(exprVal, "boolnottmp");
     case '!': return Builder.CreateLoad(exprVal, "ptrdereftmp"); 
-    case T_delete: return llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock());
+    case T_delete: 
+    {
+        return Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+    }    
     }
 }
 
@@ -390,19 +382,12 @@ llvm::Value* ConstantCall::compile() {
     return LLValues[id];
 }
 llvm::Value* FunctionCall::compile() {
-    llvm::Value *tempVal = LLValues[id]; // this'll be a Function, due to sem (hopefully)
+    llvm::Value *tempFunc = LLValues[id]; // this'll be a Function, due to sem (hopefully)
     std::vector<llvm::Value *> argsGiven;
     for (auto &arg : expr_list) {
-        llvm::Value *paramVal = arg->compile();
-        // pseudo-calling convention for functions as parameters
-        if (inf.deepSubstitute(arg->get_TypeGraph())->isFunction()) {
-            llvm::Value *funcPtr = Builder.CreateAlloca(paramVal->getType(), nullptr, "funcptrtmp");
-            Builder.CreateStore(paramVal, funcPtr);
-            paramVal = funcPtr; // this'll be a ptr containing the function address
-        } 
-        argsGiven.push_back(paramVal);
+        argsGiven.push_back(arg->compile());
     }
-    return Builder.CreateCall(tempVal, argsGiven, "funccalltmp");
+    return Builder.CreateCall(tempFunc, argsGiven, "funccalltmp");
 }
 llvm::Value* ConstructorCall::compile() {
 

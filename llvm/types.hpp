@@ -206,7 +206,6 @@ public:
     std::vector<ConstructorTypeGraph *>* getConstructors() override;
     int getConstructorCount() override;
     void addConstructor(ConstructorTypeGraph *constructor) override;
-    //! possibly too strict. keep an eye out
     bool equals(TypeGraph *o) override;
     virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~CustomTypeGraph();

@@ -449,7 +449,7 @@ llvm::ArrayType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     llvm::Type *containedLLVMType = this->Type->getLLVMType(TheModule);
-    return llvm::PointerType::getUnqual(containedLLVMType);
+    return containedLLVMType->getPointerTo();
 }
 llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
@@ -461,10 +461,8 @@ llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
         LLVMParamTypes.push_back(p->getLLVMType(TheModule));
     }
     llvm::FunctionType *tempType = llvm::FunctionType::get(LLVMResultType, LLVMParamTypes, false);
-    llvm::Function *temp = llvm::Function::Create(tempType, llvm::Function::InternalLinkage, "tempTypeCreator", TheModule);
-    // above seem necessary, cause llvm::FunctionType is different from Function->getType()
     // This returns a pointer of the function type
-    return llvm::PointerType::getUnqual(temp->getType());
+    return tempType->getPointerTo();
 }
 llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
@@ -483,6 +481,9 @@ llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 */
 llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
+    if (llvm::StructType* customType = TheModule->getTypeByName(name)) {
+        return customType;
+    }
     const llvm::DataLayout &TheDataLayout = TheModule->getDataLayout();
     
     std::vector<llvm::StructType *> LLVMConstructorTypes = {};
