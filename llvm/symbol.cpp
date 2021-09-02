@@ -229,7 +229,7 @@ TypeTable::~TypeTable() {
 ConstructorTable::ConstructorTable(bool debug)
 : BaseTable("\033[1m\033[34mConstructorTable\033[0m", debug) {}
 ConstructorEntry* ConstructorTable::insertConstructor(string name, bool overwrite) {
-    ConstructorTypeGraph *constrType = new ConstructorTypeGraph();
+    ConstructorTypeGraph *constrType = new ConstructorTypeGraph(name);
     ConstructorEntry *constructorEntry = new ConstructorEntry(name, constrType);
     return dynamic_cast<ConstructorEntry *>(insert(constructorEntry, overwrite));
 }

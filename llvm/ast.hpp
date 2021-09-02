@@ -1494,6 +1494,7 @@ class ConstructorCall : public Expr
 private:
     std::string Id;
     std::vector<Expr *> expr_list;
+    ConstructorTypeGraph *constructorTypeGraph = nullptr; // Is filled by sem
 
 public:
     ConstructorCall(std::string *Id, std::vector<Expr *> *expr_list = new std::vector<Expr *>())
@@ -1501,9 +1502,9 @@ public:
     virtual void sem()
     {
         ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
-        TypeGraph *t = c->getTypeGraph();
+        constructorTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
 
-        int count = t->getFieldCount();
+        int count = constructorTypeGraph->getFieldCount();
         if (count != (int)expr_list.size())
         {
             printError("Partial constructor call not allowed");
@@ -1513,7 +1514,7 @@ public:
         TypeGraph *correct_t;
         for (int i = 0; i < count; i++)
         {
-            correct_t = t->getFieldType(i);
+            correct_t = constructorTypeGraph->getFieldType(i);
 
             expr_list[i]->sem();
             expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));

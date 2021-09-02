@@ -181,8 +181,10 @@ public:
 class ConstructorTypeGraph : public TypeGraph {
     std::vector<TypeGraph *> *fields;
     CustomTypeGraph *customType;
+    std::string name;
+    int index = -1; // Useful for codegen of constructor
 public:
-    ConstructorTypeGraph();
+    ConstructorTypeGraph(std::string name);
     std::string stringifyType() override;
     std::string stringifyTypeClean() override;
     std::vector<TypeGraph *>* getFields() override;
@@ -192,6 +194,8 @@ public:
     int getFieldCount() override;
     TypeGraph* getFieldType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
+    int getIndex();
+    std::string getName();
     virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~ConstructorTypeGraph();
 };
@@ -208,6 +212,8 @@ public:
     void addConstructor(ConstructorTypeGraph *constructor) override;
     //! possibly too strict. keep an eye out
     bool equals(TypeGraph *o) override;
+    int getConstructorIndex(ConstructorTypeGraph *c);
+    int getConstructorIndex(std::string Id);
     virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~CustomTypeGraph();
 };
