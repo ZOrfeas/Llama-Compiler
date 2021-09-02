@@ -637,7 +637,7 @@ class Function : public Constant
 {
 private:
     std::vector<Par *> par_list;
-
+    TypeGraph *TG;
 public:
     Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType)
         : Constant(id, e, t), par_list(*p) {}
@@ -670,7 +670,7 @@ public:
         {
             F->addParam(p->get_TypeGraph());
         }
-
+        TG = T->get_TypeGraph();
         addToIdList(id);
     }
     // - Generates the function prototype

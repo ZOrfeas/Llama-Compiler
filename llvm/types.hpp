@@ -210,7 +210,6 @@ public:
     std::vector<ConstructorTypeGraph *>* getConstructors() override;
     int getConstructorCount() override;
     void addConstructor(ConstructorTypeGraph *constructor) override;
-    //! possibly too strict. keep an eye out
     bool equals(TypeGraph *o) override;
     int getConstructorIndex(ConstructorTypeGraph *c);
     int getConstructorIndex(std::string Id);

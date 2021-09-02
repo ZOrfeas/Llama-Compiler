@@ -1295,16 +1295,27 @@ public:
     virtual void sem() override
     {
         // Lookup the array
-        ArrayEntry *arr = lookupArrayFromSymbolTable(id);
+        SymbolEntry *arr = lookupBasicFromSymbolTable(id);
+        TypeGraph *t = arr->getTypeGraph();
 
         // Get the number of the dimension
         int i = dim->get_int();
-        // std::cout << i << "\n";
-        // std::cout << arr->getTypeGraph()->getDimensions() << "\n";
-        // Check if i is withing the correct bounds
-        if (i < 1 && i > arr->getTypeGraph()->getDimensions())
+        if (i < 1)
+            printError("dim expects first argument to be at least '1'");
+    
+        if (!t->isUnknown())
         {
-            printError("Index out of bounds");
+            // Check if i is withing the correct bounds
+            if (i > arr->getTypeGraph()->getDimensions())
+            {
+                printError("Index out of bounds");
+            }
+
+        }
+        
+        else
+        {
+
         }
 
         TG = type_int;
