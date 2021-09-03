@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
 #include "symbol.hpp"
 
 /*************************************************************/
@@ -29,6 +30,7 @@ SymbolTable::SymbolTable(bool debug, bool openGlobalScope) {
     if (openGlobalScope) {
         openScope();
     }
+    insertLibFunctions();
 }
 SymbolTable::~SymbolTable() {
     while(closeScope())
@@ -41,6 +43,71 @@ void SymbolTable::error(string msg, bool crash) {
     std::cout << msg << std::endl;
     if (crash) exit(1);
 
+}
+void SymbolTable::insertLibFunctions() {
+    std::vector<TypeGraph *> basicTypes = {
+        tt.lookupType("unit")->getTypeGraph(), // 0
+        tt.lookupType("int")->getTypeGraph(),  // 1
+        tt.lookupType("bool")->getTypeGraph(), // 2
+        tt.lookupType("char")->getTypeGraph(), // 3
+        tt.lookupType("float")->getTypeGraph() // 4
+        // 5th will be array of char (string)
+    };
+    TypeGraph *stringType = new ArrayTypeGraph(1, new RefTypeGraph(basicTypes[3]));
+    string stringTypeName = "string";
+    std::vector<string> names;
+    std::transform(basicTypes.begin(), basicTypes.end(),
+        std::back_inserter(names), [] (TypeGraph* const& graph) {
+            return graph->stringifyTypeClean();
+        }
+    );
+    basicTypes.push_back(stringType);
+    names.push_back(stringTypeName);
+    string prefix;
+    TypeGraph *resType, *paramType, *funcType;
+    for (int i = 1; i < 6; i++) { // this inserts the IO-lib-functions
+        for (int j = 0; j < 2; j++) {
+            if (j) {
+                prefix = "print_";
+                resType = basicTypes[0];
+                paramType = basicTypes[i];
+            } else {
+                prefix = "read_";
+                resType = basicTypes[i];
+                paramType = basicTypes[0];
+            }
+            funcType = new FunctionTypeGraph(resType);
+            funcType->addParam(paramType);
+            insertBasic(prefix + names[i], funcType);
+        }
+    }
+    TypeGraph *int_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *float_to_float = new FunctionTypeGraph(basicTypes[4]),
+              *unit_to_float = new FunctionTypeGraph(basicTypes[4]),
+              *int_to_float = new FunctionTypeGraph(basicTypes[4]),
+              *float_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *int_ref_to_unit = new FunctionTypeGraph(basicTypes[0]);
+    int_to_int->addParam(basicTypes[1]);
+    float_to_float->addParam(basicTypes[4]);
+    unit_to_float->addParam(basicTypes[0]);
+    int_to_float->addParam(basicTypes[1]);
+    float_to_int->addParam(basicTypes[4]);
+    int_ref_to_unit->addParam(new RefTypeGraph(basicTypes[1]));
+    insertBasic("abs", int_to_int);
+    insertBasic("fabs", float_to_float);
+    insertBasic("sqrt", float_to_float);
+    insertBasic("sin", float_to_float);
+    insertBasic("cos", float_to_float);
+    insertBasic("tan", float_to_float);
+    insertBasic("atan", float_to_float);
+    insertBasic("exp", float_to_float);
+    insertBasic("ln", float_to_float);
+    insertBasic("pi", unit_to_float);
+    insertBasic("incr", int_ref_to_unit);
+    insertBasic("decr", int_ref_to_unit);
+    insertBasic("float_of_int", int_to_float);
+    insertBasic("int_of_float", float_to_int);
+    insertBasic("round", float_to_int);
 }
 void SymbolTable::log(string msg) { error(msg, false); }
 void SymbolTable::enable_logs() { debug = true; }
@@ -310,6 +377,6 @@ void ConstructorEntry::addType(TypeGraph *field) {
 }
 
 bool             table_logs = false;
-SymbolTable      st(table_logs);
-TypeTable        tt(table_logs);
+TypeTable        tt(table_logs); // order important
+SymbolTable      st(table_logs); // <- this uses some types inserted above
 ConstructorTable ct(table_logs);

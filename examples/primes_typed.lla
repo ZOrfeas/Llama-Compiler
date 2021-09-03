@@ -1,8 +1,3 @@
-let print_string (a : array of char) : unit = ()
-let read_int (a : unit) : int = 4
-let print_int (a : int) : unit = ()
-let incr (a : int ref) : unit = a := !a + 1
-
 let rec prime (n : int) : bool = if n < 0 then prime (-n)
   else if n < 2 then false
   else if n = 2 then true

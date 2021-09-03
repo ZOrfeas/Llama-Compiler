@@ -84,6 +84,7 @@ class SymbolTable {
     std::vector<std::map<std::string, SymbolEntry *> *> *Table;
     /** Inserts a new symbol entry in the current active scope */
     SymbolEntry* insert(SymbolEntry *entry, bool overwrite = true);
+    void insertLibFunctions();
     void error(std::string msg, bool crash = true);
     void log(std::string msg);
     bool debug;

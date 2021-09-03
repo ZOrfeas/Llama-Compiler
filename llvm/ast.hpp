@@ -377,8 +377,7 @@ public:
     virtual TypeGraph *get_TypeGraph() override
     {
         if (!TG)
-            TG = new ArrayTypeGraph(dimensions, elem_type->get_TypeGraph());
-
+            TG = new ArrayTypeGraph(dimensions, new RefTypeGraph(elem_type->get_TypeGraph()));
         return TG;
     }
     virtual void printOn(std::ostream &out) const override

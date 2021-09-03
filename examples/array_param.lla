@@ -1,4 +1,3 @@
-let print_int a = ()
 let f a b = dim 2 a + b
 
 let mutable x[10,10]

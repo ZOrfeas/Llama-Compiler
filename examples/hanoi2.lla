@@ -1,6 +1,3 @@
-let print_string a = ()
-let read_int a = 2
-
 type pile = Left | Middle | Right
 let print_pile pile =
     match pile with
