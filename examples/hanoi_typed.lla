@@ -1,6 +1,3 @@
-let print_string (a : array of char) : unit = ()
-let read_int (a : unit) : int = 4
-
 let main : unit =
   let move (source : array of char) (target : array of char) : unit =
     print_string "Moving from: ";
