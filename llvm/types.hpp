@@ -141,7 +141,7 @@ public:
     bool equals(TypeGraph *o);
     int getDimensions() override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
-    virtual llvm::ArrayType* getLLVMType(llvm::Module *TheModule) override;
+    virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
     ~ArrayTypeGraph();
 };
 class RefTypeGraph : public TypeGraph {

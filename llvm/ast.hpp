@@ -469,7 +469,7 @@ public:
     }
 };
 
-/********************************************************************/
+/* Useful classes for definitions ***********************************/
 
 class Constr : public AST
 {
@@ -503,8 +503,6 @@ public:
         out << ")";
     }
 };
-
-/********************************************************************/
 
 class Par : public AST
 {
@@ -543,6 +541,10 @@ protected:
 public:
     DefStmt(std::string id)
         : id(id) {}
+    virtual bool isFunctionDefinition() const
+    {
+        return false;
+    }
     virtual void insert_id_to_st()
     {
     }
@@ -659,6 +661,10 @@ public:
 
         // Close the scope
         st.closeScope();
+    }
+    virtual bool isFunctionDefinition() const override 
+    {
+        return true;
     }
     virtual void insert_id_to_st() override
     {
@@ -815,9 +821,13 @@ public:
         // Recursive
         if (recursive)
         {
-            // Insert identifiers to symbol table before all the definitions
+            // Insert function names to symbol table before all the definitions
             for (DefStmt *d : def_list)
             {
+                if(!d->isFunctionDefinition()) 
+                {
+                    printError("Only function definitions can be recursive");
+                }
                 d->insert_id_to_st();
             }
 
@@ -956,8 +966,6 @@ public:
 };
 
 /* Expressions ******************************************************/
-// class Expr: public AST (used to be here)
-// class Identifier: public Expr (used to be here)
 
 class LetIn : public Expr
 {

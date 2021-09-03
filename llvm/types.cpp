@@ -477,10 +477,38 @@ llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     return llvm::Type::getFloatTy(TheModule->getContext());
 }
-llvm::ArrayType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
+llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    llvm::Type *elemLLVMType = this->Type->getLLVMType(TheModule);
-    return llvm::ArrayType::get(elemLLVMType, dimensions);
+    // Get element type
+    TypeGraph *elementTypeGraph = inf.deepSubstitute(this->getContainedType());
+    llvm::Type *elementLLVMType = elementTypeGraph->getLLVMType(TheModule);
+
+    // Prepare name of type
+    std::string arrayTypeName = "Array_" + this->stringifyDimensions() + "_" + elementTypeGraph->stringifyTypeClean(); 
+
+    // Check if it exists
+    llvm::StructType *LLVMArrayType;
+    if(LLVMArrayType = TheModule->getTypeByName(arrayTypeName))
+    {
+        return LLVMArrayType;
+    }
+
+    // Vector for StructType members
+    std::vector<llvm::Type *> members;
+
+    // Create PointerType to which the actual array will be malloc'd
+    llvm::PointerType *arrayPointer = elementLLVMType->getPointerTo();
+    members.push_back(arrayPointer);
+    
+    // Create all the integer types for dimensions and dimension sizes
+    llvm::IntegerType *LLVMInteger = llvm::Type::getInt32Ty(TheModule->getContext());
+    members.insert(members.end(), dimensions + 1, LLVMInteger);
+    
+    // Create StructType that will be used to represent arrays
+    LLVMArrayType = llvm::StructType::create(TheModule->getContext(), arrayTypeName);
+    LLVMArrayType->setBody(members);
+
+    return LLVMArrayType;
 }
 llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
 {

@@ -77,6 +77,7 @@ void closeScopeOfAll() {
 /*********************************/
 /**          Utilities           */
 /*********************************/
+
 llvm::ConstantInt* AST::c1(bool b) {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(1, b, false));
 }
@@ -195,6 +196,7 @@ llvm::Value* Program::compile() {
         def->compile();
     }
 }
+
 /*********************************/
 /**        Expressions           */
 /*********************************/
