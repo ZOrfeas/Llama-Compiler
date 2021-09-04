@@ -144,8 +144,25 @@ void AST::start_compilation(const char *programName, bool optimize) {
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
     unitType = type_unit->getLLVMType(TheModule);
-// TODO: More initializations here
-
+    llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
+    llvm::Function *main = 
+      llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
+                             "main", TheModule);
+    llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
+// TODO: Initilize lib functions here
+    Builder.SetInsertPoint(BB);
+    compile(); // compile the program code
+    // Below means that each Function codegen is responsible for restoring insert point
+    Builder.CreateRet(c32(0));
+    bool bad = llvm::verifyModule(*TheModule, &llvm::errs());
+    if (bad) { // internal error
+        std::cerr << "The IR is bad!" << std::endl;
+        TheModule->print(llvm::errs(), nullptr);
+        std::exit(1);
+    }
+    // this means we would probably need to optimize each function seperately
+    TheFPM->run(*main);
+    TheModule->print(llvm::outs(), nullptr);
 }
 void AST::printLLVMIR() 
 {
