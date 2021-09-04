@@ -399,13 +399,14 @@ pattern_list
 
 bool    syntaxAnalysis, semAnalysis, inferenceAnalysis, compile, 
         tableLogs, inferenceLogs, printTable, printAST, 
-        printObjectCode, printFinalCode, 
+        printIRCode, printObjectCode, printFinalCode, 
         printSuccess, help;
 
 enum option_enum 
     {   
-        OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
-        OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
+        OPTION_tableLogs, OPTION_inferenceLogs, 
+        OPTION_printTable, OPTION_printAST, 
+        OPTION_printIRCode, OPTION_printObjectCode, OPTION_printFinalCode,
         OPTION_printSuccess, OPTION_help
     };
 
@@ -415,8 +416,9 @@ std::vector<int> option_values =
 };
 std::vector<option_enum> long_option_values = 
 {
-    OPTION_tableLogs, OPTION_inferenceLogs, OPTION_printTable, 
-    OPTION_printAST, OPTION_printObjectCode, OPTION_printFinalCode,
+    OPTION_tableLogs, OPTION_inferenceLogs, 
+    OPTION_printTable, OPTION_printAST, 
+    OPTION_printIRCode, OPTION_printObjectCode, OPTION_printFinalCode,
     OPTION_printSuccess, OPTION_help
 };
 
@@ -429,7 +431,8 @@ std::string long_option_string[] =
     "tableLogs",      
     "inferenceLogs",  
     "printTable",     
-    "printAST",       
+    "printAST",   
+    "printIRCode",    
     "printObjectCode",
     "printFinalCode", 
     "printSuccess",   
@@ -449,6 +452,7 @@ std::string long_option_description[] =
     "Shows inference logs", 
     "Prints table with the names of variables and functions and their types",
     "Prints the whole AST produced by the syntactical analysis",
+    "Prints LLVM IR code",
     "Prints object code",
     "Prints final code",
     "Prints success message as opposed to being silent when compilation succeeds",
@@ -508,13 +512,19 @@ void compilerHandler(Program *p) {
         }
     } 
 
-    if(compile) {}
+    if(compile) 
+    {
+        p->start_compilation("a.ll");
+        p->compile();
+
+        if(printIRCode) p->printLLVMIR();
+    }
 }
 
 int main(int argc, char **argv) {
     syntaxAnalysis = semAnalysis = inferenceAnalysis = compile = 
     tableLogs = inferenceLogs = printTable = 
-    printAST = printObjectCode = printFinalCode = 
+    printAST = printIRCode = printObjectCode = printFinalCode = 
     printSuccess = help = false;
     
     int option_index = 0;
@@ -523,6 +533,7 @@ int main(int argc, char **argv) {
             {"inferenceLogs",   no_argument, NULL, OPTION_inferenceLogs     },
             {"printTable",      no_argument, NULL, OPTION_printTable        },
             {"printAST",        no_argument, NULL, OPTION_printAST          },
+            {"printIRCode",     no_argument, NULL, OPTION_printIRCode       },
             {"printObjectCode", no_argument, NULL, OPTION_printObjectCode   },
             {"printFinalCode",  no_argument, NULL, OPTION_printFinalCode    },
             {"printSuccess",    no_argument, NULL, OPTION_printSuccess      },
@@ -547,6 +558,11 @@ int main(int argc, char **argv) {
             case OPTION_printAST:
                 printAST = true;
                 break;
+            
+            
+            case OPTION_printIRCode:
+                printIRCode = true;
+                break;
             case OPTION_printObjectCode:
                 printObjectCode = true;
                 break;
@@ -560,15 +576,17 @@ int main(int argc, char **argv) {
                 std::cout << "Usage ./llamac -[short options] --[long options] < file" << std::endl;
                 std::cout << std::endl;
 
+                std::cout << "Options:\n";
+
                 for(auto i: option_values)
                 {
-                    std::cout << std::left << std::setfill(' ') << std::setw(20) << "-" + option_string[i]
+                    std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "-" + option_string[i]
                           << std::left << option_description[i]
                           << std::endl;
                 }
                 for(auto i: long_option_values)
                 {
-                    std::cout << std::left << std::setfill(' ') << std::setw(20) << "--" + long_option_string[i]
+                    std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "--" + long_option_string[i]
                           << std::left << long_option_description[i]
                           << std::endl;
                 }

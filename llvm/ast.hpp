@@ -117,6 +117,7 @@ public:
     virtual void sem() {}
     virtual llvm::Value* compile() { return nullptr; }
     void start_compilation(const char *programName, bool optimize=false);
+    void printLLVMIR();
     virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     {
         if (!t1->isUnknown() && !t2->isUnknown())

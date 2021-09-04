@@ -147,6 +147,10 @@ void AST::start_compilation(const char *programName, bool optimize) {
 // TODO: More initializations here
 
 }
+void AST::printLLVMIR() 
+{
+    TheModule->print(llvm::errs(), nullptr);
+}
 
 /*********************************/
 /**        Definitions           */
@@ -208,7 +212,7 @@ llvm::Value* Array::compile() {
         LLVMSize.push_back(e->compile());
     }
 
-    // Create one dimensional array with correct size
+    // Allocate correct space for one dimensional array
     llvm::Value *LLVMArraySize = nullptr;
     for(auto size: LLVMSize)
     {
@@ -220,17 +224,31 @@ llvm::Value* Array::compile() {
 
         LLVMArraySize = Builder.CreateFMul(LLVMArraySize, size, "multmp");
     }
-    // llvm::Instruction *LLVMMalloc = Builder.CreateMalloc();
-    // llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+    llvm::Instruction *LLVMMalloc = 
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), 
+                                     llvm::Type::getInt32Ty(TheContext),
+                                     LLVMArraySize->getType(), 
+                                     llvm::ConstantExpr::getSizeOf(LLVMArraySize->getType()),
+                                     LLVMArraySize,
+                                     nullptr,
+                                     "arrayalloc"
+                                    );
+    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
-    // Builder.CreateGEP(); 
-    // Builder.CreateStore();
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "arrayptrloc"); 
+    Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
-    // Builder.CreateGEP(); 
-    // Builder.CreateStore();
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc"); 
+    Builder.CreateStore(LLVMDimensions, dimensionsLoc);
     
-    // for() { Builder.CreateGEP(); Builder.CreateStore(); }
+    int sizeIndex;
+    for(int i = 0; i < dimensions; i++) 
+    { 
+        sizeIndex = i + 2;
+        llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(sizeIndex)}, "sizeloc"); 
+        Builder.CreateStore(LLVMSize[i], sizeLoc);
+    }
 
     // Add the array to the map
     LLValues.insert({id, LLVMAlloca});
@@ -251,7 +269,10 @@ llvm::Value* Variable::compile() {
     return nullptr;
 }
 llvm::Value* Letdef::compile() {
-
+    for(auto def: def_list)
+    {
+        def->compile();
+    }
 }
 llvm::Value* Typedef::compile() {
 
