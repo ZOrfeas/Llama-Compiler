@@ -504,8 +504,49 @@ llvm::Value* FunctionCall::compile() {
 llvm::Value* ConstructorCall::compile() {
 
 }
-llvm::Value* ArrayAccess::compile() {
+llvm::Value* ArrayAccess::compile() 
+{
+    // Emit code to calculate indices
+    std::vector<llvm::Value *> LLVMArrayIndices = {};
+    for(auto e: expr_list)
+    {
+        LLVMArrayIndices.push_back(e->compile());
+    }
 
+    // Get the complete array struct as an alloca
+    llvm::AllocaInst *LLVMArrayStruct = llvm::dyn_cast<llvm::AllocaInst>(LLValues[id]);
+    llvm::Value *LLVMArray, *LLVMDimensions;
+    std::vector<llvm::Value *> LLVMSize = {};
+
+    // Load necessary values
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arrayptrloc"); 
+    LLVMArray = Builder.CreateLoad(arrayPtrLoc);
+
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArray, {c32(0), c32(1)}, "dimensionsloc"); 
+    LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
+
+    llvm::Value *sizeLoc;
+    int sizeIndex, dimensions = expr_list.size();
+    for(int i = 0; i < dimensions; i++) 
+    { 
+        sizeIndex = i + 2;
+        sizeLoc = Builder.CreateGEP(LLVMArray, {c32(0), c32(sizeIndex)}, "sizeloc"); 
+        LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
+    }
+
+    // Calculate the position of the requested element
+    // in the one dimensional representation of the array
+    for(int i = dimensions - 1; i >= 0; i--)
+    {
+        // Multiply temp with the current index 
+
+        // Add the result to the total location
+
+        // Multiply temp with the size of current dimension 
+        
+        // Assign the result to temp
+        
+    }
 }
 
 // Match
@@ -513,7 +554,6 @@ llvm::Value* ArrayAccess::compile() {
 llvm::Value* Match::compile() {
 
 }
-
 llvm::Value* Clause::compile() {
 
 }
