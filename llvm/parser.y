@@ -515,8 +515,6 @@ void compilerHandler(Program *p) {
     if(compile) 
     {
         p->start_compilation("a.ll");
-        p->compile();
-
         if(printIRCode) p->printLLVMIR();
     }
 }

@@ -480,13 +480,15 @@ llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module *TheModule)
 llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     // Get element type
-    TypeGraph *elementTypeGraph = inf.deepSubstitute(this->getContainedType());
+    TypeGraph *elementTypeGraph = inf.deepSubstitute(this)->getContainedType()->getContainedType();
     llvm::Type *elementLLVMType = elementTypeGraph->getLLVMType(TheModule);
 
     // Prepare name of type
-    std::string arrayTypeName = "Array" + 
-                                '.' + this->stringifyDimensions() + 
+    std::string arrayTypeName = std::string("Array") + 
+                                '.' + std::to_string(dimensions) + 
                                 '.' + elementTypeGraph->stringifyTypeClean(); 
+
+    std::cout << std::endl << arrayTypeName << std::endl;
 
     // Check if it exists
     llvm::StructType *LLVMArrayType;

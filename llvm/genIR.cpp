@@ -109,8 +109,8 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
                                                 const std::string &VarName, 
                                                 llvm::Type *LLVMType) 
 {
-  llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
-  return TmpB.CreateAlloca(LLVMType, 0, VarName.c_str());
+    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+    return TmpB.CreateAlloca(LLVMType, nullptr, VarName.c_str());
 }
 
 /*********************************/
@@ -162,11 +162,10 @@ void AST::start_compilation(const char *programName, bool optimize) {
     }
     // this means we would probably need to optimize each function seperately
     TheFPM->run(*main);
-    TheModule->print(llvm::outs(), nullptr);
 }
 void AST::printLLVMIR() 
 {
-    TheModule->print(llvm::errs(), nullptr);
+    TheModule->print(llvm::outs(), nullptr);
 }
 
 /*********************************/
@@ -214,13 +213,18 @@ llvm::Value* Array::compile() {
     // Get TheFunction insert block
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
+    // Get dimensions
+    int dimensions = this->get_dimensions();
+
     // Create the Alloca with the correct type
-    llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
+    TypeGraph *containedTypeGraph = inf.deepSubstitute(T->get_TypeGraph());
+    TypeGraph *arrayTypeGraph = new ArrayTypeGraph(dimensions, new RefTypeGraph(containedTypeGraph));
+    llvm::Type *LLVMContainedType = containedTypeGraph->getLLVMType(TheModule);
+    llvm::Type *LLVMType = arrayTypeGraph->getLLVMType(TheModule);
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
 
-    // Get the dimensions and turn them into a value
-    int dimensions = this->get_dimensions();
-    llvm::ConstantInt *LLVMDimensions = llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheModule->getContext()), dimensions);
+    // Turn dimensions into a value
+    llvm::ConstantInt *LLVMDimensions = c32(dimensions);
 
     // Get the size of each dimension
     std::vector<llvm::Value *> LLVMSize = {};
@@ -228,7 +232,7 @@ llvm::Value* Array::compile() {
     {
         LLVMSize.push_back(e->compile());
     }
-
+    
     // Allocate correct space for one dimensional array
     llvm::Value *LLVMArraySize = nullptr;
     for(auto size: LLVMSize)
@@ -239,17 +243,19 @@ llvm::Value* Array::compile() {
             continue;
         }
 
-        LLVMArraySize = Builder.CreateFMul(LLVMArraySize, size, "multmp");
+        LLVMArraySize = Builder.CreateMul(LLVMArraySize, size, "multmp");
     }
+
     llvm::Instruction *LLVMMalloc = 
         llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), 
-                                     llvm::Type::getInt32Ty(TheContext),
-                                     LLVMArraySize->getType(), 
-                                     llvm::ConstantExpr::getSizeOf(LLVMArraySize->getType()),
+                                     llvm::Type::getInt64Ty(TheContext),
+                                     LLVMContainedType, 
+                                     llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
                                      nullptr,
                                      "arrayalloc"
                                     );
+
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
@@ -258,7 +264,7 @@ llvm::Value* Array::compile() {
 
     llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc"); 
     Builder.CreateStore(LLVMDimensions, dimensionsLoc);
-    
+
     int sizeIndex;
     for(int i = 0; i < dimensions; i++) 
     { 
@@ -295,7 +301,8 @@ llvm::Value* Typedef::compile() {
 
 }
 llvm::Value* Program::compile() {
-    for (auto def : definition_list) {
+    for (auto def : definition_list) 
+    {
         def->compile();
     }
 }
