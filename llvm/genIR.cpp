@@ -459,7 +459,7 @@ llvm::Value* UnOp::compile() {
     case '+': return exprVal;
     case '-': return Builder.CreateSub(c32(0), exprVal, "intnegtmp");
     case T_plusdot: return exprVal;
-    case T_minusdot: return Builder.CreateFSub(f80(0.0), exprVal, "floatnegtmp");
+    case T_minusdot: return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "floatnegtmp");
     case T_not: return Builder.CreateNot(exprVal, "boolnottmp");
     case '!': return Builder.CreateLoad(exprVal, "ptrdereftmp"); 
     case T_delete: 
