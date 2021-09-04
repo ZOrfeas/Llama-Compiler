@@ -51,5 +51,5 @@ genIR_d.o: genIR.cpp ast.hpp infer.hpp
 	$(CXX) $(CXXFLAGS) -c -o genIR_d.o genIR.cpp
 
 debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o infer_d.o genIR_d.o
-	$(CXX) $(CXXFLAGS) -o llamac_d lexer_d.o parser_d.o symbol_d.o types_d.o ast_d.o infer_d.o
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o llamac_d lexer_d.o parser_d.o symbol_d.o types_d.o ast_d.o infer_d.o
 
