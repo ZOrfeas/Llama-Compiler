@@ -104,10 +104,19 @@ void createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc) {
 void createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc) {
 
 }
+// Creates alloca of specified name and type and inserts it at the beginning of the block
+static llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction, 
+                                                const std::string &VarName, 
+                                                llvm::Type *LLVMType) 
+{
+  llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+  return TmpB.CreateAlloca(LLVMType, 0, VarName.c_str());
+}
 
 /*********************************/
 /**       Initializations        */
 /*********************************/
+
 llvm::LLVMContext AST::TheContext;
 llvm::IRBuilder<> AST::Builder(AST::TheContext);
 llvm::Module *AST::TheModule;
@@ -170,6 +179,7 @@ llvm::Value* Constant::compile() {
     llvm::Value* exprVal = expr->compile();
     exprVal->setName(id);
     LLValues.insert({id, exprVal});
+    return nullptr;
 }
 llvm::Value* Function::compile() {
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
@@ -197,10 +207,65 @@ llvm::Value* Function::compile() {
 
 }
 llvm::Value* Array::compile() {
+    // Get TheFunction insert block
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
+    // Create the Alloca with the correct type
+    llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+
+    // Get the dimensions and turn them into a value
+    int dimensions = this->get_dimensions();
+    llvm::ConstantInt *LLVMDimensions = llvm::ConstantInt::get(llvm::Type::getInt32Ty(TheModule->getContext()), dimensions);
+
+    // Get the size of each dimension
+    std::vector<llvm::Value *> LLVMSize = {};
+    for(auto e: expr_list)
+    {
+        LLVMSize.push_back(e->compile());
+    }
+
+    // Create one dimensional array with correct size
+    llvm::Value *LLVMArraySize = nullptr;
+    for(auto size: LLVMSize)
+    {
+        if(!LLVMArraySize)
+        {
+            LLVMArraySize = size;
+            continue;
+        }
+
+        LLVMArraySize = Builder.CreateFMul(LLVMArraySize, size, "multmp");
+    }
+    // llvm::Instruction *LLVMMalloc = Builder.CreateMalloc();
+    // llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+
+    // Assign the values to the members
+    // Builder.CreateGEP(); 
+    // Builder.CreateStore();
+
+    // Builder.CreateGEP(); 
+    // Builder.CreateStore();
+    
+    // for() { Builder.CreateGEP(); Builder.CreateStore(); }
+
+    // Add the array to the map
+    LLValues.insert({id, LLVMAlloca});
+
+    return nullptr;
 }
 llvm::Value* Variable::compile() {
+    // Get TheFunction insert block
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
+    // Create the Alloca with the correct type
+    llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+
+    // Add the variable to the map
+    LLValues.insert({id, LLVMAlloca});
+
+    return nullptr;
 }
 llvm::Value* Letdef::compile() {
 
