@@ -127,6 +127,7 @@ llvm::Type *AST::i8;
 llvm::Type *AST::i32;
 llvm::Type *AST::flt;
 llvm::Type *AST::unitType;
+llvm::Type *AST::machinePtrType;
 
 void AST::start_compilation(const char *programName, bool optimize) {
     TheModule = new llvm::Module(programName, TheContext);
@@ -144,6 +145,7 @@ void AST::start_compilation(const char *programName, bool optimize) {
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
     unitType = type_unit->getLLVMType(TheModule);
+    machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main = 
       llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
@@ -248,7 +250,7 @@ llvm::Value* Array::compile() {
 
     llvm::Instruction *LLVMMalloc = 
         llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), 
-                                     llvm::Type::getInt64Ty(TheContext),
+                                     machinePtrType,
                                      LLVMContainedType, 
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,

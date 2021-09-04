@@ -99,6 +99,7 @@ protected:
     static llvm::Type *i32;
     static llvm::Type *flt;
     static llvm::Type *unitType;
+    static llvm::Type *machinePtrType;
     // static llvm::Type *str;
 
     static llvm::ConstantInt* c1(bool b);
