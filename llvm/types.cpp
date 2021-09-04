@@ -488,8 +488,6 @@ llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
                                 '.' + std::to_string(dimensions) + 
                                 '.' + elementTypeGraph->stringifyTypeClean(); 
 
-    std::cout << std::endl << arrayTypeName << std::endl;
-
     // Check if it exists
     llvm::StructType *LLVMArrayType;
     if(LLVMArrayType = TheModule->getTypeByName(arrayTypeName))
