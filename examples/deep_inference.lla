@@ -1,4 +1,4 @@
 let f a b = a b
-let g a = a ; 1.0
+let g a = -. a
 let intermediate = g
-let main = f intermediate 1
+let main = f intermediate 1.0

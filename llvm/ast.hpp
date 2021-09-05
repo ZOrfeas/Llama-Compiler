@@ -99,12 +99,13 @@ protected:
     static llvm::Type *i32;
     static llvm::Type *flt;
     static llvm::Type *unitType;
+    static llvm::Type *machinePtrType;
     // static llvm::Type *str;
 
     static llvm::ConstantInt* c1(bool b);
     static llvm::ConstantInt* c8(char c);
     static llvm::ConstantInt* c32(int n);
-    static llvm::ConstantFP* f64(double d);
+    static llvm::Constant* f80(long double d);
     static llvm::Constant* unitVal();
 
 public:
@@ -676,7 +677,7 @@ public:
         {
             F->addParam(p->get_TypeGraph());
         }
-        TG = T->get_TypeGraph();
+        TG = F->getTypeGraph();
         addToIdList(id);
     }
     // - Generates the function prototype

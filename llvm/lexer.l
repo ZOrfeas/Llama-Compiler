@@ -74,7 +74,7 @@ Hex [0-9a-f]
 {Lu}({L}|{D}|_)*    { yylval.id = new std::string(yytext); return T_idupper; }
 
 {D}+                        { yylval.num = atoi(yytext); return T_intconst;   }
-({D}+\.{D}+(e[+\-]?{D}+)?)   { return T_floatconst; }
+({D}+\.{D}+(e[+\-]?{D}+)?)   { yylval.dec = atof(yytext); return T_floatconst; }
 
 \'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { yylval.str = new std::string(yytext); return T_charconst; }
 \"((\\.|[^"\\\n])?)*\"    { yylval.str = new std::string(yytext); return T_stringliteral; }

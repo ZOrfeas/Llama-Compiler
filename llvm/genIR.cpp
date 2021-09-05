@@ -87,8 +87,8 @@ llvm::ConstantInt* AST::c8(char c) {
 llvm::ConstantInt* AST::c32(int n) {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, true));
 }
-llvm::ConstantFP* AST::f64(double d) {
-    return llvm::ConstantFP::get(TheContext, llvm::APFloat(d));
+llvm::Constant* AST::f80(long double d) {
+    return llvm::ConstantFP::get(flt, d);
 }
 llvm::Constant* AST::unitVal() {
     return llvm::Constant::getNullValue(unitType);
@@ -127,6 +127,7 @@ llvm::Type *AST::i8;
 llvm::Type *AST::i32;
 llvm::Type *AST::flt;
 llvm::Type *AST::unitType;
+llvm::Type *AST::machinePtrType;
 
 void AST::start_compilation(const char *programName, bool optimize) {
     TheModule = new llvm::Module(programName, TheContext);
@@ -144,6 +145,7 @@ void AST::start_compilation(const char *programName, bool optimize) {
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
     unitType = type_unit->getLLVMType(TheModule);
+    machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main = 
       llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
@@ -189,7 +191,7 @@ llvm::Value* Function::compile() {
     llvm::Function *newFunction;
     if (llvm::FunctionType *newFuncType = 
      llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType())) {
-        newFunction = llvm::Function::Create(newFuncType, llvm::Function::InternalLinkage,
+        newFunction = llvm::Function::Create(newFuncType, llvm::Function::ExternalLinkage,
                                              id, TheModule);
     } else { std::cout << "Internal error, FunctionType dyn_cast failed\n"; exit(1); }
     LLValues.insert({id, newFunction});
@@ -200,11 +202,13 @@ llvm::Value* Function::compile() {
     for (auto &arg : newFunction->args()) {
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
+        i++;
     }
     Builder.CreateRet(expr->compile());
+    closeScopeOfAll();
     bool bad = llvm::verifyFunction(*newFunction);
     // again, this is an internal error most likely
-    if (bad) { std::cout << "Func verification failed\n"; exit(1); }
+    if (bad) { std::cout << "Func verification failed\n"; TheModule->print(llvm::errs(), nullptr); exit(1); }
     Builder.SetInsertPoint(prevBB);
     return nullptr; // doesn't matter what it returns, its a definition not an expression
 
@@ -248,7 +252,7 @@ llvm::Value* Array::compile() {
 
     llvm::Instruction *LLVMMalloc = 
         llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), 
-                                     llvm::Type::getInt64Ty(TheContext),
+                                     machinePtrType,
                                      LLVMContainedType, 
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
@@ -325,7 +329,7 @@ llvm::Value* Bool_literal::compile() {
 }
 llvm::Value* Float_literal::compile() {
     //! Possibly wrong, make sure size and stuff are ok
-    return f64(d);
+    return f80(d);
 }
 llvm::Value* Int_literal::compile() {
     return c32(n);
@@ -455,7 +459,7 @@ llvm::Value* UnOp::compile() {
     case '+': return exprVal;
     case '-': return Builder.CreateSub(c32(0), exprVal, "intnegtmp");
     case T_plusdot: return exprVal;
-    case T_minusdot: return Builder.CreateFSub(f64(0.0), exprVal, "floatnegtmp");
+    case T_minusdot: return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "floatnegtmp");
     case T_not: return Builder.CreateNot(exprVal, "boolnottmp");
     case '!': return Builder.CreateLoad(exprVal, "ptrdereftmp"); 
     case T_delete: 
