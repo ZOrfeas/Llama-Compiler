@@ -515,38 +515,46 @@ llvm::Value* ArrayAccess::compile()
 
     // Get the complete array struct as an alloca
     llvm::AllocaInst *LLVMArrayStruct = llvm::dyn_cast<llvm::AllocaInst>(LLValues[id]);
-    llvm::Value *LLVMArray, *LLVMDimensions;
     std::vector<llvm::Value *> LLVMSize = {};
 
     // Load necessary values
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arrayptrloc"); 
-    LLVMArray = Builder.CreateLoad(arrayPtrLoc);
+    llvm::Value *LLVMArray = Builder.CreateLoad(arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArray, {c32(0), c32(1)}, "dimensionsloc"); 
-    LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "dimensionsloc"); 
+    llvm::Value *LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
 
     llvm::Value *sizeLoc;
     int sizeIndex, dimensions = expr_list.size();
     for(int i = 0; i < dimensions; i++) 
     { 
         sizeIndex = i + 2;
-        sizeLoc = Builder.CreateGEP(LLVMArray, {c32(0), c32(sizeIndex)}, "sizeloc"); 
+        sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "sizeloc"); 
         LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
     }
 
     // Calculate the position of the requested element
-    // in the one dimensional representation of the array
-    for(int i = dimensions - 1; i >= 0; i--)
+    // in the one dimensional representation of the array.
+    llvm::Value *LLVMTemp = LLVMArrayIndices[dimensions - 1],
+                *LLVMArrayLoc = LLVMTemp,
+                *LLVMSuffixSizeMul = LLVMSize[dimensions - 1]; 
+    for(int i = dimensions - 2; i >= 0; i--)
     {
-        // Multiply temp with the current index 
+        // Multiply SuffixSizeMul with the current index 
+        LLVMTemp = Builder.CreateMul(LLVMSuffixSizeMul, LLVMArrayIndices[i]);
 
         // Add the result to the total location
+        LLVMArrayLoc = Builder.CreateAdd(LLVMArrayLoc, LLVMTemp);
 
-        // Multiply temp with the size of current dimension 
-        
-        // Assign the result to temp
-        
+        // Multiplication not needed the last time
+        if(i != 0)
+        {
+            // Multiply SuffixSizeMul with the size of current dimension 
+            LLVMSuffixSizeMul = Builder.CreateMul(LLVMSuffixSizeMul, LLVMSize[i]);
+        }
     }
+
+    return Builder.CreateGEP(LLVMArray, LLVMArrayLoc, "arrayelemptr");
 }
 
 // Match
