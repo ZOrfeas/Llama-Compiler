@@ -16,41 +16,51 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <utility>      // std::pair, std::make_pair
+#include <utility> // std::pair, std::make_pair
 
 /*********************************/
 /**        Symbol-Tables         */
 /*********************************/
 
 /** @param T is the Type the table will will hold pointers of */
-template<class T>
-class LLTable {
-    std::vector<std::map<std::string, T>*> *table;
-    bool nameInScope(std::string name, std::map<std::string, T> *scope) {
+template <class T>
+class LLTable
+{
+    std::vector<std::map<std::string, T> *> *table;
+    bool nameInScope(std::string name, std::map<std::string, T> *scope)
+    {
         return (scope->find(name) != scope->end());
     }
+
 public:
-    LLTable(): table(new std::vector<std::map<std::string, T>*>()) {
+    LLTable() : table(new std::vector<std::map<std::string, T> *>())
+    {
         openScope(); // open first (global) scope
     }
     /** Can be called with the implicit pair constructor
      * e.g.: insert({"a_name", a_pointer})
     */
-    void insert(std::pair<std::string, T> entry) {
+    void insert(std::pair<std::string, T> entry)
+    {
         (*table->back())[entry.first] = entry.second;
     }
-    T operator [] (std::string name) {
-        for (auto it = table->rbegin(); it != table->rend(); it++) {
+    T operator[](std::string name)
+    {
+        for (auto it = table->rbegin(); it != table->rend(); it++)
+        {
             if (nameInScope(name, *it))
                 return (**it)[name];
         }
         return nullptr;
     }
-    void openScope() { 
+    void openScope()
+    {
         table->push_back(new std::map<std::string, T>());
     }
-    void closeScope() {
-        if (table->size() != 0) {
+    void closeScope()
+    {
+        if (table->size() != 0)
+        {
             std::map<std::string, T> *poppedScope = table->back();
             table->pop_back();
             delete poppedScope;
@@ -58,17 +68,19 @@ public:
     }
     ~LLTable() {}
 };
-LLTable<llvm::Value*> LLValues;
+LLTable<llvm::Value *> LLValues;
 // this can help with the function pointer stuff (member function getType())
-// LLTable<llvm::Function*> LLFunctions; 
+// LLTable<llvm::Function*> LLFunctions;
 // LLTable<llvm::AllocaInst> LLAllocas;
 
-void openScopeOfAll() {
+void openScopeOfAll()
+{
     LLValues.openScope();
     // LLFunctions.openScope();
     // LLAllocas.openScope();
 }
-void closeScopeOfAll() {
+void closeScopeOfAll()
+{
     LLValues.closeScope();
     // LLFunctions.closeScope();
     // LLAllocas.closeScope();
@@ -78,36 +90,41 @@ void closeScopeOfAll() {
 /**          Utilities           */
 /*********************************/
 
-llvm::ConstantInt* AST::c1(bool b) {
+llvm::ConstantInt *AST::c1(bool b)
+{
     return llvm::ConstantInt::get(TheContext, llvm::APInt(1, b, false));
 }
-llvm::ConstantInt* AST::c8(char c) {
+llvm::ConstantInt *AST::c8(char c)
+{
     return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, true));
 }
-llvm::ConstantInt* AST::c32(int n) {
+llvm::ConstantInt *AST::c32(int n)
+{
     return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, true));
 }
-llvm::Constant* AST::f80(long double d) {
+llvm::Constant *AST::f80(long double d)
+{
     return llvm::ConstantFP::get(flt, d);
 }
-llvm::Constant* AST::unitVal() {
+llvm::Constant *AST::unitVal()
+{
     return llvm::Constant::getNullValue(unitType);
 }
 
 // Get's a function with unit parameters and/or result type and creates an adapter with void
 // This is necessary to create linkable object files with these functions available
-void createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc) {
-
+void createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc)
+{
 }
 // Get's a function with void parameter and/or result type and creates an adapter with unit
 // This is necessary to link with external, ready libraries
-void createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc) {
-
+void createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc)
+{
 }
 // Creates alloca of specified name and type and inserts it at the beginning of the block
-static llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction, 
-                                                const std::string &VarName, 
-                                                llvm::Type *LLVMType) 
+static llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
+                                                const std::string &VarName,
+                                                llvm::Type *LLVMType)
 {
     llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
     return TmpB.CreateAlloca(LLVMType, nullptr, VarName.c_str());
@@ -129,35 +146,38 @@ llvm::Type *AST::flt;
 llvm::Type *AST::unitType;
 llvm::Type *AST::machinePtrType;
 
-void AST::start_compilation(const char *programName, bool optimize) {
+void AST::start_compilation(const char *programName, bool optimize)
+{
     TheModule = new llvm::Module(programName, TheContext);
     TheFPM = new llvm::legacy::FunctionPassManager(TheModule);
-    if (optimize) {
-      TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
-      TheFPM->add(llvm::createInstructionCombiningPass());
-      TheFPM->add(llvm::createReassociatePass());
-      TheFPM->add(llvm::createGVNPass());
-      TheFPM->add(llvm::createCFGSimplificationPass());
+    if (optimize)
+    {
+        TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
+        TheFPM->add(llvm::createInstructionCombiningPass());
+        TheFPM->add(llvm::createReassociatePass());
+        TheFPM->add(llvm::createGVNPass());
+        TheFPM->add(llvm::createCFGSimplificationPass());
     }
     TheFPM->doInitialization();
-    i1  = type_bool->getLLVMType(TheModule);
-    i8  = type_char->getLLVMType(TheModule);
+    i1 = type_bool->getLLVMType(TheModule);
+    i8 = type_char->getLLVMType(TheModule);
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
     unitType = type_unit->getLLVMType(TheModule);
     machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
-    llvm::Function *main = 
-      llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
-                             "main", TheModule);
+    llvm::Function *main =
+        llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
+                               "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
-// TODO: Initilize lib functions here
+    // TODO: Initilize lib functions here
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
     // Below means that each Function codegen is responsible for restoring insert point
     Builder.CreateRet(c32(0));
     bool bad = llvm::verifyModule(*TheModule, &llvm::errs());
-    if (bad) { // internal error
+    if (bad)
+    { // internal error
         std::cerr << "The IR is bad!" << std::endl;
         TheModule->print(llvm::errs(), nullptr);
         std::exit(1);
@@ -165,7 +185,7 @@ void AST::start_compilation(const char *programName, bool optimize) {
     // this means we would probably need to optimize each function seperately
     TheFPM->run(*main);
 }
-void AST::printLLVMIR() 
+void AST::printLLVMIR()
 {
     TheModule->print(llvm::outs(), nullptr);
 }
@@ -174,32 +194,43 @@ void AST::printLLVMIR()
 /**        Definitions           */
 /*********************************/
 
-llvm::Value* Constr::compile() {
-
+llvm::Value *Constr::compile()
+{
+    return nullptr;
 }
-llvm::Value* Tdef::compile() {
-
+llvm::Value *Tdef::compile()
+{
+    return nullptr;
 }
-llvm::Value* Constant::compile() {
-    llvm::Value* exprVal = expr->compile();
+llvm::Value *Constant::compile()
+{
+    llvm::Value *exprVal = expr->compile();
     exprVal->setName(id);
     LLValues.insert({id, exprVal});
     return nullptr;
 }
-llvm::Value* Function::compile() {
+llvm::Value *Function::compile()
+{
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     llvm::Function *newFunction;
-    if (llvm::FunctionType *newFuncType = 
-     llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType())) {
+    if (llvm::FunctionType *newFuncType =
+            llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType()))
+    {
         newFunction = llvm::Function::Create(newFuncType, llvm::Function::ExternalLinkage,
                                              id, TheModule);
-    } else { std::cout << "Internal error, FunctionType dyn_cast failed\n"; exit(1); }
+    }
+    else
+    {
+        std::cout << "Internal error, FunctionType dyn_cast failed\n";
+        exit(1);
+    }
     LLValues.insert({id, newFunction});
     openScopeOfAll();
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", newFunction);
     Builder.SetInsertPoint(newBB);
     int i = 0;
-    for (auto &arg : newFunction->args()) {
+    for (auto &arg : newFunction->args())
+    {
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
         i++;
@@ -208,12 +239,17 @@ llvm::Value* Function::compile() {
     closeScopeOfAll();
     bool bad = llvm::verifyFunction(*newFunction);
     // again, this is an internal error most likely
-    if (bad) { std::cout << "Func verification failed\n"; TheModule->print(llvm::errs(), nullptr); exit(1); }
+    if (bad)
+    {
+        std::cout << "Func verification failed\n";
+        TheModule->print(llvm::errs(), nullptr);
+        exit(1);
+    }
     Builder.SetInsertPoint(prevBB);
     return nullptr; // doesn't matter what it returns, its a definition not an expression
-
 }
-llvm::Value* Array::compile() {
+llvm::Value *Array::compile()
+{
     // Get TheFunction insert block
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -232,16 +268,16 @@ llvm::Value* Array::compile() {
 
     // Get the size of each dimension
     std::vector<llvm::Value *> LLVMSize = {};
-    for(auto e: expr_list)
+    for (auto e : expr_list)
     {
         LLVMSize.push_back(e->compile());
     }
-    
+
     // Allocate correct space for one dimensional array
     llvm::Value *LLVMArraySize = nullptr;
-    for(auto size: LLVMSize)
+    for (auto size : LLVMSize)
     {
-        if(!LLVMArraySize)
+        if (!LLVMArraySize)
         {
             LLVMArraySize = size;
             continue;
@@ -250,30 +286,29 @@ llvm::Value* Array::compile() {
         LLVMArraySize = Builder.CreateMul(LLVMArraySize, size, "multmp");
     }
 
-    llvm::Instruction *LLVMMalloc = 
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), 
+    llvm::Instruction *LLVMMalloc =
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
                                      machinePtrType,
-                                     LLVMContainedType, 
+                                     LLVMContainedType,
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
                                      nullptr,
-                                     "arrayalloc"
-                                    );
+                                     "arrayalloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "arrayptrloc"); 
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "arrayptrloc");
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc"); 
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc");
     Builder.CreateStore(LLVMDimensions, dimensionsLoc);
 
     int sizeIndex;
-    for(int i = 0; i < dimensions; i++) 
-    { 
+    for (int i = 0; i < dimensions; i++)
+    {
         sizeIndex = i + 2;
-        llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(sizeIndex)}, "sizeloc"); 
+        llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(sizeIndex)}, "sizeloc");
         Builder.CreateStore(LLVMSize[i], sizeLoc);
     }
 
@@ -282,7 +317,8 @@ llvm::Value* Array::compile() {
 
     return nullptr;
 }
-llvm::Value* Variable::compile() {
+llvm::Value *Variable::compile()
+{
     // Get TheFunction insert block
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -295,17 +331,23 @@ llvm::Value* Variable::compile() {
 
     return nullptr;
 }
-llvm::Value* Letdef::compile() {
-    for(auto def: def_list)
+llvm::Value *Letdef::compile()
+{   
+    // Not recursive
+    for (auto def : def_list)
     {
         def->compile();
     }
-}
-llvm::Value* Typedef::compile() {
 
+    // NOTE: Must handle let rec 
 }
-llvm::Value* Program::compile() {
-    for (auto def : definition_list) 
+llvm::Value *Typedef::compile()
+{
+    return nullptr;
+}
+llvm::Value *Program::compile()
+{
+    for (auto def : definition_list)
     {
         def->compile();
     }
@@ -317,202 +359,263 @@ llvm::Value* Program::compile() {
 
 // literals
 
-llvm::Value* String_literal::compile() {
+llvm::Value *String_literal::compile()
+{
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
-
 }
-llvm::Value* Char_literal::compile() {
+llvm::Value *Char_literal::compile()
+{
     return c8(c);
 }
-llvm::Value* Bool_literal::compile() {
+llvm::Value *Bool_literal::compile()
+{
     return c1(b);
 }
-llvm::Value* Float_literal::compile() {
+llvm::Value *Float_literal::compile()
+{
     //! Possibly wrong, make sure size and stuff are ok
     return f80(d);
 }
-llvm::Value* Int_literal::compile() {
+llvm::Value *Int_literal::compile()
+{
     return c32(n);
 }
-llvm::Value* Unit_literal::compile() {
+llvm::Value *Unit_literal::compile()
+{
     //! Possibly wrong, null value of type void seems dangerous
     return unitVal();
 }
 
 // Operators
 
-llvm::Value*  BinOp::compile() {
+llvm::Value *BinOp::compile()
+{
     auto lhsVal = lhs->compile(),
          rhsVal = rhs->compile();
     auto tempTypeGraph = inf.deepSubstitute(lhs->get_TypeGraph());
 
     switch (op)
     {
-    case '+': return Builder.CreateAdd(lhsVal, rhsVal, "intaddtmp");
-    case '-': return Builder.CreateSub(lhsVal, rhsVal, "intsubtmp");
-    case '*': return Builder.CreateMul(lhsVal, rhsVal, "intmultmp");
-    case '/': return Builder.CreateSDiv(lhsVal, rhsVal, "intdivtmp");
-    case T_mod: return Builder.CreateSRem(lhsVal, rhsVal, "intmodtmp");
-    
-    case T_plusdot: return Builder.CreateFAdd(lhsVal, rhsVal, "floataddtmp");
-    case T_minusdot: return Builder.CreateFSub(lhsVal, rhsVal, "floatsubtmp");
-    case T_stardot: return Builder.CreateFMul(lhsVal, rhsVal, "floatmultmp");
-    case T_slashdot: return Builder.CreateFDiv(lhsVal, rhsVal, "floatdivtmp");
-    case T_dblstar: return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "floatpowtmp");
+    case '+':
+        return Builder.CreateAdd(lhsVal, rhsVal, "intaddtmp");
+    case '-':
+        return Builder.CreateSub(lhsVal, rhsVal, "intsubtmp");
+    case '*':
+        return Builder.CreateMul(lhsVal, rhsVal, "intmultmp");
+    case '/':
+        return Builder.CreateSDiv(lhsVal, rhsVal, "intdivtmp");
+    case T_mod:
+        return Builder.CreateSRem(lhsVal, rhsVal, "intmodtmp");
 
-    case T_dblbar: return Builder.CreateOr({lhsVal, rhsVal});
-    case T_dblampersand: return Builder.CreateAnd({lhsVal, rhsVal});
+    case T_plusdot:
+        return Builder.CreateFAdd(lhsVal, rhsVal, "floataddtmp");
+    case T_minusdot:
+        return Builder.CreateFSub(lhsVal, rhsVal, "floatsubtmp");
+    case T_stardot:
+        return Builder.CreateFMul(lhsVal, rhsVal, "floatmultmp");
+    case T_slashdot:
+        return Builder.CreateFDiv(lhsVal, rhsVal, "floatdivtmp");
+    case T_dblstar:
+        return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "floatpowtmp");
+
+    case T_dblbar:
+        return Builder.CreateOr({lhsVal, rhsVal});
+    case T_dblampersand:
+        return Builder.CreateAnd({lhsVal, rhsVal});
 
     case '=':
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: structural equality, if struct here check fields recursively
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: structural equality, if struct here check fields recursively
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "floatcmpeqtmp");
-        } else{ // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpEQ(lhsVal, rhsVal, "intcmpeqtmp");
         }
     }
     case T_lessgreater:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: structural inequality
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: structural inequality
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpONE(lhsVal, rhsVal, "floatcmpnetmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpNE(lhsVal, rhsVal, "intcmpnetmp");
         }
     }
     case T_dbleq:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: natural equality, if struct here check they are practically the same struct
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: natural equality, if struct here check they are practically the same struct
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "floatcmpeqtmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpEQ(lhsVal, rhsVal, "intcmpeqtmp");
         }
     }
     case T_exclameq:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: natural inequality
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: natural inequality
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpONE(lhsVal, rhsVal, "floatcmpnetmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpNE(lhsVal, rhsVal, "intcmpnetmp");
         }
     }
-    case '<': 
+    case '<':
     {
-        if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isFloat())
+        {
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOLT(lhsVal, rhsVal, "floatcmplttmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSLT(lhsVal, rhsVal, "intcmplttmp");
         }
     }
     case '>':
     {
-        if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isFloat())
+        {
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOGT(lhsVal, rhsVal, "floatcmpgttmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSGT(lhsVal, rhsVal, "intcmpgttmp");
         }
     }
     case T_leq:
     {
-        if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isFloat())
+        {
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOLE(lhsVal, rhsVal, "floatcmpletmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSLE(lhsVal, rhsVal, "intcmpletmp");
         }
     }
     case T_geq:
     {
-        if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isFloat())
+        {
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOGE(lhsVal, rhsVal, "floatcmpgetmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSGE(lhsVal, rhsVal, "intcmpgetmp");
         }
     }
     case T_coloneq:
-        return nullptr;//TODO: assingement logic here, return unit type value (empty struct?)
+        return nullptr; //TODO: assingement logic here, return unit type value (empty struct?)
     case ';':
         return rhsVal;
     default:
         return nullptr;
     }
 }
-llvm::Value* UnOp::compile() {
+llvm::Value *UnOp::compile()
+{
     auto exprVal = expr->compile();
 
     switch (op)
     {
-    case '+': return exprVal;
-    case '-': return Builder.CreateSub(c32(0), exprVal, "intnegtmp");
-    case T_plusdot: return exprVal;
-    case T_minusdot: return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "floatnegtmp");
-    case T_not: return Builder.CreateNot(exprVal, "boolnottmp");
-    case '!': return Builder.CreateLoad(exprVal, "ptrdereftmp"); 
-    case T_delete: 
+    case '+':
+        return exprVal;
+    case '-':
+        return Builder.CreateSub(c32(0), exprVal, "intnegtmp");
+    case T_plusdot:
+        return exprVal;
+    case T_minusdot:
+        return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "floatnegtmp");
+    case T_not:
+        return Builder.CreateNot(exprVal, "boolnottmp");
+    case '!':
+        return Builder.CreateLoad(exprVal, "ptrdereftmp");
+    case T_delete:
     {
         return Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
-    }    
+    }
     }
 }
 
 // Misc
 
-llvm::Value* LetIn::compile() {
-    llvm::Value* retVal;
+llvm::Value *LetIn::compile()
+{
+    llvm::Value *retVal;
     openScopeOfAll();
     letdef->compile();
     retVal = expr->compile();
     closeScopeOfAll();
-    return retVal;    
+    return retVal;
 }
-llvm::Value* New::compile() {
-
+llvm::Value *New::compile()
+{
 }
-llvm::Value* While::compile() {
-
+llvm::Value *While::compile()
+{
 }
-llvm::Value* For::compile() {
-
+llvm::Value *For::compile()
+{
 }
-llvm::Value* If::compile() {
-
+llvm::Value *If::compile()
+{
 }
-llvm::Value* Dim::compile() {
-
+llvm::Value *Dim::compile()
+{
 }
-llvm::Value* ConstantCall::compile() {
+llvm::Value *ConstantCall::compile()
+{
     return LLValues[id];
 }
-llvm::Value* FunctionCall::compile() {
+llvm::Value *FunctionCall::compile()
+{
     llvm::Value *tempFunc = LLValues[id]; // this'll be a Function, due to sem (hopefully)
     std::vector<llvm::Value *> argsGiven;
-    for (auto &arg : expr_list) {
+    for (auto &arg : expr_list)
+    {
         argsGiven.push_back(arg->compile());
     }
     return Builder.CreateCall(tempFunc, argsGiven, "funccalltmp");
 }
-llvm::Value* ConstructorCall::compile() {
-
+llvm::Value *ConstructorCall::compile()
+{
 }
-llvm::Value* ArrayAccess::compile() 
+llvm::Value *ArrayAccess::compile()
 {
     // Emit code to calculate indices
     std::vector<llvm::Value *> LLVMArrayIndices = {};
-    for(auto e: expr_list)
+    for (auto e : expr_list)
     {
         LLVMArrayIndices.push_back(e->compile());
     }
@@ -522,18 +625,18 @@ llvm::Value* ArrayAccess::compile()
     std::vector<llvm::Value *> LLVMSize = {};
 
     // Load necessary values
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arrayptrloc"); 
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arrayptrloc");
     llvm::Value *LLVMArray = Builder.CreateLoad(arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "dimensionsloc"); 
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "dimensionsloc");
     llvm::Value *LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
 
     llvm::Value *sizeLoc;
     int sizeIndex, dimensions = expr_list.size();
-    for(int i = 0; i < dimensions; i++) 
-    { 
+    for (int i = 0; i < dimensions; i++)
+    {
         sizeIndex = i + 2;
-        sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "sizeloc"); 
+        sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "sizeloc");
         LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
     }
 
@@ -541,19 +644,19 @@ llvm::Value* ArrayAccess::compile()
     // in the one dimensional representation of the array.
     llvm::Value *LLVMTemp = LLVMArrayIndices[dimensions - 1],
                 *LLVMArrayLoc = LLVMTemp,
-                *LLVMSuffixSizeMul = LLVMSize[dimensions - 1]; 
-    for(int i = dimensions - 2; i >= 0; i--)
+                *LLVMSuffixSizeMul = LLVMSize[dimensions - 1];
+    for (int i = dimensions - 2; i >= 0; i--)
     {
-        // Multiply SuffixSizeMul with the current index 
+        // Multiply SuffixSizeMul with the current index
         LLVMTemp = Builder.CreateMul(LLVMSuffixSizeMul, LLVMArrayIndices[i]);
 
         // Add the result to the total location
         LLVMArrayLoc = Builder.CreateAdd(LLVMArrayLoc, LLVMTemp);
 
         // Multiplication not needed the last time
-        if(i != 0)
+        if (i != 0)
         {
-            // Multiply SuffixSizeMul with the size of current dimension 
+            // Multiply SuffixSizeMul with the size of current dimension
             LLVMSuffixSizeMul = Builder.CreateMul(LLVMSuffixSizeMul, LLVMSize[i]);
         }
     }
@@ -563,9 +666,9 @@ llvm::Value* ArrayAccess::compile()
 
 // Match
 
-llvm::Value* Match::compile() {
-
+llvm::Value *Match::compile()
+{
 }
-llvm::Value* Clause::compile() {
-
+llvm::Value *Clause::compile()
+{
 }
