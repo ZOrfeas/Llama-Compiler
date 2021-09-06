@@ -15,15 +15,16 @@ parser.hpp parser.cpp: parser.y
 # Add your dependencies here, e.g.
 # parser.o: parser.cpp lexer.hpp symbol.hpp
 lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
-parser.o: parser.cpp lexer.hpp symbol.hpp ast.hpp infer.hpp
+parser.o: parser.cpp lexer.hpp ast.hpp parser.hpp options.hpp
 ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
 infer.o: infer.cpp infer.hpp types.hpp
 genIR.o: genIR.cpp ast.hpp infer.hpp
+options.o: options.cpp lexer.hpp ast.hpp infer.hpp symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o symbol.o types.o symbol.o ast.o infer.o genIR.o
+compiler: lexer.o parser.o symbol.o types.o ast.o infer.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
 
 clean:
