@@ -10,3 +10,8 @@ parser.*
 !parser.y
 #----------------
 llamac*
+#----------------
+lib.a
+compile.sh
+a.out
+a.ll
