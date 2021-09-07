@@ -8,11 +8,8 @@
 #include <vector>
 
 #include "lexer.hpp"
-#include "symbol.hpp"
 #include "ast.hpp"
-#include "infer.hpp"
-
-void compilerHandler(Program *p);
+#include "options.hpp"
 
 // #define YYERROR_VERBOSE 1 // comment out to disable verbose error report
 // #define YYDEBUG 1 // comment out to disable debug feature compilation
@@ -152,7 +149,7 @@ void compilerHandler(Program *p);
 
 %%
 program 
-: program_list                      { $$ = $1; compilerHandler($$); } 
+: program_list                      { $$ = $1; optionList.executeOptions($$); } 
 ;
 
 program_list
@@ -396,227 +393,18 @@ pattern_list
 ;
 
 %%
-
-bool    syntaxAnalysis, semAnalysis, inferenceAnalysis, compile, 
-        tableLogs, inferenceLogs, printTable, printAST, 
-        printIRCode, printObjectCode, printFinalCode, 
-        printSuccess, help;
-
-enum option_enum 
-    {   
-        OPTION_tableLogs, OPTION_inferenceLogs, 
-        OPTION_printTable, OPTION_printAST, 
-        OPTION_printIRCode, OPTION_printObjectCode, OPTION_printFinalCode,
-        OPTION_printSuccess, OPTION_help
-    };
-
-std::vector<int> option_values = 
-{
-    0, 1, 2, 3
-};
-std::vector<option_enum> long_option_values = 
-{
-    OPTION_tableLogs, OPTION_inferenceLogs, 
-    OPTION_printTable, OPTION_printAST, 
-    OPTION_printIRCode, OPTION_printObjectCode, OPTION_printFinalCode,
-    OPTION_printSuccess, OPTION_help
-};
-
-std::string option_string[] = 
-{
-    "s", "a", "i", "c"
-};
-std::string long_option_string[] = 
-{   
-    "tableLogs",      
-    "inferenceLogs",  
-    "printTable",     
-    "printAST",   
-    "printIRCode",    
-    "printObjectCode",
-    "printFinalCode", 
-    "printSuccess",   
-    "help",           
-};
-
-std::string option_description[] = 
-{
-    "Checks only if the program is syntactically correct",
-    "Checks if the program is also semantically correct",
-    "Performs inference to resolve unknown types",
-    "Produces code"
-};
-std::string long_option_description[] = 
-{
-    "Shows symbol, type and constructor table logs",
-    "Shows inference logs", 
-    "Prints table with the names of variables and functions and their types",
-    "Prints the whole AST produced by the syntactical analysis",
-    "Prints LLVM IR code",
-    "Prints object code",
-    "Prints final code",
-    "Prints success message as opposed to being silent when compilation succeeds",
-    "Shows all options and their funcionality"
-};
-
 void yyerror(const char *msg) {
     printf("Error at line %d: %s\n", yylineno, msg);
     exit(1);
 }
 
-void printHeader(std::string s)
-{
-    int stars = 20;
-    std::cout   << std::setfill('*') << std::setw(stars) << " " << s << " " 
-                << std::setfill('*') << std::setw(stars) << " " << std::endl
-                << std::endl; 
-}
-
-//bool table_logs, inferer_logs;
-void compilerHandler(Program *p) {
-    if (inferenceLogs) 
-    {
-        inf.enable_logs();
-    }
-
-    if (tableLogs) 
-    {
-        st.enable_logs();
-        tt.enable_logs();
-        ct.enable_logs();
-    }
-
-    if(syntaxAnalysis)
-    {
-        if(printAST) 
-        {   
-            //printHeader("AST");
-            std::cout << *p << std::endl; 
-            std::cout << std::endl;
-        }
-    }
-    
-    if(semAnalysis)
-    {
-        p->sem(); 
-    }
-
-    if(inferenceAnalysis) 
-    {
-        inf.solveAll(false);
-        if(printTable) 
-        {   
-            //printHeader("Types of identifiers");
-            p->printIdTypeGraphs();
-            std::cout << std::endl;
-        }
-    } 
-
-    if(compile) 
-    {
-        p->start_compilation("a.ll");
-        if(printIRCode) p->printLLVMIR();
-    }
-}
-
 int main(int argc, char **argv) {
-    syntaxAnalysis = semAnalysis = inferenceAnalysis = compile = 
-    tableLogs = inferenceLogs = printTable = 
-    printAST = printIRCode = printObjectCode = printFinalCode = 
-    printSuccess = help = false;
-    
-    int option_index = 0;
-    struct option long_options[] = {
-            {"tableLogs",       no_argument, NULL, OPTION_tableLogs         },
-            {"inferenceLogs",   no_argument, NULL, OPTION_inferenceLogs     },
-            {"printTable",      no_argument, NULL, OPTION_printTable        },
-            {"printAST",        no_argument, NULL, OPTION_printAST          },
-            {"printIRCode",     no_argument, NULL, OPTION_printIRCode       },
-            {"printObjectCode", no_argument, NULL, OPTION_printObjectCode   },
-            {"printFinalCode",  no_argument, NULL, OPTION_printFinalCode    },
-            {"printSuccess",    no_argument, NULL, OPTION_printSuccess      },
-            {"help",            no_argument, NULL, OPTION_help              }
-        };
-    
-    int c;
-    bool noShortOptions = true; // If there are no short options then run all stages
-    while((c = getopt_long(argc, argv, "saic", long_options, &option_index)) != -1)
-    {   
-        switch(c)
-        {
-            case OPTION_tableLogs:
-                tableLogs = true;
-                break;
-            case OPTION_inferenceLogs:
-                inferenceLogs = true;
-                break;
-            case OPTION_printTable:
-                printTable = true;
-                break;
-            case OPTION_printAST:
-                printAST = true;
-                break;
-            
-            
-            case OPTION_printIRCode:
-                printIRCode = true;
-                break;
-            case OPTION_printObjectCode:
-                printObjectCode = true;
-                break;
-            case OPTION_printFinalCode:
-                printFinalCode = true;
-                break;
-            case OPTION_printSuccess:
-                printSuccess = true;
-                break;
-            case OPTION_help:
-                std::cout << "Usage ./llamac -[short options] --[long options] < file" << std::endl;
-                std::cout << std::endl;
-
-                std::cout << "Options:\n";
-
-                for(auto i: option_values)
-                {
-                    std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "-" + option_string[i]
-                          << std::left << option_description[i]
-                          << std::endl;
-                }
-                for(auto i: long_option_values)
-                {
-                    std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "--" + long_option_string[i]
-                          << std::left << long_option_description[i]
-                          << std::endl;
-                }
-                exit(0);
-                break;
-            case 'c':
-                compile = true;
-            case 'i':
-                inferenceAnalysis = true;
-            case 'a':
-                semAnalysis = true;
-            case 's':
-                syntaxAnalysis = true;
-                noShortOptions = false;
-                break;
-            default:
-                break;
-        }
-    }
-
-    // If no arguments are given then compile
-    if(noShortOptions) 
-    {
-        syntaxAnalysis = true;
-        semAnalysis = true;
-        inferenceAnalysis = true;
-        compile = true;
-    }
+    // Handle options
+    optionList.parseOptions(argc, argv);
 
     // yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
     
-    if (result == 0 && printSuccess) printf("Success\n");
+    if (result == 0 && printSuccess.isActivated()) std::cout << "Success\n";
     return result;
 }
