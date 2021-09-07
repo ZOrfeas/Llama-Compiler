@@ -102,6 +102,10 @@ llvm::ConstantInt *AST::c32(int n)
 {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, true));
 }
+llvm::ConstantInt *AST::c64(long int n)
+{
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(64, n, true));
+}
 llvm::Constant *AST::f80(long double d)
 {
     return llvm::ConstantFP::get(flt, d);
@@ -157,13 +161,13 @@ void AST::start_compilation(const char *programName, bool optimize)
     unitType = type_unit->getLLVMType(TheModule);
     machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     arrCharType = (new ArrayTypeGraph(1, new RefTypeGraph(type_char)))->getLLVMType(TheModule);
+    std::vector<std::pair<std::string, llvm::Function*>> *libFunctions = genLibGlueLogic();
+    for (auto &libFunc: *libFunctions) { LLValues.insert(libFunc); }
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
                                "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
-    std::vector<std::pair<std::string, llvm::Function*>> *libFunctions = genLibGlueLogic();
-    for (auto &libFunc: *libFunctions) { LLValues.insert(libFunc); }
 // TODO: Initilize lib functions here
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
@@ -233,7 +237,7 @@ llvm::Value *Function::compile()
     closeScopeOfAll();
     bool bad = llvm::verifyFunction(*newFunction);
     // again, this is an internal error most likely
-    if (bad) { std::cout << "Func verification failed for"<< id <<'\n'; TheModule->print(llvm::errs(), nullptr); exit(1); }
+    if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; newFunction->print(llvm::errs(), nullptr); exit(1); }
     Builder.SetInsertPoint(prevBB);
     return nullptr; // doesn't matter what it returns, its a definition not an expression
 }
@@ -343,7 +347,8 @@ llvm::Value *Letdef::compile()
     
     return nullptr;
 }
-llvm::Value* Typedef::compile() {
+llvm::Value *Typedef::compile()
+{
     return nullptr;
 }
 llvm::Value *Program::compile()
@@ -365,46 +370,41 @@ llvm::Value *String_literal::compile()
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
     // Get TheFunction insert block
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
-
-    int dimensions = 1;
+    llvm::Value *strVal = Builder.CreateGlobalStringPtr(s);
     int size = s.size() + 1;
-    llvm::Type *LLVMType = TG->getLLVMType(TheModule);
-    llvm::Type *LLVMContainedType = llvm::IntegerType::getInt8Ty(TheModule->getContext());
     
     llvm::Value *LLVMArraySize = c32(size);
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", LLVMType);
-
-    // Turn dimensions into a value
-    llvm::ConstantInt *LLVMDimensions = c32(dimensions);
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", arrCharType->getPointerElementType());
 
     // Allocate memory for string
     llvm::Instruction *LLVMMalloc =
         llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
                                      machinePtrType,
-                                     LLVMContainedType,
-                                     llvm::ConstantExpr::getSizeOf(LLVMContainedType),
+                                     i8,
+                                     llvm::ConstantExpr::getSizeOf(i8),
                                      LLVMArraySize,
                                      nullptr,
                                      "stringalloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
-
     // Assign the values to the members
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "stringptrloc");
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
     llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc");
-    Builder.CreateStore(LLVMDimensions, dimensionsLoc);
+    Builder.CreateStore(c32(1), dimensionsLoc);
 
     llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(2)}, "sizeloc");
     Builder.CreateStore(LLVMArraySize, sizeLoc);
 
-    // Copy the string
-    for(auto i = 0; i < s.size(); i++)
-    {
-        llvm::Value *stringElemLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0), c32(i)}, "stringelemloc");
-        Builder.CreateStore(c8(s[i]), stringElemLoc);
-    }
+    Builder.CreateCall(TheModule->getFunction("strcpy"), {LLVMAllocatedMemory, strVal});
+
+    // // Copy the string
+    // for(unsigned int i = 0; i < s.size(); i++)
+    // {
+    //     llvm::Value *stringElemLoc = Builder.CreateGEP(LLVMAllocatedMemory, {c32(i)}, "stringelemloc");
+    //     Builder.CreateStore(c8(s[i]), stringElemLoc);
+    // }
 
     return LLVMAlloca;
 }
@@ -743,8 +743,9 @@ llvm::Value *If::compile()
     // Finish
     TheFunction->getBasicBlockList().push_back(MergeBB);
     Builder.SetInsertPoint(MergeBB);
+    llvm::Value *retVal = Builder.CreateLoad(LLVMAlloca);
 
-    return LLVMAlloca;
+    return retVal;
 }
 llvm::Value *Dim::compile()
 {
