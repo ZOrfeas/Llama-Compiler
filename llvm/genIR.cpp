@@ -334,12 +334,22 @@ llvm::Value *Variable::compile()
 llvm::Value *Letdef::compile()
 {   
     // Not recursive
-    for (auto def : def_list)
+    if(!recursive)
     {
-        def->compile();
+        for (auto def : def_list)
+        {
+            def->compile();
+        }
     }
 
     // NOTE: Must handle let rec 
+    // (mutually) Recursive functions
+    if(recursive)
+    {
+        // Get all function signatures
+
+        // Compile bodies
+    }
 }
 llvm::Value *Typedef::compile()
 {
@@ -362,6 +372,51 @@ llvm::Value *Program::compile()
 llvm::Value *String_literal::compile()
 {
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
+    // Get TheFunction insert block
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    int dimensions = 1;
+    int size = s.size() + 1;
+    llvm::Type *LLVMType = TG->getLLVMType(TheModule);
+    llvm::Type *LLVMContainedType = llvm::IntegerType::getInt8Ty(TheModule->getContext());
+    
+    llvm::Value *LLVMDimensions = c32(1);
+    llvm::Value *LLVMArraySize = c32(size);
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", LLVMType);
+
+    // Turn dimensions into a value
+    llvm::ConstantInt *LLVMDimensions = c32(dimensions);
+
+    // Allocate memory for string
+    llvm::Instruction *LLVMMalloc =
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+                                     machinePtrType,
+                                     LLVMContainedType,
+                                     llvm::ConstantExpr::getSizeOf(LLVMContainedType),
+                                     LLVMArraySize,
+                                     nullptr,
+                                     "stringalloc");
+
+    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+
+    // Assign the values to the members
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "stringptrloc");
+    Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
+
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc");
+    Builder.CreateStore(LLVMDimensions, dimensionsLoc);
+
+    llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(2)}, "sizeloc");
+    Builder.CreateStore(LLVMArraySize, sizeLoc);
+
+    // Copy the string
+    for(auto i = 0; i < s.size(); i++)
+    {
+        llvm::Value *stringElemLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0), c32(i)}, "stringelemloc");
+        Builder.CreateStore(c8(s[i]), stringElemLoc);
+    }
+
+    return LLVMAlloca;
 }
 llvm::Value *Char_literal::compile()
 {
@@ -581,15 +636,131 @@ llvm::Value *LetIn::compile()
 }
 llvm::Value *New::compile()
 {
+    TypeGraph *newTypeGraph = inf.deepSubstitute(TG);
+    const std::string instrName = "new_" + newTypeGraph->stringifyTypeClean() + "_alloc";
+    llvm::Type *newType = newTypeGraph->getContainedType()->getLLVMType(TheModule);
+
+    llvm::Instruction *LLVMMalloc =
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+                                     machinePtrType,
+                                     newType,
+                                     llvm::ConstantExpr::getSizeOf(newType),
+                                     c32(1),
+                                     nullptr,
+                                     instrName);
+
+    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 }
 llvm::Value *While::compile()
 {
 }
 llvm::Value *For::compile()
 {
+    bool increment = (step == "to");
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    // For loop variable
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, i32);
+    llvm::Value *LLVMTemp;
+
+    // Create Basic Block for initialisation, body, end
+    llvm::BasicBlock *LoopBB = llvm::BasicBlock::Create(TheContext, "forloop");
+    llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(TheContext, "forbody");
+    llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "forend");
+
+    /*************** INITIALISATION ***************/
+    
+    // Emit code for start and finish values
+    llvm::Value *StartV = start->compile();
+    llvm::Value *FinishV = finish->compile();
+
+    // Create value that holds the step
+    llvm::Value *StepV = increment ? c32(1) : c32(-1);
+
+    // Create scope for loop variable and initialise it
+    openScopeOfAll();
+    Builder.CreateStore(StartV, LLVMAlloca);
+    LLValues.insert({id, LLVMAlloca});
+
+    // Begin loop
+    Builder.CreateBr(LoopBB);
+    
+    /*************** LOOP ***************/
+    
+    TheFunction->getBasicBlockList().push_back(LoopBB);
+    Builder.SetInsertPoint(LoopBB);
+
+    // Check whether the condition is satisfied
+    LLVMTemp = Builder.CreateLoad(LLVMAlloca);
+    LLVMTemp = increment ? Builder.CreateICmpSLE(LLVMTemp, FinishV, "forloopchecklte") 
+                         : Builder.CreateICmpSGE(LLVMTemp, FinishV, "forlookcheckgte");
+    Builder.CreateCondBr(LLVMTemp, BodyBB, FinishBB);
+
+    /*************** BODY ***************/
+
+    TheFunction->getBasicBlockList().push_back(BodyBB);
+    Builder.SetInsertPoint(BodyBB);
+
+    // Emit code for the body
+    body->compile();
+
+    // Add step to the loop variable 
+    LLVMTemp = Builder.CreateLoad(LLVMAlloca);
+    LLVMTemp = Builder.CreateAdd(LLVMTemp, StepV, "forstep");
+    Builder.CreateStore(LLVMTemp, LLVMAlloca);
+
+    // Loop
+    Builder.CreateBr(LoopBB);
+    
+    /*************** FINISH ***************/
+
+    TheFunction->getBasicBlockList().push_back(FinishBB);
+    Builder.SetInsertPoint(FinishBB);
+    
+    closeScopeOfAll();
+    return unitVal();
 }
 llvm::Value *If::compile()
 {
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    // Create alloca to hold the return value
+    llvm::Type *LLVMIfReturnType = TG->getLLVMType(TheModule);
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", LLVMIfReturnType);
+
+    // Emit code for the condition compare
+    llvm::Value *LLVMCond = cond->compile();
+    LLVMCond = Builder.CreateICmpEQ(LLVMCond, c1(true), "ifcond");
+
+    // Create blocks for the then and else cases.  
+    // Insert the 'then' block at the end of the function.
+    llvm::BasicBlock *ThenBB = llvm::BasicBlock::Create(TheContext, "then");
+    llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(TheContext, "else");
+    llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
+
+    // Create branch
+    Builder.CreateCondBr(LLVMCond, ThenBB, ElseBB);
+
+    // Handle then
+    TheFunction->getBasicBlockList().push_back(ThenBB);
+    Builder.SetInsertPoint(ThenBB);
+    llvm::Value *ThenV = body->compile();
+    Builder.CreateStore(ThenV, LLVMAlloca);
+    Builder.CreateBr(MergeBB);
+
+    // Handle else whether it exists or not
+    TheFunction->getBasicBlockList().push_back(ElseBB);
+    Builder.SetInsertPoint(ElseBB);
+    llvm::Value *ElseV = unitVal();
+    if(else_body) ElseV = else_body->compile();
+    Builder.CreateStore(ElseV, LLVMAlloca);
+    Builder.CreateBr(MergeBB);
+
+    // Finish
+    TheFunction->getBasicBlockList().push_back(MergeBB);
+    Builder.SetInsertPoint(MergeBB);
+
+    return LLVMAlloca;
 }
 llvm::Value *Dim::compile()
 {
