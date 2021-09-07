@@ -138,13 +138,13 @@ void AST::start_compilation(const char *programName, bool optimize) {
     unitType = type_unit->getLLVMType(TheModule);
     machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     arrCharType = (new ArrayTypeGraph(1, new RefTypeGraph(type_char)))->getLLVMType(TheModule);
+    std::vector<std::pair<std::string, llvm::Function*>> *libFunctions = genLibGlueLogic();
+    for (auto &libFunc: *libFunctions) { LLValues.insert(libFunc); }
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main = 
       llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
                              "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
-    std::vector<std::pair<std::string, llvm::Function*>> *libFunctions = genLibGlueLogic();
-    for (auto &libFunc: *libFunctions) { LLValues.insert(libFunc); }
 // TODO: Initilize lib functions here
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
