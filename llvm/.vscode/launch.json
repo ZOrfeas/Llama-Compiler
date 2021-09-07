@@ -10,10 +10,8 @@
             "request": "launch",
             "program": "${fileDirname}/llamac_d",
             "args": [ 
-                "--printAST",
-                "--tableLogs",
-                "--inferenceLogs",
-                "<" , "../examples/match_many_patterns.lla"
+                "--printIRCode",
+                "<" , "../../float_llvm_test.lla"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

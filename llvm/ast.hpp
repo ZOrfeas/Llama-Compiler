@@ -100,14 +100,18 @@ protected:
     static llvm::Type *flt;
     static llvm::Type *unitType;
     static llvm::Type *machinePtrType;
-    // static llvm::Type *str;
+    static llvm::Type *arrCharType;
 
     static llvm::ConstantInt* c1(bool b);
     static llvm::ConstantInt* c8(char c);
     static llvm::ConstantInt* c32(int n);
     static llvm::Constant* f80(long double d);
     static llvm::Constant* unitVal();
-
+    std::vector<std::pair<std::string, llvm::Function*>>* genLibGlueLogic();
+    static llvm::Function* createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc);
+    static llvm::Function* createFuncAdapterFromCharArrToString(llvm::Function *charArrFunc);
+    static llvm::Function* createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc);
+    static llvm::Function* createFuncAdapterFromStringToCharArr(llvm::Function *stringFunc);
 public:
     AST()
     {

@@ -477,7 +477,7 @@ llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     return llvm::Type::getX86_FP80Ty(TheModule->getContext());
 }
-llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
+llvm::PointerType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     // Get element type
     TypeGraph *elementTypeGraph = inf.deepSubstitute(this)->getContainedType()->getContainedType();
@@ -492,7 +492,7 @@ llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
     llvm::StructType *LLVMArrayType;
     if(LLVMArrayType = TheModule->getTypeByName(arrayTypeName))
     {
-        return LLVMArrayType;
+        return LLVMArrayType->getPointerTo();
     }
 
     // Vector for StructType members
@@ -510,7 +510,7 @@ llvm::StructType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
     LLVMArrayType = llvm::StructType::create(TheModule->getContext(), arrayTypeName);
     LLVMArrayType->setBody(members);
 
-    return LLVMArrayType;
+    return LLVMArrayType->getPointerTo();
 }
 llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
 {

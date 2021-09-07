@@ -76,8 +76,13 @@ void SymbolTable::insertLibFunctions() {
                 resType = basicTypes[i];
                 paramType = basicTypes[0];
             }
-            funcType = new FunctionTypeGraph(resType);
-            funcType->addParam(paramType);
+            if (!j && i == 5) { // read_string is special
+                funcType = new FunctionTypeGraph(basicTypes[0]);
+                funcType->addParam(basicTypes[5]);
+            } else {
+                funcType = new FunctionTypeGraph(resType);
+                funcType->addParam(paramType);
+            }
             insertBasic(prefix + names[i], funcType);
         }
     }
