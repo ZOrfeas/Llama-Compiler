@@ -105,6 +105,7 @@ protected:
     static llvm::ConstantInt* c1(bool b);
     static llvm::ConstantInt* c8(char c);
     static llvm::ConstantInt* c32(int n);
+    static llvm::ConstantInt* c64(long int n);
     static llvm::Constant* f80(long double d);
     static llvm::Constant* unitVal();
     std::vector<std::pair<std::string, llvm::Function*>>* genLibGlueLogic();
@@ -1043,7 +1044,7 @@ private:
 
 public:
     String_literal(std::string *s)
-        : s(*s) {}
+        : s(s->substr(1, s->size()-2)) {}
     virtual void sem() override
     {
         TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
