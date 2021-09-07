@@ -1,6 +1,6 @@
 #include "options.hpp"
 
-int LongOption::count = 0;
+int LongOption::count = 130; // so that it doesn't hit any ascii codes
 OptionList optionList;
 
 Option::Option(int val, std::string name, std::string description)
@@ -87,6 +87,7 @@ void OptionList::parseOptions(int argc, char **argv)
     for(auto s: shortOptions) { short_options += s->getName(); }
 
     int c;
+    int highestActivatedShortOption = -1;
     bool noShortOptions = true; // If there are no short options then run all stages
     while((c = getopt_long(argc, argv, short_options.c_str(), long_options, &option_index)) != -1)
     {   
@@ -105,17 +106,18 @@ void OptionList::parseOptions(int argc, char **argv)
         {
             auto s = shortOptions[i];
 
-            if(!noShortOptions) {
-                s->activate();
-            }
-            else if(c == s->getVal())
+            if(c == s->getVal())
             {
                 s->activate();
                 noShortOptions = false;
+                if(i > highestActivatedShortOption) 
+                {
+                    highestActivatedShortOption = i;
+                }
             }
         }
     }
-    
+
     // Print help message
     if(help.isActivated()) 
     {
@@ -139,11 +141,19 @@ void OptionList::parseOptions(int argc, char **argv)
     }
 
     // If no short options are given then compile
+    // Else activate until highest activated short option
     if(noShortOptions) 
     {
         for(auto s: shortOptions)
         {
             s->activate();
+        }
+    }
+    else 
+    {
+        for(int i = 0; i <= highestActivatedShortOption; i++)
+        {
+            shortOptions[i]->activate();
         }
     }
 }

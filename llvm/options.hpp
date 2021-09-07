@@ -41,7 +41,7 @@ class LongOption
     : public Option
 {
 protected:
-    static int count; // shouldn't go higher than 40
+    static int count;
 public:
     LongOption(std::string name, std::string description);
     struct option getStructOption();

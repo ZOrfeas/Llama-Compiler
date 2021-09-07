@@ -346,10 +346,6 @@ llvm::Value *Letdef::compile()
 llvm::Value* Typedef::compile() {
     return nullptr;
 }
-llvm::Value *Typedef::compile()
-{
-    return nullptr;
-}
 llvm::Value *Program::compile()
 {
     for (auto def : definition_list)
@@ -375,7 +371,6 @@ llvm::Value *String_literal::compile()
     llvm::Type *LLVMType = TG->getLLVMType(TheModule);
     llvm::Type *LLVMContainedType = llvm::IntegerType::getInt8Ty(TheModule->getContext());
     
-    llvm::Value *LLVMDimensions = c32(1);
     llvm::Value *LLVMArraySize = c32(size);
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", LLVMType);
 
@@ -601,9 +596,47 @@ llvm::Value *New::compile()
                                      instrName);
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+
+    return LLVMAllocatedMemory;
 }
 llvm::Value *While::compile()
 {
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    // Create Basic Block for loop, body, end
+    llvm::BasicBlock *LoopBB = llvm::BasicBlock::Create(TheContext, "whileloop");
+    llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(TheContext, "whilebody");
+    llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "whileend");
+
+    /*************** LOOP ***************/
+
+    TheFunction->getBasicBlockList().push_back(LoopBB);
+    Builder.SetInsertPoint(LoopBB);
+
+    // Emit code for the condition
+    llvm::Value *LLVMCond = cond->compile();
+
+    // Check whether to continue or finish
+    LLVMCond = Builder.CreateICmpEQ(LLVMCond, c1(true), "whileloopcheck");
+    Builder.CreateCondBr(LLVMCond, BodyBB, FinishBB);
+
+    /*************** BODY ***************/
+
+    TheFunction->getBasicBlockList().push_back(BodyBB);
+    Builder.SetInsertPoint(BodyBB);
+
+    // Emit code for the body
+    body->compile();
+
+    // Loop
+    Builder.CreateBr(LoopBB);
+
+    /*************** FINISH ***************/
+
+    TheFunction->getBasicBlockList().push_back(FinishBB);
+    Builder.SetInsertPoint(FinishBB);
+
+    return unitVal();
 }
 llvm::Value *For::compile()
 {
@@ -614,7 +647,7 @@ llvm::Value *For::compile()
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, i32);
     llvm::Value *LLVMTemp;
 
-    // Create Basic Block for initialisation, body, end
+    // Create Basic Block for loop, body, end
     llvm::BasicBlock *LoopBB = llvm::BasicBlock::Create(TheContext, "forloop");
     llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(TheContext, "forbody");
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "forend");
@@ -642,7 +675,7 @@ llvm::Value *For::compile()
     Builder.SetInsertPoint(LoopBB);
 
     // Check whether the condition is satisfied
-    LLVMTemp = Builder.CreateLoad(LLVMAlloca);
+    LLVMTemp = Builder.CreateLoad(LLVMAlloca);  // NOTE: might be able to avoid this load
     LLVMTemp = increment ? Builder.CreateICmpSLE(LLVMTemp, FinishV, "forloopchecklte") 
                          : Builder.CreateICmpSGE(LLVMTemp, FinishV, "forlookcheckgte");
     Builder.CreateCondBr(LLVMTemp, BodyBB, FinishBB);
@@ -750,8 +783,8 @@ llvm::Value *ArrayAccess::compile()
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arr.acc.ptrloc"); 
     llvm::Value *LLVMArray = Builder.CreateLoad(arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "arr.acc.dimloc"); 
-    llvm::Value *LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
+    // llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "arr.acc.dimloc"); 
+    // llvm::Value *LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
 
     llvm::Value *sizeLoc;
     int sizeIndex, dimensions = expr_list.size();
