@@ -237,7 +237,7 @@ llvm::Value *Function::compile()
     closeScopeOfAll();
     bool bad = llvm::verifyFunction(*newFunction);
     // again, this is an internal error most likely
-    if (bad) { std::cout << "Func verification failed for"<< id <<'\n'; TheModule->print(llvm::errs(), nullptr); exit(1); }
+    if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; newFunction->print(llvm::errs(), nullptr); exit(1); }
     Builder.SetInsertPoint(prevBB);
     return nullptr; // doesn't matter what it returns, its a definition not an expression
 }
@@ -706,8 +706,9 @@ llvm::Value *If::compile()
     // Finish
     TheFunction->getBasicBlockList().push_back(MergeBB);
     Builder.SetInsertPoint(MergeBB);
+    llvm::Value *retVal = Builder.CreateLoad(LLVMAlloca);
 
-    return LLVMAlloca;
+    return retVal;
 }
 llvm::Value *Dim::compile()
 {

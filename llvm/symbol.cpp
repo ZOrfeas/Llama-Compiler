@@ -91,13 +91,21 @@ void SymbolTable::insertLibFunctions() {
               *unit_to_float = new FunctionTypeGraph(basicTypes[4]),
               *int_to_float = new FunctionTypeGraph(basicTypes[4]),
               *float_to_int = new FunctionTypeGraph(basicTypes[1]),
-              *int_ref_to_unit = new FunctionTypeGraph(basicTypes[0]);
+              *int_ref_to_unit = new FunctionTypeGraph(basicTypes[0]),
+              *arrchar_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *arrchar_arrchar_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *arrchar_arrchar_to_unit = new FunctionTypeGraph(basicTypes[0]);
     int_to_int->addParam(basicTypes[1]);
     float_to_float->addParam(basicTypes[4]);
     unit_to_float->addParam(basicTypes[0]);
     int_to_float->addParam(basicTypes[1]);
     float_to_int->addParam(basicTypes[4]);
     int_ref_to_unit->addParam(new RefTypeGraph(basicTypes[1]));
+    arrchar_to_int->addParam(basicTypes[5]);
+    arrchar_arrchar_to_int->addParam(basicTypes[5]);
+    arrchar_arrchar_to_int->addParam(basicTypes[5]);
+    arrchar_arrchar_to_unit->addParam(basicTypes[5]);
+    arrchar_arrchar_to_unit->addParam(basicTypes[5]);
     insertBasic("abs", int_to_int);
     insertBasic("fabs", float_to_float);
     insertBasic("sqrt", float_to_float);
@@ -113,6 +121,10 @@ void SymbolTable::insertLibFunctions() {
     insertBasic("float_of_int", int_to_float);
     insertBasic("int_of_float", float_to_int);
     insertBasic("round", float_to_int);
+    insertBasic("strlen", arrchar_to_int);
+    insertBasic("strcmp", arrchar_arrchar_to_int);
+    insertBasic("strcpy", arrchar_arrchar_to_unit);
+    insertBasic("strcat", arrchar_arrchar_to_unit);
 }
 void SymbolTable::log(string msg) { error(msg, false); }
 void SymbolTable::enable_logs() { debug = true; }
