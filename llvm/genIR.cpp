@@ -239,6 +239,7 @@ llvm::Value *Function::compile()
     // again, this is an internal error most likely
     if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; newFunction->print(llvm::errs(), nullptr); exit(1); }
     Builder.SetInsertPoint(prevBB);
+    TheFPM->run(*newFunction);
     return nullptr; // doesn't matter what it returns, its a definition not an expression
 }
 llvm::Value *Array::compile()
@@ -254,7 +255,11 @@ llvm::Value *Array::compile()
     TypeGraph *arrayTypeGraph = new ArrayTypeGraph(dimensions, new RefTypeGraph(containedTypeGraph));
     llvm::Type *LLVMContainedType = containedTypeGraph->getLLVMType(TheModule);
     llvm::Type *LLVMType = arrayTypeGraph->getLLVMType(TheModule)->getPointerElementType();
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+    // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+    auto *LLVMMAllocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+                                                        LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
+                                                        nullptr, nullptr, "arr.def.malloc");
+    llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
 
     // Turn dimensions into a value
     llvm::ConstantInt *LLVMDimensions = c32(dimensions);
@@ -292,22 +297,22 @@ llvm::Value *Array::compile()
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "arr.def.arrayptrloc"); 
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(0)}, "arr.def.arrayptrloc"); 
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "arr.def.dimloc"); 
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(1)}, "arr.def.dimloc"); 
     Builder.CreateStore(LLVMDimensions, dimensionsLoc);
 
     int sizeIndex;
     for (int i = 0; i < dimensions; i++)
     {
         sizeIndex = i + 2;
-        llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(sizeIndex)}, "arr.def.sizeloc");
+        llvm::Value *sizeLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(sizeIndex)}, "arr.def.sizeloc");
         Builder.CreateStore(LLVMSize[i], sizeLoc);
     }
 
     // Add the array to the map
-    LLValues.insert({id, LLVMAlloca});
+    LLValues.insert({id, LLVMMAllocStruct});
 
     return nullptr;
 }
@@ -318,10 +323,14 @@ llvm::Value *Variable::compile()
 
     // Create the Alloca with the correct type
     llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+    // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
+    auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+                                                        LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
+                                                        nullptr, nullptr, "var.def.malloc");
+    llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
     // Add the variable to the map
-    LLValues.insert({id, LLVMAlloca});
+    LLValues.insert({id, LLVMMAlloc});
 
     return nullptr;
 }
@@ -374,7 +383,12 @@ llvm::Value *String_literal::compile()
     int size = s.size() + 1;
     
     llvm::Value *LLVMArraySize = c32(size);
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", arrCharType->getPointerElementType());
+    // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", arrCharType->getPointerElementType());
+    auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+                                                        arrCharType->getPointerElementType(),
+                                                        llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
+                                                        nullptr, nullptr, "str.literal.malloc");
+    llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
 
     // Allocate memory for string
     llvm::Instruction *LLVMMalloc =
@@ -388,13 +402,13 @@ llvm::Value *String_literal::compile()
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
     // Assign the values to the members
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)}, "stringptrloc");
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMallocStruct, {c32(0), c32(0)}, "stringptrloc");
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)}, "dimensionsloc");
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMMallocStruct, {c32(0), c32(1)}, "dimensionsloc");
     Builder.CreateStore(c32(1), dimensionsLoc);
 
-    llvm::Value *sizeLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(2)}, "sizeloc");
+    llvm::Value *sizeLoc = Builder.CreateGEP(LLVMMallocStruct, {c32(0), c32(2)}, "sizeloc");
     Builder.CreateStore(LLVMArraySize, sizeLoc);
 
     Builder.CreateCall(TheModule->getFunction("strcpy"), {LLVMAllocatedMemory, strVal});
@@ -406,7 +420,7 @@ llvm::Value *String_literal::compile()
     //     Builder.CreateStore(c8(s[i]), stringElemLoc);
     // }
 
-    return LLVMAlloca;
+    return LLVMMallocStruct;
 }
 llvm::Value *Char_literal::compile()
 {
@@ -782,7 +796,7 @@ llvm::Value *ArrayAccess::compile()
     }
 
     // Get the complete array struct as an alloca
-    llvm::AllocaInst *LLVMArrayStruct = llvm::dyn_cast<llvm::AllocaInst>(LLValues[id]);
+    llvm::Value *LLVMArrayStruct = LLValues[id];
     std::vector<llvm::Value *> LLVMSize = {};
 
     // Load necessary values

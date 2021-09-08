@@ -58,6 +58,7 @@ llvm::Function* AST::createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc) {
     } else {
         TmpB.CreateRet(TmpB.CreateCall(voidFunc, params, "to.unit.wrapper"));
     }
+    TheFPM->run(*wrapperFunc);
     return wrapperFunc;
 }
 // Get's a function with string parameter and/or result type and creates an adapter with array of char
@@ -109,12 +110,14 @@ llvm::Function* AST::createFuncAdapterFromStringToCharArr(llvm::Function *string
         retValCandidate = arrayOfCharVal;
     }
     TmpB.CreateRet(retValCandidate);
+    TheFPM->run(*wrapperFunc);
     return wrapperFunc;
 }
 
 llvm::Function* adaptReadString(llvm::Function *ReadString, llvm::Module *TheModule,
                                 llvm::FunctionType *arrchar_to_unit, llvm::Value *unitVal,
-                                llvm::Value *c32_0, llvm::Value *c32_1, llvm::Value *c32_2) {
+                                llvm::Value *c32_0, llvm::Value *c32_1, llvm::Value *c32_2,
+                                llvm::legacy::FunctionPassManager *TheFPM) {
     llvm::Function *readStringAdapted = llvm::Function::Create(arrchar_to_unit, llvm::Function::InternalLinkage,
                                                                "read_string", TheModule);
     llvm::BasicBlock *readStringAdaptedBB = llvm::BasicBlock::Create(TheModule->getContext(), "entry", readStringAdapted);
@@ -126,6 +129,7 @@ llvm::Function* adaptReadString(llvm::Function *ReadString, llvm::Module *TheMod
     llvm::Value *readStringString = TmpB.CreateLoad(readStringStringLoc);
     TmpB.CreateCall(ReadString, {readStringSize, readStringString});
     TmpB.CreateRet(unitVal);
+    TheFPM->run(*readStringAdapted);
     return readStringAdapted;
 }
 
@@ -184,7 +188,7 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     IOlibAdapted[10] = createFuncAdapterFromStringToCharArr(IOlibAdapted[10]); // this SHOULD be StrCat
 
     IOlibAdapted.push_back(adaptReadString(ReadString, TheModule, arrchar_to_unit, unitVal(),
-                                           c32(0), c32(1), c32(2)));
+                                           c32(0), c32(1), c32(2), TheFPM));
     IOlibAdapted.push_back(createFuncAdapterFromStringToCharArr(StrLen));
     IOlibAdapted.push_back(createFuncAdapterFromStringToCharArr(StrCmp));
 
