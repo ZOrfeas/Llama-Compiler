@@ -42,7 +42,8 @@ struct option LongOption::getStructOption()
 ShortOption syntaxAnalysis('s', "Checks only if the program is syntactically correct"),
             semAnalysis('a', "Checks if the program is also semantically correct"),
             inferenceAnalysis('i', "Performs inference to resolve unknown types"),
-            compile('c', "Produces code");
+            compile('c', "Produces code"),
+            optimise('O', "Produces code and runs optimisations on it");
 
 LongOption tableLogs("tableLogs", "Shows symbol, type and constructor table logs"),
            inferenceLogs("inferenceLogs", "Shows inference logs"),
@@ -195,7 +196,8 @@ void OptionList::executeOptions(Program *p)
 
     if(compile.isActivated()) 
     {
-        p->start_compilation("a.ll");
+        bool opt = optimise.isActivated();
+        p->start_compilation("a.ll", opt);
         if(printIRCode.isActivated()) p->printLLVMIR();
     }
 }

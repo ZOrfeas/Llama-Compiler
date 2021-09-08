@@ -608,6 +608,8 @@ llvm::Value *While::compile()
     llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(TheContext, "whilebody");
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "whileend");
 
+    Builder.CreateBr(LoopBB);
+    
     /*************** LOOP ***************/
 
     TheFunction->getBasicBlockList().push_back(LoopBB);
@@ -617,7 +619,7 @@ llvm::Value *While::compile()
     llvm::Value *LLVMCond = cond->compile();
 
     // Check whether to continue or finish
-    LLVMCond = Builder.CreateICmpEQ(LLVMCond, c1(true), "whileloopcheck");
+    //LLVMCond = Builder.CreateICmpEQ(LLVMCond, c1(true), "whileloopcheck");
     Builder.CreateCondBr(LLVMCond, BodyBB, FinishBB);
 
     /*************** BODY ***************/
@@ -642,10 +644,7 @@ llvm::Value *For::compile()
 {
     bool increment = (step == "to");
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
-
-    // For loop variable
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, i32);
-    llvm::Value *LLVMTemp;
+    llvm::BasicBlock *PreheaderBB = Builder.GetInsertBlock();
 
     // Create Basic Block for loop, body, end
     llvm::BasicBlock *LoopBB = llvm::BasicBlock::Create(TheContext, "forloop");
@@ -661,10 +660,8 @@ llvm::Value *For::compile()
     // Create value that holds the step
     llvm::Value *StepV = increment ? c32(1) : c32(-1);
 
-    // Create scope for loop variable and initialise it
+    // Create scope for loop variable
     openScopeOfAll();
-    Builder.CreateStore(StartV, LLVMAlloca);
-    LLValues.insert({id, LLVMAlloca});
 
     // Begin loop
     Builder.CreateBr(LoopBB);
@@ -674,11 +671,16 @@ llvm::Value *For::compile()
     TheFunction->getBasicBlockList().push_back(LoopBB);
     Builder.SetInsertPoint(LoopBB);
 
+    // Create phi node, add an entry for start and insert to the table
+    llvm::PHINode *LoopVariable = Builder.CreatePHI(i32, 2, id);
+    LoopVariable->addIncoming(StartV, PreheaderBB);
+    LLValues.insert({id, LoopVariable});
+
     // Check whether the condition is satisfied
-    LLVMTemp = Builder.CreateLoad(LLVMAlloca);  // NOTE: might be able to avoid this load
-    LLVMTemp = increment ? Builder.CreateICmpSLE(LLVMTemp, FinishV, "forloopchecklte") 
-                         : Builder.CreateICmpSGE(LLVMTemp, FinishV, "forlookcheckgte");
-    Builder.CreateCondBr(LLVMTemp, BodyBB, FinishBB);
+    llvm::Value *LLVMCond = 
+        increment ? Builder.CreateICmpSLE(LoopVariable, FinishV, "forloopchecklte") 
+                  : Builder.CreateICmpSGE(LoopVariable, FinishV, "forlookcheckgte");
+    Builder.CreateCondBr(LLVMCond, BodyBB, FinishBB);
 
     /*************** BODY ***************/
 
@@ -689,10 +691,11 @@ llvm::Value *For::compile()
     body->compile();
 
     // Add step to the loop variable 
-    LLVMTemp = Builder.CreateLoad(LLVMAlloca);
-    LLVMTemp = Builder.CreateAdd(LLVMTemp, StepV, "forstep");
-    Builder.CreateStore(LLVMTemp, LLVMAlloca);
+    llvm::Value *NextV = Builder.CreateAdd(LoopVariable, StepV, "forstep");
 
+    // Add entry to the phi node for backedge
+    LoopVariable->addIncoming(NextV, Builder.GetInsertBlock());
+    
     // Loop
     Builder.CreateBr(LoopBB);
     
@@ -708,9 +711,8 @@ llvm::Value *If::compile()
 {
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
-    // Create alloca to hold the return value
+    // Get return type of if
     llvm::Type *LLVMIfReturnType = TG->getLLVMType(TheModule);
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", LLVMIfReturnType);
 
     // Emit code for the condition compare
     llvm::Value *LLVMCond = cond->compile();
@@ -729,7 +731,7 @@ llvm::Value *If::compile()
     TheFunction->getBasicBlockList().push_back(ThenBB);
     Builder.SetInsertPoint(ThenBB);
     llvm::Value *ThenV = body->compile();
-    Builder.CreateStore(ThenV, LLVMAlloca);
+    ThenBB = Builder.GetInsertBlock();
     Builder.CreateBr(MergeBB);
 
     // Handle else whether it exists or not
@@ -737,13 +739,16 @@ llvm::Value *If::compile()
     Builder.SetInsertPoint(ElseBB);
     llvm::Value *ElseV = unitVal();
     if(else_body) ElseV = else_body->compile();
-    Builder.CreateStore(ElseV, LLVMAlloca);
+    ElseBB = Builder.GetInsertBlock();
     Builder.CreateBr(MergeBB);
 
     // Finish
     TheFunction->getBasicBlockList().push_back(MergeBB);
     Builder.SetInsertPoint(MergeBB);
-    llvm::Value *retVal = Builder.CreateLoad(LLVMAlloca);
+
+    llvm::PHINode *retVal = Builder.CreatePHI(LLVMIfReturnType, 2, "ifretval");
+    retVal->addIncoming(ThenV, ThenBB);
+    retVal->addIncoming(ElseV, ElseBB);
 
     return retVal;
 }
