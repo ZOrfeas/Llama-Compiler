@@ -28,6 +28,7 @@ public:
     std::string getDescription();
     bool isActivated();
     void activate();
+    void deactivate();
 };
 
 class ShortOption

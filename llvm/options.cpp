@@ -25,6 +25,10 @@ void Option::activate()
 {
     activated = true;
 }
+void Option::deactivate()
+{
+    activated = false;
+}
 
 ShortOption::ShortOption(char c, std::string description)
     : Option(c, std::string(1, c), description) { optionList.addShortOption(this); }
@@ -149,6 +153,9 @@ void OptionList::parseOptions(int argc, char **argv)
         {
             s->activate();
         }
+
+        // When no options are given don't optimise
+        optimise.deactivate();
     }
     else 
     {
