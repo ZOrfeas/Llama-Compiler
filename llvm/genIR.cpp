@@ -303,10 +303,14 @@ llvm::Value *Array::compile()
     llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(1)}, "arr.def.dimloc"); 
     Builder.CreateStore(LLVMDimensions, dimensionsLoc);
 
+    // Step over the other fields
+    int step = 2;
+
+    // Store the sizes of the dimensions
     int sizeIndex;
     for (int i = 0; i < dimensions; i++)
     {
-        sizeIndex = i + 2;
+        sizeIndex = i + step;
         llvm::Value *sizeLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(sizeIndex)}, "arr.def.sizeloc");
         Builder.CreateStore(LLVMSize[i], sizeLoc);
     }
@@ -767,7 +771,19 @@ llvm::Value *If::compile()
     return retVal;
 }
 llvm::Value *Dim::compile()
-{
+{   
+    // Step over the other fields
+    int step = 2;
+
+    // Calculate the selected dimension and make it zero based
+    int selectedDim = dim->get_int() - 1;
+
+    // Get the pointer to the array struct
+    llvm::Value *LLVMPointerToStruct = LLValues[id];
+
+    // 
+    llvm::Value *LLVMSizeLoc = Builder.CreateGEP(LLVMPointerToStruct, {c32(0), c32(selectedDim + step)}, "dimsizeloc");
+    return Builder.CreateLoad(LLVMSizeLoc);
 }
 llvm::Value *ConstantCall::compile()
 {
@@ -785,6 +801,46 @@ llvm::Value *FunctionCall::compile()
 }
 llvm::Value *ConstructorCall::compile()
 {
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    // Get the enum of this constructor in the custom type
+    int constrIndex = constructorTypeGraph->getIndex();
+
+    // Create the struct that will be saved in the second field of the custom type struct
+    llvm::StructType *constrType = constructorTypeGraph->getLLVMType(TheModule); 
+    llvm::AllocaInst *LLVMContainedStructAlloca = CreateEntryBlockAlloca(TheFunction, "constructorstruct", constrType);
+
+    // Get the custom type of this constructor
+    llvm::StructType *customType = constructorTypeGraph->getCustomType()->getLLVMType(TheModule);
+    llvm::AllocaInst *LLVMCustomStructAlloca = CreateEntryBlockAlloca(TheFunction, "customstruct", customType);
+
+    // Codegen and store the parameters to its fields
+    llvm::Value *constrFieldLoc, *LLVMParam;
+    for(int i = 0; i < expr_list.size(); i++)
+    {
+        LLVMParam = expr_list[i]->compile();
+       
+        constrFieldLoc = Builder.CreateGEP(LLVMContainedStructAlloca, {c32(0), c32(i)}, "constrFieldLoc");
+        Builder.CreateStore(LLVMParam, constrFieldLoc);
+    }
+
+    // Store the enum into custom struct
+    llvm::Value *enumLoc = Builder.CreateGEP(LLVMCustomStructAlloca, {c32(0), c32(0)}, "customenumloc");
+    Builder.CreateStore(c32(constrIndex), enumLoc);
+
+    // Get the expected field type of the custom type 
+    llvm::Type *customFieldTypePtr = customType->getTypeAtIndex(1)->getPointerTo();
+
+    // Bitcast the constructor struct into the custom struct
+    llvm::Instruction *LLVMBitCast = llvm::CastInst::CreatePointerCast(LLVMContainedStructAlloca, customFieldTypePtr, "constructorbitcast", Builder.GetInsertBlock());
+    llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
+
+    // Store it into the custom struct
+    llvm::Value *LLVMCastStruct = Builder.CreateLoad(LLVMCastStructPtr);
+    llvm::Value *constructorLoc = Builder.CreateGEP(LLVMCustomStructAlloca, {c32(0), c32(1)}, "customconstructorloc");
+    Builder.CreateStore(LLVMCastStruct, constructorLoc);
+
+    return Builder.CreateLoad(LLVMCustomStructAlloca);
 }
 llvm::Value *ArrayAccess::compile()
 {
@@ -803,14 +859,15 @@ llvm::Value *ArrayAccess::compile()
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arr.acc.ptrloc"); 
     llvm::Value *LLVMArray = Builder.CreateLoad(arrayPtrLoc);
 
-    // llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(1)}, "arr.acc.dimloc"); 
-    // llvm::Value *LLVMDimensions = Builder.CreateLoad(dimensionsLoc);
+    // Step over the other fields
+    int step = 2;
 
+    // Get all the sizes of the dimensions
     llvm::Value *sizeLoc;
     int sizeIndex, dimensions = expr_list.size();
     for (int i = 0; i < dimensions; i++)
     {
-        sizeIndex = i + 2;
+        sizeIndex = i + step;
         sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "arr.acc.sizeloc"); 
         LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
     }
