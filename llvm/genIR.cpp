@@ -449,6 +449,22 @@ llvm::Value *Unit_literal::compile()
     return unitVal();
 }
 
+llvm::Value *Char_literal::LLVMCompare(llvm::Value *V)
+{
+    llvm::Value *literalV = compile();
+    return Builder.CreateICmpEQ(literalV, V, "literal.char.compare");
+}
+llvm::Value *Int_literal::LLVMCompare(llvm::Value *V)
+{
+    llvm::Value *literalV = compile();
+    return Builder.CreateICmpEQ(literalV, V, "literal.int.compare");
+}
+llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
+{
+    llvm::Value *literalV = compile();
+    return Builder.CreateFCmpOEQ(literalV, V, "literal.char.compare");
+}
+
 // Operators
 
 llvm::Value *BinOp::compile()
@@ -900,7 +916,109 @@ llvm::Value *ArrayAccess::compile()
 
 llvm::Value *Match::compile()
 {
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+    // Emit code for expression to be matched
+    llvm::Value *toMatchV = toMatch->compile();
+
+    // Basic Block to exit the match
+    llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "match.finish");
+    
+    // One basic block for every clause
+    std::vector<llvm::BasicBlock *> ClauseBB = {};
+    
+    // One value for each clause (for the phi node)
+    std::vector<llvm::Value *> ClauseV = {};
+
+    // Create first basic block
+    llvm::BasicBlock *NextBB = llvm::BasicBlock::Create(TheContext, "match.firstclause");
+    Builder.CreateBr(NextBB);
+    for(int i = 0; i < clause_list.size(); i++)
+    {   
+        auto c = clause_list[i];
+
+        // Insert basic block for this clause
+        TheFunction->getBasicBlockList().push_back(NextBB);
+        Builder.SetInsertPoint(NextBB);
+        
+        openScopeOfAll();
+
+        // Contains bool value that shows whether match was successful
+        llvm::Value *tryToMatchV = c->tryToMatch(toMatchV);
+        
+        // Emit code for the expression of the clause and save it
+        ClauseV.push_back(c->compile());
+
+        closeScopeOfAll();
+
+        // Save the current basic block for the phi node
+        ClauseBB.push_back(Builder.GetInsertBlock());
+
+        // Create next basic block
+        NextBB = llvm::BasicBlock::Create(TheContext, "match.nextclause");
+
+        // Check whether match was successful
+        Builder.CreateCondBr(tryToMatchV, FinishBB, NextBB);
+    }
+
+    // Insert basic block in case no pattern matched 
+    // in which case a runtime error will be thrown
+    TheFunction->getBasicBlockList().push_back(NextBB);
+    Builder.SetInsertPoint(NextBB);
+    Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+
+    // Insert basic block to finish
+    TheFunction->getBasicBlockList().push_back(FinishBB);
+    Builder.SetInsertPoint(FinishBB);
+
+    // Create phi node and add all the incoming values
+    llvm::PHINode *retVal = Builder.CreatePHI(TG->getLLVMType(TheModule), clause_list.size(), "ifretval");
+    for(int i = 0; i < clause_list.size(); i++)
+    {
+        retVal->addIncoming(ClauseV[i], ClauseBB[i]);
+    }
 }
 llvm::Value *Clause::compile()
 {
+    return expr->compile();
+}
+llvm::Value *Clause::tryToMatch(llvm::Value *toMatchV)
+{
+    // Give the value to be matched to the correct pattern
+    pattern->set_toMatchV(toMatchV);
+
+    // Find out whether the match was successful
+    return pattern->compile();
+}
+
+void Pattern::set_toMatchV(llvm::Value *v)
+{
+    toMatchV = v;
+}
+llvm::Value *PatternLiteral::compile()
+{
+    return literal->LLVMCompare(toMatchV);
+}
+llvm::Value *PatternId::compile()
+{
+    // Add a variable with this value to the table
+    LLValues.insert({id, toMatchV});
+
+    // Match was successful
+    return c1(true);
+}
+llvm::Value *PatternConstr::compile()
+{
+    // Create alloca and store toMatchV to it
+    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
+    Builder.CreateStore(toMatchV, LLVMAlloca);
+
+    // Check whether they were created by the same constructor
+    int index = constrTypeGraph->getIndex();
+    llvm::Value *toMatchIndexLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)});
+    llvm::Value *toMatchIndex = Builder.CreateLoad(toMatchIndexLoc, "pattern.constr.loadindex");
+    llvm::Value *indexCmp = Builder.CreateICmpEQ(c32(index), toMatchIndex);
+
+    // Recursively try to match the fields
 }

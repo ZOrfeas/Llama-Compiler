@@ -1036,6 +1036,8 @@ public:
 
 class Literal : public Expr
 {
+public:
+    virtual llvm::Value* LLVMCompare(llvm::Value *V);
 };
 class String_literal : public Literal
 {
@@ -1120,6 +1122,7 @@ public:
     // Generate a char constant (byte) and return its Value*
     // possibly llvm accepts escape sequences as they are so we may need to reconstruct them
     virtual llvm::Value* compile() override;
+    virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
     virtual void sem() override
     {
         TG = type_char;
@@ -1162,6 +1165,7 @@ public:
     }
     // generate a float constant and return its Value*
     virtual llvm::Value* compile() override;
+    virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Float(" << d << ")";
@@ -1185,6 +1189,7 @@ public:
     }
     // generate an int constant (check size) and return its Value*
     virtual llvm::Value* compile() override;
+    virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Int(" << n << ")";
@@ -1627,11 +1632,15 @@ public:
 
 class Pattern : public AST
 {
+protected:
+    // Will be filled by Clause's and Pattern's compile
+    llvm::Value *toMatchV = nullptr;
 public:
     // Checks whether the pattern is valid for TypeGraph *t
     virtual void checkPatternTypeGraph(TypeGraph *t)
     {
     }
+    void set_toMatchV(llvm::Value *v);
 };
 class PatternLiteral : public Pattern
 {
@@ -1650,6 +1659,7 @@ public:
     {
         out << "PatternLiteral(" << *literal << ")";
     }
+    virtual llvm::Value* compile() override;
 };
 class PatternId : public Pattern
 {
@@ -1670,6 +1680,7 @@ public:
     {
         out << "PatternId(" << id << ")";
     }
+    virtual llvm::Value* compile() override;
 };
 class PatternConstr : public Pattern
 {
@@ -1677,18 +1688,21 @@ protected:
     std::string Id;
     std::vector<Pattern *> pattern_list;
 
+    // Will be filled by checkPatternTypeGraph
+    ConstructorTypeGraph *constrTypeGraph = nullptr;
+
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>())
         : Id(*Id), pattern_list(*p_list) {}
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
-        TypeGraph *c_TypeGraph = c->getTypeGraph();
+        ConstructorTypeGraph *constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
 
         // Check that toMatch is of the same type as constructor or force it to be
-        checkTypeGraphs(t, c_TypeGraph, "Constructor is not of the same type as the expression to match");
+        checkTypeGraphs(t, constrTypeGraph, "Constructor is not of the same type as the expression to match");
 
-        int count = c_TypeGraph->getFieldCount();
+        int count = constrTypeGraph->getFieldCount();
         if (count != (int)pattern_list.size())
         {
             printError("Partial constructor pattern not allowed");
@@ -1697,7 +1711,7 @@ public:
         TypeGraph *correct_t;
         for (int i = 0; i < count; i++)
         {
-            correct_t = c_TypeGraph->getFieldType(i);
+            correct_t = constrTypeGraph->getFieldType(i);
 
             pattern_list[i]->checkPatternTypeGraph(correct_t);
         }
@@ -1711,6 +1725,7 @@ public:
         }
         out << ")";
     }
+    virtual llvm::Value* compile() override;
 };
 
 class Clause : public AST
@@ -1754,6 +1769,7 @@ public:
     {
         return expr->get_TypeGraph();
     }
+    llvm::Value *tryToMatch(llvm::Value *toMatchV);
     // Could be implemented kinda like an if-else, very simply in fact for 
     // cases without custom types. 
     // For custom types check the enum to match the constructor call each time,
