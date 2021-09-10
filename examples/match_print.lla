@@ -1,0 +1,8 @@
+type direction = Left of int | Middle of float | Right of char
+
+let a = Middle 34.1
+
+let main = 
+    match a with 
+        Middle 34.1 -> (print_string "Success\n")
+    end 

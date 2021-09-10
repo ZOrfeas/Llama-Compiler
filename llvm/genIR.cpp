@@ -969,18 +969,26 @@ llvm::Value *Match::compile()
     // in which case a runtime error will be thrown
     TheFunction->getBasicBlockList().push_back(NextBB);
     Builder.SetInsertPoint(NextBB);
-    Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    //Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    
+    // Never going to get here but llvm complains anyway
+    Builder.CreateBr(FinishBB); 
 
     // Insert basic block to finish
     TheFunction->getBasicBlockList().push_back(FinishBB);
     Builder.SetInsertPoint(FinishBB);
 
     // Create phi node and add all the incoming values
-    llvm::PHINode *retVal = Builder.CreatePHI(TG->getLLVMType(TheModule), clause_list.size(), "ifretval");
+    llvm::PHINode *retVal = Builder.CreatePHI(TG->getLLVMType(TheModule), clause_list.size(), "match.retval");
     for(int i = 0; i < clause_list.size(); i++)
     {
         retVal->addIncoming(ClauseV[i], ClauseBB[i]);
     }
+
+    // Never going to get here but llvm complains anyway
+    retVal->addIncoming(ClauseV[0], NextBB);
+
+    return retVal;
 }
 llvm::Value *Clause::compile()
 {
