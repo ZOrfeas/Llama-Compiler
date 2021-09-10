@@ -449,6 +449,10 @@ llvm::Value *Unit_literal::compile()
     return unitVal();
 }
 
+llvm::Value *Literal::LLVMCompare(llvm::Value *V)
+{
+    return nullptr;
+}
 llvm::Value *Char_literal::LLVMCompare(llvm::Value *V)
 {
     llvm::Value *literalV = compile();
@@ -1009,16 +1013,71 @@ llvm::Value *PatternId::compile()
 }
 llvm::Value *PatternConstr::compile()
 {
+    // Basic Block for the merge 
+    llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "pattern.constr.finish");
+    
     // Create alloca and store toMatchV to it
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
     Builder.CreateStore(toMatchV, LLVMAlloca);
-
+    
     // Check whether they were created by the same constructor
     int index = constrTypeGraph->getIndex();
     llvm::Value *toMatchIndexLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)});
     llvm::Value *toMatchIndex = Builder.CreateLoad(toMatchIndexLoc, "pattern.constr.loadindex");
     llvm::Value *indexCmp = Builder.CreateICmpEQ(c32(index), toMatchIndex);
+    llvm::BasicBlock *StartBB = Builder.GetInsertBlock();
+    llvm::BasicBlock *SameConstrBB = llvm::BasicBlock::Create(TheContext, "pattern.constr.sameconstr");
+    Builder.CreateCondBr(indexCmp, SameConstrBB, FinishBB);
 
+    // We know that they come from the same constructor now
+    TheFunction->getBasicBlockList().push_back(SameConstrBB);
+    Builder.SetInsertPoint(SameConstrBB);
+
+    // Get the actual type of the struct of the constructor
+    llvm::StructType *constrType = constrTypeGraph->getLLVMType(TheModule);
+    llvm::Type *constrTypePtr = constrType->getPointerTo();
+
+    // Create alloca with the struct of the constructor
+    llvm::Value *toMatchConstrStructLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)});
+    llvm::Value *toMatchConstrStruct = Builder.CreateLoad(toMatchConstrStructLoc, "pattern.constr.loadconstrstruct");
+    llvm::AllocaInst *toMatchConstrStructAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.constrstructalloca", toMatchConstrStruct->getType());
+    Builder.CreateStore(toMatchConstrStruct, toMatchConstrStructAlloca);
+
+    // Bitcast the second field of the toMatchV struct to constrTypePtr
+    llvm::Instruction *LLVMBitCast = llvm::CastInst::CreatePointerCast(toMatchConstrStructAlloca, constrTypePtr, "pattern.constr.bitcast", Builder.GetInsertBlock());
+    llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
+
+    // This value will be used to check that all fields can be matched
+    llvm::Value *canMatchFields = c1(true);
+    
     // Recursively try to match the fields
+    for(int i = 0; i < pattern_list.size(); i++)
+    {
+        auto p = pattern_list[i];
+
+        // Get the field and try to match
+        llvm::Value *castStructFieldLoc = Builder.CreateGEP(LLVMCastStructPtr, {c32(i)}, "pattern.constr.fieldloc");
+        llvm::Value *tempV = Builder.CreateLoad(castStructFieldLoc, "pattern.constr.structfield");
+        p->set_toMatchV(tempV);
+        tempV = p->compile();
+
+        // Use and instruction to ensure that all matches succeed
+        canMatchFields = Builder.CreateAnd(canMatchFields, tempV);
+    }
+
+    // Get the correct basic block for the phi and jump to finish
+    SameConstrBB = Builder.GetInsertBlock();
+    Builder.CreateBr(FinishBB);
+
+    // Reached the finish
+    TheFunction->getBasicBlockList().push_back(FinishBB);
+    Builder.SetInsertPoint(FinishBB);
+
+    // Create phi node that merges StartBB and SameConstrBB
+    llvm::PHINode *retVal = Builder.CreatePHI(i1, 2, "pattern.constr.retval");
+    retVal->addIncoming(indexCmp, StartBB);
+    retVal->addIncoming(canMatchFields, SameConstrBB);
+
+    return retVal;
 }
