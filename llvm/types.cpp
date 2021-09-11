@@ -391,7 +391,7 @@ int ConstructorTypeGraph::getIndex()
     // If it hasn't yet been found find it and save it
     if(index == -1)
     {
-        index = customType->getConstructorIndex(this);
+        index = customType->getConstructorIndex(name);
     }
 
     return index;
@@ -440,6 +440,7 @@ bool CustomTypeGraph::equals(TypeGraph *o) {
 }
 int CustomTypeGraph::getConstructorIndex(ConstructorTypeGraph *c)
 {
+    // NOTE: This doesn't work correctly
     for(int i = 0; i < constructors->size(); i++)
     {
         if((*constructors)[i]->equals(c)) 
@@ -559,9 +560,6 @@ llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
 llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
     std::vector<llvm::Type *> LLVMTypeList = {};
-
-    // Add a integer field that identifies this constructor for the custom type
-    LLVMTypeList.push_back(llvm::Type::getInt32Ty(TheModule->getContext()));
 
     // Add the rest of the fields of the constructor
     for(auto f: *fields)
