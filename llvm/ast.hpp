@@ -1038,60 +1038,27 @@ class Literal : public Expr
 {
 public:
     virtual llvm::Value* LLVMCompare(llvm::Value *V);
-};
-class String_literal : public Literal
-{
-private:
-    std::string s;
-
-public:
-    String_literal(std::string *s)
-        : s(s->substr(1, s->size()-2)) {}
-    virtual void sem() override
-    {
-        TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
-    }
-    // generate a char array constant(?) and return its Value*
-    virtual llvm::Value* compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "String(" << s << ")";
-    }
-};
-class Char_literal : public Literal
-{
-private:
-    std::string c_string;
-    char c;
-
-public:
-    Char_literal(std::string *c_string)
-        : c_string(*c_string)
-    {
-        c = getChar(*c_string);
-    }
-    // Recognise character from string
-    char getChar(std::string c)
+    static char getChar(std::string c)
     {
         char ans = 0;
 
         // Normal character
-        if (c[1] != '\\')
+        if (c[0] != '\\')
         {
-            ans = c[1];
+            ans = c[0];
         }
 
         // '\xnn'
-        else if (c[2] == 'x')
+        else if (c[1] == 'x')
         {
-            const char hex[2] = {c[3], c[4]};
+            const char hex[2] = {c[2], c[3]};
             ans = strtol(hex, nullptr, 16);
         }
 
         // Escape secuence
         else
         {
-            switch (c[2])
+            switch (c[1])
             {
             case 'n':
                 ans = '\n';
@@ -1118,6 +1085,57 @@ public:
         }
 
         return ans;
+    }
+};
+class String_literal : public Literal
+{
+private:
+    std::string s;
+
+public:
+    String_literal(std::string *s)
+        : s(escapeChars(s->substr(1, s->size()-2))) {}
+    virtual void sem() override
+    {
+        TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
+    }
+    std::string escapeChars(std::string rawStr) {
+        std::string escapedString;
+        for (unsigned int i = 0; i < rawStr.size(); i++) {
+            if (rawStr[i] != '\\') {
+                escapedString.push_back(rawStr[i]);
+            } else {
+                std::string escapeSeq;
+                if (rawStr[i+1] != 'x') {
+                    escapeSeq = rawStr.substr(i, 2);
+                    i++;
+                } else {
+                    escapeSeq = rawStr.substr(i, 4);
+                    i += 3;
+                }
+                escapedString.push_back(getChar(escapeSeq));
+            }
+        }
+        return escapedString;
+    }
+    // generate a char array constant(?) and return its Value*
+    virtual llvm::Value* compile() override;
+    virtual void printOn(std::ostream &out) const override
+    {
+        out << "String(" << s << ")";
+    }
+};
+class Char_literal : public Literal
+{
+private:
+    std::string c_string;
+    char c;
+
+public:
+    Char_literal(std::string *c_string)
+        : c_string(c_string->substr(1, c_string->size() - 2))
+    {
+        c = getChar(this->c_string);
     }
     // Generate a char constant (byte) and return its Value*
     // possibly llvm accepts escape sequences as they are so we may need to reconstruct them
