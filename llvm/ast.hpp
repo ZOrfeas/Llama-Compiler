@@ -1038,6 +1038,54 @@ class Literal : public Expr
 {
 public:
     virtual llvm::Value* LLVMCompare(llvm::Value *V);
+    static char getChar(std::string c)
+    {
+        char ans = 0;
+
+        // Normal character
+        if (c[0] != '\\')
+        {
+            ans = c[0];
+        }
+
+        // '\xnn'
+        else if (c[1] == 'x')
+        {
+            const char hex[2] = {c[2], c[3]};
+            ans = strtol(hex, nullptr, 16);
+        }
+
+        // Escape secuence
+        else
+        {
+            switch (c[1])
+            {
+            case 'n':
+                ans = '\n';
+                break;
+            case 't':
+                ans = '\t';
+                break;
+            case 'r':
+                ans = '\r';
+                break;
+            case '0':
+                ans = 0;
+                break;
+            case '\\':
+                ans = '\\';
+                break;
+            case '\'':
+                ans = '\'';
+                break;
+            case '\"':
+                ans = '\"';
+                break;
+            }
+        }
+
+        return ans;
+    }
 };
 class String_literal : public Literal
 {
@@ -1066,58 +1114,9 @@ private:
 
 public:
     Char_literal(std::string *c_string)
-        : c_string(*c_string)
+        : c_string(c_string->substr(1, c_string->size() - 2))
     {
-        c = getChar(*c_string);
-    }
-    // Recognise character from string
-    char getChar(std::string c)
-    {
-        char ans = 0;
-
-        // Normal character
-        if (c[1] != '\\')
-        {
-            ans = c[1];
-        }
-
-        // '\xnn'
-        else if (c[2] == 'x')
-        {
-            const char hex[2] = {c[3], c[4]};
-            ans = strtol(hex, nullptr, 16);
-        }
-
-        // Escape secuence
-        else
-        {
-            switch (c[2])
-            {
-            case 'n':
-                ans = '\n';
-                break;
-            case 't':
-                ans = '\t';
-                break;
-            case 'r':
-                ans = '\r';
-                break;
-            case '0':
-                ans = 0;
-                break;
-            case '\\':
-                ans = '\\';
-                break;
-            case '\'':
-                ans = '\'';
-                break;
-            case '\"':
-                ans = '\"';
-                break;
-            }
-        }
-
-        return ans;
+        c = getChar(this->c_string);
     }
     // Generate a char constant (byte) and return its Value*
     // possibly llvm accepts escape sequences as they are so we may need to reconstruct them
