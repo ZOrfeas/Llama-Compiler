@@ -492,8 +492,10 @@ llvm::Value *BinOp::compile()
     case T_stardot: return Builder.CreateFMul(lhsVal, rhsVal, "float.multmp");
     case T_slashdot: return Builder.CreateFDiv(lhsVal, rhsVal, "float.divtmp");
     // for below to work, link against lib.so with -lm flag.
-    case T_dblstar: return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
-
+    case T_dblstar: {
+        // return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
+        return Builder.CreateCall(TheModule->getFunction("pow"), {rhsVal, lhsVal}, "float.powtmp");
+    }
     case T_dblbar: return Builder.CreateOr({lhsVal, rhsVal});
     case T_dblampersand: return Builder.CreateAnd({lhsVal, rhsVal});
 

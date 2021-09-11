@@ -285,6 +285,11 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     pairs->push_back({"decr", createDecrLibFunc(TheModule, unitType, c32(1), unitVal())});
     pairs->push_back({"float_of_int", createFloatOfIntLibFunc(TheModule, flt)});
 
+    llvm::FunctionType *powType = 
+        llvm::FunctionType::get(flt, {flt, flt}, false);
+    llvm::Function *pow =
+        llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow", TheModule);
+
     // for (auto &pair: *pairs) {
     //     std::cout << pair.first << ' ' << pair.second->getName().str() << '\n';
     // }

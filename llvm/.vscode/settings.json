@@ -58,6 +58,7 @@
         "ratio": "cpp",
         "mutex": "cpp",
         "shared_mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "*.def": "cpp"
     }
 }
