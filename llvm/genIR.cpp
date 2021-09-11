@@ -245,7 +245,7 @@ llvm::Value *Function::compile()
 llvm::Value *Array::compile()
 {
     // Get TheFunction insert block
-    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
     // Get dimensions
     int dimensions = this->get_dimensions();
@@ -323,7 +323,7 @@ llvm::Value *Array::compile()
 llvm::Value *Variable::compile()
 {
     // Get TheFunction insert block
-    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
     // Create the Alloca with the correct type
     llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
@@ -370,6 +370,8 @@ llvm::Value *Program::compile()
     {
         def->compile();
     }
+
+    return nullptr;
 }
 
 /*********************************/
@@ -382,7 +384,7 @@ llvm::Value *String_literal::compile()
 {
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
     // Get TheFunction insert block
-    llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     llvm::Value *strVal = Builder.CreateGlobalStringPtr(s);
     int size = s.size() + 1;
     
@@ -836,7 +838,7 @@ llvm::Value *ConstructorCall::compile()
 
     // Codegen and store the parameters to its fields
     llvm::Value *constrFieldLoc, *LLVMParam;
-    for(int i = 0; i < expr_list.size(); i++)
+    for(int i = 0; i < (int)expr_list.size(); i++)
     {
         LLVMParam = expr_list[i]->compile();
        
@@ -924,7 +926,7 @@ llvm::Value *Match::compile()
 
     // Emit code for expression to be matched
     llvm::Value *toMatchV = toMatch->compile();
-
+    
     // Basic Block to exit the match
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "match.finish");
     
@@ -937,7 +939,7 @@ llvm::Value *Match::compile()
     // Create first basic block
     llvm::BasicBlock *NextBB = llvm::BasicBlock::Create(TheContext, "match.firstclause");
     Builder.CreateBr(NextBB);
-    for(int i = 0; i < clause_list.size(); i++)
+    for(int i = 0; i < (int)clause_list.size(); i++)
     {   
         auto c = clause_list[i];
 
@@ -980,7 +982,7 @@ llvm::Value *Match::compile()
 
     // Create phi node and add all the incoming values
     llvm::PHINode *retVal = Builder.CreatePHI(TG->getLLVMType(TheModule), clause_list.size(), "match.retval");
-    for(int i = 0; i < clause_list.size(); i++)
+    for(int i = 0; i < (int)clause_list.size(); i++)
     {
         retVal->addIncoming(ClauseV[i], ClauseBB[i]);
     }
@@ -1028,7 +1030,7 @@ llvm::Value *PatternConstr::compile()
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
     Builder.CreateStore(toMatchV, LLVMAlloca);
-    
+
     // Check whether they were created by the same constructor
     int index = constrTypeGraph->getIndex();
     llvm::Value *toMatchIndexLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)});
@@ -1060,7 +1062,7 @@ llvm::Value *PatternConstr::compile()
     llvm::Value *canMatchFields = c1(true);
     
     // Recursively try to match the fields
-    for(int i = 0; i < pattern_list.size(); i++)
+    for(int i = 0; i < (int)pattern_list.size(); i++)
     {
         auto p = pattern_list[i];
 
