@@ -115,6 +115,18 @@ void TypeGraph::copyConstraintFlags(TypeGraph *o) {
 void TypeGraph::changeInner(TypeGraph* replacement, unsigned int index) {
     wrongCall("changeInner()"); exit(1);
 }
+int TypeGraph::getBound() {
+    wrongCall("getBound()"); exit(1);
+}
+void TypeGraph::changeBoundVal(int newBound) {
+    wrongCall("changeBoundVal()"); exit(1);
+}
+void TypeGraph::changeBoundPtr(int *newBoundPtr) {
+    wrongCall("changeBoundPtr()"); exit(1);
+}
+void TypeGraph::setDimensions(int fixedDimensions) {
+    wrongCall("setDimensions()"); exit(1);
+}
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
@@ -179,8 +191,9 @@ FloatTypeGraph::FloatTypeGraph()
 /**                    Array TypeGraph                       */
 /*************************************************************/
 
-ArrayTypeGraph::ArrayTypeGraph(int dimensions, TypeGraph *containedType)
-: TypeGraph(graphType::TYPE_array), Type(containedType), dimensions(dimensions) {}
+ArrayTypeGraph::ArrayTypeGraph(int dimensions, TypeGraph *containedType, int lowBound)
+: TypeGraph(graphType::TYPE_array), Type(containedType), dimensions(dimensions),
+lowBound(new int(lowBound)) {}
 std::string ArrayTypeGraph::stringifyDimensions() {
     if (dimensions == 1) {
         return "array of";
@@ -212,6 +225,19 @@ bool ArrayTypeGraph::equals(TypeGraph *o) {
 }
 void ArrayTypeGraph::changeInner(TypeGraph *replacement, unsigned int index) {
     Type = replacement;
+}
+int ArrayTypeGraph::getBound() { return *lowBound; }
+void ArrayTypeGraph::changeBoundVal(int newBound) {
+    dimensions = -1; // this 'disables' dimensions
+    *lowBound = newBound;
+}
+void ArrayTypeGraph::changeBoundPtr(int *newBoundPtr) {
+    dimensions = -1; // this 'disables' dimensions
+    lowBound = newBoundPtr;
+}
+void ArrayTypeGraph::setDimensions(int fixedDimensions) {
+    dimensions = fixedDimensions; // sets personal int
+    *lowBound = fixedDimensions; // sets the positions int
 }
 ArrayTypeGraph::~ArrayTypeGraph() { if (Type->isDeletable()) delete Type; }
 
