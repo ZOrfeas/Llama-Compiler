@@ -16,18 +16,18 @@
 #include <algorithm>
 #include <utility>      // std::pair, std::make_pair
 
-//! ↓↓↓↓↓↓↓↓ Optional ↓↓↓↓↓↓↓↓
-// Get's a function with unit parameters and/or result type and creates an adapter with void
-// This is necessary to create linkable object files with these functions available
-llvm::Function* AST::createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc) {
+// //! ↓↓↓↓↓↓↓↓ Optional ↓↓↓↓↓↓↓↓
+// // Get's a function with unit parameters and/or result type and creates an adapter with void
+// // This is necessary to create linkable object files with these functions available
+// llvm::Function* AST::createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc) {
 
-}
-// Get's a function with array of char parameter and/or result type and creates an adapter with string
-// This is necessary to create linkable object files with these functions available
-llvm::Function* AST::createFuncAdapterFromCharArrToString(llvm::Function *charArrFunc) {
+// }
+// // Get's a function with array of char parameter and/or result type and creates an adapter with string
+// // This is necessary to create linkable object files with these functions available
+// llvm::Function* AST::createFuncAdapterFromCharArrToString(llvm::Function *charArrFunc) {
 
-}
-//! ↑↑↑↑↑↑↑↑ Optional ↑↑↑↑↑↑↑↑
+// }
+// //! ↑↑↑↑↑↑↑↑ Optional ↑↑↑↑↑↑↑↑
 
 // Get's a function with void parameter and/or result type and creates an adapter with unit
 // This is necessary to link with external, ready libraries
@@ -133,6 +133,47 @@ llvm::Function* adaptReadString(llvm::Function *ReadString, llvm::Module *TheMod
     return readStringAdapted;
 }
 
+llvm::Function *createIncrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal) {
+    llvm::FunctionType *intptr_to_unit =
+        llvm::FunctionType::get(unitType, {llvm::Type::getInt32PtrTy(TheModule->getContext())}, false);
+    llvm::Function *incrFunc = 
+        llvm::Function::Create(intptr_to_unit, llvm::Function::InternalLinkage, "incr", TheModule);
+    llvm::BasicBlock *incrFuncBB = llvm::BasicBlock::Create(TheModule->getContext(), "entry", incrFunc);
+    llvm::IRBuilder<> TmpB(TheModule->getContext()); TmpB.SetInsertPoint(incrFuncBB);
+    llvm::Value *prevVal = TmpB.CreateLoad(incrFunc->getArg(0), "prevval");
+    TmpB.CreateStore(TmpB.CreateAdd(prevVal, c32_1, "newval"), incrFunc->getArg(0));
+    TmpB.CreateRet(unitVal);
+    // incrFunc->print(llvm::outs());
+    return incrFunc;
+}
+
+llvm::Function *createDecrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal) {
+    llvm::FunctionType *intptr_to_unit =
+        llvm::FunctionType::get(unitType, {llvm::Type::getInt32PtrTy(TheModule->getContext())}, false);
+    llvm::Function *decrFunc = 
+        llvm::Function::Create(intptr_to_unit, llvm::Function::InternalLinkage, "decr", TheModule);
+    llvm::BasicBlock *decrFuncBB = llvm::BasicBlock::Create(TheModule->getContext(), "entry", decrFunc);
+    llvm::IRBuilder<> TmpB(TheModule->getContext()); TmpB.SetInsertPoint(decrFuncBB);
+    llvm::Value *prevVal = TmpB.CreateLoad(decrFunc->getArg(0), "prevval");
+    TmpB.CreateStore(TmpB.CreateSub(prevVal, c32_1, "newval"), decrFunc->getArg(0));
+    TmpB.CreateRet(unitVal);
+    // decrFunc->print(llvm::outs());
+    return decrFunc;
+}
+
+llvm::Function *createFloatOfIntLibFunc(llvm::Module *TheModule, llvm::Type *flt) {
+    llvm::FunctionType *int_to_float =
+        llvm::FunctionType::get(flt, {llvm::Type::getInt32Ty(TheModule->getContext())}, false);
+    llvm::Function *floatOfIntFunc =
+        llvm::Function::Create(int_to_float, llvm::Function::InternalLinkage, "float_of_int", TheModule);
+    llvm::BasicBlock *floatOfIntBB = llvm::BasicBlock::Create(TheModule->getContext(), "entry", floatOfIntFunc);
+    llvm::IRBuilder<> TmpB(TheModule->getContext()); TmpB.SetInsertPoint(floatOfIntBB);
+    llvm::Value *newFloat = TmpB.CreateCast(llvm::Instruction::SIToFP, floatOfIntFunc->getArg(0), flt, "newfloat");
+    TmpB.CreateRet(newFloat);
+    // floatOfIntFunc->print(llvm::outs());
+    return floatOfIntFunc;
+}
+
 std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     auto pairs = new std::vector<std::pair<std::string, llvm::Function*>>();
     llvm::FunctionType 
@@ -208,6 +249,42 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
             default: pairs->push_back({IOlibAdapted[i]->getName(), IOlibAdapted[i]}); 
         }
     }
+    llvm::FunctionType 
+        *int_to_int = llvm::FunctionType::get(i32, {i32}, false),
+        *float_to_float = llvm::FunctionType::get(flt, {flt}, false),
+        *float_to_int = llvm::FunctionType::get(i32, {flt}, false),
+        *char_to_int = llvm::FunctionType::get(i32, {i8}, false),
+        *int_to_char = llvm::FunctionType::get(i8, {i32}, false);
+    llvm::Function
+        *Abs = llvm::Function::Create(int_to_int, llvm::Function::ExternalLinkage, "abs", TheModule),
+        *FAbs = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "fabs", TheModule),
+        *Sqrt = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "sqrt", TheModule),
+        *Sin = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "sin", TheModule),
+        *Cos = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "cos", TheModule),
+        *Tan = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "tan", TheModule),
+        *Atan = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "atan", TheModule),
+        *Exp = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "exp", TheModule),
+        *Ln = llvm::Function::Create(float_to_float, llvm::Function::ExternalLinkage, "ln", TheModule),
+        *Pi = llvm::Function::Create(void_to_float, llvm::Function::ExternalLinkage, "pi", TheModule),
+        *Chr = llvm::Function::Create(int_to_char, llvm::Function::ExternalLinkage, "chr", TheModule),
+        *Ord = llvm::Function::Create(char_to_int, llvm::Function::ExternalLinkage, "ord", TheModule),
+        *Exit = llvm::Function::Create(int_to_void, llvm::Function::ExternalLinkage, "exit", TheModule),
+        *Round = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "round", TheModule),
+        *Trunc = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "trunc", TheModule);
+    std::vector<llvm::Function *> UtilLib = {Abs, FAbs, Sqrt, Sin, Cos, Tan, Atan, Exp, Ln, 
+                                             Exit, Round};
+    for (auto &func: UtilLib) {
+        pairs->push_back({func->getName(), func});
+    }
+    pairs->push_back({"pi", createFuncAdapterFromVoidToUnit(Pi)});
+    pairs->push_back({"int_of_float", Trunc});
+    pairs->push_back({"int_of_char", Ord});
+    pairs->push_back({"char_of_int", Chr});
+
+    pairs->push_back({"incr", createIncrLibFunc(TheModule, unitType, c32(1), unitVal())});
+    pairs->push_back({"decr", createDecrLibFunc(TheModule, unitType, c32(1), unitVal())});
+    pairs->push_back({"float_of_int", createFloatOfIntLibFunc(TheModule, flt)});
+
     // for (auto &pair: *pairs) {
     //     std::cout << pair.first << ' ' << pair.second->getName().str() << '\n';
     // }

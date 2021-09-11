@@ -604,7 +604,10 @@ llvm::Value *UnOp::compile()
     case T_minusdot: return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "float.negtmp");
     case T_not: return Builder.CreateNot(exprVal, "bool.nottmp");
     case '!': return Builder.CreateLoad(exprVal, "ptr.dereftmp"); 
-    case T_delete: return Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+    case T_delete: {
+        Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+        return unitVal();
+    }    
     default: return nullptr;    
     }
 }
