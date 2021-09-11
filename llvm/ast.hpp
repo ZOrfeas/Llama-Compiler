@@ -1094,10 +1094,29 @@ private:
 
 public:
     String_literal(std::string *s)
-        : s(s->substr(1, s->size()-2)) {}
+        : s(escapeChars(s->substr(1, s->size()-2))) {}
     virtual void sem() override
     {
         TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
+    }
+    std::string escapeChars(std::string rawStr) {
+        std::string escapedString;
+        for (unsigned int i = 0; i < rawStr.size(); i++) {
+            if (rawStr[i] != '\\') {
+                escapedString.push_back(rawStr[i]);
+            } else {
+                std::string escapeSeq;
+                if (rawStr[i+1] != 'x') {
+                    escapeSeq = rawStr.substr(i, 2);
+                    i++;
+                } else {
+                    escapeSeq = rawStr.substr(i, 4);
+                    i += 3;
+                }
+                escapedString.push_back(getChar(escapeSeq));
+            }
+        }
+        return escapedString;
     }
     // generate a char array constant(?) and return its Value*
     virtual llvm::Value* compile() override;
