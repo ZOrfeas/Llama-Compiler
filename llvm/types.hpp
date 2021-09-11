@@ -64,6 +64,10 @@ public:
     virtual void changeInner(TypeGraph *replacement, unsigned int index = 0);
     virtual std::string stringifyTypeClean();
     virtual llvm::Type* getLLVMType(llvm::Module *TheModule) = 0;
+    virtual int getBound();
+    virtual void changeBoundVal(int newBound);
+    virtual void changeBoundPtr(int *newBoundptr);
+    virtual void setDimensions(int fixedDimensions);
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -132,14 +136,19 @@ public:
 class ArrayTypeGraph : public TypeGraph {
     TypeGraph *Type;
     int dimensions;
+    int *lowBound;
     std::string stringifyDimensions();
 public:
-    ArrayTypeGraph(int dimensions, TypeGraph *containedType);
+    ArrayTypeGraph(int dimensions, TypeGraph *containedType, int lowBound = -1);
     std::string stringifyType() override;
     std::string stringifyTypeClean() override;
     TypeGraph* getContainedType();
     bool equals(TypeGraph *o);
     int getDimensions() override;
+    int getBound() override;
+    void changeBoundVal(int newBound) override;
+    void changeBoundPtr(int *newBoundptr) override;
+    void setDimensions(int fixedDimensions) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
     virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
     ~ArrayTypeGraph();

@@ -1572,6 +1572,10 @@ public:
         // and the indices provided are integers
         if (!t->isUnknown())
         {
+            if (!t->isArray())
+            {
+                printError("Array access attempted on " + t->stringifyTypeClean());
+            }
             int count = t->getDimensions();
             if (count != args_n)
             {
