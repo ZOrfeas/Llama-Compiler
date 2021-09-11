@@ -1754,11 +1754,10 @@ public:
         {
             printError("Don't know the expected type of e");
         }
-        else
-        {
-            pattern->checkPatternTypeGraph(correctPatternTypeGraph);
-        }
-
+        
+        // Check pattern
+        pattern->checkPatternTypeGraph(correctPatternTypeGraph);
+        
         // Semantically analyse expression
         expr->sem();
 
@@ -1833,7 +1832,7 @@ public:
 
         // Reached the end so all the results have the same type
         // or the constraints will force them to be
-        TG = curr;
+        TG = prev;
     }
     // generate code for each clause, return the value of its result
     virtual llvm::Value* compile() override;
