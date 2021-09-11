@@ -1692,15 +1692,15 @@ protected:
     std::vector<Pattern *> pattern_list;
 
     // Will be filled by checkPatternTypeGraph
-    ConstructorTypeGraph *constrTypeGraph = nullptr;
+    ConstructorTypeGraph *constrTypeGraph;
 
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>())
-        : Id(*Id), pattern_list(*p_list) {}
+        : Id(*Id), pattern_list(*p_list) { constrTypeGraph = nullptr; }
     virtual void checkPatternTypeGraph(TypeGraph *t) override
     {
         ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
-        ConstructorTypeGraph *constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
+        constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
 
         // Check that toMatch is of the same type as constructor or force it to be
         checkTypeGraphs(t, constrTypeGraph, "Constructor is not of the same type as the expression to match");
