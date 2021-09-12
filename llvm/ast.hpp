@@ -135,7 +135,7 @@ public:
         // }
         // else
         // {
-            inf.addConstraint(t1, t2, line_number);
+            inf.addConstraint(t1, t2, line_number, msg);
         // }
     }
     virtual void printError(std::string msg)
@@ -1428,7 +1428,8 @@ public:
 
         ArrayTypeGraph *constraintArray = 
             new ArrayTypeGraph(-1, new UnknownTypeGraph(), i);
-        inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number);
+        inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number,
+            std::string("Needs array of at least ") + std::to_string(i) + " dimensions");
 
         TG = type_int;
     }

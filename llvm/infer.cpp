@@ -11,10 +11,11 @@ using std::to_string;
 /**** Constraint ****/
 /********************/
 
-Constraint::Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno)
-: lhs(lhs), rhs(rhs), lineno(lineno) {}
+Constraint::Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, string msg)
+: lhs(lhs), rhs(rhs), lineno(lineno), msg(msg) {}
 TypeGraph* Constraint::getLhs() { return lhs; }
 TypeGraph* Constraint::getRhs() { return rhs; }
+std::string Constraint::getMsg() { return msg; }
 int Constraint::getLineNo() { return lineno; }
 string Constraint::stringify() {
     return "(line " + to_string(lineno) + ") " + 
@@ -46,13 +47,13 @@ map<string, TypeGraph *>* Inferer::getSubstitutions() {
     return substitutions;
 }
 
-void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno) {
+void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, string msg) {
     if (debug)
         log("Adding constraint, " + lhs->stringifyType()
             + " == " + rhs->stringifyType());
     lhs = tryApplySubstitutions(lhs);
     rhs = tryApplySubstitutions(rhs);
-    auto newConstraint = new Constraint(lhs, rhs, lineno);
+    auto newConstraint = new Constraint(lhs, rhs, lineno, msg);
     constraints->push_back(newConstraint);
 }
 bool Inferer::isValidSubstitution(TypeGraph *unknownType, TypeGraph* candidateType) {
@@ -211,16 +212,20 @@ void Inferer::solveOne(Constraint *constraint) {
                     " at line " + to_string(constraint->getLineNo()));
             for (int i = 0; i < lhsTypeGraph->getParamCount(); i++) {
                 addConstraint(lhsTypeGraph->getParamType(i), rhsTypeGraph->getParamType(i),
-                              constraint->getLineNo()); // insert constraints for parameter types
+                              constraint->getLineNo(), constraint->getMsg()); // insert constraints for parameter types
             }
             addConstraint(lhsTypeGraph->getResultType(), rhsTypeGraph->getResultType(),
-                          constraint->getLineNo()); // insert constraint for result types
+                          constraint->getLineNo(), constraint->getMsg()); // insert constraint for result types
         }
     } else if (areCompatibleArraysOrRefs(lhsTypeGraph, rhsTypeGraph)) {             // are both refs, or arrays of same dimensions
         addConstraint(lhsTypeGraph->getContainedType(), rhsTypeGraph->getContainedType(),
-                      constraint->getLineNo());
+                      constraint->getLineNo(), constraint->getMsg());
     } else {                                                                        // any other case type check/inference fails
-        error("Failed on constraint " + constraint->stringify());
+        if (debug)
+            log("Failed on constraint " + constraint->stringify());
+        std::cout << "Error at line " + to_string(constraint->getLineNo()) + ": "
+                  << constraint->getMsg() << std::endl;
+        exit(1);
     }
 }
 void Inferer::initSubstitution(string name) {

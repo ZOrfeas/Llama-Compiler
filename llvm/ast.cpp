@@ -61,7 +61,8 @@ void UnOp::sem() {
             // to ensure that expr is in fact a ref
             TypeGraph *unknown = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown);
-            inf.addConstraint(t_expr, ref_t, line_number);
+            inf.addConstraint(t_expr, ref_t, line_number, 
+                std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
 
             TG = ref_t->getContainedType();
             break;
@@ -72,7 +73,8 @@ void UnOp::sem() {
             // to ensure that expr is in fact a ref
             TypeGraph *unknown_t = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown_t);
-            inf.addConstraint(t_expr, ref_t, line_number);
+            inf.addConstraint(t_expr, ref_t, line_number,
+                std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
             
             TG = type_unit;
             break;
