@@ -1415,17 +1415,20 @@ public:
     virtual void sem() override
     {
         // Lookup the array
-        ArrayEntry *arr = lookupArrayFromSymbolTable(id);
+        SymbolEntry *arr = lookupBasicFromSymbolTable(id);
 
         // Get the number of the dimension
         int i = dim->get_int();
-        // std::cout << i << "\n";
-        // std::cout << arr->getTypeGraph()->getDimensions() << "\n";
+
         // Check if i is withing the correct bounds
-        if (i < 1 && i > arr->getTypeGraph()->getDimensions())
+        if (i < 1)
         {
             printError("Index out of bounds");
         }
+
+        ArrayTypeGraph *constraintArray = 
+            new ArrayTypeGraph(-1, new UnknownTypeGraph(), i);
+        inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number);
 
         TG = type_int;
     }

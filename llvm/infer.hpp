@@ -68,7 +68,7 @@ public:
     /** Stores a new constraint
      * @param lhs pointer to lhs
      * @param rhs pointer to rhs
-     * @param extract_names controls if free type names are searched and saved
+     * @param lineno line where constraint was created
      */
     void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
     void initSubstitution(std::string name);

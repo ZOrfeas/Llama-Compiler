@@ -118,6 +118,9 @@ void TypeGraph::changeInner(TypeGraph* replacement, unsigned int index) {
 int TypeGraph::getBound() {
     wrongCall("getBound()"); exit(1);
 }
+int *TypeGraph::getBoundPtr() {
+    wrongCall("getBoundPtr()"); exit(1);
+}
 void TypeGraph::changeBoundVal(int newBound) {
     wrongCall("changeBoundVal()"); exit(1);
 }
@@ -192,11 +195,14 @@ FloatTypeGraph::FloatTypeGraph()
 /*************************************************************/
 
 ArrayTypeGraph::ArrayTypeGraph(int dimensions, TypeGraph *containedType, int lowBound)
-: TypeGraph(graphType::TYPE_array), Type(containedType), dimensions(dimensions),
+: TypeGraph(graphType::TYPE_array), Type(containedType),
+dimensions(dimensions),
 lowBound(new int(lowBound)) {}
 std::string ArrayTypeGraph::stringifyDimensions() {
     if (dimensions == 1) {
         return "array of";
+    } else if (dimensions == -1) {
+        return std::string("array (at least ") + std::to_string(*lowBound) + ") of";
     } else {
         int temp = dimensions - 1;
         std::string retVal = "[*";
@@ -217,7 +223,9 @@ std::string ArrayTypeGraph::stringifyTypeClean() {
            getContainedType()->stringifyTypeClean();
 }
 TypeGraph* ArrayTypeGraph::getContainedType() { return Type; }
-int ArrayTypeGraph::getDimensions() { return dimensions; }
+int ArrayTypeGraph::getDimensions() {
+    return *lowBound != -1 && dimensions != -1 ? *lowBound : dimensions;
+}
 bool ArrayTypeGraph::equals(TypeGraph *o) {
     if (this == o) return true;
     return o->isArray() &&
@@ -227,6 +235,7 @@ void ArrayTypeGraph::changeInner(TypeGraph *replacement, unsigned int index) {
     Type = replacement;
 }
 int ArrayTypeGraph::getBound() { return *lowBound; }
+int *ArrayTypeGraph::getBoundPtr() { return lowBound; }
 void ArrayTypeGraph::changeBoundVal(int newBound) {
     dimensions = -1; // this 'disables' dimensions
     *lowBound = newBound;
@@ -357,8 +366,9 @@ FunctionTypeGraph::~FunctionTypeGraph() {
 /**                    Constructor TypeGraph                 */
 /*************************************************************/
 
-ConstructorTypeGraph::ConstructorTypeGraph(std::string name): name(name), TypeGraph(graphType::TYPE_record),
-fields(new std::vector<TypeGraph *>()), customType(nullptr) {}
+ConstructorTypeGraph::ConstructorTypeGraph(std::string name):TypeGraph(graphType::TYPE_record),
+customType(nullptr), name(name),
+fields(new std::vector<TypeGraph *>()) {}
 std::string ConstructorTypeGraph::stringifyType() {
     return "\033[4m" + stringifyTypeClean() + "\033[0m";
 }
@@ -441,25 +451,27 @@ bool CustomTypeGraph::equals(TypeGraph *o) {
 int CustomTypeGraph::getConstructorIndex(ConstructorTypeGraph *c)
 {
     // NOTE: This doesn't work correctly
-    for(int i = 0; i < constructors->size(); i++)
+    for(long unsigned int i = 0; i < constructors->size(); i++)
     {
         if((*constructors)[i]->equals(c)) 
         {
             return i;
         }
     }
+    exit(1);
 }
 int CustomTypeGraph::getConstructorIndex(std::string Id) 
 {
     std::string s;
-    for(int i = 0; i < constructors->size(); i++)
+    for(long unsigned int i = 0; i < constructors->size(); i++)
     {
         s = (*constructors)[i]->getName();
         if(Id == s) 
         {
             return i;
         }
-    }   
+    }
+    exit(1);
 }
 CustomTypeGraph::~CustomTypeGraph() {
     for (auto &constructor: *constructors)
@@ -517,7 +529,7 @@ llvm::PointerType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 
     // Check if it exists
     llvm::StructType *LLVMArrayType;
-    if(LLVMArrayType = TheModule->getTypeByName(arrayTypeName))
+    if((LLVMArrayType = TheModule->getTypeByName(arrayTypeName)))
     {
         return LLVMArrayType->getPointerTo();
     }
@@ -580,7 +592,7 @@ llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
 llvm::PointerType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
 {   
     llvm::StructType *LLVMCustomType;
-    if (LLVMCustomType = TheModule->getTypeByName(name)) {
+    if ((LLVMCustomType = TheModule->getTypeByName(name))) {
         return LLVMCustomType->getPointerTo();
     }
 

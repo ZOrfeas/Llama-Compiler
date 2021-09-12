@@ -65,6 +65,7 @@ public:
     virtual std::string stringifyTypeClean();
     virtual llvm::Type* getLLVMType(llvm::Module *TheModule) = 0;
     virtual int getBound();
+    virtual int *getBoundPtr();
     virtual void changeBoundVal(int newBound);
     virtual void changeBoundPtr(int *newBoundptr);
     virtual void setDimensions(int fixedDimensions);
@@ -146,6 +147,7 @@ public:
     bool equals(TypeGraph *o);
     int getDimensions() override;
     int getBound() override;
+    int *getBoundPtr() override;
     void changeBoundVal(int newBound) override;
     void changeBoundPtr(int *newBoundptr) override;
     void setDimensions(int fixedDimensions) override;
@@ -188,9 +190,9 @@ public:
 
 /** This represents a singular constructor */
 class ConstructorTypeGraph : public TypeGraph {
-    std::vector<TypeGraph *> *fields;
     CustomTypeGraph *customType;
     std::string name;
+    std::vector<TypeGraph *> *fields;
     int index = -1; // Useful for codegen of constructor
 public:
     ConstructorTypeGraph(std::string name);
