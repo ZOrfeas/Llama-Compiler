@@ -1657,12 +1657,17 @@ class Pattern : public AST
 protected:
     // Will be filled by Clause's and Pattern's compile
     llvm::Value *toMatchV = nullptr;
+    llvm::BasicBlock *NextClauseBB = nullptr;
 public:
     // Checks whether the pattern is valid for TypeGraph *t
     virtual void checkPatternTypeGraph(TypeGraph *t)
     {
     }
     void set_toMatchV(llvm::Value *v);
+    void set_NextClauseBB(llvm::BasicBlock *b)
+    {
+        NextClauseBB = b;
+    }
 };
 class PatternLiteral : public Pattern
 {
@@ -1790,7 +1795,7 @@ public:
     {
         return expr->get_TypeGraph();
     }
-    llvm::Value *tryToMatch(llvm::Value *toMatchV);
+    llvm::Value *tryToMatch(llvm::Value *toMatchV, llvm::BasicBlock *NextClauseBB);
     // Could be implemented kinda like an if-else, very simply in fact for 
     // cases without custom types. 
     // For custom types check the enum to match the constructor call each time,

@@ -859,8 +859,8 @@ llvm::Value *ConstructorCall::compile()
     llvm::Type *customFieldTypePtr = customType->getTypeAtIndex(1)->getPointerTo();
 
     // Bitcast the constructor struct into the custom struct
-    llvm::Instruction *LLVMBitCast = llvm::CastInst::CreatePointerCast(LLVMContainedStructAlloca, customFieldTypePtr, "constructorbitcast", Builder.GetInsertBlock());
-    llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
+    llvm::Instruction *LLVMCastStructPtr = llvm::CastInst::CreatePointerCast(LLVMContainedStructAlloca, customFieldTypePtr, "constructorbitcast", Builder.GetInsertBlock());
+    //llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
 
     // Store it into the custom struct
     llvm::Value *LLVMCastStruct = Builder.CreateLoad(LLVMCastStructPtr);
@@ -942,20 +942,33 @@ llvm::Value *Match::compile()
     std::vector<llvm::Value *> ClauseV = {};
 
     // Create first basic block
-    llvm::BasicBlock *NextBB = llvm::BasicBlock::Create(TheContext, "match.firstclause");
-    Builder.CreateBr(NextBB);
+    llvm::BasicBlock *SuccessBB;
+    llvm::BasicBlock *NextClauseBB = llvm::BasicBlock::Create(TheContext, "match.firstclause");
+    Builder.CreateBr(NextClauseBB);
     for(int i = 0; i < (int)clause_list.size(); i++)
     {   
         auto c = clause_list[i];
 
-        // Insert basic block for this clause
-        TheFunction->getBasicBlockList().push_back(NextBB);
-        Builder.SetInsertPoint(NextBB);
-        
-        openScopeOfAll();
+        /*************** CHECK CLAUSE ***************/
+        TheFunction->getBasicBlockList().push_back(NextClauseBB);
+        Builder.SetInsertPoint(NextClauseBB);
 
-        // Contains bool value that shows whether match was successful
-        llvm::Value *tryToMatchV = c->tryToMatch(toMatchV);
+        // Create the two possible next basic blocks
+        bool isLastClause = (i < (int)clause_list.size() - 1);
+        std::string NextClauseBBName = (isLastClause) ? "match.fail" : "match.nextclause";
+        NextClauseBB = llvm::BasicBlock::Create(TheContext, NextClauseBBName);
+        SuccessBB = llvm::BasicBlock::Create(TheContext, "match.success");
+
+        // Checks whether it matched, possibly adds to LLValues
+        openScopeOfAll();
+        llvm::Value *tryToMatchV = c->tryToMatch(toMatchV, NextClauseBB);
+
+        // Branch to correct basic block
+        Builder.CreateCondBr(tryToMatchV, SuccessBB, NextClauseBB);
+
+        /*************** MATCH SUCCESS ***************/
+        TheFunction->getBasicBlockList().push_back(SuccessBB);
+        Builder.SetInsertPoint(SuccessBB);
         
         // Emit code for the expression of the clause and save it
         ClauseV.push_back(c->compile());
@@ -964,36 +977,30 @@ llvm::Value *Match::compile()
 
         // Save the current basic block for the phi node
         ClauseBB.push_back(Builder.GetInsertBlock());
-
-        // Create next basic block
-        NextBB = llvm::BasicBlock::Create(TheContext, "match.nextclause");
-
-        // Check whether match was successful
-        Builder.CreateCondBr(tryToMatchV, FinishBB, NextBB);
+        
+        // Finish matching
+        Builder.CreateBr(FinishBB);
     }
 
-    // Insert basic block in case no pattern matched 
-    // in which case a runtime error will be thrown
-    TheFunction->getBasicBlockList().push_back(NextBB);
-    Builder.SetInsertPoint(NextBB);
-    //Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    /*************** NO MATCH ***************/
+    TheFunction->getBasicBlockList().push_back(NextClauseBB);
+    Builder.SetInsertPoint(NextClauseBB);
+    Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
     
     // Never going to get here but llvm complains anyway
-    Builder.CreateBr(FinishBB); 
+    Builder.CreateBr(NextClauseBB); 
 
-    // Insert basic block to finish
+    /*************** FINISH ***************/
     TheFunction->getBasicBlockList().push_back(FinishBB);
     Builder.SetInsertPoint(FinishBB);
 
     // Create phi node and add all the incoming values
-    llvm::PHINode *retVal = Builder.CreatePHI(TG->getLLVMType(TheModule), clause_list.size(), "match.retval");
+    llvm::Type *retType = TG->getLLVMType(TheModule);
+    llvm::PHINode *retVal = Builder.CreatePHI(retType, clause_list.size(), "match.retval");
     for(int i = 0; i < (int)clause_list.size(); i++)
     {
         retVal->addIncoming(ClauseV[i], ClauseBB[i]);
     }
-
-    // Never going to get here but llvm complains anyway
-    retVal->addIncoming(ClauseV[0], NextBB);
 
     return retVal;
 }
@@ -1001,10 +1008,13 @@ llvm::Value *Clause::compile()
 {
     return expr->compile();
 }
-llvm::Value *Clause::tryToMatch(llvm::Value *toMatchV)
+llvm::Value *Clause::tryToMatch(llvm::Value *toMatchV, llvm::BasicBlock *NextClauseBB)
 {
     // Give the value to be matched to the correct pattern
     pattern->set_toMatchV(toMatchV);
+
+    // Give the correct basic block to branch in case of failure
+    pattern->set_NextClauseBB(NextClauseBB);
 
     // Find out whether the match was successful
     return pattern->compile();
@@ -1016,6 +1026,7 @@ void Pattern::set_toMatchV(llvm::Value *v)
 }
 llvm::Value *PatternLiteral::compile()
 {
+
     return literal->LLVMCompare(toMatchV);
 }
 llvm::Value *PatternId::compile()
@@ -1028,22 +1039,19 @@ llvm::Value *PatternId::compile()
 }
 llvm::Value *PatternConstr::compile()
 {
-    // Basic Block for the merge 
-    llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "pattern.constr.finish");
-    
     // Create alloca and store toMatchV to it
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
     Builder.CreateStore(toMatchV, LLVMAlloca);
 
     // Check whether they were created by the same constructor
+    // if not then move to the next clause of the match
     int index = constrTypeGraph->getIndex();
     llvm::Value *toMatchIndexLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)});
     llvm::Value *toMatchIndex = Builder.CreateLoad(toMatchIndexLoc, "pattern.constr.loadindex");
     llvm::Value *indexCmp = Builder.CreateICmpEQ(c32(index), toMatchIndex);
-    llvm::BasicBlock *StartBB = Builder.GetInsertBlock();
     llvm::BasicBlock *SameConstrBB = llvm::BasicBlock::Create(TheContext, "pattern.constr.sameconstr");
-    Builder.CreateCondBr(indexCmp, SameConstrBB, FinishBB);
+    Builder.CreateCondBr(indexCmp, SameConstrBB, NextClauseBB);
 
     // We know that they come from the same constructor now
     TheFunction->getBasicBlockList().push_back(SameConstrBB);
@@ -1060,8 +1068,8 @@ llvm::Value *PatternConstr::compile()
     Builder.CreateStore(toMatchConstrStruct, toMatchConstrStructAlloca);
 
     // Bitcast the second field of the toMatchV struct to constrTypePtr
-    llvm::Instruction *LLVMBitCast = llvm::CastInst::CreatePointerCast(toMatchConstrStructAlloca, constrTypePtr, "pattern.constr.bitcast", Builder.GetInsertBlock());
-    llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
+    llvm::Value *LLVMCastStructPtr = llvm::CastInst::CreatePointerCast(toMatchConstrStructAlloca, constrTypePtr, "pattern.constr.bitcast", Builder.GetInsertBlock());
+    //llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
 
     // This value will be used to check that all fields can be matched
     llvm::Value *canMatchFields = c1(true);
@@ -1072,7 +1080,7 @@ llvm::Value *PatternConstr::compile()
         auto p = pattern_list[i];
 
         // Get the field and try to match
-        llvm::Value *castStructFieldLoc = Builder.CreateGEP(LLVMCastStructPtr, {c32(i)}, "pattern.constr.fieldloc");
+        llvm::Value *castStructFieldLoc = Builder.CreateGEP(LLVMCastStructPtr, {c32(0), c32(i)}, "pattern.constr.fieldloc");
         llvm::Value *tempV = Builder.CreateLoad(castStructFieldLoc, "pattern.constr.structfield");
         p->set_toMatchV(tempV);
         tempV = p->compile();
@@ -1081,18 +1089,5 @@ llvm::Value *PatternConstr::compile()
         canMatchFields = Builder.CreateAnd(canMatchFields, tempV);
     }
 
-    // Get the correct basic block for the phi and jump to finish
-    SameConstrBB = Builder.GetInsertBlock();
-    Builder.CreateBr(FinishBB);
-
-    // Reached the finish
-    TheFunction->getBasicBlockList().push_back(FinishBB);
-    Builder.SetInsertPoint(FinishBB);
-
-    // Create phi node that merges StartBB and SameConstrBB
-    llvm::PHINode *retVal = Builder.CreatePHI(i1, 2, "pattern.constr.retval");
-    retVal->addIncoming(indexCmp, StartBB);
-    retVal->addIncoming(canMatchFields, SameConstrBB);
-
-    return retVal;
+    return canMatchFields;
 }
