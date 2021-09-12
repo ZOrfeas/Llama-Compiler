@@ -222,7 +222,7 @@ public:
     bool equals(TypeGraph *o) override;
     int getConstructorIndex(ConstructorTypeGraph *c);
     int getConstructorIndex(std::string Id);
-    virtual llvm::StructType* getLLVMType(llvm::Module *TheModule) override;
+    virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
     ~CustomTypeGraph();
 };
 

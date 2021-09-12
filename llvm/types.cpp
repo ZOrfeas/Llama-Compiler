@@ -577,12 +577,15 @@ llvm::StructType* ConstructorTypeGraph::getLLVMType(llvm::Module *TheModule)
     This either creates the type or returns it if it has already 
     been created.
 */
-llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
+llvm::PointerType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
 {   
     llvm::StructType *LLVMCustomType;
     if (LLVMCustomType = TheModule->getTypeByName(name)) {
-        return LLVMCustomType;
+        return LLVMCustomType->getPointerTo();
     }
+
+    LLVMCustomType = llvm::StructType::create(TheModule->getContext(), name);
+    
     const llvm::DataLayout &TheDataLayout = TheModule->getDataLayout();
     llvm::StructType *LLVMLargestStructType, *LLVMTempType;
     bool first = true;
@@ -607,8 +610,7 @@ llvm::StructType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
     // Create a StructType with one ConstantInt and the LargestStructType
     llvm::IntegerType *LLVMStructEnum = llvm::Type::getInt32Ty(TheModule->getContext());
     std::vector<llvm::Type *> LLVMStructTypes = { LLVMStructEnum, LLVMLargestStructType };
-    LLVMCustomType = llvm::StructType::create(TheModule->getContext(), name);
     LLVMCustomType->setBody(LLVMStructTypes);
     
-    return LLVMCustomType;
+    return LLVMCustomType->getPointerTo();
 }

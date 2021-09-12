@@ -173,6 +173,7 @@ void AST::start_compilation(const char *programName, bool optimize)
     compile(); // compile the program code
     // Below means that each Function codegen is responsible for restoring insert point
     Builder.CreateRet(c32(0));
+    
     bool bad = llvm::verifyModule(*TheModule, &llvm::errs());
     if (bad)
     { // internal error
@@ -348,7 +349,6 @@ llvm::Value *Letdef::compile()
             def->compile();
         }
     }
-
     // NOTE: Must handle let rec 
     // (mutually) Recursive functions
     else
@@ -838,8 +838,19 @@ llvm::Value *ConstructorCall::compile()
     llvm::AllocaInst *LLVMContainedStructAlloca = CreateEntryBlockAlloca(TheFunction, "constructorstruct", constrType);
 
     // Get the custom type of this constructor
-    llvm::StructType *customType = constructorTypeGraph->getCustomType()->getLLVMType(TheModule);
-    llvm::AllocaInst *LLVMCustomStructAlloca = CreateEntryBlockAlloca(TheFunction, "customstruct", customType);
+    llvm::StructType *customType = llvm::dyn_cast<llvm::StructType>(constructorTypeGraph->getCustomType()->getLLVMType(TheModule)->getPointerElementType());
+    //llvm::AllocaInst *LLVMCustomStructAlloca = CreateEntryBlockAlloca(TheFunction, "customstruct", customType);
+
+    auto LLVMCustomStructMallocInst = llvm::CallInst::CreateMalloc
+                                            (
+                                                Builder.GetInsertBlock(),
+                                                machinePtrType,
+                                                customType,
+                                                llvm::ConstantExpr::getSizeOf(customType),
+                                                nullptr, nullptr,
+                                                "customstruct.malloc"
+                                            );
+    llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
 
     // Codegen and store the parameters to its fields
     llvm::Value *constrFieldLoc, *LLVMParam;
@@ -852,7 +863,7 @@ llvm::Value *ConstructorCall::compile()
     }
 
     // Store the enum into custom struct
-    llvm::Value *enumLoc = Builder.CreateGEP(LLVMCustomStructAlloca, {c32(0), c32(0)}, "customenumloc");
+    llvm::Value *enumLoc = Builder.CreateGEP(LLVMCustomStructPtr, {c32(0), c32(0)}, "customenumloc");
     Builder.CreateStore(c32(constrIndex), enumLoc);
 
     // Get the expected field type of the custom type 
@@ -864,10 +875,10 @@ llvm::Value *ConstructorCall::compile()
 
     // Store it into the custom struct
     llvm::Value *LLVMCastStruct = Builder.CreateLoad(LLVMCastStructPtr);
-    llvm::Value *constructorLoc = Builder.CreateGEP(LLVMCustomStructAlloca, {c32(0), c32(1)}, "customconstructorloc");
+    llvm::Value *constructorLoc = Builder.CreateGEP(LLVMCustomStructPtr, {c32(0), c32(1)}, "customconstructorloc");
     Builder.CreateStore(LLVMCastStruct, constructorLoc);
 
-    return Builder.CreateLoad(LLVMCustomStructAlloca);
+    return LLVMCustomStructPtr;
 }
 llvm::Value *ArrayAccess::compile()
 {
@@ -954,7 +965,7 @@ llvm::Value *Match::compile()
         Builder.SetInsertPoint(NextClauseBB);
 
         // Create the two possible next basic blocks
-        bool isLastClause = (i < (int)clause_list.size() - 1);
+        bool isLastClause = (i == (int)clause_list.size() - 1);
         std::string NextClauseBBName = (isLastClause) ? "match.fail" : "match.nextclause";
         NextClauseBB = llvm::BasicBlock::Create(TheContext, NextClauseBBName);
         SuccessBB = llvm::BasicBlock::Create(TheContext, "match.success");
@@ -981,7 +992,7 @@ llvm::Value *Match::compile()
         // Finish matching
         Builder.CreateBr(FinishBB);
     }
-
+    
     /*************** NO MATCH ***************/
     TheFunction->getBasicBlockList().push_back(NextClauseBB);
     Builder.SetInsertPoint(NextClauseBB);
@@ -997,6 +1008,7 @@ llvm::Value *Match::compile()
     // Create phi node and add all the incoming values
     llvm::Type *retType = TG->getLLVMType(TheModule);
     llvm::PHINode *retVal = Builder.CreatePHI(retType, clause_list.size(), "match.retval");
+
     for(int i = 0; i < (int)clause_list.size(); i++)
     {
         retVal->addIncoming(ClauseV[i], ClauseBB[i]);
@@ -1038,16 +1050,16 @@ llvm::Value *PatternId::compile()
     return c1(true);
 }
 llvm::Value *PatternConstr::compile()
-{
+{    
     // Create alloca and store toMatchV to it
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
-    llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
-    Builder.CreateStore(toMatchV, LLVMAlloca);
+    //llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
+    //Builder.CreateStore(toMatchV, LLVMAlloca);
 
     // Check whether they were created by the same constructor
     // if not then move to the next clause of the match
     int index = constrTypeGraph->getIndex();
-    llvm::Value *toMatchIndexLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(0)});
+    llvm::Value *toMatchIndexLoc = Builder.CreateGEP(toMatchV, {c32(0), c32(0)});
     llvm::Value *toMatchIndex = Builder.CreateLoad(toMatchIndexLoc, "pattern.constr.loadindex");
     llvm::Value *indexCmp = Builder.CreateICmpEQ(c32(index), toMatchIndex);
     llvm::BasicBlock *SameConstrBB = llvm::BasicBlock::Create(TheContext, "pattern.constr.sameconstr");
@@ -1062,7 +1074,7 @@ llvm::Value *PatternConstr::compile()
     llvm::Type *constrTypePtr = constrType->getPointerTo();
 
     // Create alloca with the struct of the constructor
-    llvm::Value *toMatchConstrStructLoc = Builder.CreateGEP(LLVMAlloca, {c32(0), c32(1)});
+    llvm::Value *toMatchConstrStructLoc = Builder.CreateGEP(toMatchV, {c32(0), c32(1)});
     llvm::Value *toMatchConstrStruct = Builder.CreateLoad(toMatchConstrStructLoc, "pattern.constr.loadconstrstruct");
     llvm::AllocaInst *toMatchConstrStructAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.constrstructalloca", toMatchConstrStruct->getType());
     Builder.CreateStore(toMatchConstrStruct, toMatchConstrStructAlloca);
@@ -1083,6 +1095,7 @@ llvm::Value *PatternConstr::compile()
         llvm::Value *castStructFieldLoc = Builder.CreateGEP(LLVMCastStructPtr, {c32(0), c32(i)}, "pattern.constr.fieldloc");
         llvm::Value *tempV = Builder.CreateLoad(castStructFieldLoc, "pattern.constr.structfield");
         p->set_toMatchV(tempV);
+        p->set_NextClauseBB(NextClauseBB);
         tempV = p->compile();
 
         // Use and instruction to ensure that all matches succeed
