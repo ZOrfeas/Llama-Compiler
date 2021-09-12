@@ -126,17 +126,17 @@ public:
     void printLLVMIR();
     virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     {
-        if (!t1->isUnknown() && !t2->isUnknown())
-        {
-            if (!t1->equals(t2))
-            {
-                printError(msg);
-            }
-        }
-        else
-        {
+        // if (!t1->isUnknown() && !t2->isUnknown())
+        // {
+        //     if (!t1->equals(t2))
+        //     {
+        //         printError(msg);
+        //     }
+        // }
+        // else
+        // {
             inf.addConstraint(t1, t2, line_number);
-        }
+        // }
     }
     virtual void printError(std::string msg)
     {   
@@ -1507,7 +1507,7 @@ public:
                 correct_t = definitionTypeGraph->getParamType(i);
 
                 expr_list[i]->sem();
-                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
+                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1) + ", " + correct_t->stringifyTypeClean() + " expected");
             }
 
             TG = definitionTypeGraph->getResultType();

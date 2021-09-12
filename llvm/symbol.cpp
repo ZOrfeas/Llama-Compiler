@@ -91,6 +91,8 @@ void SymbolTable::insertLibFunctions() {
               *unit_to_float = new FunctionTypeGraph(basicTypes[4]),
               *int_to_float = new FunctionTypeGraph(basicTypes[4]),
               *float_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *char_to_int = new FunctionTypeGraph(basicTypes[1]),
+              *int_to_char = new FunctionTypeGraph(basicTypes[3]),
               *int_ref_to_unit = new FunctionTypeGraph(basicTypes[0]),
               *arrchar_to_int = new FunctionTypeGraph(basicTypes[1]),
               *arrchar_arrchar_to_int = new FunctionTypeGraph(basicTypes[1]),
@@ -100,6 +102,8 @@ void SymbolTable::insertLibFunctions() {
     unit_to_float->addParam(basicTypes[0]);
     int_to_float->addParam(basicTypes[1]);
     float_to_int->addParam(basicTypes[4]);
+    char_to_int->addParam(basicTypes[3]);
+    int_to_char->addParam(basicTypes[1]);
     int_ref_to_unit->addParam(new RefTypeGraph(basicTypes[1]));
     arrchar_to_int->addParam(basicTypes[5]);
     arrchar_arrchar_to_int->addParam(basicTypes[5]);
@@ -121,6 +125,8 @@ void SymbolTable::insertLibFunctions() {
     insertBasic("float_of_int", int_to_float);
     insertBasic("int_of_float", float_to_int);
     insertBasic("round", float_to_int);
+    insertBasic("int_of_char", char_to_int);
+    insertBasic("char_of_int", int_to_char);
     insertBasic("strlen", arrchar_to_int);
     insertBasic("strcmp", arrchar_arrchar_to_int);
     insertBasic("strcpy", arrchar_arrchar_to_unit);

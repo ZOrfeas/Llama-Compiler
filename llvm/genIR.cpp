@@ -168,7 +168,6 @@ void AST::start_compilation(const char *programName, bool optimize)
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
                                "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
-// TODO: Initilize lib functions here
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
     // Below means that each Function codegen is responsible for restoring insert point
