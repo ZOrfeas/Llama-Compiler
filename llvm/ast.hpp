@@ -646,6 +646,7 @@ class Function : public Constant
 private:
     std::vector<Par *> par_list;
     TypeGraph *TG;
+    llvm::Function *funcPrototype;
 public:
     Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType)
         : Constant(id, e, t), par_list(*p) {}
@@ -688,6 +689,8 @@ public:
     // - Generates the function prototype
     // - creates a scope, inserts the paramete names and values
     // - calls expr->codegen()
+    void generateLLVMPrototype();
+    void generateBody();
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {

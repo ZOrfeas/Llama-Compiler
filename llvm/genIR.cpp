@@ -208,9 +208,8 @@ llvm::Value *Constant::compile()
     LLValues.insert({id, exprVal});
     return nullptr;
 }
-llvm::Value *Function::compile()
-{
-    llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
+
+void Function::generateLLVMPrototype() {
     llvm::Function *newFunction;
     if (llvm::FunctionType *newFuncType =
             llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType()))
@@ -224,11 +223,15 @@ llvm::Value *Function::compile()
         exit(1);
     }
     LLValues.insert({id, newFunction});
+    funcPrototype = newFunction;
+}
+void Function::generateBody() {
+    llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     openScopeOfAll();
-    llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", newFunction);
+    llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", funcPrototype);
     Builder.SetInsertPoint(newBB);
     int i = 0;
-    for (auto &arg : newFunction->args())
+    for (auto &arg : funcPrototype->args())
     {
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
@@ -236,12 +239,17 @@ llvm::Value *Function::compile()
     }
     Builder.CreateRet(expr->compile());
     closeScopeOfAll();
-    bool bad = llvm::verifyFunction(*newFunction);
+    bool bad = llvm::verifyFunction(*funcPrototype);
     // again, this is an internal error most likely
-    if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; newFunction->print(llvm::errs(), nullptr); exit(1); }
+    if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; funcPrototype->print(llvm::errs(), nullptr); exit(1); }
     Builder.SetInsertPoint(prevBB);
-    TheFPM->run(*newFunction);
-    return nullptr; // doesn't matter what it returns, its a definition not an expression
+    TheFPM->run(*funcPrototype);
+}
+llvm::Value *Function::compile()
+{
+    generateLLVMPrototype();
+    generateBody();
+    return nullptr;
 }
 llvm::Value *Array::compile()
 {
@@ -352,10 +360,25 @@ llvm::Value *Letdef::compile()
     // NOTE: Must handle let rec 
     // (mutually) Recursive functions
     else
-    {
+    {   
+        std::vector<Function *> functions;
+        Function *currFunc;
+        for (auto def : def_list) {
+            if ((currFunc = dynamic_cast<Function *>(def))) {
+                functions.push_back(currFunc);
+            } else { // internal/sem error
+                std::cerr << "Recursive defs were not all functions";
+                std::exit(1);
+            }
+        }
         // Get all function signatures
-
+        for (auto func : functions) {
+            func->generateLLVMPrototype();
+        }
         // Compile bodies
+        for (auto func : functions) {
+            func->generateBody();
+        }
     }
     
     return nullptr;
@@ -443,6 +466,8 @@ llvm::Value *Float_literal::compile()
 }
 llvm::Value *Int_literal::compile()
 {
+    // std::cout << n << '\n';
+    // Builder.CreateCall(TheModule->getFunction("writeInteger"), {c32(n)});
     return c32(n);
 }
 llvm::Value *Unit_literal::compile()
