@@ -120,143 +120,26 @@ public:
     }
     virtual ~AST() {}
     virtual void printOn(std::ostream &out) const = 0;
-    virtual void sem() {}
-    virtual llvm::Value* compile() { return nullptr; }
+    virtual void sem();
+    virtual llvm::Value* compile() 
+    { return nullptr; }
     void start_compilation(const char *programName, bool optimize=false);
     void printLLVMIR();
-    virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
-    {
-        // if (!t1->isUnknown() && !t2->isUnknown())
-        // {
-        //     if (!t1->equals(t2))
-        //     {
-        //         printError(msg);
-        //     }
-        // }
-        // else
-        // {
-            inf.addConstraint(t1, t2, line_number, msg);
-        // }
-    }
-    virtual void printError(std::string msg)
-    {   
-        std::string intro = "Error at line " + std::to_string(line_number) + ": ";
-        printColorString(intro, intro.size(), 1, 31);
-        std::cout << msg << std::endl;
-        exit(1);
-    }
-    virtual void insertBasicToSymbolTable(std::string id, TypeGraph *t) 
-    {
-        st.insertBasic(id, t);
-    }
-    virtual void insertRefToSymbolTable(std::string id, TypeGraph *t) 
-    {   
-        st.insertRef(id, t);   
-    }
-    virtual void insertArrayToSymbolTable(std::string id, TypeGraph *contained_type, int d) 
-    {
-        st.insertArray(id, contained_type, d);
-    }
-    virtual FunctionEntry *insertFunctionToSymbolTable(std::string id, TypeGraph *t) 
-    {
-        return st.insertFunction(id, t);
-    }
-    virtual void insertTypeToTypeTable(std::string id) 
-    {
-        if(!tt.insertType(id))
-        {
-            printError("Type " + id + " has already been defined");
-        }
-    }
-    virtual ConstructorEntry *insertConstructorToConstructorTable(std::string Id)
-    {
-        ConstructorEntry *c = ct.insertConstructor(Id);
-        if(!c) 
-        {
-            std::string type = lookupConstructorFromContstructorTable(Id)->getTypeGraph()->getCustomType()->stringifyTypeClean();
-            printError("Constructor " + Id + " already belongs to type " + type);
-        }
-        
-        return c;
-    }
-    virtual SymbolEntry *lookupBasicFromSymbolTable(std::string id) 
-    {
-        SymbolEntry *s = st.lookup(id, false);
-        if(!s) 
-        {
-            printError("Identifier " + id + " not found");
-        }
-
-        return s;
-    }
-    virtual ArrayEntry *lookupArrayFromSymbolTable(std::string id)
-    {
-        ArrayEntry *s = st.lookupArray(id, false);
-        if(!s) 
-        {
-            printError("Array identifier " + id + " not found");
-        }
-        
-        return s;
-    }
-    virtual TypeEntry *lookupTypeFromTypeTable(std::string id)
-    {
-        TypeEntry *t = tt.lookupType(id, false);
-        if(!t) 
-        {
-            printError("Type " + id + " not found");
-        }
-
-        return t;
-    }
-    virtual ConstructorEntry *lookupConstructorFromContstructorTable(std::string Id) 
-    {
-        ConstructorEntry *c = ct.lookupConstructor(Id, false);
-        if(!c)
-        {
-            printError("Constructor " + Id + " not found");
-        }
-        
-        return c;
-    }
-    virtual void printIdTypeGraphs() 
-    {
-        // Find the maximum size of the ids, type and line strings
-        // in order to decide the padding
-        int margin = 2;
-        int idWidth = 4, typeWidth = 8, lineWidth = 3;
-        std::string name, typeString, line;
-        for(auto ident: AST_identifier_list)
-        {
-            name = ident->getName();
-            typeString = ident->getTypeString();
-            line = ident->getLine();
-
-            if(idWidth < (int)name.size()) idWidth = name.size();
-            if(typeWidth < (int)typeString.size()) typeWidth = typeString.size();
-            if(lineWidth < (int)line.size()) lineWidth = line.size();
-        }
-        idWidth += margin;
-        typeWidth += margin;
-        lineWidth += margin;
-
-        // Print the header of the table
-        int colorANSI = 34 , formatANSI = 4;
-        printColorString("Name", idWidth, formatANSI, colorANSI);
-        printColorString("Type", typeWidth, formatANSI, colorANSI);
-        printColorString("Line", lineWidth, formatANSI, colorANSI);
-        std::cout << std::endl;
-
-        // Print every line
-        for (auto ident: AST_identifier_list)
-        {
-            ident->printIdLine(lineWidth, idWidth, typeWidth);
-        }
-    }
-    virtual void addToIdList(std::string id) 
-    {
-        AST_identifier_list.push_back(new Identifier(id, line_number));
-    }
+    void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg);
+    void printError(std::string msg);
+    virtual void insertToTable();
+    void insertBasicToSymbolTable(std::string id, TypeGraph *t);
+    void insertRefToSymbolTable(std::string id, TypeGraph *t);
+    void insertArrayToSymbolTable(std::string id, TypeGraph *contained_type, int d);
+    FunctionEntry *insertFunctionToSymbolTable(std::string id, TypeGraph *t);
+    void insertTypeToTypeTable(std::string id);
+    ConstructorEntry *insertConstructorToConstructorTable(std::string Id);
+    SymbolEntry *lookupBasicFromSymbolTable(std::string id);
+    ArrayEntry *lookupArrayFromSymbolTable(std::string id);
+    TypeEntry *lookupTypeFromTypeTable(std::string id);
+    ConstructorEntry *lookupConstructorFromContstructorTable(std::string Id);
+    void printIdTypeGraphs();
+    void addToIdList(std::string id);
 };
 
 inline std::ostream &operator<<(std::ostream &out, const AST &t)
@@ -277,33 +160,18 @@ protected:
 public:
     Type(category c)
         : c(c) {}
-    category get_category()
-    {
-        return c;
-    }
-    bool compare_category(category _c)
-    {
-        return c == _c;
-    }
-    virtual bool compare_basic_type(type t)
-    {
-        return false;
-    }
+    category get_category();
+    bool compare_category(category _c);
+    virtual bool compare_basic_type(type t);
     virtual TypeGraph *get_TypeGraph() = 0;
-    friend bool compare_categories(Type *T1, Type *T2)
-    {
-        return (T1->c == T2->c);
-    }
+    friend bool compare_categories(Type *T1, Type *T2);
 };
 class UnknownType : public Type
 {
 public:
     UnknownType()
         : Type(category::CATEGORY_unknown) { TG = new UnknownTypeGraph(true, true, false); }
-    virtual TypeGraph *get_TypeGraph() override
-    {
-        return TG;
-    }
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "UnknownType(" << TG->stringifyType() << ")";
@@ -318,17 +186,8 @@ protected:
 public:
     BasicType(type t)
         : Type(category::CATEGORY_basic), t(t) {}
-    virtual bool compare_basic_type(type _t) override
-    {
-        return t == _t;
-    }
-    virtual TypeGraph *get_TypeGraph() override
-    {
-        if (!TG)
-            TG = lookupTypeFromTypeTable(type_string[(int)t])->getTypeGraph();
-
-        return TG;
-    }
+    virtual bool compare_basic_type(type _t) override;
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << type_string[static_cast<int>(t)];
@@ -342,31 +201,7 @@ private:
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType)
         : Type(category::CATEGORY_function), lhtype(lhtype), rhtype(rhtype) {}
-    virtual TypeGraph *get_TypeGraph() override
-    {
-        if (!TG)
-        {
-            TypeGraph *l = lhtype->get_TypeGraph();
-            TypeGraph *r = rhtype->get_TypeGraph();
-
-            // No type inference needed here because FunctionType is called only if the type is given
-            if (r->isFunction())
-            {
-                TG = r;
-            }
-            else
-            {
-                TG = new FunctionTypeGraph(r);
-            }
-
-            // Operator -> is right associative
-            // so the parameters will be added
-            // from last to first
-            TG->addParam(l, false);
-        }
-
-        return TG;
-    }
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << *lhtype << "->" << *rhtype;
@@ -381,12 +216,7 @@ private:
 public:
     ArrayType(int dimensions = 1, Type *elem_type = new UnknownType)
         : Type(category::CATEGORY_array), dimensions(dimensions), elem_type(elem_type) {}
-    virtual TypeGraph *get_TypeGraph() override
-    {
-        if (!TG)
-            TG = new ArrayTypeGraph(dimensions, new RefTypeGraph(elem_type->get_TypeGraph()));
-        return TG;
-    }
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "TYPE_array(" << dimensions << ", " << *elem_type << ")";
@@ -401,13 +231,7 @@ private:
 public:
     RefType(Type *ref_type = new UnknownType())
         : Type(category::CATEGORY_ref), ref_type(ref_type) {}
-    virtual TypeGraph *get_TypeGraph() override
-    {
-        if (!TG)
-            TG = new RefTypeGraph(ref_type->get_TypeGraph());
-
-        return TG;
-    }
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "TYPE_ref(" << *ref_type << ")";
@@ -421,13 +245,7 @@ private:
 public:
     CustomType(std::string *id)
         : Type(category::CATEGORY_custom), id(*id) {}
-    virtual TypeGraph *get_TypeGraph()
-    {
-        if (!TG)
-            TG = lookupTypeFromTypeTable(id)->getTypeGraph();
-
-        return TG;
-    }
+    virtual TypeGraph *get_TypeGraph() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "CustomType(" << id << ")";
@@ -441,10 +259,6 @@ class Expr : public AST
 protected:
     Type *T;
     TypeGraph *TG;
-
-    // dynamic shows whether an expression
-    // was created with new (Probably bad idea)
-    bool dynamic = false;
 
 public:
     TypeGraph *get_TypeGraph();
@@ -488,7 +302,7 @@ private:
 public:
     Par(std::string *id, Type *t = new UnknownType)
         : id(*id), T(t) {}
-    void insert_id_to_st();
+    virtual void insertToTable() override;
     TypeGraph *get_TypeGraph();
     std::string getId();
     virtual void printOn(std::ostream &out) const override
@@ -507,16 +321,8 @@ protected:
 public:
     DefStmt(std::string id)
         : id(id) {}
-    virtual bool isFunctionDefinition() const
-    {
-        return false;
-    }
-    virtual void insert_id_to_st()
-    {
-    }
-    virtual void insert_id_to_tt()
-    {
-    }
+    virtual bool isFunctionDefinition() const;
+    virtual void insertToTable();
 };
 class Tdef : public DefStmt
 {
@@ -526,20 +332,8 @@ private:
 public:
     Tdef(std::string *id, std::vector<Constr *> *c)
         : DefStmt(*id), constr_list(*c) {}
-    virtual void insert_id_to_tt() override
-    {
-        // Insert custom type to type table
-        insertTypeToTypeTable(id);
-    }
-    virtual void sem() override
-    {
-        TypeEntry *t = lookupTypeFromTypeTable(id);
-
-        for (Constr *c : constr_list)
-        {
-            c->add_Id_to_ct(t);
-        }
-    }
+    virtual void insertToTable() override;
+    virtual void sem() override;
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
@@ -568,10 +362,7 @@ protected:
 public:
     Def(std::string id, Type *t)
         : DefStmt(id), T(t) {}
-    Type *get_type()
-    { /* NOTE: Returns the pointer */
-        return T;
-    }
+    Type *get_type();
 };
 class Constant : public Def
 {
@@ -581,18 +372,8 @@ protected:
 public:
     Constant(std::string *id, Expr *e, Type *t = new UnknownType)
         : Def(*id, t), expr(e) {}
-    virtual void sem() override
-    {
-        std::string err = "Must be of specified type " + T->get_TypeGraph()->stringifyType();
-        expr->sem();
-        expr->type_check(T->get_TypeGraph(), err);
-    }
-    virtual void insert_id_to_st() override
-    {
-        insertBasicToSymbolTable(id, T->get_TypeGraph());
-
-        addToIdList(id);
-    }
+    virtual void sem() override;
+    virtual void insertToTable() override;
     // - if it is a true Constant definition stores the result of the expr->codegen()
     // - Danger if it's a copy of an already existing function or other edge cases
     virtual llvm::Value* compile() override;
@@ -610,42 +391,9 @@ private:
 public:
     Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType)
         : Constant(id, e, t), par_list(*p) {}
-    virtual void sem() override
-    {
-        // New scope for the body of the function where the parameters will be inserted
-        st.openScope();
-
-        // Insert parameters to symbol table
-        for (Par *p : par_list)
-        {
-            p->insert_id_to_st();
-        }
-
-        // Check the type of the expression (and call sem)
-        std::string err = "Function body must be of specified type " + T->get_TypeGraph()->stringifyType();
-        expr->sem();
-        expr->type_check(T->get_TypeGraph(), err);
-
-        // Close the scope
-        st.closeScope();
-    }
-    virtual bool isFunctionDefinition() const override 
-    {
-        return true;
-    }
-    virtual void insert_id_to_st() override
-    {
-        // Insert Function id to symbol table
-        FunctionEntry *F = insertFunctionToSymbolTable(id, T->get_TypeGraph());
-
-        // Add the parameters to the entry
-        for (Par *p : par_list)
-        {
-            F->addParam(p->get_TypeGraph());
-        }
-        TG = F->getTypeGraph();
-        addToIdList(id);
-    }
+    virtual void sem() override;
+    virtual bool isFunctionDefinition() const override;
+    virtual void insertToTable() override;
     // - Generates the function prototype
     // - creates a scope, inserts the paramete names and values
     // - calls expr->codegen()
@@ -676,42 +424,9 @@ private:
 public:
     Array(std::string *id, std::vector<Expr *> *e, Type *T = new UnknownType)
         : Mutable(*id, T), expr_list(*e) {}
-    virtual void sem() override
-    {
-        // All dimension sizes are of type integer
-        for (Expr *e : expr_list)
-        {   
-            e->sem();
-            e->type_check(type_int, "Array dimension sizes must be int");
-        }
-    }
-    int get_dimensions()
-    {
-        return expr_list.size();
-    }
-    virtual void insert_id_to_st()
-    {
-        int d = get_dimensions();
-        TypeGraph *t = T->get_TypeGraph();
-        RefTypeGraph *contained_type = new RefTypeGraph(t);
-
-        if(!t->isUnknown())
-        {
-            if (t->isArray())
-            {
-                printError("Array cannot contain arrays");
-            }
-            insertArrayToSymbolTable(id, contained_type, d);
-        }
-        else
-        {
-            TypeGraph *unknown_contained_type = new UnknownTypeGraph(false, true, false);
-            insertArrayToSymbolTable(id, unknown_contained_type, d);
-            inf.addConstraint(unknown_contained_type, contained_type, line_number);
-        }
-
-        addToIdList(id);
-    }
+    virtual void sem() override;
+    int get_dimensions();
+    virtual void insertToTable();
     // creates a *Value of a struct type. One such type is created/exists for every
     // arrayType (contents and dimensions only differentiate them),
     // these struct types contain a pointer to the contained type,
@@ -743,24 +458,7 @@ class Variable : public Mutable
 public:
     Variable(std::string *id, Type *T = new UnknownType)
         : Mutable(*id, T) {}
-    virtual void insert_id_to_st() override
-    {
-        TypeGraph *t = T->get_TypeGraph();
-        TypeGraph *ref_type = new RefTypeGraph(t);
-
-        if(!t->isUnknown()) 
-        {
-            insertRefToSymbolTable(id, t);
-        }
-        else
-        {
-            TypeGraph *unknown_ref_type = new UnknownTypeGraph(false, true, false);
-            insertBasicToSymbolTable(id, unknown_ref_type);
-            inf.addConstraint(unknown_ref_type, ref_type, line_number);
-        }
-
-        addToIdList(id);
-    }
+    virtual void insertToTable() override;
     // alloca's the necessary space for a var of its TYPE
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -774,7 +472,6 @@ public:
 
 class Definition : public AST
 {
-    // virtual void append(DefStmt *d) = 0;
 };
 class Letdef : public Definition
 {
@@ -785,44 +482,7 @@ private:
 public:
     Letdef(std::vector<DefStmt *> *d, bool rec = false)
         : recursive(rec), def_list(*d) {}
-    virtual void sem() override
-    {
-        // Recursive
-        if (recursive)
-        {
-            // Insert function names to symbol table before all the definitions
-            for (DefStmt *d : def_list)
-            {
-                if(!d->isFunctionDefinition()) 
-                {
-                    printError("Only function definitions can be recursive");
-                }
-                d->insert_id_to_st();
-            }
-
-            // Semantically analyse definitions
-            for (DefStmt *d : def_list)
-            {
-                d->sem();
-            }
-        }
-
-        // Not recursive
-        else
-        {
-            // Semantically analyse definitions
-            for (DefStmt *d : def_list)
-            {
-                d->sem();
-            }
-
-            // Insert identifiers to symbol table after all the definitions
-            for (DefStmt *d : def_list)
-            {
-                d->insert_id_to_st();
-            }
-        }
-    }
+    virtual void sem() override;
     // in order compile the definitions contained 
     // (recursive or not is irrelevant for functions if prototypes are defined at the start)
     virtual llvm::Value* compile() override;
@@ -854,20 +514,7 @@ private:
 public:
     Typedef(std::vector<DefStmt *> *t)
         : tdef_list(*t) {}
-    virtual void sem() override
-    {
-        // Insert identifiers to type table before all the definitions
-        for (DefStmt *td : tdef_list)
-        {
-            td->insert_id_to_tt();
-        }
-
-        // Semantically analyse definitions
-        for (DefStmt *td : tdef_list)
-        {
-            td->sem();
-        }
-    }
+    virtual void sem() override;
     // in order create the types defined 
     // (Struct for big type, with pointers to constr types and enum ?)
     virtual llvm::Value* compile() override;
@@ -903,13 +550,7 @@ public:
     }
     Program()
         : definition_list() {}
-    virtual void sem() override
-    {
-        for (Definition *d : definition_list)
-        {
-            d->sem();
-        }
-    }
+    virtual void sem() override;
     void append(Definition *d)
     {
         definition_list.push_back(d);
@@ -945,23 +586,7 @@ private:
 public:
     LetIn(Definition *letdef, Expr *expr)
         : letdef(letdef), expr(expr) {}
-    virtual void sem() override
-    {
-        // Create new scope
-        st.openScope();
-
-        // Semantically analyse letdef
-        letdef->sem();
-
-        // Semantically analyse expression
-        expr->sem();
-
-        // Close scope defined by expression
-        st.closeScope();
-
-        // The type of the LetIn is the same as that of the expression
-        TG = expr->get_TypeGraph();
-    }
+    virtual void sem() override;
     // open scope, do the definition, compile the expression, return its result Value*
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -974,54 +599,7 @@ class Literal : public Expr
 {
 public:
     virtual llvm::Value* LLVMCompare(llvm::Value *V);
-    static char getChar(std::string c)
-    {
-        char ans = 0;
-
-        // Normal character
-        if (c[0] != '\\')
-        {
-            ans = c[0];
-        }
-
-        // '\xnn'
-        else if (c[1] == 'x')
-        {
-            const char hex[2] = {c[2], c[3]};
-            ans = strtol(hex, nullptr, 16);
-        }
-
-        // Escape secuence
-        else
-        {
-            switch (c[1])
-            {
-            case 'n':
-                ans = '\n';
-                break;
-            case 't':
-                ans = '\t';
-                break;
-            case 'r':
-                ans = '\r';
-                break;
-            case '0':
-                ans = 0;
-                break;
-            case '\\':
-                ans = '\\';
-                break;
-            case '\'':
-                ans = '\'';
-                break;
-            case '\"':
-                ans = '\"';
-                break;
-            }
-        }
-
-        return ans;
-    }
+    static char getChar(std::string c);
 };
 class String_literal : public Literal
 {
@@ -1031,29 +609,8 @@ private:
 public:
     String_literal(std::string *s)
         : s(escapeChars(s->substr(1, s->size()-2))) {}
-    virtual void sem() override
-    {
-        TG = new ArrayTypeGraph(1, new RefTypeGraph(type_char));
-    }
-    std::string escapeChars(std::string rawStr) {
-        std::string escapedString;
-        for (unsigned int i = 0; i < rawStr.size(); i++) {
-            if (rawStr[i] != '\\') {
-                escapedString.push_back(rawStr[i]);
-            } else {
-                std::string escapeSeq;
-                if (rawStr[i+1] != 'x') {
-                    escapeSeq = rawStr.substr(i, 2);
-                    i++;
-                } else {
-                    escapeSeq = rawStr.substr(i, 4);
-                    i += 3;
-                }
-                escapedString.push_back(getChar(escapeSeq));
-            }
-        }
-        return escapedString;
-    }
+    virtual void sem() override;
+    std::string escapeChars(std::string rawStr);
     // generate a char array constant(?) and return its Value*
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1077,10 +634,7 @@ public:
     // possibly llvm accepts escape sequences as they are so we may need to reconstruct them
     virtual llvm::Value* compile() override;
     virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
-    virtual void sem() override
-    {
-        TG = type_char;
-    }
+    virtual void sem() override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "Char(" << c_string << ")";
@@ -1094,10 +648,7 @@ private:
 public:
     Bool_literal(bool b)
         : b(b) {}
-    virtual void sem() override
-    {
-        TG = type_bool;
-    }
+    virtual void sem() override;
     // Generate a bool (bit?) constant and return its Value*
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1113,10 +664,7 @@ private:
 public:
     Float_literal(double d)
         : d(d) {}
-    virtual void sem() override
-    {
-        TG = type_float;
-    }
+    virtual void sem() override;
     // generate a float constant and return its Value*
     virtual llvm::Value* compile() override;
     virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
@@ -1133,14 +681,8 @@ private:
 public:
     Int_literal(int n)
         : n(n) {}
-    int get_int()
-    {
-        return n;
-    }
-    virtual void sem() override
-    {
-        TG = type_int;
-    }
+    int get_int();
+    virtual void sem() override;
     // generate an int constant (check size) and return its Value*
     virtual llvm::Value* compile() override;
     virtual llvm::Value* LLVMCompare(llvm::Value *V) override;
@@ -1153,10 +695,7 @@ class Unit_literal : public Literal
 {
 public:
     Unit_literal() {}
-    virtual void sem() override
-    {
-        TG = type_unit;
-    }
+    virtual void sem() override;
     // There is something called empty struct type {} in llvm
     // (http://nondot.org/~sabre/LLVMNotes/EliminatingVoid.txt#:~:text=The%20'void'%20type%20in%20llvm,return%20value%20of%20a%20function.&text=In%20the%20LLVM%20IR%2C%20instead,'%3A%20the%20empty%20struct%20type.)
     // could be what we want to use
@@ -1207,18 +746,7 @@ class New : public Expr
 
 public:
     New(Type *t) : new_type(t) {}
-    virtual void sem() override
-    {
-        TypeGraph *t = new_type->get_TypeGraph();
-
-        // Array type not allowed
-        if (t->isArray())
-        {
-            printError("Array type cannot be allocated with new");
-        }
-
-        TG = new RefTypeGraph(t);
-    }
+    virtual void sem() override;
     // malloc's a new spot in memory and returns its value (probably :) )
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1235,16 +763,7 @@ private:
 public:
     While(Expr *e1, Expr *e2)
         : cond(e1), body(e2) {}
-    virtual void sem() override
-    {
-        cond->sem();
-        body->sem();
-        // Typecheck
-        cond->type_check(type_bool, "While condition must be bool");
-        body->type_check(type_unit, "While body must be unit");
-
-        TG = type_unit;
-    }
+    virtual void sem() override;
     // compiles the loop, take note of the condition.
     // phi node may be necessary, avoidable if we can be sure
     // that the condition is "constant" (pointer dereference, or some shit)
@@ -1264,27 +783,7 @@ private:
 public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3)
         : id(*id), step(s), start(e1), finish(e2), body(e3) {}
-    virtual void sem() override
-    {
-        // Create new scope for counter and add it
-        st.openScope();
-        insertBasicToSymbolTable(id, type_int);
-        addToIdList(id);
-
-        // Typecheck start, finish, body
-        start->sem();
-        finish->sem();
-        body->sem();
-
-        start->type_check(type_int, "Start value of iterator must be int");
-        finish->type_check(type_int, "Finish value of iterator must be int");
-        body->type_check(type_unit, "For body must be unit");
-
-        // Close the scope
-        st.closeScope();
-
-        TG = type_unit;
-    }
+    virtual void sem() override;
     // could possibly alloc a variable to use for the loop
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1299,29 +798,7 @@ private:
 
 public:
     If(Expr *e1, Expr *e2, Expr *e3 = nullptr) : cond(e1), body(e2), else_body(e3) {}
-    virtual void sem() override
-    {
-        cond->sem();
-        cond->type_check(type_bool, "Condition of if must be bool");
-
-        // If there is no else just semantically analyse body (must be unit)
-        if (else_body == nullptr)
-        {
-            body->sem();
-            body->type_check(type_unit, "Return type of if must be unit since there is no else");
-        }
-
-        // If there is else then check if the types match
-        else
-        {
-            body->sem();
-            else_body->sem();
-            same_type(body, else_body, "Return value of if and else must be same type");
-        }
-
-        // The type of the body is always the type of the If
-        TG = body->get_TypeGraph();
-    }
+    virtual void If::sem() override;
     // again think about phi nodes, otherwise its a simple if compilation,
     // noteworthy: no 'else' means else branch just jumps to end
     virtual llvm::Value* compile() override;
@@ -1345,27 +822,7 @@ private:
 public:
     Dim(std::string *id, Int_literal *dim = new Int_literal(1))
         : dim(dim), id(*id) {}
-    virtual void sem() override
-    {
-        // Lookup the array
-        SymbolEntry *arr = lookupBasicFromSymbolTable(id);
-
-        // Get the number of the dimension
-        int i = dim->get_int();
-
-        // Check if i is withing the correct bounds
-        if (i < 1)
-        {
-            printError("Index out of bounds");
-        }
-
-        ArrayTypeGraph *constraintArray = 
-            new ArrayTypeGraph(-1, new UnknownTypeGraph(), i);
-        inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number,
-            std::string("Needs array of at least ") + std::to_string(i) + " dimensions");
-
-        TG = type_int;
-    }
+    virtual void sem() override;
     // llvm may have our backs, may store some runtime (or at least the expression)
     // info about the length of an array (through its type system)
     virtual llvm::Value* compile() override;
@@ -1386,11 +843,7 @@ protected:
 public:
     ConstantCall(std::string *id)
         : id(*id) {}
-    virtual void sem() override
-    {
-        SymbolEntry *s = lookupBasicFromSymbolTable(id);
-        TG = s->getTypeGraph();
-    }
+    virtual void sem() override;
     // lookup and return the Value* stored, special case if it's a function
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1406,54 +859,7 @@ private:
 public:
     FunctionCall(std::string *id, std::vector<Expr *> *expr_list)
         : ConstantCall(id), expr_list(*expr_list) {}
-    virtual void sem() override
-    {
-        TypeGraph *definitionTypeGraph = lookupBasicFromSymbolTable(id)->getTypeGraph();
-        int count;
-        if (definitionTypeGraph->isUnknown())
-        {
-            // Create the correct FunctionTypeGraph as given by the call
-            count = (int)expr_list.size();
-            UnknownTypeGraph *resultTypeGraph = new UnknownTypeGraph(true, false, false);
-            FunctionTypeGraph *callTypeGraph = new FunctionTypeGraph(resultTypeGraph);
-            TypeGraph *argTypeGraph;
-            for (int i = 0; i < count; i++)
-            {
-                expr_list[i]->sem();
-                argTypeGraph = expr_list[i]->get_TypeGraph();
-                callTypeGraph->addParam(argTypeGraph, true);
-            }
-
-            inf.addConstraint(definitionTypeGraph, callTypeGraph, line_number);
-
-            TG = resultTypeGraph;
-        }
-        else if (definitionTypeGraph->isFunction())
-        {
-            // Check whether the call matches the definitions
-            count = definitionTypeGraph->getParamCount();
-            if (count != (int)expr_list.size())
-            {
-                printError("Partial function call not allowed");
-            }
-
-            std::string err = "Type mismatch on parameter No. ";
-            TypeGraph *correct_t;
-            for (int i = 0; i < count; i++)
-            {
-                correct_t = definitionTypeGraph->getParamType(i);
-
-                expr_list[i]->sem();
-                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1) + ", " + correct_t->stringifyTypeClean() + " expected");
-            }
-
-            TG = definitionTypeGraph->getResultType();
-        }
-        else
-        {
-            printError(id + " already declared as non-function");
-        }
-    }
+    virtual void sem() override;
     // get the function prototype and call it, return the Value* of the call
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1476,29 +882,7 @@ private:
 public:
     ConstructorCall(std::string *Id, std::vector<Expr *> *expr_list = new std::vector<Expr *>())
         : Id(*Id), expr_list(*expr_list) {}
-    virtual void sem()
-    {
-        ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
-        constructorTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
-
-        int count = constructorTypeGraph->getFieldCount();
-        if (count != (int)expr_list.size())
-        {
-            printError("Partial constructor call not allowed");
-        }
-
-        std::string err = "Type mismatch on field No. ";
-        TypeGraph *correct_t;
-        for (int i = 0; i < count; i++)
-        {
-            correct_t = constructorTypeGraph->getFieldType(i);
-
-            expr_list[i]->sem();
-            expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
-        }
-
-        TG = c->getTypeGraph();
-    }
+    virtual void sem() override;
     // creates a struct (emplaces it in the big struct sets the enum?)
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
@@ -1520,53 +904,7 @@ private:
 public:
     ArrayAccess(std::string *id, std::vector<Expr *> *expr_list)
         : id(*id), expr_list(*expr_list) {}
-    virtual void sem() override
-    {
-        int args_n = (int)expr_list.size();
-        SymbolEntry *a = lookupBasicFromSymbolTable(id);
-        TypeGraph *t = a->getTypeGraph();
-
-        // If it is known check that the dimensions are correct
-        // and the indices provided are integers
-        if (!t->isUnknown())
-        {
-            if (!t->isArray())
-            {
-                printError("Array access attempted on " + t->stringifyTypeClean());
-            }
-            int count = t->getDimensions();
-            if (count != args_n)
-            {
-                printError("Partial array call not allowed");
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                expr_list[i]->sem();
-                expr_list[i]->type_check(type_int, "Array indices can only be int");
-            }
-
-            TG = t->getContainedType();
-        }
-
-        // If it is unknown then create the array typegraph
-        // with given amount of dimensions as a constraint
-        // and check that all given indices are integers
-        else
-        {
-            TypeGraph *elemTypeGraph = new RefTypeGraph(new UnknownTypeGraph(false, true, false));
-            ArrayTypeGraph *correct_array = new ArrayTypeGraph(args_n, elemTypeGraph);
-            inf.addConstraint(t, correct_array, line_number);
-
-            for (Expr *e : expr_list)
-            {
-                e->sem();
-                e->type_check(type_int, "Array indices can only be int");
-            }
-
-            TG = elemTypeGraph;
-        }
-    }
+    virtual void sem() override;
     // since inside the struct a simple array is contained,
     // perform the calculation of the actual address before dereferencing
     // (We could if we wanted to, check bounds at runtime and exit with error code)
@@ -1600,9 +938,7 @@ protected:
     llvm::BasicBlock *NextClauseBB = nullptr;
 public:
     // Checks whether the pattern is valid for TypeGraph *t
-    virtual void checkPatternTypeGraph(TypeGraph *t)
-    {
-    }
+    virtual void checkPatternTypeGraph(TypeGraph *t);
     void set_toMatchV(llvm::Value *v);
     void set_NextClauseBB(llvm::BasicBlock *b)
     {
@@ -1617,11 +953,7 @@ protected:
 public:
     PatternLiteral(Literal *l)
         : literal(l) {}
-    virtual void checkPatternTypeGraph(TypeGraph *t) override
-    {
-        literal->sem();
-        checkTypeGraphs(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
-    }
+    virtual void checkPatternTypeGraph(TypeGraph *t) override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "PatternLiteral(" << *literal << ")";
@@ -1636,13 +968,7 @@ protected:
 public:
     PatternId(std::string *id)
         : id(*id) {}
-    virtual void checkPatternTypeGraph(TypeGraph *t) override
-    {
-        // Insert a new symbol with name id and type the same as that of e
-        insertBasicToSymbolTable(id, t);
-
-        addToIdList(id);
-    }
+    virtual void checkPatternTypeGraph(TypeGraph *t) override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "PatternId(" << id << ")";
@@ -1661,28 +987,7 @@ protected:
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>())
         : Id(*Id), pattern_list(*p_list) { constrTypeGraph = nullptr; }
-    virtual void checkPatternTypeGraph(TypeGraph *t) override
-    {
-        ConstructorEntry *c = lookupConstructorFromContstructorTable(Id);
-        constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
-
-        // Check that toMatch is of the same type as constructor or force it to be
-        checkTypeGraphs(t, constrTypeGraph, "Constructor is not of the same type as the expression to match");
-
-        int count = constrTypeGraph->getFieldCount();
-        if (count != (int)pattern_list.size())
-        {
-            printError("Partial constructor pattern not allowed");
-        }
-
-        TypeGraph *correct_t;
-        for (int i = 0; i < count; i++)
-        {
-            correct_t = constrTypeGraph->getFieldType(i);
-
-            pattern_list[i]->checkPatternTypeGraph(correct_t);
-        }
-    }
+    virtual void checkPatternTypeGraph(TypeGraph *t) override;
     virtual void printOn(std::ostream &out) const override
     {
         out << "PatternConstr(" << Id;
@@ -1707,34 +1012,9 @@ private:
 public:
     Clause(Pattern *p, Expr *e)
         : pattern(p), expr(e) {}
-    virtual void sem() override
-    {
-        // Open new scope just in case of PatternId
-        st.openScope();
-
-        // Check whether the pattern is valid for given expression
-        if (correctPatternTypeGraph == nullptr)
-        {
-            printError("Don't know the expected type of e");
-        }
-        
-        // Check pattern
-        pattern->checkPatternTypeGraph(correctPatternTypeGraph);
-        
-        // Semantically analyse expression
-        expr->sem();
-
-        // Close the scope
-        st.closeScope();
-    }
-    void set_correctPatternTypeGraph(TypeGraph *t)
-    {
-        correctPatternTypeGraph = t;
-    }
-    TypeGraph *get_exprTypeGraph()
-    {
-        return expr->get_TypeGraph();
-    }
+    virtual void sem() override;
+    void set_correctPatternTypeGraph(TypeGraph *t);
+    TypeGraph *get_exprTypeGraph();
     llvm::Value *tryToMatch(llvm::Value *toMatchV, llvm::BasicBlock *NextClauseBB);
     // Could be implemented kinda like an if-else, very simply in fact for 
     // cases without custom types. 
@@ -1755,48 +1035,7 @@ private:
 public:
     Match(Expr *e, std::vector<Clause *> *c)
         : toMatch(e), clause_list(*c) {}
-    virtual void sem()
-    {
-        // Semantically analyse expression
-        toMatch->sem();
-
-        // Get the TypeGraph t of e, must be the same as patterns
-        TypeGraph *t = toMatch->get_TypeGraph();
-
-        // Will be used during the loop to check all possible results
-        TypeGraph *prev, *curr;
-
-        // On the first loop temp will be assigned a value
-        bool first = true;
-
-        // Semantically analyse every clause
-        for (Clause *c : clause_list)
-        {
-            c->set_correctPatternTypeGraph(t);
-            c->sem();
-
-            if (first)
-            {
-                prev = c->get_exprTypeGraph();
-                first = false;
-                continue;
-            }
-            else
-            {
-                curr = c->get_exprTypeGraph();
-
-                // Check that they are of the same type or force them to be
-                checkTypeGraphs(prev, curr, "Results of match have different types");
-
-                // Move prev
-                prev = curr;
-            }
-        }
-
-        // Reached the end so all the results have the same type
-        // or the constraints will force them to be
-        TG = prev;
-    }
+    virtual void sem() override;
     // generate code for each clause, return the value of its result
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
