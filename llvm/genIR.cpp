@@ -161,8 +161,11 @@ void AST::start_compilation(const char *programName, bool optimize)
     unitType = type_unit->getLLVMType(TheModule);
     machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     arrCharType = (new ArrayTypeGraph(1, new RefTypeGraph(type_char)))->getLLVMType(TheModule);
-    std::vector<std::pair<std::string, llvm::Function*>> *libFunctions = genLibGlueLogic();
-    for (auto &libFunc: *libFunctions) { LLValues.insert(libFunc); }
+    std::vector<std::pair<std::string, llvm::Function *>> *libFunctions = genLibGlueLogic();
+    for (auto &libFunc : *libFunctions)
+    {
+        LLValues.insert(libFunc);
+    }
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
@@ -172,7 +175,7 @@ void AST::start_compilation(const char *programName, bool optimize)
     compile(); // compile the program code
     // Below means that each Function codegen is responsible for restoring insert point
     Builder.CreateRet(c32(0));
-    
+
     bool bad = llvm::verifyModule(*TheModule, &llvm::errs());
     if (bad)
     { // internal error
@@ -192,6 +195,10 @@ void AST::printLLVMIR()
 /**        Definitions           */
 /*********************************/
 
+llvm::Value *AST::compile()
+{
+    return nullptr;
+}
 llvm::Value *Constr::compile()
 {
     return nullptr;
@@ -208,7 +215,8 @@ llvm::Value *Constant::compile()
     return nullptr;
 }
 
-void Function::generateLLVMPrototype() {
+void Function::generateLLVMPrototype()
+{
     llvm::Function *newFunction;
     if (llvm::FunctionType *newFuncType =
             llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType()))
@@ -224,7 +232,8 @@ void Function::generateLLVMPrototype() {
     LLValues.insert({id, newFunction});
     funcPrototype = newFunction;
 }
-void Function::generateBody() {
+void Function::generateBody()
+{
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     openScopeOfAll();
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", funcPrototype);
@@ -240,7 +249,12 @@ void Function::generateBody() {
     closeScopeOfAll();
     bool bad = llvm::verifyFunction(*funcPrototype);
     // again, this is an internal error most likely
-    if (bad) { std::cerr << "Func verification failed for "<< id <<'\n'; funcPrototype->print(llvm::errs(), nullptr); exit(1); }
+    if (bad)
+    {
+        std::cerr << "Func verification failed for " << id << '\n';
+        funcPrototype->print(llvm::errs(), nullptr);
+        exit(1);
+    }
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
@@ -299,16 +313,15 @@ llvm::Value *Array::compile()
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
                                      nullptr,
-                                     "arr.def.malloc"
-                                    );
+                                     "arr.def.malloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(0)}, "arr.def.arrayptrloc"); 
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(0)}, "arr.def.arrayptrloc");
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
 
-    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(1)}, "arr.def.dimloc"); 
+    llvm::Value *dimensionsLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(1)}, "arr.def.dimloc");
     Builder.CreateStore(LLVMDimensions, dimensionsLoc);
 
     // Step over the other fields
@@ -347,39 +360,45 @@ llvm::Value *Variable::compile()
     return nullptr;
 }
 llvm::Value *Letdef::compile()
-{   
+{
     // Not recursive
-    if(!recursive)
+    if (!recursive)
     {
         for (auto def : def_list)
         {
             def->compile();
         }
     }
-    // NOTE: Must handle let rec 
+    // NOTE: Must handle let rec
     // (mutually) Recursive functions
     else
-    {   
+    {
         std::vector<Function *> functions;
         Function *currFunc;
-        for (auto def : def_list) {
-            if ((currFunc = dynamic_cast<Function *>(def))) {
+        for (auto def : def_list)
+        {
+            if ((currFunc = dynamic_cast<Function *>(def)))
+            {
                 functions.push_back(currFunc);
-            } else { // internal/sem error
+            }
+            else
+            { // internal/sem error
                 std::cerr << "Recursive defs were not all functions";
                 std::exit(1);
             }
         }
         // Get all function signatures
-        for (auto func : functions) {
+        for (auto func : functions)
+        {
             func->generateLLVMPrototype();
         }
         // Compile bodies
-        for (auto func : functions) {
+        for (auto func : functions)
+        {
             func->generateBody();
         }
     }
-    
+
     return nullptr;
 }
 llvm::Value *Typedef::compile()
@@ -409,7 +428,7 @@ llvm::Value *String_literal::compile()
     //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     llvm::Value *strVal = Builder.CreateGlobalStringPtr(s);
     int size = s.size() + 1;
-    
+
     llvm::Value *LLVMArraySize = c32(size);
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", arrCharType->getPointerElementType());
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
@@ -505,61 +524,93 @@ llvm::Value *BinOp::compile()
 
     switch (op)
     {
-    case '+': return Builder.CreateAdd(lhsVal, rhsVal, "int.addtmp");
-    case '-': return Builder.CreateSub(lhsVal, rhsVal, "int.subtmp");
-    case '*': return Builder.CreateMul(lhsVal, rhsVal, "int.multmp");
-    case '/': return Builder.CreateSDiv(lhsVal, rhsVal, "int.divtmp");
-    case T_mod: return Builder.CreateSRem(lhsVal, rhsVal, "int.modtmp");
-    
-    case T_plusdot: return Builder.CreateFAdd(lhsVal, rhsVal, "float.addtmp");
-    case T_minusdot: return Builder.CreateFSub(lhsVal, rhsVal, "float.subtmp");
-    case T_stardot: return Builder.CreateFMul(lhsVal, rhsVal, "float.multmp");
-    case T_slashdot: return Builder.CreateFDiv(lhsVal, rhsVal, "float.divtmp");
+    case '+':
+        return Builder.CreateAdd(lhsVal, rhsVal, "int.addtmp");
+    case '-':
+        return Builder.CreateSub(lhsVal, rhsVal, "int.subtmp");
+    case '*':
+        return Builder.CreateMul(lhsVal, rhsVal, "int.multmp");
+    case '/':
+        return Builder.CreateSDiv(lhsVal, rhsVal, "int.divtmp");
+    case T_mod:
+        return Builder.CreateSRem(lhsVal, rhsVal, "int.modtmp");
+
+    case T_plusdot:
+        return Builder.CreateFAdd(lhsVal, rhsVal, "float.addtmp");
+    case T_minusdot:
+        return Builder.CreateFSub(lhsVal, rhsVal, "float.subtmp");
+    case T_stardot:
+        return Builder.CreateFMul(lhsVal, rhsVal, "float.multmp");
+    case T_slashdot:
+        return Builder.CreateFDiv(lhsVal, rhsVal, "float.divtmp");
     // for below to work, link against lib.so with -lm flag.
-    case T_dblstar: {
+    case T_dblstar:
+    {
         // return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
         return Builder.CreateCall(TheModule->getFunction("pow"), {lhsVal, rhsVal}, "float.powtmp");
     }
-    case T_dblbar: return Builder.CreateOr({lhsVal, rhsVal});
-    case T_dblampersand: return Builder.CreateAnd({lhsVal, rhsVal});
+    case T_dblbar:
+        return Builder.CreateOr({lhsVal, rhsVal});
+    case T_dblampersand:
+        return Builder.CreateAnd({lhsVal, rhsVal});
 
     case '=':
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: structural equality, if struct here check fields recursively
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: structural equality, if struct here check fields recursively
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
-        } else{ // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
         }
     }
     case T_lessgreater:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: structural inequality
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: structural inequality
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpONE(lhsVal, rhsVal, "float.cmpnetmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpNE(lhsVal, rhsVal, "int.cmpnetmp");
         }
     }
     case T_dbleq:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: natural equality, if struct here check they are practically the same struct
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: natural equality, if struct here check they are practically the same struct
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
         }
     }
     case T_exclameq:
     {
-        if (tempTypeGraph->isCustom()) {
-            return nullptr;//TODO: natural inequality
-        } else if (tempTypeGraph->isFloat()) {
+        if (tempTypeGraph->isCustom())
+        {
+            return nullptr; //TODO: natural inequality
+        }
+        else if (tempTypeGraph->isFloat())
+        {
             return Builder.CreateFCmpONE(lhsVal, rhsVal, "float.cmpnetmp");
-        } else { // anything else (that passed sem)
+        }
+        else
+        { // anything else (that passed sem)
             return Builder.CreateICmpNE(lhsVal, rhsVal, "int.cmpnetmp");
         }
     }
@@ -570,7 +621,9 @@ llvm::Value *BinOp::compile()
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOLT(lhsVal, rhsVal, "float.cmplttmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSLT(lhsVal, rhsVal, "int.cmplttmp");
         }
     }
@@ -581,7 +634,9 @@ llvm::Value *BinOp::compile()
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOGT(lhsVal, rhsVal, "float.cmpgttmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSGT(lhsVal, rhsVal, "int.cmpgttmp");
         }
     }
@@ -592,7 +647,9 @@ llvm::Value *BinOp::compile()
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOLE(lhsVal, rhsVal, "float.cmpletmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSLE(lhsVal, rhsVal, "int.cmpletmp");
         }
     }
@@ -603,13 +660,15 @@ llvm::Value *BinOp::compile()
             // QNAN in docs is a 'quiet NaN'
             //! might need to check for QNAN btw
             return Builder.CreateFCmpOGE(lhsVal, rhsVal, "float.cmpgetmp");
-        } else { // int or char (which is an int too)
+        }
+        else
+        { // int or char (which is an int too)
             return Builder.CreateICmpSGE(lhsVal, rhsVal, "int.cmpgetmp");
         }
     }
     case T_coloneq:
     {
-        Builder.CreateStore(rhsVal, lhsVal);    
+        Builder.CreateStore(rhsVal, lhsVal);
         return unitVal();
     }
     case ';':
@@ -624,17 +683,25 @@ llvm::Value *UnOp::compile()
 
     switch (op)
     {
-    case '+': return exprVal;
-    case '-': return Builder.CreateSub(c32(0), exprVal, "int.negtmp");
-    case T_plusdot: return exprVal;
-    case T_minusdot: return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "float.negtmp");
-    case T_not: return Builder.CreateNot(exprVal, "bool.nottmp");
-    case '!': return Builder.CreateLoad(exprVal, "ptr.dereftmp"); 
-    case T_delete: {
+    case '+':
+        return exprVal;
+    case '-':
+        return Builder.CreateSub(c32(0), exprVal, "int.negtmp");
+    case T_plusdot:
+        return exprVal;
+    case T_minusdot:
+        return Builder.CreateFSub(llvm::ConstantFP::getZeroValueForNegation(flt), exprVal, "float.negtmp");
+    case T_not:
+        return Builder.CreateNot(exprVal, "bool.nottmp");
+    case '!':
+        return Builder.CreateLoad(exprVal, "ptr.dereftmp");
+    case T_delete:
+    {
         Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
         return unitVal();
-    }    
-    default: return nullptr;    
+    }
+    default:
+        return nullptr;
     }
 }
 
@@ -678,7 +745,7 @@ llvm::Value *While::compile()
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "whileend");
 
     Builder.CreateBr(LoopBB);
-    
+
     /*************** LOOP ***************/
 
     TheFunction->getBasicBlockList().push_back(LoopBB);
@@ -721,7 +788,7 @@ llvm::Value *For::compile()
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "forend");
 
     /*************** INITIALISATION ***************/
-    
+
     // Emit code for start and finish values
     llvm::Value *StartV = start->compile();
     llvm::Value *FinishV = finish->compile();
@@ -734,9 +801,9 @@ llvm::Value *For::compile()
 
     // Begin loop
     Builder.CreateBr(LoopBB);
-    
+
     /*************** LOOP ***************/
-    
+
     TheFunction->getBasicBlockList().push_back(LoopBB);
     Builder.SetInsertPoint(LoopBB);
 
@@ -746,8 +813,8 @@ llvm::Value *For::compile()
     LLValues.insert({id, LoopVariable});
 
     // Check whether the condition is satisfied
-    llvm::Value *LLVMCond = 
-        increment ? Builder.CreateICmpSLE(LoopVariable, FinishV, "forloopchecklte") 
+    llvm::Value *LLVMCond =
+        increment ? Builder.CreateICmpSLE(LoopVariable, FinishV, "forloopchecklte")
                   : Builder.CreateICmpSGE(LoopVariable, FinishV, "forlookcheckgte");
     Builder.CreateCondBr(LLVMCond, BodyBB, FinishBB);
 
@@ -759,20 +826,20 @@ llvm::Value *For::compile()
     // Emit code for the body
     body->compile();
 
-    // Add step to the loop variable 
+    // Add step to the loop variable
     llvm::Value *NextV = Builder.CreateAdd(LoopVariable, StepV, "forstep");
 
     // Add entry to the phi node for backedge
     LoopVariable->addIncoming(NextV, Builder.GetInsertBlock());
-    
+
     // Loop
     Builder.CreateBr(LoopBB);
-    
+
     /*************** FINISH ***************/
 
     TheFunction->getBasicBlockList().push_back(FinishBB);
     Builder.SetInsertPoint(FinishBB);
-    
+
     closeScopeOfAll();
     return unitVal();
 }
@@ -787,7 +854,7 @@ llvm::Value *If::compile()
     llvm::Value *LLVMCond = cond->compile();
     LLVMCond = Builder.CreateICmpEQ(LLVMCond, c1(true), "ifcond");
 
-    // Create blocks for the then and else cases.  
+    // Create blocks for the then and else cases.
     // Insert the 'then' block at the end of the function.
     llvm::BasicBlock *ThenBB = llvm::BasicBlock::Create(TheContext, "then");
     llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(TheContext, "else");
@@ -807,7 +874,8 @@ llvm::Value *If::compile()
     TheFunction->getBasicBlockList().push_back(ElseBB);
     Builder.SetInsertPoint(ElseBB);
     llvm::Value *ElseV = unitVal();
-    if(else_body) ElseV = else_body->compile();
+    if (else_body)
+        ElseV = else_body->compile();
     ElseBB = Builder.GetInsertBlock();
     Builder.CreateBr(MergeBB);
 
@@ -822,7 +890,7 @@ llvm::Value *If::compile()
     return retVal;
 }
 llvm::Value *Dim::compile()
-{   
+{
     // Step over the other fields
     int step = 2;
 
@@ -832,7 +900,7 @@ llvm::Value *Dim::compile()
     // Get the pointer to the array struct
     llvm::Value *LLVMPointerToStruct = LLValues[id];
 
-    // 
+    //
     llvm::Value *LLVMSizeLoc = Builder.CreateGEP(LLVMPointerToStruct, {c32(0), c32(selectedDim + step)}, "dimsizeloc");
     return Builder.CreateLoad(LLVMSizeLoc);
 }
@@ -858,30 +926,28 @@ llvm::Value *ConstructorCall::compile()
     int constrIndex = constructorTypeGraph->getIndex();
 
     // Create the struct that will be saved in the second field of the custom type struct
-    llvm::StructType *constrType = constructorTypeGraph->getLLVMType(TheModule); 
+    llvm::StructType *constrType = constructorTypeGraph->getLLVMType(TheModule);
     llvm::AllocaInst *LLVMContainedStructAlloca = CreateEntryBlockAlloca(TheFunction, "constructorstruct", constrType);
 
     // Get the custom type of this constructor
     llvm::StructType *customType = llvm::dyn_cast<llvm::StructType>(constructorTypeGraph->getCustomType()->getLLVMType(TheModule)->getPointerElementType());
     //llvm::AllocaInst *LLVMCustomStructAlloca = CreateEntryBlockAlloca(TheFunction, "customstruct", customType);
 
-    auto LLVMCustomStructMallocInst = llvm::CallInst::CreateMalloc
-                                            (
-                                                Builder.GetInsertBlock(),
-                                                machinePtrType,
-                                                customType,
-                                                llvm::ConstantExpr::getSizeOf(customType),
-                                                nullptr, nullptr,
-                                                "customstruct.malloc"
-                                            );
+    auto LLVMCustomStructMallocInst = llvm::CallInst::CreateMalloc(
+        Builder.GetInsertBlock(),
+        machinePtrType,
+        customType,
+        llvm::ConstantExpr::getSizeOf(customType),
+        nullptr, nullptr,
+        "customstruct.malloc");
     llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
 
     // Codegen and store the parameters to its fields
     llvm::Value *constrFieldLoc, *LLVMParam;
-    for(int i = 0; i < (int)expr_list.size(); i++)
+    for (int i = 0; i < (int)expr_list.size(); i++)
     {
         LLVMParam = expr_list[i]->compile();
-       
+
         constrFieldLoc = Builder.CreateGEP(LLVMContainedStructAlloca, {c32(0), c32(i)}, "constrFieldLoc");
         Builder.CreateStore(LLVMParam, constrFieldLoc);
     }
@@ -890,7 +956,7 @@ llvm::Value *ConstructorCall::compile()
     llvm::Value *enumLoc = Builder.CreateGEP(LLVMCustomStructPtr, {c32(0), c32(0)}, "customenumloc");
     Builder.CreateStore(c32(constrIndex), enumLoc);
 
-    // Get the expected field type of the custom type 
+    // Get the expected field type of the custom type
     llvm::Type *customFieldTypePtr = customType->getTypeAtIndex(1)->getPointerTo();
 
     // Bitcast the constructor struct into the custom struct
@@ -918,7 +984,7 @@ llvm::Value *ArrayAccess::compile()
     std::vector<llvm::Value *> LLVMSize = {};
 
     // Load necessary values
-    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arr.acc.ptrloc"); 
+    llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(0)}, "arr.acc.ptrloc");
     llvm::Value *LLVMArray = Builder.CreateLoad(arrayPtrLoc);
 
     // Step over the other fields
@@ -930,7 +996,7 @@ llvm::Value *ArrayAccess::compile()
     for (int i = 0; i < dimensions; i++)
     {
         sizeIndex = i + step;
-        sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "arr.acc.sizeloc"); 
+        sizeLoc = Builder.CreateGEP(LLVMArrayStruct, {c32(0), c32(sizeIndex)}, "arr.acc.sizeloc");
         LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
     }
 
@@ -966,13 +1032,13 @@ llvm::Value *Match::compile()
 
     // Emit code for expression to be matched
     llvm::Value *toMatchV = toMatch->compile();
-    
+
     // Basic Block to exit the match
     llvm::BasicBlock *FinishBB = llvm::BasicBlock::Create(TheContext, "match.finish");
-    
+
     // One basic block for every clause
     std::vector<llvm::BasicBlock *> ClauseBB = {};
-    
+
     // One value for each clause (for the phi node)
     std::vector<llvm::Value *> ClauseV = {};
 
@@ -980,8 +1046,8 @@ llvm::Value *Match::compile()
     llvm::BasicBlock *SuccessBB;
     llvm::BasicBlock *NextClauseBB = llvm::BasicBlock::Create(TheContext, "match.firstclause");
     Builder.CreateBr(NextClauseBB);
-    for(int i = 0; i < (int)clause_list.size(); i++)
-    {   
+    for (int i = 0; i < (int)clause_list.size(); i++)
+    {
         auto c = clause_list[i];
 
         /*************** CHECK CLAUSE ***************/
@@ -1004,7 +1070,7 @@ llvm::Value *Match::compile()
         /*************** MATCH SUCCESS ***************/
         TheFunction->getBasicBlockList().push_back(SuccessBB);
         Builder.SetInsertPoint(SuccessBB);
-        
+
         // Emit code for the expression of the clause and save it
         ClauseV.push_back(c->compile());
 
@@ -1012,18 +1078,18 @@ llvm::Value *Match::compile()
 
         // Save the current basic block for the phi node
         ClauseBB.push_back(Builder.GetInsertBlock());
-        
+
         // Finish matching
         Builder.CreateBr(FinishBB);
     }
-    
+
     /*************** NO MATCH ***************/
     TheFunction->getBasicBlockList().push_back(NextClauseBB);
     Builder.SetInsertPoint(NextClauseBB);
     Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
-    
+
     // Never going to get here but llvm complains anyway
-    Builder.CreateBr(NextClauseBB); 
+    Builder.CreateBr(NextClauseBB);
 
     /*************** FINISH ***************/
     TheFunction->getBasicBlockList().push_back(FinishBB);
@@ -1033,7 +1099,7 @@ llvm::Value *Match::compile()
     llvm::Type *retType = TG->getLLVMType(TheModule);
     llvm::PHINode *retVal = Builder.CreatePHI(retType, clause_list.size(), "match.retval");
 
-    for(int i = 0; i < (int)clause_list.size(); i++)
+    for (int i = 0; i < (int)clause_list.size(); i++)
     {
         retVal->addIncoming(ClauseV[i], ClauseBB[i]);
     }
@@ -1060,6 +1126,10 @@ void Pattern::set_toMatchV(llvm::Value *v)
 {
     toMatchV = v;
 }
+void Pattern::set_NextClauseBB(llvm::BasicBlock *b)
+{
+    NextClauseBB = b;
+}
 llvm::Value *PatternLiteral::compile()
 {
 
@@ -1074,7 +1144,7 @@ llvm::Value *PatternId::compile()
     return c1(true);
 }
 llvm::Value *PatternConstr::compile()
-{    
+{
     // Create alloca and store toMatchV to it
     llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
     //llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.alloca", toMatchV->getType());
@@ -1109,9 +1179,9 @@ llvm::Value *PatternConstr::compile()
 
     // This value will be used to check that all fields can be matched
     llvm::Value *canMatchFields = c1(true);
-    
+
     // Recursively try to match the fields
-    for(int i = 0; i < (int)pattern_list.size(); i++)
+    for (int i = 0; i < (int)pattern_list.size(); i++)
     {
         auto p = pattern_list[i];
 

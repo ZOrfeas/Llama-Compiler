@@ -217,7 +217,7 @@ char Literal::getChar(std::string c)
     return ans;
 }
 String_literal::String_literal(std::string *s)
-    : s(escapeChars(s->substr(1, s->size() - 2))) {}
+    : s(escapeChars(s->substr(1, s->size() - 2))), originalStr(*s) {}
 Char_literal::Char_literal(std::string *c_string)
     : c_string(c_string->substr(1, c_string->size() - 2))
 {

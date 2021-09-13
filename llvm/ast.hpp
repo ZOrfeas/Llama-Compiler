@@ -16,8 +16,8 @@
 #include "symbol.hpp"
 #include "types.hpp"
 #include "infer.hpp"
- 
-const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
+
+extern const std::string type_string[];
 enum class type
 {
     TYPE_unit,
@@ -100,10 +100,7 @@ public:
     virtual ~AST();
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
-    virtual llvm::Value *compile()
-    {
-        return nullptr;
-    }
+    virtual llvm::Value *compile();
     void start_compilation(const char *programName, bool optimize = false);
     void printLLVMIR();
     void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg);
@@ -123,11 +120,7 @@ public:
     void addToIdList(std::string id);
 };
 
-inline std::ostream &operator<<(std::ostream &out, const AST &t)
-{
-    t.printOn(out);
-    return out;
-}
+std::ostream &operator<<(std::ostream &out, const AST &t);
 
 /* Type classes *****************************************************/
 // These classes are used when the name of a type apears in the code
@@ -151,10 +144,7 @@ class UnknownType : public Type
 public:
     UnknownType();
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "UnknownType(" << TG->stringifyType() << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class BasicType : public Type
 {
@@ -166,10 +156,7 @@ public:
     BasicType(type t);
     virtual bool compare_basic_type(type _t) override;
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << type_string[static_cast<int>(t)];
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class FunctionType : public Type
 {
@@ -179,10 +166,7 @@ private:
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << *lhtype << "->" << *rhtype;
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class ArrayType : public Type
 {
@@ -193,10 +177,7 @@ private:
 public:
     ArrayType(int dimensions = 1, Type *elem_type = new UnknownType);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "TYPE_array(" << dimensions << ", " << *elem_type << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class RefType : public Type
 {
@@ -207,10 +188,7 @@ private:
 public:
     RefType(Type *ref_type = new UnknownType());
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "TYPE_ref(" << *ref_type << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class CustomType : public Type
 {
@@ -220,10 +198,7 @@ private:
 public:
     CustomType(std::string *id);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "CustomType(" << id << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /* Basic Abstract Classes *******************************************/
@@ -253,17 +228,7 @@ public:
     Constr(std::string *Id, std::vector<Type *> *t);
     void add_Id_to_ct(TypeEntry *te);
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Constr(" << Id;
-
-        for (Type *t : type_list)
-        {
-            out << ", " << *t;
-        }
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class Par : public AST
@@ -277,10 +242,7 @@ public:
     virtual void insertToTable() override;
     TypeGraph *get_TypeGraph();
     std::string getId();
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Par(" << id << ", " << *T << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /********************************************************************/
@@ -305,23 +267,7 @@ public:
     virtual void insertToTable() override;
     virtual void sem() override;
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Tdef(" << id << ", ";
-
-        bool first = true;
-        for (Constr *c : constr_list)
-        {
-            if (!first)
-                out << ", ";
-            else
-                first = false;
-
-            out << *c;
-        }
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Def : public DefStmt
 {
@@ -345,10 +291,7 @@ public:
     // - if it is a true Constant definition stores the result of the expr->codegen()
     // - Danger if it's a copy of an already existing function or other edge cases
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Function : public Constant
 {
@@ -368,15 +311,7 @@ public:
     void generateLLVMPrototype();
     void generateBody();
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Function(" << id;
-        for (Par *p : par_list)
-        {
-            out << ", " << *p;
-        }
-        out << ", " << *T << ", " << *expr << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Mutable : public Def
 {
@@ -398,26 +333,7 @@ public:
     // these struct types contain a pointer to the contained type,
     // and the length of every dimension (could be done as independent fields, or in an array)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Array(" << id;
-        if (!expr_list.empty())
-        {
-            out << "[";
-
-            bool first = true;
-            for (Expr *e : expr_list)
-            {
-                if (!first)
-                    out << ", ";
-                else
-                    first = false;
-
-                out << *e;
-            }
-        }
-        out << "], " << *T << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Variable : public Mutable
 {
@@ -426,11 +342,7 @@ public:
     virtual void insertToTable() override;
     // alloca's the necessary space for a var of its TYPE
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Variable(" << id << ", " << *T << ", "
-            << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /********************************************************************/
@@ -450,25 +362,7 @@ public:
     // in order compile the definitions contained
     // (recursive or not is irrelevant for functions if prototypes are defined at the start)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Let(";
-        if (recursive)
-            out << "rec ";
-
-        bool first = true;
-        for (DefStmt *d : def_list)
-        {
-            if (!first)
-                out << "and ";
-            else
-                first = false;
-
-            out << *d;
-        }
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Typedef : public Definition
 {
@@ -481,23 +375,7 @@ public:
     // in order create the types defined
     // (Struct for big type, with pointers to constr types and enum ?)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Type(";
-
-        bool first = true;
-        for (DefStmt *t : tdef_list)
-        {
-            if (!first)
-                out << ", ";
-            else
-                first = false;
-
-            out << *t;
-        }
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /********************************************************************/
@@ -514,22 +392,7 @@ public:
     void append(Definition *d);
     // in order compile all the contained definitions
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Definition(";
-
-        bool first = true;
-        for (Definition *d : definition_list)
-        {
-            if (!first)
-                out << ",";
-            else
-                first = false;
-            out << *d;
-        }
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /* Expressions ******************************************************/
@@ -545,10 +408,7 @@ public:
     virtual void sem() override;
     // open scope, do the definition, compile the expression, return its result Value*
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "LetIN(" << *letdef << ", " << *expr << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class Literal : public Expr
@@ -560,7 +420,7 @@ public:
 class String_literal : public Literal
 {
 private:
-    std::string s;
+    std::string s, originalStr;
 
 public:
     String_literal(std::string *s);
@@ -568,10 +428,7 @@ public:
     std::string escapeChars(std::string rawStr);
     // generate a char array constant(?) and return its Value*
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "String(" << s << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Char_literal : public Literal
 {
@@ -586,10 +443,7 @@ public:
     virtual llvm::Value *compile() override;
     virtual llvm::Value *LLVMCompare(llvm::Value *V) override;
     virtual void sem() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Char(" << c_string << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Bool_literal : public Literal
 {
@@ -601,10 +455,7 @@ public:
     virtual void sem() override;
     // Generate a bool (bit?) constant and return its Value*
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Bool(" << b << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Float_literal : public Literal
 {
@@ -617,10 +468,7 @@ public:
     // generate a float constant and return its Value*
     virtual llvm::Value *compile() override;
     virtual llvm::Value *LLVMCompare(llvm::Value *V) override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Float(" << d << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Int_literal : public Literal
 {
@@ -634,10 +482,7 @@ public:
     // generate an int constant (check size) and return its Value*
     virtual llvm::Value *compile() override;
     virtual llvm::Value *LLVMCompare(llvm::Value *V) override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Int(" << n << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Unit_literal : public Literal
 {
@@ -648,10 +493,7 @@ public:
     // (http://nondot.org/~sabre/LLVMNotes/EliminatingVoid.txt#:~:text=The%20'void'%20type%20in%20llvm,return%20value%20of%20a%20function.&text=In%20the%20LLVM%20IR%2C%20instead,'%3A%20the%20empty%20struct%20type.)
     // could be what we want to use
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Unit";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class BinOp : public Expr
@@ -665,10 +507,7 @@ public:
     virtual void sem() override;
     // switch-case for every possible operator
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class UnOp : public Expr
 {
@@ -681,10 +520,7 @@ public:
     virtual void sem() override;
     // switch-case for every possible operator
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "UnOp(" << op << ", " << *expr << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class New : public Expr
 {
@@ -695,10 +531,7 @@ public:
     virtual void sem() override;
     // malloc's a new spot in memory and returns its value (probably :) )
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "New(" << *new_type << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class While : public Expr
@@ -713,10 +546,7 @@ public:
     // phi node may be necessary, avoidable if we can be sure
     // that the condition is "constant" (pointer dereference, or some shit)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "While(" << *cond << ", " << *body << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class For : public Expr
 {
@@ -730,10 +560,7 @@ public:
     virtual void sem() override;
     // could possibly alloc a variable to use for the loop
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class If : public Expr
 {
@@ -746,15 +573,7 @@ public:
     // again think about phi nodes, otherwise its a simple if compilation,
     // noteworthy: no 'else' means else branch just jumps to end
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "If(" << *cond << ", " << *body;
-
-        if (else_body)
-            out << ", " << *else_body;
-
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class Dim : public Expr
@@ -769,13 +588,7 @@ public:
     // llvm may have our backs, may store some runtime (or at least the expression)
     // info about the length of an array (through its type system)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Dim(";
-        if (dim)
-            out << *dim << ", ";
-        out << id << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class ConstantCall : public Expr
@@ -788,10 +601,7 @@ public:
     virtual void sem() override;
     // lookup and return the Value* stored, special case if it's a function
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "ConstantCall(" << id << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class FunctionCall : public ConstantCall
 {
@@ -803,15 +613,7 @@ public:
     virtual void sem() override;
     // get the function prototype and call it, return the Value* of the call
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "FunctionCall(" << id;
-        for (Expr *e : expr_list)
-        {
-            out << ", " << *e;
-        }
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class ConstructorCall : public Expr
 {
@@ -825,15 +627,7 @@ public:
     virtual void sem() override;
     // creates a struct (emplaces it in the big struct sets the enum?)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "ConstructorCall(" << Id;
-        for (Expr *e : expr_list)
-        {
-            out << ", " << *e;
-        }
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class ArrayAccess : public Expr
 {
@@ -848,23 +642,7 @@ public:
     // perform the calculation of the actual address before dereferencing
     // (We could if we wanted to, check bounds at runtime and exit with error code)
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "ArrayAccess(" << id << "[";
-
-        bool first = true;
-        for (Expr *e : expr_list)
-        {
-            if (!first)
-                out << ", ";
-            else
-                first = false;
-
-            out << *e;
-        }
-
-        out << "])";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 
 /* Match ************************************************************/
@@ -880,10 +658,7 @@ public:
     // Checks whether the pattern is valid for TypeGraph *t
     virtual void checkPatternTypeGraph(TypeGraph *t);
     void set_toMatchV(llvm::Value *v);
-    void set_NextClauseBB(llvm::BasicBlock *b)
-    {
-        NextClauseBB = b;
-    }
+    void set_NextClauseBB(llvm::BasicBlock *b);
 };
 class PatternLiteral : public Pattern
 {
@@ -893,11 +668,8 @@ protected:
 public:
     PatternLiteral(Literal *l);
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "PatternLiteral(" << *literal << ")";
-    }
     virtual llvm::Value *compile() override;
+    virtual void printOn(std::ostream &out) const override;
 };
 class PatternId : public Pattern
 {
@@ -907,11 +679,8 @@ protected:
 public:
     PatternId(std::string *id);
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "PatternId(" << id << ")";
-    }
     virtual llvm::Value *compile() override;
+    virtual void printOn(std::ostream &out) const override;
 };
 class PatternConstr : public Pattern
 {
@@ -925,16 +694,8 @@ protected:
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>());
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "PatternConstr(" << Id;
-        for (Pattern *p : pattern_list)
-        {
-            out << ", " << *p;
-        }
-        out << ")";
-    }
     virtual llvm::Value *compile() override;
+    virtual void printOn(std::ostream &out) const override;
 };
 
 class Clause : public AST
@@ -957,10 +718,7 @@ public:
     // For custom types check the enum to match the constructor call each time,
     // if it matches dereference once and check the inner values recursively
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Clause(" << *pattern << ", " << *expr << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };
 class Match : public Expr
 {
@@ -973,13 +731,5 @@ public:
     virtual void sem() override;
     // generate code for each clause, return the value of its result
     virtual llvm::Value *compile() override;
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Match(" << *toMatch;
-        for (Clause *c : clause_list)
-        {
-            out << ", " << *c;
-        }
-        out << ")";
-    }
+    virtual void printOn(std::ostream &out) const override;
 };

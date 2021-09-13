@@ -17,6 +17,7 @@ parser.hpp parser.cpp: parser.y
 lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
 parser.o: parser.cpp lexer.hpp ast.hpp parser.hpp options.hpp
 ast.o: ast.cpp lexer.hpp ast.hpp
+printOn.o: printOn.cpp ast.hpp
 sem.o: sem.cpp ast.hpp parser.hpp  
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
@@ -26,7 +27,7 @@ libIR.o: libIR.cpp ast.hpp
 options.o: options.cpp ast.hpp infer.hpp symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o symbol.o types.o ast.o sem.o infer.o libIR.o genIR.o options.o
+compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
 
 clean:
