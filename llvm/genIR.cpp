@@ -528,7 +528,7 @@ llvm::Value *BinOp::compile()
     // for below to work, link against lib.so with -lm flag.
     case T_dblstar: {
         // return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
-        return Builder.CreateCall(TheModule->getFunction("pow"), {lhsVal, rhsVal}, "float.powtmp");
+        return Builder.CreateCall(TheModule->getFunction("pow.custom"), {lhsVal, rhsVal}, "float.powtmp");
     }
     case T_dblbar: return Builder.CreateOr({lhsVal, rhsVal});
     case T_dblampersand: return Builder.CreateAnd({lhsVal, rhsVal});

@@ -288,7 +288,7 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     llvm::FunctionType *powType = 
         llvm::FunctionType::get(flt, {flt, flt}, false);
     llvm::Function *pow =
-        llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow", TheModule);
+        llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow.custom", TheModule);
     llvm::BasicBlock *powBB = llvm::BasicBlock::Create(TheContext, "entry", pow);
     llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(powBB);
     llvm::Value *logarithm = TmpB.CreateCall(Ln, {pow->getArg(0)}, "pow.lnx");
