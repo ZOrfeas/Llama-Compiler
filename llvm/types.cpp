@@ -497,6 +497,7 @@ llvm::Type* UnitTypeGraph::getLLVMType(llvm::Module *TheModule)
     } else {
         llvm::StructType* newUnitType = llvm::StructType::create(TheModule->getContext());
         newUnitType->setName("unit");
+        newUnitType->setBody({llvm::Type::getInt1Ty(TheModule->getContext())});
         return newUnitType;
     }
 }
