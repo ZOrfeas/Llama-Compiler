@@ -61,7 +61,8 @@ void UnOp::sem() {
             // to ensure that expr is in fact a ref
             TypeGraph *unknown = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown);
-            inf.addConstraint(t_expr, ref_t, line_number);
+            inf.addConstraint(t_expr, ref_t, line_number, 
+                std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
 
             TG = ref_t->getContainedType();
             break;
@@ -72,7 +73,8 @@ void UnOp::sem() {
             // to ensure that expr is in fact a ref
             TypeGraph *unknown_t = new UnknownTypeGraph(false, true, false);
             TypeGraph *ref_t = new RefTypeGraph(unknown_t);
-            inf.addConstraint(t_expr, ref_t, line_number);
+            inf.addConstraint(t_expr, ref_t, line_number,
+                std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
             
             TG = type_unit;
             break;
@@ -162,10 +164,7 @@ void BinOp::sem() {
         {
             // The lhs must be a ref of the same type as the rhs
             RefTypeGraph *correct_lhs = new RefTypeGraph(t_rhs);
-            if (lhs->get_TypeGraph()->isRef())
-                inf.addConstraint(lhs->get_TypeGraph()->getContainedType(), t_rhs, line_number);
-            else
-                lhs->type_check(correct_lhs, "Must be a ref of " + t_rhs->stringifyType());
+            lhs->type_check(correct_lhs, "Must be a ref of " + t_rhs->stringifyType());
 
             // Cleanup NOTE: If the new TypeGraph is 
             // used for inference it should not be deleted

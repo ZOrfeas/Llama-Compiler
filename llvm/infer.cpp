@@ -11,10 +11,11 @@ using std::to_string;
 /**** Constraint ****/
 /********************/
 
-Constraint::Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno)
-: lhs(lhs), rhs(rhs), lineno(lineno) {}
+Constraint::Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, string msg)
+: lhs(lhs), rhs(rhs), lineno(lineno), msg(msg) {}
 TypeGraph* Constraint::getLhs() { return lhs; }
 TypeGraph* Constraint::getRhs() { return rhs; }
+std::string Constraint::getMsg() { return msg; }
 int Constraint::getLineNo() { return lineno; }
 string Constraint::stringify() {
     return "(line " + to_string(lineno) + ") " + 
@@ -45,50 +46,15 @@ vector<Constraint *>* Inferer::getConstraints() { return constraints; }
 map<string, TypeGraph *>* Inferer::getSubstitutions() {
     return substitutions;
 }
-// void Inferer::getFreeTypes(TypeGraph *fullType, vector<string> *names) {
-//     switch (fullType->getSubClass())
-//     {
-//     case graphType::TYPE_unknown:
-//         names->push_back(fullType->getTmpName());
-//         break;
-//     case graphType::TYPE_array:
-//     case graphType::TYPE_ref:
-//         getFreeTypes(fullType->getContainedType(), names);
-//         break;
-//     case graphType::TYPE_function:
-//         for (auto &paramType: *fullType->getParamTypes()) {
-//             getFreeTypes(paramType, names);
-//         }
-//         getFreeTypes(fullType->getResultType(), names);
-//         break;
-//     default: // any other case either contains no, or isn't a free type name
-//         break;
-//     }
-//     return;
-// }
-// void Inferer::initSubstitutions(vector<string> *names) {
-//     pair<map<string, TypeGraph *>::iterator, bool> res; 
-//     for (auto &name: *names) {
-//         substitutions->insert({name, nullptr});
-//     }
-// }
-void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno) {
+
+void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, string msg) {
     if (debug)
         log("Adding constraint, " + lhs->stringifyType()
             + " == " + rhs->stringifyType());
-    // if (!extract_names) { // names should already exist in substitutions map
-        lhs = tryApplySubstitutions(lhs);
-        rhs = tryApplySubstitutions(rhs);
-    // }
-    auto newConstraint = new Constraint(lhs, rhs, lineno);
+    lhs = tryApplySubstitutions(lhs);
+    rhs = tryApplySubstitutions(rhs);
+    auto newConstraint = new Constraint(lhs, rhs, lineno, msg);
     constraints->push_back(newConstraint);
-    // if (extract_names) {
-    //     auto names = new vector<string>();
-    //     getFreeTypes(lhs, names);
-    //     getFreeTypes(rhs, names);
-    //     initSubstitutions(names);
-    //     delete names;
-    // }
 }
 bool Inferer::isValidSubstitution(TypeGraph *unknownType, TypeGraph* candidateType) {
     bool invalid = (
@@ -146,12 +112,38 @@ void Inferer::trySubstitute(TypeGraph *unknownType, TypeGraph *candidateType, in
 }
 // utility function to not bloat the main solveOne
 bool areCompatibleArraysOrRefs(TypeGraph *a, TypeGraph *b) {
-    return (
-            a->isArray() && b->isArray() &&
-            a->getDimensions() == b->getDimensions()
-           ) || (
-               a->isRef() && b->isRef()
-           );
+    
+    if (a->isRef() && b->isRef()) {
+        return true;
+    } else if (a->isArray() && b->isArray()) {
+        if (a->getDimensions() != -1 && b->getDimensions() != -1 &&
+            (a->getDimensions() == b->getDimensions())) {
+            return true; // this is the case were both the arrays are of known dims
+        } else if (a->getDimensions() == -1 && b->getDimensions() == -1) {
+            // case were both arrays are of unknown dims
+            if (a->getBound() >= b->getBound()) {
+                b->changeBoundPtr(a->getBoundPtr()); // keep greater of two
+            } else {
+                a->changeBoundPtr(b->getBoundPtr());
+            }
+            return true; // they always match
+        } else if (a->getDimensions() == -1) { // only a is unknown
+            if (b->getDimensions() < a->getBound()) { // incompatible known with unknown
+                return false;
+            } else { // compatible, make them fixed
+                a->setDimensions(b->getDimensions());
+                return true;
+            }
+        } else if (b->getDimensions() == -1) {
+            if (a->getDimensions() < b->getBound()) {
+                return false;
+            } else {
+                b->setDimensions(a->getDimensions());
+                return true;
+            }
+        } // else falls through
+    }
+    return false;
 }
 TypeGraph* Inferer::isUnknown_Exists_HasSubstitution(TypeGraph *unknonwnType) {
     if (!unknonwnType->isUnknown())
@@ -220,16 +212,20 @@ void Inferer::solveOne(Constraint *constraint) {
                     " at line " + to_string(constraint->getLineNo()));
             for (int i = 0; i < lhsTypeGraph->getParamCount(); i++) {
                 addConstraint(lhsTypeGraph->getParamType(i), rhsTypeGraph->getParamType(i),
-                              constraint->getLineNo()); // insert constraints for parameter types
+                              constraint->getLineNo(), constraint->getMsg()); // insert constraints for parameter types
             }
             addConstraint(lhsTypeGraph->getResultType(), rhsTypeGraph->getResultType(),
-                          constraint->getLineNo()); // insert constraint for result types
+                          constraint->getLineNo(), constraint->getMsg()); // insert constraint for result types
         }
     } else if (areCompatibleArraysOrRefs(lhsTypeGraph, rhsTypeGraph)) {             // are both refs, or arrays of same dimensions
         addConstraint(lhsTypeGraph->getContainedType(), rhsTypeGraph->getContainedType(),
-                      constraint->getLineNo());
+                      constraint->getLineNo(), constraint->getMsg());
     } else {                                                                        // any other case type check/inference fails
-        error("Failed on constraint " + constraint->stringify());
+        if (debug)
+            log("Failed on constraint " + constraint->stringify());
+        std::cout << "Error at line " + to_string(constraint->getLineNo()) + ": "
+                  << constraint->getMsg() << std::endl;
+        exit(1);
     }
 }
 void Inferer::initSubstitution(string name) {

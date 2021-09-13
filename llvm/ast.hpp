@@ -126,17 +126,17 @@ public:
     void printLLVMIR();
     virtual void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     {
-        if (!t1->isUnknown() && !t2->isUnknown())
-        {
-            if (!t1->equals(t2))
-            {
-                printError(msg);
-            }
-        }
-        else
-        {
-            inf.addConstraint(t1, t2, line_number);
-        }
+        // if (!t1->isUnknown() && !t2->isUnknown())
+        // {
+        //     if (!t1->equals(t2))
+        //     {
+        //         printError(msg);
+        //     }
+        // }
+        // else
+        // {
+            inf.addConstraint(t1, t2, line_number, msg);
+        // }
     }
     virtual void printError(std::string msg)
     {   
@@ -1348,17 +1348,21 @@ public:
     virtual void sem() override
     {
         // Lookup the array
-        ArrayEntry *arr = lookupArrayFromSymbolTable(id);
+        SymbolEntry *arr = lookupBasicFromSymbolTable(id);
 
         // Get the number of the dimension
         int i = dim->get_int();
-        // std::cout << i << "\n";
-        // std::cout << arr->getTypeGraph()->getDimensions() << "\n";
+
         // Check if i is withing the correct bounds
-        if (i < 1 && i > arr->getTypeGraph()->getDimensions())
+        if (i < 1)
         {
             printError("Index out of bounds");
         }
+
+        ArrayTypeGraph *constraintArray = 
+            new ArrayTypeGraph(-1, new UnknownTypeGraph(), i);
+        inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number,
+            std::string("Needs array of at least ") + std::to_string(i) + " dimensions");
 
         TG = type_int;
     }
@@ -1440,7 +1444,7 @@ public:
                 correct_t = definitionTypeGraph->getParamType(i);
 
                 expr_list[i]->sem();
-                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
+                expr_list[i]->type_check(correct_t, err + std::to_string(i + 1) + ", " + correct_t->stringifyTypeClean() + " expected");
             }
 
             TG = definitionTypeGraph->getResultType();

@@ -10,12 +10,14 @@
 class Constraint {
     TypeGraph *lhs, *rhs;
     int lineno;
+    std::string msg;
 public:
-    Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
+    Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, std::string msg);
     /** Returns a container compatible reference wrapper to the lhs of the constraint */
     TypeGraph* getLhs();
     /** Returns a container compatible reference wrapper to the rhs of the constraint */
     TypeGraph* getRhs();
+    std::string getMsg();
     int getLineNo();
     std::string stringify();
     ~Constraint();
@@ -68,9 +70,9 @@ public:
     /** Stores a new constraint
      * @param lhs pointer to lhs
      * @param rhs pointer to rhs
-     * @param extract_names controls if free type names are searched and saved
+     * @param lineno line where constraint was created
      */
-    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
+    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, std::string msg = "");
     void initSubstitution(std::string name);
     void checkAllSubstituted(bool err = true);
     void enable_logs();
