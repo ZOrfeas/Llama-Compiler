@@ -22,8 +22,8 @@ symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
 infer.o: infer.cpp infer.hpp types.hpp
 genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp 
-libIR.o: libIR.cpp ast.hpp lexer.hpp
-options.o: options.cpp lexer.hpp ast.hpp infer.hpp symbol.hpp
+libIR.o: libIR.cpp ast.hpp
+options.o: options.cpp ast.hpp infer.hpp symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
 compiler: lexer.o parser.o symbol.o types.o ast.o sem.o infer.o libIR.o genIR.o options.o

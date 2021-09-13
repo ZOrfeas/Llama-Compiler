@@ -9,7 +9,7 @@
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Utils.h>
 #include <llvm/IR/Instructions.h>
-#include "lexer.hpp" // to get extern yylineno and not crash from ast include
+//#include "lexer.hpp" // to get extern yylineno and not crash from ast include
 #include "ast.hpp"
 #include <vector>
 #include <string>
