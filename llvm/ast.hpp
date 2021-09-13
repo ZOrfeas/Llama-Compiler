@@ -75,6 +75,8 @@ protected:
     static llvm::Module *TheModule;
     static llvm::legacy::FunctionPassManager *TheFPM;
 
+    static llvm::TargetMachine *TargetMachine;
+
     static llvm::Type *i1;
     static llvm::Type *i8;
     static llvm::Type *i32;
@@ -103,6 +105,7 @@ public:
     virtual llvm::Value *compile();
     void start_compilation(const char *programName, bool optimize = false);
     void printLLVMIR();
+    void emitObjectCode(const char *filename);
     void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg);
     void printError(std::string msg);
     virtual void insertToTable();

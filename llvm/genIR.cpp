@@ -9,6 +9,11 @@
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Utils.h>
 #include <llvm/IR/Instructions.h>
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/Support/TargetRegistry.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/FileSystem.h"
 //#include "lexer.hpp" // to get extern yylineno and not crash from ast include
 #include "ast.hpp"
 #include "infer.hpp"
@@ -133,6 +138,8 @@ llvm::IRBuilder<> AST::Builder(AST::TheContext);
 llvm::Module *AST::TheModule;
 llvm::legacy::FunctionPassManager *AST::TheFPM;
 
+llvm::TargetMachine *AST::TargetMachine;
+
 llvm::Type *AST::i1;
 llvm::Type *AST::i8;
 llvm::Type *AST::i32;
@@ -154,6 +161,27 @@ void AST::start_compilation(const char *programName, bool optimize)
         TheFPM->add(llvm::createCFGSimplificationPass());
     }
     TheFPM->doInitialization();
+    // Emit object code initializations
+    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+    llvm::InitializeAllTargetInfos();
+    llvm::InitializeAllTargets();
+    llvm::InitializeAllTargetMCs();
+    llvm::InitializeAllAsmParsers();
+    llvm::InitializeAllAsmPrinters();
+    std::string Error;
+    auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+    if (!Target) {
+        llvm::errs() << Error;
+        exit(1);
+    }
+    auto CPU = "generic";
+    auto Features = "";
+    llvm::TargetOptions opt;
+    auto RM = llvm::Optional<llvm::Reloc::Model>();
+    TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+    TheModule->setDataLayout(TargetMachine->createDataLayout());
+    TheModule->setTargetTriple(TargetTriple);
+    // Basic types initializations start
     i1 = type_bool->getLLVMType(TheModule);
     i8 = type_char->getLLVMType(TheModule);
     i32 = type_int->getLLVMType(TheModule);
@@ -161,11 +189,13 @@ void AST::start_compilation(const char *programName, bool optimize)
     unitType = type_unit->getLLVMType(TheModule);
     machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
     arrCharType = (new ArrayTypeGraph(1, new RefTypeGraph(type_char)))->getLLVMType(TheModule);
+    // Initialize runtime lib functions
     std::vector<std::pair<std::string, llvm::Function *>> *libFunctions = genLibGlueLogic();
     for (auto &libFunc : *libFunctions)
     {
         LLValues.insert(libFunc);
     }
+    // Initialize garbage collection functions
     llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
     llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic", TheModule);
@@ -174,14 +204,15 @@ void AST::start_compilation(const char *programName, bool optimize)
     llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
                             "GC_free", TheModule);
+    // Initialize main function (entry point)
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
                                "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
     Builder.SetInsertPoint(BB);
-    compile(); // compile the program code
-    // Below means that each Function codegen is responsible for restoring insert point
+    // compile the program code
+    compile();
     Builder.CreateRet(c32(0));
 
     bool bad = llvm::verifyModule(*TheModule, &llvm::errs());
@@ -191,12 +222,32 @@ void AST::start_compilation(const char *programName, bool optimize)
         TheModule->print(llvm::errs(), nullptr);
         std::exit(1);
     }
-    // this means we would probably need to optimize each function seperately
     TheFPM->run(*main);
 }
 void AST::printLLVMIR()
 {
     TheModule->print(llvm::outs(), nullptr);
+}
+void AST::emitObjectCode(const char *filename)
+{
+    std::error_code EC;
+    llvm::raw_fd_ostream dst(filename, EC, llvm::sys::fs::OF_None);
+
+    if (EC) {
+        llvm::errs() << "Could not open file: " << EC.message();
+        exit(1);
+    }
+
+    llvm::legacy::PassManager pass;
+    auto FileType = llvm::CGFT_ObjectFile;
+
+    if (TargetMachine->addPassesToEmitFile(pass, dst, nullptr, FileType)) {
+        llvm::errs() << "TargetMachine can't emit a file of this type";
+        exit(1);
+    }
+
+    pass.run(*TheModule);
+    dst.flush();
 }
 
 /*********************************/
