@@ -59,6 +59,8 @@
         "mutex": "cpp",
         "shared_mutex": "cpp",
         "thread": "cpp",
-        "*.def": "cpp"
+        "*.def": "cpp",
+        "stdbool.h": "c",
+        "stdlib.h": "c"
     }
 }

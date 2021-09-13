@@ -167,6 +167,14 @@ void AST::start_compilation(const char *programName, bool optimize)
     llvm::Function *main =
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
                                "main", TheModule);
+    llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
+    llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+                           "GC_malloc_atomic", TheModule);
+    llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+                           "GC_malloc_atomic_uncollectable", TheModule);
+    llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
+    llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
+                            "GC_free", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
@@ -266,7 +274,9 @@ llvm::Value *Array::compile()
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
     auto *LLVMMAllocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr, nullptr, "arr.def.malloc");
+                                                        nullptr,
+                                                        TheModule->getFunction("GC_malloc_atomic"), 
+                                                        "arr.def.malloc");
     llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
 
     // Turn dimensions into a value
@@ -298,7 +308,7 @@ llvm::Value *Array::compile()
                                      LLVMContainedType,
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
-                                     nullptr,
+                                     TheModule->getFunction("GC_malloc_atomic"),
                                      "arr.def.malloc"
                                     );
 
@@ -338,7 +348,7 @@ llvm::Value *Variable::compile()
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr, nullptr, "var.def.malloc");
+                                                        nullptr, TheModule->getFunction("GC_malloc_atomic"), "var.def.malloc");
     llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
     // Add the variable to the map
@@ -415,7 +425,7 @@ llvm::Value *String_literal::compile()
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         arrCharType->getPointerElementType(),
                                                         llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                        nullptr, nullptr, "str.literal.malloc");
+                                                        nullptr, TheModule->getFunction("GC_malloc_atomic"), "str.literal.malloc");
     llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
 
     // Allocate memory for string
@@ -425,7 +435,7 @@ llvm::Value *String_literal::compile()
                                      i8,
                                      llvm::ConstantExpr::getSizeOf(i8),
                                      LLVMArraySize,
-                                     nullptr,
+                                     TheModule->getFunction("GC_malloc_atomic"),
                                      "stringalloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
@@ -631,7 +641,9 @@ llvm::Value *UnOp::compile()
     case T_not: return Builder.CreateNot(exprVal, "bool.nottmp");
     case '!': return Builder.CreateLoad(exprVal, "ptr.dereftmp"); 
     case T_delete: {
-        Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+        // Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+        llvm::Instruction *i8PtrCast = llvm::CastInst::CreatePointerCast(exprVal, i8->getPointerTo(), "delete.cast", Builder.GetInsertBlock());
+        Builder.CreateCall(TheModule->getFunction("GC_free"), {i8PtrCast});
         return unitVal();
     }    
     default: return nullptr;    
@@ -660,8 +672,8 @@ llvm::Value *New::compile()
                                      machinePtrType,
                                      newType,
                                      llvm::ConstantExpr::getSizeOf(newType),
-                                     c32(1),
                                      nullptr,
+                                     TheModule->getFunction("GC_malloc_atomic_uncollectable"),
                                      instrName);
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
@@ -871,7 +883,7 @@ llvm::Value *ConstructorCall::compile()
                                                 machinePtrType,
                                                 customType,
                                                 llvm::ConstantExpr::getSizeOf(customType),
-                                                nullptr, nullptr,
+                                                nullptr, TheModule->getFunction("GC_malloc_atomic"),
                                                 "customstruct.malloc"
                                             );
     llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);

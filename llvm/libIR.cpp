@@ -98,7 +98,7 @@ llvm::Function* AST::createFuncAdapterFromStringToCharArr(llvm::Function *string
         auto *arrayOfCharMalloc =  llvm::CallInst::CreateMalloc(TmpB.GetInsertBlock(), machinePtrType, 
                                                              arrCharType->getPointerElementType(),
                                                              llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                             nullptr, nullptr, "to.arrchar.retval");
+                                                             nullptr, TheModule->getFunction("GC_malloc"), "to.arrchar.retval");
         llvm::Value *arrayOfCharVal = TmpB.Insert(arrayOfCharMalloc);
         llvm::Value *arrayPtrLoc = TmpB.CreateGEP(arrayOfCharVal, {c32(0), c32(0)}, "to.arrchar.arrayptrloc");
         TmpB.CreateStore(retValCandidate, arrayPtrLoc);
