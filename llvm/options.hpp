@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "lexer.hpp"
+//#include "lexer.hpp"
 #include "ast.hpp"
 #include "infer.hpp"
 #include "symbol.hpp"
