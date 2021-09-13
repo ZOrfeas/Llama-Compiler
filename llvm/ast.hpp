@@ -447,32 +447,10 @@ protected:
     bool dynamic = false;
 
 public:
-    TypeGraph *get_TypeGraph()
-    {
-        return TG;
-    }
-    void type_check(TypeGraph *t, std::string msg = "Type mismatch")
-    {
-        checkTypeGraphs(TG, t, msg + ", " + TG->stringifyTypeClean() + " given.");
-    }
-    void checkIntCharFloat(std::string msg = "Must be int, char or float")
-    {
-        if(!TG->isUnknown()) 
-        {
-            if(!TG->equals(type_int) && !TG->equals(type_char) && !TG->equals(type_float))
-            {
-                printError(msg);
-            }
-        }
-        else
-        {
-            TG->setIntCharFloat();
-        }
-    }
-    friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
-    {
-        e1->type_check(e2->TG, msg);
-    }
+    TypeGraph *get_TypeGraph();
+    void type_check(TypeGraph *t, std::string msg = "Type mismatch");
+    void checkIntCharFloat(std::string msg = "Must be int, char or float");
+    friend void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch");
 };
 
 /* Useful classes for definitions ***********************************/
@@ -486,16 +464,7 @@ private:
 public:
     Constr(std::string *Id, std::vector<Type *> *t)
         : Id(*Id), type_list(*t) {}
-    void add_Id_to_ct(TypeEntry *te)
-    {
-        ConstructorEntry *c = insertConstructorToConstructorTable(Id);
-        for (Type *t : type_list)
-        {
-            c->addType(t->get_TypeGraph());
-        }
-
-        te->addConstructor(c);
-    }
+    void add_Id_to_ct(TypeEntry *te);
     virtual llvm::Value* compile() override;
     virtual void printOn(std::ostream &out) const override
     {
@@ -519,18 +488,9 @@ private:
 public:
     Par(std::string *id, Type *t = new UnknownType)
         : id(*id), T(t) {}
-    /*SymbolEntry* get_SymbolEntry() { return new SymbolEntry(id, T->get_TypeGraph()); }*/
-    void insert_id_to_st()
-    {
-        insertBasicToSymbolTable(id, T->get_TypeGraph());
-
-        addToIdList(id);
-    }
-    TypeGraph *get_TypeGraph()
-    {
-        return T->get_TypeGraph();
-    }
-    std::string getId() {return id;}
+    void insert_id_to_st();
+    TypeGraph *get_TypeGraph();
+    std::string getId();
     virtual void printOn(std::ostream &out) const override
     {
         out << "Par(" << id << ", " << *T << ")";
@@ -1009,33 +969,6 @@ public:
         out << "LetIN(" << *letdef << ", " << *expr << ")";
     }
 };
-
-/*
-class Id_upper : public Identifier
-{
-public:
-    Id_upper(std::string *s)
-    {
-        name = *s;
-    }
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "Id(" << name << ")";
-    }
-};
-class Id_lower : public Identifier
-{
-public:
-    Id_lower(std::string *s)
-    {
-        name = *s;
-    }
-    virtual void printOn(std::ostream &out) const override
-    {
-        out << "id(" << name << ")";
-    }
-};
-*/
 
 class Literal : public Expr
 {
