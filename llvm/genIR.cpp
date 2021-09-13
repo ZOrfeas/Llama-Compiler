@@ -166,10 +166,6 @@ void AST::start_compilation(const char *programName, bool optimize)
     {
         LLValues.insert(libFunc);
     }
-    llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
-    llvm::Function *main =
-        llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
-                               "main", TheModule);
     llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
     llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic", TheModule);
@@ -178,6 +174,10 @@ void AST::start_compilation(const char *programName, bool optimize)
     llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
                             "GC_free", TheModule);
+    llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
+    llvm::Function *main =
+        llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
+                               "main", TheModule);
     llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", main);
     Builder.SetInsertPoint(BB);
     compile(); // compile the program code
