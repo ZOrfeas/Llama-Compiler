@@ -1,13 +1,18 @@
 #include "ast.hpp"
 #include "parser.hpp"
 
+TypeGraph *type_unit = tt.lookupType("unit")->getTypeGraph();
+TypeGraph *type_int = tt.lookupType("int")->getTypeGraph();
+TypeGraph *type_float = tt.lookupType("float")->getTypeGraph();
+TypeGraph *type_bool = tt.lookupType("bool")->getTypeGraph();
+TypeGraph *type_char = tt.lookupType("char")->getTypeGraph();
+
 /*********************************/
 /**          AST                 */
 /*********************************/
-
+ 
 void AST::sem()
 {
-
 }
 void AST::checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
 {
@@ -23,13 +28,7 @@ void AST::checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     inf.addConstraint(t1, t2, line_number, msg);
     // }
 }
-void AST::printError(std::string msg)
-{
-    std::string intro = "Error at line " + std::to_string(line_number) + ": ";
-    printColorString(intro, intro.size(), 1, 31);
-    std::cout << msg << std::endl;
-    exit(1);
-}
+
 void AST::insertToTable()
 {
 }
@@ -106,47 +105,6 @@ ConstructorEntry *AST::lookupConstructorFromContstructorTable(std::string Id)
     }
 
     return c;
-}
-void AST::printIdTypeGraphs()
-{
-    // Find the maximum size of the ids, type and line strings
-    // in order to decide the padding
-    int margin = 2;
-    int idWidth = 4, typeWidth = 8, lineWidth = 3;
-    std::string name, typeString, line;
-    for (auto ident : AST_identifier_list)
-    {
-        name = ident->getName();
-        typeString = ident->getTypeString();
-        line = ident->getLine();
-
-        if (idWidth < (int)name.size())
-            idWidth = name.size();
-        if (typeWidth < (int)typeString.size())
-            typeWidth = typeString.size();
-        if (lineWidth < (int)line.size())
-            lineWidth = line.size();
-    }
-    idWidth += margin;
-    typeWidth += margin;
-    lineWidth += margin;
-
-    // Print the header of the table
-    int colorANSI = 34, formatANSI = 4;
-    printColorString("Name", idWidth, formatANSI, colorANSI);
-    printColorString("Type", typeWidth, formatANSI, colorANSI);
-    printColorString("Line", lineWidth, formatANSI, colorANSI);
-    std::cout << std::endl;
-
-    // Print every line
-    for (auto ident : AST_identifier_list)
-    {
-        ident->printIdLine(lineWidth, idWidth, typeWidth);
-    }
-}
-void AST::addToIdList(std::string id)
-{
-    AST_identifier_list.push_back(new Identifier(id, line_number));
 }
 
 /*********************************/
@@ -467,7 +425,6 @@ void LetIn::sem()
     TG = expr->get_TypeGraph();
 }
 
-
 /*********************************/
 /**          Expressions         */
 /*********************************/
@@ -476,11 +433,11 @@ TypeGraph *Expr::get_TypeGraph()
 {
     return TG;
 }
-void Expr::type_check(TypeGraph *t, std::string msg = "Type mismatch")
+void Expr::type_check(TypeGraph *t, std::string msg)
 {
     checkTypeGraphs(TG, t, msg + ", " + TG->stringifyTypeClean() + " given.");
 }
-void Expr::checkIntCharFloat(std::string msg = "Must be int, char or float")
+void Expr::checkIntCharFloat(std::string msg)
 {
     if (!TG->isUnknown())
     {
@@ -497,54 +454,6 @@ void Expr::checkIntCharFloat(std::string msg = "Must be int, char or float")
 void same_type(Expr *e1, Expr *e2, std::string msg = "Type mismatch")
 {
     e1->type_check(e2->TG, msg);
-}
-static char getChar(std::string c)
-{
-    char ans = 0;
-
-    // Normal character
-    if (c[0] != '\\')
-    {
-        ans = c[0];
-    }
-
-    // '\xnn'
-    else if (c[1] == 'x')
-    {
-        const char hex[2] = {c[2], c[3]};
-        ans = strtol(hex, nullptr, 16);
-    }
-
-    // Escape secuence
-    else
-    {
-        switch (c[1])
-        {
-        case 'n':
-            ans = '\n';
-            break;
-        case 't':
-            ans = '\t';
-            break;
-        case 'r':
-            ans = '\r';
-            break;
-        case '0':
-            ans = 0;
-            break;
-        case '\\':
-            ans = '\\';
-            break;
-        case '\'':
-            ans = '\'';
-            break;
-        case '\"':
-            ans = '\"';
-            break;
-        }
-    }
-
-    return ans;
 }
 std::string String_literal::escapeChars(std::string rawStr)
 {

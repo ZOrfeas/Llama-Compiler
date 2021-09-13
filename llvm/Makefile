@@ -16,7 +16,7 @@ parser.hpp parser.cpp: parser.y
 # parser.o: parser.cpp lexer.hpp symbol.hpp
 lexer.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
 parser.o: parser.cpp lexer.hpp ast.hpp parser.hpp options.hpp
-ast.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
+ast.o: ast.cpp lexer.hpp ast.hpp
 sem.o: sem.cpp ast.hpp parser.hpp  
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
