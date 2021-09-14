@@ -6,7 +6,29 @@
 const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
 
 // Stores the amount of spaces to be inserted before printing the node
-int spaces = 0; 
+static int prefixSpaces = 0;
+const int indent = 2;
+
+// Prints newline
+void createBlock(std::ostream &out)
+{
+    prefixSpaces += indent;
+    out << std::endl;
+}
+
+// Doesn't print newline
+void closeBlock(std::ostream &out)
+{
+    prefixSpaces -= indent;
+
+    //out << std::endl;
+}
+
+void printHeader(std::ostream &out, std::string h)
+{
+    out << std::string(prefixSpaces, ' ') << '-' << h;
+}
+void printType(std::ostream &out, std::string t);
 
 std::ostream &operator<<(std::ostream &out, const AST &t)
 {
@@ -14,293 +36,408 @@ std::ostream &operator<<(std::ostream &out, const AST &t)
     return out;
 }
 
+std::string UnknownType::getTypeStr() const
+{
+    return TG->stringifyTypeClean();
+}
+std::string BasicType::getTypeStr() const
+{
+    return type_string[static_cast<int>(t)];
+}
+std::string FunctionType::getTypeStr() const
+{
+    return lhtype->getTypeStr() + "->" + rhtype->getTypeStr();
+}
+std::string ArrayType::getTypeStr() const
+{
+    // 2d array of int
+    return std::to_string(dimensions) + "d " + "array of " + elem_type->getTypeStr();
+}
+std::string RefType::getTypeStr() const
+{
+    // int ref
+    return ref_type->getTypeStr() + " ref";
+}
+std::string CustomType::getTypeStr() const
+{
+    return id;
+}
+
+void Type::printOn(std::ostream &out) const
+{
+    printHeader(out, "Type " + getTypeStr());
+
+    createBlock(out);
+    closeBlock(out);
+}
+
+/*
 void UnknownType::printOn(std::ostream &out) const
 {
-    out << "UnknownType(" << TG->stringifyType() << ")";
+    printHeader(out, "UnknownType " + getTypeStr());
 }
 void BasicType::printOn(std::ostream &out) const
 {
-    out << type_string[static_cast<int>(t)];
+    printHeader(out, "BasicType " + getTypeStr());
 }
 void FunctionType::printOn(std::ostream &out) const
 {
+    printHeader(out, "FunctionType");
     out << *lhtype << "->" << *rhtype;
 }
 void ArrayType::printOn(std::ostream &out) const
 {
-    out << "TYPE_array(" << dimensions << ", " << *elem_type << ")";
+    printHeader(out, "ArrayType " + std::to_string(dimensions) + " ");
+    out << *elem_type;
 }
 void RefType::printOn(std::ostream &out) const
 {
-    out << "TYPE_ref(" << *ref_type << ")";
+    printHeader(out, "RefType ");
+    out << *ref_type;
 }
 void CustomType::printOn(std::ostream &out) const
 {
-    out << "CustomType(" << id << ")";
+    printHeader(out, "CustomType " + getTypeStr());
 }
+*/
 
 void Constr::printOn(std::ostream &out) const
 {
-    out << "Constr(" << Id;
+    printHeader(out, "Constr " + Id);
 
-    for (Type *t : type_list)
+    createBlock(out);
+    for (auto *t : type_list)
     {
-        out << ", " << *t;
+        out << *t;
     }
-
-    out << ")";
+    closeBlock(out);
 }
 void Par::printOn(std::ostream &out) const
 {
-    out << "Par(" << id << ", " << *T << ")";
+    printHeader(out, "Par " + id);
+
+    createBlock(out);
+    out << *T;
+    closeBlock(out);
 }
 
 void Tdef::printOn(std::ostream &out) const
 {
-    out << "Tdef(" << id << ", ";
+    printHeader(out, "Tdef " + id);
 
-    bool first = true;
+    createBlock(out);
     for (Constr *c : constr_list)
     {
-        if (!first)
-            out << ", ";
-        else
-            first = false;
-
         out << *c;
     }
-
-    out << ")";
+    closeBlock(out);
 }
 void Constant::printOn(std::ostream &out) const
 {
-    out << "Constant(" << id << ", " << *T << ", " << *expr << ")";
+    printHeader(out, "Constant " + id);
+
+    createBlock(out);
+    out << *T;
+    out << *expr;
+    closeBlock(out);
 }
 void Function::printOn(std::ostream &out) const
 {
-    out << "Function(" << id;
+    printHeader(out, "Function " + id);
+
+    createBlock(out);
+    out << *T;
+
+    printHeader(out, "Parameters");
+    createBlock(out);
     for (Par *p : par_list)
     {
-        out << ", " << *p;
+        out << *p;
     }
-    out << ", " << *T << ", " << *expr << ")";
+    closeBlock(out);
+
+    printHeader(out, "Body");
+    createBlock(out);
+    out << *expr;
+    closeBlock(out);
+
+    closeBlock(out);
 }
 void Array::printOn(std::ostream &out) const
 {
-    out << "Array(" << id;
-    if (!expr_list.empty())
+    printHeader(out, "Array " + id);
+
+    createBlock(out);
+    out << *T;
+
+    for (auto *e : expr_list)
     {
-        out << "[";
-
-        bool first = true;
-        for (Expr *e : expr_list)
-        {
-            if (!first)
-                out << ", ";
-            else
-                first = false;
-
-            out << *e;
-        }
+        out << *e;
     }
-    out << "], " << *T << ")";
+    closeBlock(out);
 }
 void Variable::printOn(std::ostream &out) const
 {
-    out << "Variable(" << id << ", " << *T << ", "
-        << ")";
+    printHeader(out, "Variable " + id);
+
+    createBlock(out);
+    out << *T;
+    closeBlock(out);
 }
 
 void Letdef::printOn(std::ostream &out) const
 {
-    out << "Let(";
     if (recursive)
-        out << "rec ";
+        printHeader(out, "Letdef rec");
+    else
+        printHeader(out, "Letdef");
 
-    bool first = true;
-    for (DefStmt *d : def_list)
+    createBlock(out);
+    for (auto *d : def_list)
     {
-        if (!first)
-            out << "and ";
-        else
-            first = false;
-
         out << *d;
     }
-
-    out << ")";
+    closeBlock(out);
 }
 void Typedef::printOn(std::ostream &out) const
 {
-    out << "Type(";
+    printHeader(out, "Typedef");
 
-    bool first = true;
-    for (DefStmt *t : tdef_list)
+    createBlock(out);
+    for (auto *t : tdef_list)
     {
-        if (!first)
-            out << ", ";
-        else
-            first = false;
-
         out << *t;
     }
-
-    out << ")";
+    closeBlock(out);
 }
 void Program::printOn(std::ostream &out) const
 {
-    out << "Definition(";
+    printHeader(out, "Program");
 
-    bool first = true;
-    for (Definition *d : definition_list)
+    createBlock(out);
+    for (auto *d : definition_list)
     {
-        if (!first)
-            out << ",";
-        else
-            first = false;
         out << *d;
     }
-
-    out << ")";
+    closeBlock(out);
 }
 
 void LetIn::printOn(std::ostream &out) const
 {
-    out << "LetIN(" << *letdef << ", " << *expr << ")";
+    printHeader(out, "LetIn");
+
+    createBlock(out);
+    out << *letdef;
+    out << *expr;
+    closeBlock(out);
 }
 
 void String_literal::printOn(std::ostream &out) const
 {
-    out << "String(" << originalStr << ")";
+    printHeader(out, "String_literal " + originalStr);
+
+    createBlock(out);
+    closeBlock(out);
 }
 void Char_literal::printOn(std::ostream &out) const
 {
-    out << "Char(" << c_string << ")";
+    printHeader(out, "Char_literal " + c_string);
+
+    createBlock(out);
+    closeBlock(out);
 }
 void Bool_literal::printOn(std::ostream &out) const
 {
-    out << "Bool(" << b << ")";
+    printHeader(out, "Bool_literal " + std::to_string(b));
+
+    createBlock(out);
+    closeBlock(out);
 }
 void Float_literal::printOn(std::ostream &out) const
 {
-    out << "Float(" << d << ")";
+    printHeader(out, "Float_literal " + std::to_string(d));
+
+    createBlock(out);
+    closeBlock(out);
 }
 void Int_literal::printOn(std::ostream &out) const
 {
-    out << "Int(" << n << ")";
+    printHeader(out, "Int_literal " + std::to_string(n));
+
+    createBlock(out);
+    closeBlock(out);
 }
 void Unit_literal::printOn(std::ostream &out) const
 {
-    out << "Unit";
+    printHeader(out, "Unit_literal");
+
+    createBlock(out);
+    closeBlock(out);
 }
 
 void BinOp::printOn(std::ostream &out) const
 {
-    out << "BinOp(" << *lhs << ", " << op << ", " << *rhs << ")";
+    printHeader(out, "BinOp " + std::to_string(op));
+
+    createBlock(out);
+    out << *lhs;
+    out << *rhs;
+    closeBlock(out);
 }
 void UnOp::printOn(std::ostream &out) const
 {
-    out << "UnOp(" << op << ", " << *expr << ")";
+    printHeader(out, "UnOp " + std::to_string(op));
+
+    createBlock(out);
+    out << *expr;
+    closeBlock(out);
 }
 void New::printOn(std::ostream &out) const
 {
-    out << "New(" << *new_type << ")";
+    printHeader(out, "New");
+
+    createBlock(out);
+    out << *new_type;
+    closeBlock(out);
 }
 
 void While::printOn(std::ostream &out) const
 {
-    out << "While(" << *cond << ", " << *body << ")";
+    printHeader(out, "While");
+
+    createBlock(out);
+    out << *cond;
+    out << *body;
+    closeBlock(out);
 }
 void For::printOn(std::ostream &out) const
 {
-    out << "For(" << id << ", " << *start << ", " << step << *finish << ", " << *body << ")";
+    printHeader(out, "For " + id);
+
+    createBlock(out);
+    out << *start;
+    printHeader(out, step);
+    out << *finish;
+    out << *body;
+    closeBlock(out);
 }
 void If::printOn(std::ostream &out) const
 {
-    out << "If(" << *cond << ", " << *body;
+    printHeader(out, "If");
 
+    createBlock(out);
+    out << *cond;
+    out << *body;
     if (else_body)
-        out << ", " << *else_body;
-
-    out << ")";
+        out << *else_body;
+    closeBlock(out);
 }
 
 void Dim::printOn(std::ostream &out) const
 {
-    out << "Dim(";
+    printHeader(out, "Dim");
+
+    createBlock(out);
     if (dim)
-        out << *dim << ", ";
-    out << id << ")";
+        out << *dim;
+    out << id;
+    closeBlock(out);
 }
 
 void ConstantCall::printOn(std::ostream &out) const
 {
-    out << "ConstantCall(" << id << ")";
+    printHeader(out, "ConstantCal " + id);
+
+    createBlock(out);
+    closeBlock(out);
 }
 void FunctionCall::printOn(std::ostream &out) const
 {
-    out << "FunctionCall(" << id;
-    for (Expr *e : expr_list)
+    printHeader(out, "FunctionCall " + id);
+
+    createBlock(out);
+    for (auto *e : expr_list)
     {
-        out << ", " << *e;
+        out << *e;
     }
-    out << ")";
+    closeBlock(out);
 }
 void ConstructorCall::printOn(std::ostream &out) const
 {
-    out << "ConstructorCall(" << Id;
-    for (Expr *e : expr_list)
+    printHeader(out, "ConstructorCall " + Id);
+
+    createBlock(out);
+    for (auto *e : expr_list)
     {
-        out << ", " << *e;
+        out << *e;
     }
-    out << ")";
+    closeBlock(out);
 }
 void ArrayAccess::printOn(std::ostream &out) const
 {
-    out << "ArrayAccess(" << id << "[";
+    printHeader(out, "ArrayAccess " + id);
 
-    bool first = true;
-    for (Expr *e : expr_list)
+    createBlock(out);
+    for (auto *e : expr_list)
     {
-        if (!first)
-            out << ", ";
-        else
-            first = false;
-
         out << *e;
     }
-
-    out << "])";
+    closeBlock(out);
 }
 
 void PatternLiteral::printOn(std::ostream &out) const
 {
-    out << "PatternLiteral(" << *literal << ")";
+    printHeader(out, "PatternLiteral");
+    out << *literal;
+
+    createBlock(out);
+    closeBlock(out);
 }
 void PatternId::printOn(std::ostream &out) const
 {
-    out << "PatternId(" << id << ")";
+    printHeader(out, "PatternId " + id);
+
+    createBlock(out);
+    closeBlock(out);
 }
 void PatternConstr::printOn(std::ostream &out) const
 {
-    out << "PatternConstr(" << Id;
+    printHeader(out, "PatternConstr " + Id);
+
+    createBlock(out);
     for (Pattern *p : pattern_list)
     {
-        out << ", " << *p;
+        out << *p;
     }
-    out << ")";
+    closeBlock(out);
 }
 
 void Clause::printOn(std::ostream &out) const
 {
-    out << "Clause(" << *pattern << ", " << *expr << ")";
+    printHeader(out, "Clause");
+
+    createBlock(out);
+
+    printHeader(out, "Pattern");
+    createBlock(out);
+    out << *pattern;
+    closeBlock(out);
+
+    printHeader(out, "Expression");
+    createBlock(out);
+    out << *expr;
+    closeBlock(out);
+
+    closeBlock(out);
 }
 void Match::printOn(std::ostream &out) const
 {
-    out << "Match(" << *toMatch;
+    printHeader(out, "Match");
+
+    createBlock(out);
     for (Clause *c : clause_list)
     {
-        out << ", " << *c;
+        out << *c;
     }
-    out << ")";
+    closeBlock(out);
 }
