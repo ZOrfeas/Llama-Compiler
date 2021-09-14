@@ -106,6 +106,7 @@ public:
     void start_compilation(const char *programName, bool optimize = false);
     void printLLVMIR();
     void emitObjectCode(const char *filename);
+    void emitAssemblyCode();
     void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg);
     void printError(std::string msg);
     virtual void insertToTable();
@@ -509,6 +510,11 @@ public:
     BinOp(Expr *e1, int op, Expr *e2);
     virtual void sem() override;
     // switch-case for every possible operator
+    llvm::Value *allStructFieldsEqual(llvm::Value *lhsVal,
+                                      llvm::Value *rhsVal);
+    llvm::Value *equalityHelper(llvm::Value *lhsVal,
+                                llvm::Value *rhsVal,
+                                bool structural);
     virtual llvm::Value *compile() override;
     virtual void printOn(std::ostream &out) const override;
 };
