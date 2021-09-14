@@ -140,6 +140,8 @@ public:
     bool compare_category(category _c);
     virtual bool compare_basic_type(type t);
     virtual TypeGraph *get_TypeGraph() = 0;
+    virtual std::string getTypeStr() const = 0;
+    virtual void printOn(std::ostream &out) const override;
     friend bool compare_categories(Type *T1, Type *T2);
 };
 class UnknownType : public Type
@@ -147,7 +149,7 @@ class UnknownType : public Type
 public:
     UnknownType();
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 class BasicType : public Type
 {
@@ -159,7 +161,7 @@ public:
     BasicType(type t);
     virtual bool compare_basic_type(type _t) override;
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 class FunctionType : public Type
 {
@@ -169,7 +171,7 @@ private:
 public:
     FunctionType(Type *lhtype = new UnknownType, Type *rhtype = new UnknownType);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 class ArrayType : public Type
 {
@@ -180,7 +182,7 @@ private:
 public:
     ArrayType(int dimensions = 1, Type *elem_type = new UnknownType);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 class RefType : public Type
 {
@@ -191,7 +193,7 @@ private:
 public:
     RefType(Type *ref_type = new UnknownType());
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 class CustomType : public Type
 {
@@ -201,7 +203,7 @@ private:
 public:
     CustomType(std::string *id);
     virtual TypeGraph *get_TypeGraph() override;
-    virtual void printOn(std::ostream &out) const override;
+    virtual std::string getTypeStr() const override;
 };
 
 /* Basic Abstract Classes *******************************************/
