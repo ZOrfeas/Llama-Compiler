@@ -188,9 +188,9 @@ void Variable::printOn(std::ostream &out) const
 void Letdef::printOn(std::ostream &out) const
 {
     if (recursive)
-        printHeader(out, "Let rec");
+        printHeader(out, "Letdef rec");
     else
-        printHeader(out, "Let");
+        printHeader(out, "Letdef");
 
     createBlock(out);
     for (auto *d : def_list)
@@ -201,9 +201,9 @@ void Letdef::printOn(std::ostream &out) const
 }
 void Typedef::printOn(std::ostream &out) const
 {
-    printHeader(out, "Type");
+    printHeader(out, "Typedef");
 
-    closeBlock(out);
+    createBlock(out);
     for (auto *t : tdef_list)
     {
         out << *t;
