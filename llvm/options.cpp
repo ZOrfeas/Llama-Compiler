@@ -50,14 +50,6 @@ struct option LongOption::getStructOption()
 
 // Initialisations
 
-/*
-// Short options must be created in correct order
-ShortOption syntaxAnalysis('s', "Checks only if the program is syntactically correct"),
-    semAnalysis('a', "Checks if the program is also semantically correct"),
-    inferenceAnalysis('i', "Performs inference to resolve unknown types"),
-    compile('c', "Produces code");
-*/
-
 LongOption 
     // Main options
     optimise("O", "Produces code and runs optimisations on it"),
@@ -103,20 +95,9 @@ struct option *OptionList::getLongOptionArray()
 }
 void OptionList::parseOptions(int argc, char **argv)
 {
-    int index = 0;
+    int index = 0, c;
     struct option *long_options = getLongOptionArray();
-
     std::string short_options = "";
-    /*
-    for (auto s : shortOptions)
-    {
-        short_options += s->getName();
-    }
-    */
-
-    int c;
-    //int highestActivatedShortOption = -1;
-    //bool noShortOptions = true; // If there are no short options then run all stages
     while ((c = getopt_long_only(argc, argv, short_options.c_str(), long_options, &index)) != -1)
     {
         //std::cout << long_options[index].name << std::endl;
@@ -132,24 +113,6 @@ void OptionList::parseOptions(int argc, char **argv)
             }
         }
 
-        /*
-        // Check short options in reverse
-        for (int i = shortOptions.size() - 1; i >= 0; i--)
-        {
-            auto s = shortOptions[i];
-
-            if (c == s->getVal())
-            {
-                s->activate();
-                noShortOptions = false;
-                if (i > highestActivatedShortOption)
-                {
-                    highestActivatedShortOption = i;
-                }
-            }
-        }
-        */
-
         // Reset index
         index = 0;
     }
@@ -160,15 +123,6 @@ void OptionList::parseOptions(int argc, char **argv)
         std::cout << "Usage ./llamac [options] < file" << std::endl;
         std::cout << std::endl;
         std::cout << "Options:\n";
-
-        /*
-        for (auto s : shortOptions)
-        {
-            std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "-" + s->getName()
-                      << std::left << s->getDescription()
-                      << std::endl;
-        }
-        */
 
         for (auto l : longOptions)
         {
@@ -182,28 +136,6 @@ void OptionList::parseOptions(int argc, char **argv)
         std::cout << std::endl;
         exit(0);
     }
-
-    /*
-    // If no short options are given then compile
-    // Else activate until highest activated short option
-    if (!frontend.isActivated())
-    {
-        for (auto s : shortOptions)
-        {
-            s->activate();
-        }
-
-        // When no options are given don't optimise
-        optimise.deactivate();
-    }
-    else
-    {
-        for (int i = 0; i <= highestActivatedShortOption; i++)
-        {
-            shortOptions[i]->activate();
-        }
-    }
-    */
 }
 void OptionList::executeOptions(Program *p)
 {
