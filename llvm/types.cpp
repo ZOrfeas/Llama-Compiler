@@ -373,11 +373,7 @@ std::string ConstructorTypeGraph::stringifyType() {
     return "\033[4m" + stringifyTypeClean() + "\033[0m";
 }
 std::string ConstructorTypeGraph::stringifyTypeClean() {
-    if (getCustomType() == nullptr) {
-        return TypeGraph::stringifyTypeClean();
-    } else {
-        return getCustomType()->stringifyTypeClean();
-    }
+    return name;
 }
 std::vector<TypeGraph *>* ConstructorTypeGraph::getFields() { return fields; }
 void ConstructorTypeGraph::addField(TypeGraph *field) { fields->push_back(field); }

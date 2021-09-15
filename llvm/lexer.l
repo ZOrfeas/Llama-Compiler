@@ -97,7 +97,7 @@ Hex [0-9a-f]
 "!=" { yylval.op = T_exclameq;     return T_exclameq;     }
 ":=" { yylval.op = T_coloneq;      return T_coloneq;      }
 
---.*\n  { /* nothing */ }
+--.*  { /* nothing */ }
 
 "(*"                        { comment_cnt++; BEGIN(IN_COMMENT); /*printf("comment_cnt is %d",comment_cnt);*/}
 <IN_COMMENT>"(*"            { comment_cnt++; /*printf("comment_cnt is %d",comment_cnt);*/}

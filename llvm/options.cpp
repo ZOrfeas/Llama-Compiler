@@ -133,7 +133,7 @@ void OptionList::parseOptions(int argc, char **argv)
         }
 
         std::cout << std::endl;
-        std::cout << "Compiler might use files a.ll and a.out in which case they will be truncated" << std::endl;
+        std::cout << "Compiler might use files a.ll, a.o in which case they will be truncated" << std::endl;
         std::cout << std::endl;
         exit(0);
     }
@@ -204,12 +204,17 @@ void OptionList::executeOptions(Program *p)
     }
     if (inference)
     {
-        inf.solveAll(false);
+        bool infSuccess = inf.solveAll(false);
         if (idTypes.isActivated())
         {
             //printHeader("Types of identifiers");
             p->printIdTypeGraphs();
             //std::cout << std::endl;
+        }
+        // this is required to print idTypeGraphs even if inference fails
+        if (!infSuccess)  {
+            std::cerr << "Exiting ...\n";
+            exit(1);
         }
     }
     if (compile)
@@ -228,7 +233,7 @@ void OptionList::executeOptions(Program *p)
         if (printObjectCode.isActivated())
         {
             if(filename == "")
-                p->emitObjectCode("a.out");
+                p->emitObjectCode("a.o");
             else
                 p->emitObjectCode(filename.c_str());
         }

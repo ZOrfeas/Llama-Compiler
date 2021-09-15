@@ -231,7 +231,7 @@ void Inferer::solveOne(Constraint *constraint) {
 void Inferer::initSubstitution(string name) {
     substitutions->insert({name, nullptr});
 }
-void Inferer::checkAllSubstituted(bool err) {
+bool Inferer::checkAllSubstituted(bool err) {
     bool success = true;
     if(debug) log("Validating all unknown types where successfuly infered...");
     for (auto &pair: (*substitutions)) {
@@ -243,8 +243,9 @@ void Inferer::checkAllSubstituted(bool err) {
     }
     if (success)
         if(debug) log("Inference successful");
+    return success;
 }
-void Inferer::solveAll(bool err) {
+bool Inferer::solveAll(bool err) {
     std::reverse(constraints->begin(), constraints->end());
     Constraint *holder;
     while(!constraints->empty()) {
@@ -252,7 +253,7 @@ void Inferer::solveAll(bool err) {
         constraints->pop_back();
         solveOne(holder);
     }
-    checkAllSubstituted(err);
+    return checkAllSubstituted(err);
 }
 
 void Inferer::enable_logs() { debug = true; }

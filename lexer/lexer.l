@@ -128,7 +128,7 @@ Hex [0-9a-f]
 \'([^'"\\\n\r\0]|(\\([ntr0\\'"]|(x{Hex}{Hex}))))\'    { return T_charconst; }
 \"((\\.|[^"\\\n])?)*\"    { return T_string; }
 
-[=\|+\-\*/!;<>]    { return yytext[0]; }
+[=\|+\-\*/!;<>]    { printf("Test\n");return yytext[0]; }
 [\(\)\[\],:]        { return yytext[0]; }
 
 "->" { return T_dashgreater;  }
@@ -143,10 +143,10 @@ Hex [0-9a-f]
 "<=" { return T_leq;          }
 ">=" { return T_geq;          }
 "==" { return T_dbleq;        }
-"!=" { return T_exclameq;      }
+"!=" { return T_exclameq;     }
 ":=" { return T_coloneq;      }
 
---.*\n  { /* nothing */ }
+"--".*  { /* nothing */ }
 
 "(*"                        { /*printf("yytext: %s\n", yytext);*/ comment_cnt++; BEGIN(IN_COMMENT); /*printf("comment_cnt is %d\n",comment_cnt);*/}
 <IN_COMMENT>"(*"            { comment_cnt++; /*printf("comment_cnt is %d\n",comment_cnt);*/}

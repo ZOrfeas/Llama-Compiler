@@ -66,7 +66,7 @@ public:
     // and returns the "true" current typeGraph it has been resolve too, thus far
     TypeGraph* tryApplySubstitutions(TypeGraph* unknownType);
     TypeGraph* deepSubstitute(TypeGraph* unknownType);
-    void solveAll(bool err = true);
+    bool solveAll(bool err = true);
     /** Stores a new constraint
      * @param lhs pointer to lhs
      * @param rhs pointer to rhs
@@ -74,7 +74,7 @@ public:
      */
     void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, std::string msg = "");
     void initSubstitution(std::string name);
-    void checkAllSubstituted(bool err = true);
+    bool checkAllSubstituted(bool err = true);
     void enable_logs();
     ~Inferer();
 };
