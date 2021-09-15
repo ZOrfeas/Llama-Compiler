@@ -425,9 +425,9 @@ void ArrayAccess::printOn(std::ostream &out) const
 void PatternLiteral::printOn(std::ostream &out) const
 {
     printHeader(out, "PatternLiteral");
-    out << *literal;
 
     createBlock(out);
+    out << *literal;
     closeBlock(out);
 }
 void PatternId::printOn(std::ostream &out) const
