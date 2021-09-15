@@ -3,8 +3,8 @@
 int LongOption::count = 130; // so that it doesn't hit any ascii codes
 OptionList optionList;
 
-Option::Option(int val, std::string name, std::string description)
-    : val(val), name(name), description(description) {}
+Option::Option(int val, std::string name, std::string description, int has_arg)
+    : val(val), name(name), description(description), has_arg(has_arg) {}
 int Option::getVal()
 {
     return val;
@@ -16,6 +16,14 @@ std::string Option::getName()
 std::string Option::getDescription()
 {
     return description;
+}
+std::string Option::getOptarg()
+{
+    return optarg;
+}
+void Option::setOptarg(std::string s)
+{
+    optarg = s;
 }
 bool Option::isActivated()
 {
@@ -33,32 +41,42 @@ void Option::deactivate()
 ShortOption::ShortOption(char c, std::string description)
     : Option(c, std::string(1, c), description) { optionList.addShortOption(this); }
 
-LongOption::LongOption(std::string name, std::string description)
-    : Option(count++, name, description) { optionList.addLongOption(this); }
+LongOption::LongOption(std::string name, std::string description, int has_arg)
+    : Option(count++, name, description, has_arg) { optionList.addLongOption(this); }
 struct option LongOption::getStructOption()
 {
-    return {name.c_str(), no_argument, NULL, val};
+    return {name.c_str(), has_arg, NULL, val};
 }
 
 // Initialisations
 
+/*
 // Short options must be created in correct order
 ShortOption syntaxAnalysis('s', "Checks only if the program is syntactically correct"),
-            semAnalysis('a', "Checks if the program is also semantically correct"),
-            inferenceAnalysis('i', "Performs inference to resolve unknown types"),
-            compile('c', "Produces code"),
-            optimise('O', "Produces code and runs optimisations on it");
+    semAnalysis('a', "Checks if the program is also semantically correct"),
+    inferenceAnalysis('i', "Performs inference to resolve unknown types"),
+    compile('c', "Produces code");
+*/
 
-LongOption tableLogs("tableLogs", "Shows symbol, type and constructor table logs"),
-           inferenceLogs("inferenceLogs", "Shows inference logs"),
-           printTable("printTable", "Prints table with the names of variables and functions and their types"),
-           printAST("printAST", "Prints the whole AST produced by the syntactical analysis"),
-           printIRCode("printIRCode", "Prints LLVM IR code"),
-           printObjectCode("printObjectCode", "Prints object code"),
-           printFinalCode("printFinalCode", "Prints final code"),
-           printSuccess("printSuccess", "Prints success message as opposed to being silent when compilation succeeds"),
-           help("help", "Shows all options and their funcionality");
+LongOption 
+    // Main options
+    optimise("O", "Produces code and runs optimisations on it"),
+    llvmIR("i", "Prints LLVM IR code"),
+    printFinalCode("f", "Prints final code"),
+    outputFile("o", "Prints output to file specified", required_argument),
 
+    // Auxiliary options for debug
+    ast("ast", "Prints the whole AST produced by the syntactical analysis"),
+    idTypes("idtypes", "Prints table with the names of variables and functions and their types"),
+    inferenceLogs("inflogs", "Shows inference logs"),
+    tableLogs("tlogs", "Shows symbol, type and constructor table logs"),
+    printSuccess("success", "Prints success message as opposed to being silent when compilation succeeds"),
+    
+    // Options that allow the user to directly instruct the frontend
+    frontend("frontend", "Controls the frontend and takes arguments syntax, sem, inf, compile", required_argument),
+    
+    // Help
+    help("help", "Shows all options and their funcionality");
 
 OptionList::OptionList()
 {
@@ -73,10 +91,10 @@ void OptionList::addLongOption(LongOption *l)
 {
     longOptions.push_back(l);
 }
-struct option* OptionList::getLongOptionArray()
+struct option *OptionList::getLongOptionArray()
 {
     struct option *arr = new struct option[longOptions.size()];
-    for(int i = 0; i < (int)longOptions.size(); i++)
+    for (int i = 0; i < (int)longOptions.size(); i++)
     {
         arr[i] = longOptions[i]->getStructOption();
     }
@@ -85,71 +103,92 @@ struct option* OptionList::getLongOptionArray()
 }
 void OptionList::parseOptions(int argc, char **argv)
 {
-    int option_index = 0;
+    int index = 0;
     struct option *long_options = getLongOptionArray();
 
     std::string short_options = "";
-    for(auto s: shortOptions) { short_options += s->getName(); }
+    /*
+    for (auto s : shortOptions)
+    {
+        short_options += s->getName();
+    }
+    */
 
     int c;
-    int highestActivatedShortOption = -1;
-    bool noShortOptions = true; // If there are no short options then run all stages
-    while((c = getopt_long(argc, argv, short_options.c_str(), long_options, &option_index)) != -1)
-    {   
+    //int highestActivatedShortOption = -1;
+    //bool noShortOptions = true; // If there are no short options then run all stages
+    while ((c = getopt_long_only(argc, argv, short_options.c_str(), long_options, &index)) != -1)
+    {
+        //std::cout << long_options[index].name << std::endl;
+
         // Check long options
-        for(auto l: longOptions)
+        for (auto l : longOptions)
         {
-            if(c == l->getVal()) 
+            if (c == l->getVal())
             {
                 l->activate();
+                if (optarg) l->setOptarg(optarg);
                 break;
             }
         }
 
+        /*
         // Check short options in reverse
-        for(int i = shortOptions.size() - 1; i >= 0; i--)
+        for (int i = shortOptions.size() - 1; i >= 0; i--)
         {
             auto s = shortOptions[i];
 
-            if(c == s->getVal())
+            if (c == s->getVal())
             {
                 s->activate();
                 noShortOptions = false;
-                if(i > highestActivatedShortOption) 
+                if (i > highestActivatedShortOption)
                 {
                     highestActivatedShortOption = i;
                 }
             }
         }
+        */
+
+        // Reset index
+        index = 0;
     }
 
-    // Print help message
-    if(help.isActivated()) 
+    // Print help message and exit immediately
+    if (help.isActivated())
     {
-        std::cout << "Usage ./llamac -[short options] --[long options] < file" << std::endl;
+        std::cout << "Usage ./llamac [options] < file" << std::endl;
         std::cout << std::endl;
         std::cout << "Options:\n";
 
-        for(auto s: shortOptions)
+        /*
+        for (auto s : shortOptions)
         {
             std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "-" + s->getName()
-                  << std::left << s->getDescription()
-                  << std::endl;
+                      << std::left << s->getDescription()
+                      << std::endl;
         }
-        for(auto l: longOptions)
+        */
+
+        for (auto l : longOptions)
         {
-            std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "--" + l->getName()
-                  << std::left << l->getDescription()
-                  << std::endl;
+            std::cout << "  " << std::left << std::setfill(' ') << std::setw(20) << "-" + l->getName()
+                      << std::left << l->getDescription()
+                      << std::endl;
         }
+
+        std::cout << std::endl;
+        std::cout << "Compiler might use files a.ll and a.out in which case they will be truncated" << std::endl;
+        std::cout << std::endl;
         exit(0);
     }
 
+    /*
     // If no short options are given then compile
     // Else activate until highest activated short option
-    if(noShortOptions) 
+    if (!frontend.isActivated())
     {
-        for(auto s: shortOptions)
+        for (auto s : shortOptions)
         {
             s->activate();
         }
@@ -157,57 +196,104 @@ void OptionList::parseOptions(int argc, char **argv)
         // When no options are given don't optimise
         optimise.deactivate();
     }
-    else 
+    else
     {
-        for(int i = 0; i <= highestActivatedShortOption; i++)
+        for (int i = 0; i <= highestActivatedShortOption; i++)
         {
             shortOptions[i]->activate();
         }
     }
+    */
 }
 void OptionList::executeOptions(Program *p)
 {
-    if (inferenceLogs.isActivated()) 
+    // If output file is provided freopen stdout to it
+    std::string filename = "";
+    if(outputFile.isActivated())
+    {
+        filename = outputFile.getOptarg();
+        if(filename == "") 
+        {
+            std::cout << "No file provided" << std::endl;
+            exit(1);
+        }
+        
+        std::freopen(filename.c_str(), "w", stdout);
+    }
+
+    bool syntax = false, sem = false, inference = false, compile = false;
+    if(frontend.isActivated()) 
+    {
+        std::string stage = frontend.getOptarg();
+
+        if (stage == "syntax") 
+            syntax = true;
+        else if (stage == "sem")
+            syntax = sem = true;
+        else if (stage == "inf") 
+            syntax = sem = inference = true;
+        else if (stage == "compile")
+            syntax = sem = inference = compile = true;
+        else 
+        {
+            std::cout << "Argument " << "\"" + stage + "\"" << " passed to frontend is invalid" << std::endl;
+            exit(1); 
+        }
+    }
+    else 
+    {
+        syntax = sem = inference = compile = true;
+    }
+
+    if (inferenceLogs.isActivated())
     {
         inf.enable_logs();
     }
-    if (tableLogs.isActivated()) 
+    if (tableLogs.isActivated())
     {
         st.enable_logs();
         tt.enable_logs();
         ct.enable_logs();
     }
-    if(syntaxAnalysis.isActivated())
+
+    if (syntax)
     {
-        if(printAST.isActivated()) 
-        {   
+        if (ast.isActivated())
+        {
             //printHeader("AST");
-            std::cout << *p << std::endl; 
-            std::cout << std::endl;
+            std::cout << *p << std::endl;
+            //std::cout << std::endl;
         }
     }
-    if(semAnalysis.isActivated())
+    if (sem)
     {
-        p->sem(); 
+        p->sem();
     }
-    if(inferenceAnalysis.isActivated()) 
+    if (inference)
     {
         inf.solveAll(false);
-        if(printTable.isActivated()) 
-        {   
+        if (idTypes.isActivated())
+        {
             //printHeader("Types of identifiers");
             p->printIdTypeGraphs();
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
-    } 
-
-    if(compile.isActivated()) 
+    }
+    if (compile)
     {
         bool opt = optimise.isActivated();
         p->start_compilation("a.ll", opt);
-        if(printIRCode.isActivated()) p->printLLVMIR();
+        
+        if (llvmIR.isActivated())
+        {
+            p->printLLVMIR();
+        }
+        if (printFinalCode.isActivated())
+        {
+            if(filename == "")
+                p->emitObjectCode("a.out");
+            else
+                p->emitObjectCode(filename.c_str());
+        }
     }
 }
-
-
-

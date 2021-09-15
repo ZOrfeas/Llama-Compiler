@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-//#include "lexer.hpp"
 #include "ast.hpp"
 #include "infer.hpp"
 #include "symbol.hpp"
@@ -21,11 +20,18 @@ protected:
     bool activated = false;
     int val;
     std::string name, description;
+
+    int has_arg;
+    // Will be filled if an argument is given
+    std::string optarg = "";
+
 public:
-    Option(int val, std::string name, std::string description);
+    Option(int val, std::string name, std::string description, int has_arg = no_argument);
     int getVal();
     std::string getName();
     std::string getDescription();
+    std::string getOptarg();
+    void setOptarg(std::string s);
     bool isActivated();
     void activate();
     void deactivate();
@@ -44,7 +50,7 @@ class LongOption
 protected:
     static int count;
 public:
-    LongOption(std::string name, std::string description);
+    LongOption(std::string name, std::string description, int has_arg = no_argument);
     struct option getStructOption();
 };
 
