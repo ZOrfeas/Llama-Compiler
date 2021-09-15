@@ -211,7 +211,10 @@ void OptionList::executeOptions(Program *p)
             //std::cout << std::endl;
         }
         // this is required to print idTypeGraphs even if inference fails
-        if (infSuccess) exit(1);
+        if (!infSuccess)  {
+            std::cerr << "Exiting ...\n";
+            exit(1);
+        }
     }
     if (compile)
     {
