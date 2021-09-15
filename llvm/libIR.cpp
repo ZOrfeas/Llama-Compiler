@@ -290,11 +290,26 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     llvm::Function *pow =
         llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow.custom", TheModule);
     llvm::BasicBlock *powBB = llvm::BasicBlock::Create(TheContext, "entry", pow);
+    llvm::BasicBlock *signApplierBB = llvm::BasicBlock::Create(TheContext, "signapply", pow);
+    llvm::BasicBlock *collectorBB = llvm::BasicBlock::Create(TheContext, "collector", pow);
     llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(powBB);
-    llvm::Value *logarithm = TmpB.CreateCall(Ln, {pow->getArg(0)}, "pow.lnx");
+
+    llvm::Value *isNegative = TmpB.CreateFCmpOLT(pow->getArg(0), f80(0.0), "pow.xisnegative");
+    llvm::Value *absX = TmpB.CreateCall(FAbs, {pow->getArg(0)}, "pow.absx");
+    llvm::Value *logarithm = TmpB.CreateCall(Ln, {absX}, "pow.lnabsx");
     llvm::Value *mult = TmpB.CreateFMul(pow->getArg(1), logarithm, "pow.ylnx");
     llvm::Value *powRes = TmpB.CreateCall(Exp, {mult}, "pow.res");
-    TmpB.CreateRet(powRes);
+    TmpB.CreateCondBr(isNegative, signApplierBB, collectorBB);
+
+    TmpB.SetInsertPoint(signApplierBB);
+    llvm::Value *negRes = TmpB.CreateFNeg(powRes);
+    TmpB.CreateBr(collectorBB);
+
+    TmpB.SetInsertPoint(collectorBB);
+    llvm::PHINode *fullRes = TmpB.CreatePHI(flt, 2, "pow.signrestore");
+    fullRes->addIncoming(powRes, powBB);
+    fullRes->addIncoming(negRes, signApplierBB);
+    TmpB.CreateRet(fullRes);
     
     // for (auto &pair: *pairs) {
     //     std::cout << pair.first << ' ' << pair.second->getName().str() << '\n';
