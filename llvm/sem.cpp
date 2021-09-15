@@ -834,7 +834,7 @@ void ConstructorCall::sem()
         expr_list[i]->type_check(correct_t, err + std::to_string(i + 1));
     }
 
-    TG = c->getTypeGraph();
+    TG = c->getTypeGraph()->getCustomType();
 }
 void ArrayAccess::sem()
 {
@@ -905,7 +905,7 @@ void PatternConstr::checkPatternTypeGraph(TypeGraph *t)
     constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
 
     // Check that toMatch is of the same type as constructor or force it to be
-    checkTypeGraphs(t, constrTypeGraph, "Constructor is not of the same type as the expression to match");
+    checkTypeGraphs(t, constrTypeGraph->getCustomType(), "Constructor is not of the same type as the expression to match");
 
     int count = constrTypeGraph->getFieldCount();
     if (count != (int)pattern_list.size())
