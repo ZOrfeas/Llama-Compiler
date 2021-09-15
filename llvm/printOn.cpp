@@ -321,10 +321,12 @@ void BinOp::printOn(std::ostream &out) const
 }
 void UnOp::printOn(std::ostream &out) const
 {
-    printHeader(out, "UnOp " + std::to_string(op));
+    std::string opStr = opToString(op);
+    if(opStr == "") printHeader(out, "UnOp " + std::to_string(op));
+    else printHeader(out, "UnOp " + opStr);
 
     createBlock(out);
-    out << *expr;
+    out << *expr; 
     closeBlock(out);
 }
 void New::printOn(std::ostream &out) const
