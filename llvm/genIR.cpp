@@ -249,6 +249,18 @@ void AST::emitObjectCode(const char *filename)
     pass.run(*TheModule);
     dst.flush();
 }
+void AST::emitAssemblyCode()
+{
+    llvm::legacy::PassManager pass;
+    auto FileType = llvm::CGFT_AssemblyFile;
+
+    if (TargetMachine->addPassesToEmitFile(pass, (llvm::raw_pwrite_stream &) llvm::outs(), 
+                                           nullptr, FileType)) {
+        llvm::errs() << "TargetMachine can't emit a file of this type";
+    }
+    pass.run(*TheModule);
+    llvm::outs().flush();
+}
 
 /*********************************/
 /**        Definitions           */
@@ -577,6 +589,39 @@ llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
 
 // Operators
 
+llvm::Value *BinOp::allStructFieldsEqual(llvm::Value *lhsVal, llvm::Value *rhsVal)
+{
+    
+}
+llvm::Value *BinOp::equalityHelper(llvm::Value *lhsVal,
+                                   llvm::Value *rhsVal,
+                                   bool structural)
+{
+    llvm::Type *cmpType = lhsVal->getType();
+    if (cmpType == unitType) {
+        return c1(true);
+    }
+    if (cmpType->isPointerTy() && 
+        cmpType->getPointerElementType()->isStructTy() && 
+        cmpType->getPointerElementType() != unitType &&
+        structural)
+    {   
+        return allStructFieldsEqual(lhsVal, rhsVal);
+    }
+    if (cmpType->isPointerTy() && !structural) {
+        llvm::Value 
+            *lhsPointerInt = Builder.CreatePtrToInt(lhsVal, machinePtrType, "ptr.cmplhstmp"),
+            *rhsPointerInt = Builder.CreatePtrToInt(rhsVal, machinePtrType, "ptr.cmprhstmp");
+        return Builder.CreateICmpEQ(lhsPointerInt, rhsPointerInt, "ptr.cmpnateqtmp");         
+    }
+    if (cmpType->isIntegerTy()) {
+        return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
+    }
+    if (cmpType == flt) {
+        return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
+    }
+
+}
 llvm::Value *BinOp::compile()
 {
     auto lhsVal = lhs->compile(),
@@ -617,63 +662,22 @@ llvm::Value *BinOp::compile()
 
     case '=':
     {
-        if (tempTypeGraph->isCustom())
-        {
-            return nullptr; //TODO: structural equality, if struct here check fields recursively
-        }
-        else if (tempTypeGraph->isFloat())
-        {
-            return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
-        }
-        else
-        { // anything else (that passed sem)
-            return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
-        }
+        return equalityHelper(lhsVal, rhsVal, true);
     }
     case T_lessgreater:
     {
-        if (tempTypeGraph->isCustom())
-        {
-            return nullptr; //TODO: structural inequality
-        }
-        else if (tempTypeGraph->isFloat())
-        {
-            return Builder.CreateFCmpONE(lhsVal, rhsVal, "float.cmpnetmp");
-        }
-        else
-        { // anything else (that passed sem)
-            return Builder.CreateICmpNE(lhsVal, rhsVal, "int.cmpnetmp");
-        }
+        llvm::Value *eq = equalityHelper(lhsVal, rhsVal, true);
+        return Builder.CreateNot(eq);
+
     }
     case T_dbleq:
     {
-        if (tempTypeGraph->isCustom())
-        {
-            return nullptr; //TODO: natural equality, if struct here check they are practically the same struct
-        }
-        else if (tempTypeGraph->isFloat())
-        {
-            return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
-        }
-        else
-        { // anything else (that passed sem)
-            return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
-        }
+        return equalityHelper(lhsVal, rhsVal, false);
     }
     case T_exclameq:
     {
-        if (tempTypeGraph->isCustom())
-        {
-            return nullptr; //TODO: natural inequality
-        }
-        else if (tempTypeGraph->isFloat())
-        {
-            return Builder.CreateFCmpONE(lhsVal, rhsVal, "float.cmpnetmp");
-        }
-        else
-        { // anything else (that passed sem)
-            return Builder.CreateICmpNE(lhsVal, rhsVal, "int.cmpnetmp");
-        }
+        llvm::Value *eq = equalityHelper(lhsVal, rhsVal, false);
+        return Builder.CreateNot(eq);
     }
     case '<':
     {
