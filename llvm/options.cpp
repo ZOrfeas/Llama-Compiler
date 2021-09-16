@@ -204,18 +204,16 @@ void OptionList::executeOptions(Program *p)
     }
     if (inference)
     {
-        bool infSuccess = inf.solveAll(false);
         if (idTypes.isActivated())
         {
             //printHeader("Types of identifiers");
             p->printIdTypeGraphs();
             //std::cout << std::endl;
         }
+        
         // this is required to print idTypeGraphs even if inference fails
-        if (!infSuccess)  {
-            std::cerr << "Exiting ...\n";
-            exit(1);
-        }
+        bool infSuccess = inf.solveAll(false);
+        if (!infSuccess) exit(1);
     }
     if (compile)
     {
