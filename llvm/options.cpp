@@ -204,6 +204,7 @@ void OptionList::executeOptions(Program *p)
     }
     if (inference)
     {
+        bool infSuccess = inf.solveAll(false);
         if (idTypes.isActivated())
         {
             //printHeader("Types of identifiers");
@@ -212,7 +213,6 @@ void OptionList::executeOptions(Program *p)
         }
         
         // this is required to print idTypeGraphs even if inference fails
-        bool infSuccess = inf.solveAll(false);
         if (!infSuccess) exit(1);
     }
     if (compile)
