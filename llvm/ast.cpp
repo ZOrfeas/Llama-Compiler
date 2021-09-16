@@ -44,12 +44,12 @@ void Identifier::printIdLine(int lineWidth, int idWidth, int typeWidth)
     std::cout << std::endl;
 }
 
-void AST::printError(std::string msg)
+void AST::printError(std::string msg, bool crash)
 {
     std::string intro = "Error at line " + std::to_string(line_number) + ": ";
     printColorString(intro, intro.size(), 1, 31);
     std::cout << msg << std::endl;
-    exit(1);
+    if (crash) exit(1);
 }
 void AST::printIdTypeGraphs()
 {

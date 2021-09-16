@@ -14,7 +14,8 @@ TypeGraph *type_char = tt.lookupType("char")->getTypeGraph();
 void AST::sem()
 {
 }
-void AST::checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
+void AST::checkTypeGraphs(TypeGraph *t1, TypeGraph *t2,
+    std::function<void(void)> *errCallback)
 {
     // if (!t1->isUnknown() && !t2->isUnknown())
     // {
@@ -25,7 +26,7 @@ void AST::checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg)
     // }
     // else
     // {
-    inf.addConstraint(t1, t2, line_number, msg);
+    inf.addConstraint(t1, t2, line_number, errCallback);
     // }
 }
 
@@ -435,7 +436,14 @@ TypeGraph *Expr::get_TypeGraph()
 }
 void Expr::type_check(TypeGraph *t, std::string msg)
 {
-    checkTypeGraphs(TG, t, msg + ", " + TG->stringifyTypeClean() + " given.");
+    checkTypeGraphs(TG, t, new std::function<void(void)>(
+        [=]() {
+            printError(
+                msg + ", " + inf.deepSubstitute(TG)->stringifyTypeClean() + " given.",
+                false
+            );
+        }
+    ));
 }
 void Expr::checkIntCharFloat(std::string msg)
 {
@@ -548,8 +556,14 @@ void UnOp::sem()
         // to ensure that expr is in fact a ref
         TypeGraph *unknown = new UnknownTypeGraph(false, true, false);
         TypeGraph *ref_t = new RefTypeGraph(unknown);
-        inf.addConstraint(t_expr, ref_t, line_number,
-                          std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
+        inf.addConstraint(t_expr, ref_t, line_number, new std::function<void(void)>(
+            [=]() {
+                printError(
+                    std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean(),
+                    false
+                );
+            }
+        ));
 
         TG = ref_t->getContainedType();
         break;
@@ -560,8 +574,14 @@ void UnOp::sem()
         // to ensure that expr is in fact a ref
         TypeGraph *unknown_t = new UnknownTypeGraph(false, true, false);
         TypeGraph *ref_t = new RefTypeGraph(unknown_t);
-        inf.addConstraint(t_expr, ref_t, line_number,
-                          std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean());
+        inf.addConstraint(t_expr, ref_t, line_number, new std::function<void(void)>(
+            [=]() {
+                printError(
+                    std::string("Expected ref, got ") + inf.deepSubstitute(t_expr)->stringifyTypeClean(),
+                    false
+                );
+            }
+        ));
 
         TG = type_unit;
         break;
@@ -754,9 +774,14 @@ void Dim::sem()
 
     ArrayTypeGraph *constraintArray =
         new ArrayTypeGraph(-1, new UnknownTypeGraph(), i);
-    inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number,
-                      std::string("Needs array of at least ") + std::to_string(i) + " dimensions");
-
+    inf.addConstraint(arr->getTypeGraph(), constraintArray, line_number, new std::function<void(void)>(
+        [=]() {
+            printError(
+                std::string("Needs array of at least ") + std::to_string(i) + " dimensions",
+                false
+            );
+        }
+    ));
     TG = type_int;
 }
 
@@ -791,9 +816,13 @@ void FunctionCall::sem()
     {
         // Check whether the call matches the definitions
         count = definitionTypeGraph->getParamCount();
-        if (count != (int)expr_list.size())
+        if (count > (int)expr_list.size())
         {
             printError("Partial function call not allowed");
+        }
+        if (count < (int)expr_list.size())
+        {
+            printError("Too many arguments given to function");
         }
 
         std::string err = "Type mismatch on parameter No. ";
@@ -890,7 +919,11 @@ void Pattern::checkPatternTypeGraph(TypeGraph *t)
 void PatternLiteral::checkPatternTypeGraph(TypeGraph *t)
 {
     literal->sem();
-    checkTypeGraphs(t, literal->get_TypeGraph(), "Literal is not a valid pattern for given type");
+    checkTypeGraphs(t, literal->get_TypeGraph(), new std::function<void(void)>(
+        [=]() {
+            printError("Literal is not a valid pattern for given type", false);
+        }
+    ));
 }
 void PatternId::checkPatternTypeGraph(TypeGraph *t)
 {
@@ -905,7 +938,11 @@ void PatternConstr::checkPatternTypeGraph(TypeGraph *t)
     constrTypeGraph = dynamic_cast<ConstructorTypeGraph *>(c->getTypeGraph());
 
     // Check that toMatch is of the same type as constructor or force it to be
-    checkTypeGraphs(t, constrTypeGraph->getCustomType(), "Constructor is not of the same type as the expression to match");
+    checkTypeGraphs(t, constrTypeGraph->getCustomType(), new std::function<void(void)>(
+        [=]() {
+            printError("Constructor is not of the same type as the expression to match", false);
+        }
+    ));
 
     int count = constrTypeGraph->getFieldCount();
     if (count != (int)pattern_list.size())
@@ -953,7 +990,11 @@ void Match::sem()
             curr = c->get_exprTypeGraph();
 
             // Check that they are of the same type or force them to be
-            checkTypeGraphs(prev, curr, "Results of match have different types");
+            checkTypeGraphs(prev, curr, new std::function<void(void)>(
+                [=]() {
+                    printError("Results of match have different types", false);
+                }
+            ));
 
             // Move prev
             prev = curr;

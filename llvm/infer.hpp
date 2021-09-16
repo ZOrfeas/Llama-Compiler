@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 #include "types.hpp"
 
 /** Represents a single constraint */
@@ -12,12 +13,13 @@ class Constraint {
     int lineno;
     std::string msg;
 public:
-    Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, std::string msg);
+    Constraint(TypeGraph *lhs, TypeGraph *rhs, int lineno);
     /** Returns a container compatible reference wrapper to the lhs of the constraint */
     TypeGraph* getLhs();
     /** Returns a container compatible reference wrapper to the rhs of the constraint */
     TypeGraph* getRhs();
-    std::string getMsg();
+    std::function<void(void)> *errCallback;
+    void setErrCallback(std::function<void(void)> *callback);
     int getLineNo();
     std::string stringify();
     ~Constraint();
@@ -49,14 +51,14 @@ class Inferer {
     // helper for occurs check
     bool isOrOccurs(TypeGraph *unknownType, TypeGraph *candidateType);
     // Solves and removes a constraint if possible
-    void solveOne(Constraint *constraint);
+    bool solveOne(Constraint *constraint);
     // prints logs to stdout
     void log(std::string msg);
     // prints error to stdout and exits
-    void error(std::string msg);
     bool debug;
 public:
     Inferer(bool debug = false);
+    void error(std::string msg);
     std::vector<Constraint *>* getConstraints();
     std::map<std::string, TypeGraph *>* getSubstitutions();
     TypeGraph* getSubstitutedLhs(Constraint *constraint);
@@ -72,7 +74,8 @@ public:
      * @param rhs pointer to rhs
      * @param lineno line where constraint was created
      */
-    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno, std::string msg = "");
+    void addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,
+        std::function<void(void)> *errCallback = nullptr);
     void initSubstitution(std::string name);
     bool checkAllSubstituted(bool err = true);
     void enable_logs();

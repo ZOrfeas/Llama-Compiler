@@ -219,8 +219,8 @@ std::string ArrayTypeGraph::stringifyType() {
            "\033[0m";
 }
 std::string ArrayTypeGraph::stringifyTypeClean() {
-    return stringifyDimensions() + " " +
-           getContainedType()->stringifyTypeClean();
+    return std::string("(") + stringifyDimensions() + " " +
+           getContainedType()->stringifyTypeClean() + std::string(")");
 }
 TypeGraph* ArrayTypeGraph::getContainedType() { return Type; }
 int ArrayTypeGraph::getDimensions() {

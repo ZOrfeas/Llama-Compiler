@@ -107,8 +107,8 @@ public:
     void printLLVMIR();
     void emitObjectCode(const char *filename);
     void emitAssemblyCode();
-    void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::string msg);
-    void printError(std::string msg);
+    void checkTypeGraphs(TypeGraph *t1, TypeGraph *t2, std::function<void(void)> *errCallback);
+    void printError(std::string msg, bool crash = true);
     virtual void insertToTable();
     void insertBasicToSymbolTable(std::string id, TypeGraph *t);
     void insertRefToSymbolTable(std::string id, TypeGraph *t);
