@@ -54,7 +54,8 @@ LongOption
     // Main options
     optimise("O", "Produces code and runs optimisations on it"),
     llvmIR("i", "Prints LLVM IR code"),
-    printFinalCode("f", "Prints final code"),
+    printObjectCode("f", "Prints object code"),
+    printAssemblyCode("S", "Prints assembly code"),
     outputFile("o", "Prints output to file specified", required_argument),
 
     // Auxiliary options for debug
@@ -225,7 +226,11 @@ void OptionList::executeOptions(Program *p)
         {
             p->printLLVMIR();
         }
-        if (printFinalCode.isActivated())
+        if (printAssemblyCode.isActivated())
+        {
+            p->emitAssemblyCode();
+        }
+        if (printObjectCode.isActivated())
         {
             if(filename == "")
                 p->emitObjectCode("a.o");

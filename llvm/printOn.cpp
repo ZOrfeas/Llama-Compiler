@@ -2,6 +2,7 @@
 #include <iomanip>
 
 #include "ast.hpp"
+#include "parser.hpp"
 
 const std::string type_string[] = {"unit", "int", "float", "bool", "char"};
 
@@ -275,9 +276,43 @@ void Unit_literal::printOn(std::ostream &out) const
     closeBlock(out);
 }
 
+std::string opToString(int op)
+{
+    switch (op)
+    {
+        case '!':
+        case '+':
+        case '-': 
+        case '*':
+        case '/':
+        case '=':
+        case '<':
+        case '>':
+        case ';':           return std::string(1, char(op));
+        case T_mod:         return "mod";
+        case T_plusdot:     return "+.";
+        case T_minusdot:    return "-.";
+        case T_stardot:     return "*.";
+        case T_slashdot:    return "/.";
+        case T_dblstar:     return "**";
+        case T_dblbar:      return "||";
+        case T_dblampersand:return "&&";
+        case T_lessgreater: return "<>";
+        case T_dbleq:       return "==";
+        case T_exclameq:    return "!=";
+        case T_leq:         return "<=";
+        case T_geq:         return ">=";
+        case T_coloneq:     return ":=";
+        case T_not:         return "not";
+        case T_delete:      return "delete";
+        default:            return ""; break;
+    }
+}
 void BinOp::printOn(std::ostream &out) const
 {
-    printHeader(out, "BinOp " + std::to_string(op));
+    std::string opStr = opToString(op);
+    if(opStr == "") printHeader(out, "BinOp " + std::to_string(op));
+    else printHeader(out, "BinOp " + opStr);
 
     createBlock(out);
     out << *lhs;
@@ -286,10 +321,12 @@ void BinOp::printOn(std::ostream &out) const
 }
 void UnOp::printOn(std::ostream &out) const
 {
-    printHeader(out, "UnOp " + std::to_string(op));
+    std::string opStr = opToString(op);
+    if(opStr == "") printHeader(out, "UnOp " + std::to_string(op));
+    else printHeader(out, "UnOp " + opStr);
 
     createBlock(out);
-    out << *expr;
+    out << *expr; 
     closeBlock(out);
 }
 void New::printOn(std::ostream &out) const
@@ -388,9 +425,9 @@ void ArrayAccess::printOn(std::ostream &out) const
 void PatternLiteral::printOn(std::ostream &out) const
 {
     printHeader(out, "PatternLiteral");
-    out << *literal;
 
     createBlock(out);
+    out << *literal;
     closeBlock(out);
 }
 void PatternId::printOn(std::ostream &out) const
