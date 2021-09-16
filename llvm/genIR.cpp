@@ -286,7 +286,7 @@ llvm::Value *Constant::compile()
     return nullptr;
 }
 
-void Function::generateLLVMPrototype()
+llvm::Function *Function::generateLLVMPrototype()
 {
     llvm::Function *newFunction;
     if (llvm::FunctionType *newFuncType =
@@ -300,8 +300,8 @@ void Function::generateLLVMPrototype()
         std::cout << "Internal error, FunctionType dyn_cast failed\n";
         exit(1);
     }
-    LLValues.insert({id, newFunction});
     funcPrototype = newFunction;
+    return newFunction;
 }
 void Function::generateBody()
 {
@@ -329,10 +329,12 @@ void Function::generateBody()
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
+std::string Function::getId() { return id; }
 llvm::Value *Function::compile()
 {
-    generateLLVMPrototype();
+    llvm::Function *newFunction = generateLLVMPrototype();
     generateBody();
+    LLValues.insert({id, newFunction});
     return nullptr;
 }
 llvm::Value *Array::compile()
@@ -352,6 +354,7 @@ llvm::Value *Array::compile()
     auto *LLVMMAllocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
                                                         nullptr,
+                                                        // nullptr,
                                                         TheModule->getFunction("GC_malloc_atomic"), 
                                                         "arr.def.malloc");
     llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
@@ -385,6 +388,7 @@ llvm::Value *Array::compile()
                                      LLVMContainedType,
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
+                                    //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic"),
                                      "arr.def.malloc");
 
@@ -424,7 +428,10 @@ llvm::Value *Variable::compile()
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr, TheModule->getFunction("GC_malloc_atomic"), "var.def.malloc");
+                                                        nullptr, 
+                                                        // nullptr,
+                                                        TheModule->getFunction("GC_malloc_atomic"), 
+                                                        "var.def.malloc");
     llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
     // Add the variable to the map
@@ -463,7 +470,8 @@ llvm::Value *Letdef::compile()
         // Get all function signatures
         for (auto func : functions)
         {
-            func->generateLLVMPrototype();
+            llvm::Function *newFunction = func->generateLLVMPrototype();
+            LLValues.insert({func->getId(), newFunction});
         }
         // Compile bodies
         for (auto func : functions)
@@ -507,7 +515,10 @@ llvm::Value *String_literal::compile()
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         arrCharType->getPointerElementType(),
                                                         llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                        nullptr, TheModule->getFunction("GC_malloc_atomic"), "str.literal.malloc");
+                                                        nullptr, 
+                                                        // nullptr,
+                                                        TheModule->getFunction("GC_malloc_atomic"),
+                                                        "str.literal.malloc");
     llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
 
     // Allocate memory for string
@@ -517,6 +528,7 @@ llvm::Value *String_literal::compile()
                                      i8,
                                      llvm::ConstantExpr::getSizeOf(i8),
                                      LLVMArraySize,
+                                    //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic"),
                                      "stringalloc");
 
@@ -591,7 +603,29 @@ llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
 
 llvm::Value *BinOp::allStructFieldsEqual(llvm::Value *lhsVal, llvm::Value *rhsVal)
 {
-    
+    llvm::StructType *strType;
+    llvm::Value *lhsFieldPtr, *rhsFieldPtr;
+    llvm::Value *accumulator = c1(true), *current;
+
+    if ((strType = llvm::dyn_cast<llvm::StructType>(lhsVal->getType()->getPointerElementType()))) {
+        int i = 0;
+        for (auto &element: strType->elements()) {
+            lhsFieldPtr = Builder.CreateGEP(lhsVal, {c32(0), c32(i)}, "strct.lhsfieldtmp");
+            rhsFieldPtr = Builder.CreateGEP(rhsVal, {c32(0), c32(i)}, "strct.rhsfieldtmp");
+            if (!rhsFieldPtr->getType()->getPointerElementType()->isStructTy())
+                current = equalityHelper(Builder.CreateLoad(lhsFieldPtr),
+                                         Builder.CreateLoad(rhsFieldPtr), true);
+            else {
+                current = equalityHelper(lhsFieldPtr, rhsFieldPtr, true);
+            }
+            accumulator = Builder.CreateAnd({accumulator, current});
+            i++;
+        }
+        return accumulator;
+    } else {
+        std::cout << "Internal error, allStructFieldsEqual called for something other than a structpointer\n";
+        exit(1);
+    }
 }
 llvm::Value *BinOp::equalityHelper(llvm::Value *lhsVal,
                                    llvm::Value *rhsVal,
@@ -620,7 +654,8 @@ llvm::Value *BinOp::equalityHelper(llvm::Value *lhsVal,
     if (cmpType == flt) {
         return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
     }
-
+    std::cout << "Internal error equalityHelper unreachable spot reached\n";
+    exit(1);
 }
 llvm::Value *BinOp::compile()
 {
@@ -661,23 +696,32 @@ llvm::Value *BinOp::compile()
         return Builder.CreateAnd({lhsVal, rhsVal});
 
     case '=':
-    {
+    { // structural equality, they contain the same values
+        if (tempTypeGraph->isCustom()) {
+            Builder.CreateCall(TheModule->getFunction("writeString"),
+                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-equality !@$#$!@#$\n")});
+            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+            return c1(false);
+        }
         return equalityHelper(lhsVal, rhsVal, true);
     }
     case T_lessgreater:
-    {
-        llvm::Value *eq = equalityHelper(lhsVal, rhsVal, true);
-        return Builder.CreateNot(eq);
-
+    { // structural inequality, they do not contain the same values
+        if (tempTypeGraph->isCustom()) {
+            Builder.CreateCall(TheModule->getFunction("writeString"),
+                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-inequality !@$#$!@#$\n")});
+            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+            return c1(false);
+        }
+        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, true));
     }
     case T_dbleq:
-    {
+    { // natural equality, they are the same object
         return equalityHelper(lhsVal, rhsVal, false);
     }
     case T_exclameq:
-    {
-        llvm::Value *eq = equalityHelper(lhsVal, rhsVal, false);
-        return Builder.CreateNot(eq);
+    { // natural equality, they are not the same object
+        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, false));
     }
     case '<':
     {
@@ -795,6 +839,7 @@ llvm::Value *New::compile()
                                      newType,
                                      llvm::ConstantExpr::getSizeOf(newType),
                                      nullptr,
+                                    //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic_uncollectable"),
                                      instrName);
 
@@ -1005,7 +1050,9 @@ llvm::Value *ConstructorCall::compile()
         machinePtrType,
         customType,
         llvm::ConstantExpr::getSizeOf(customType),
-        nullptr, TheModule->getFunction("GC_malloc_atomic"),
+        nullptr, 
+        // nullptr,
+        TheModule->getFunction("GC_malloc_atomic"),
         "customstruct.malloc");
     llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
 
@@ -1153,6 +1200,8 @@ llvm::Value *Match::compile()
     /*************** NO MATCH ***************/
     TheFunction->getBasicBlockList().push_back(NextClauseBB);
     Builder.SetInsertPoint(NextClauseBB);
+    Builder.CreateCall(TheModule->getFunction("writeString"),
+        {Builder.CreateGlobalStringPtr("Runtime Error: No clause matches given expression\n")});
     Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
 
     // Never going to get here but llvm complains anyway
