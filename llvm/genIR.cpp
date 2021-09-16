@@ -286,7 +286,7 @@ llvm::Value *Constant::compile()
     return nullptr;
 }
 
-void Function::generateLLVMPrototype()
+llvm::Function *Function::generateLLVMPrototype()
 {
     llvm::Function *newFunction;
     if (llvm::FunctionType *newFuncType =
@@ -300,8 +300,8 @@ void Function::generateLLVMPrototype()
         std::cout << "Internal error, FunctionType dyn_cast failed\n";
         exit(1);
     }
-    LLValues.insert({id, newFunction});
     funcPrototype = newFunction;
+    return newFunction;
 }
 void Function::generateBody()
 {
@@ -329,10 +329,12 @@ void Function::generateBody()
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
+std::string Function::getId() { return id; }
 llvm::Value *Function::compile()
 {
-    generateLLVMPrototype();
+    llvm::Function *newFunction = generateLLVMPrototype();
     generateBody();
+    LLValues.insert({id, newFunction});
     return nullptr;
 }
 llvm::Value *Array::compile()
@@ -468,7 +470,8 @@ llvm::Value *Letdef::compile()
         // Get all function signatures
         for (auto func : functions)
         {
-            func->generateLLVMPrototype();
+            llvm::Function *newFunction = func->generateLLVMPrototype();
+            LLValues.insert({func->getId(), newFunction});
         }
         // Compile bodies
         for (auto func : functions)
@@ -694,19 +697,23 @@ llvm::Value *BinOp::compile()
 
     case '=':
     { // structural equality, they contain the same values
-        // return equalityHelper(lhsVal, rhsVal, true);
-        Builder.CreateCall(TheModule->getFunction("writeString"),
-            {Builder.CreateGlobalStringPtr("structural-equality\n")});
-        Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
-        return nullptr;
+        if (tempTypeGraph->isCustom()) {
+            Builder.CreateCall(TheModule->getFunction("writeString"),
+                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-equality !@$#$!@#$\n")});
+            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+            return c1(false);
+        }
+        return equalityHelper(lhsVal, rhsVal, true);
     }
     case T_lessgreater:
     { // structural inequality, they do not contain the same values
-        // return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, true));
-        Builder.CreateCall(TheModule->getFunction("writeString"),
-            {Builder.CreateGlobalStringPtr("structural-inequality\n")});
-        Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
-        return nullptr;
+        if (tempTypeGraph->isCustom()) {
+            Builder.CreateCall(TheModule->getFunction("writeString"),
+                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-inequality !@$#$!@#$\n")});
+            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+            return c1(false);
+        }
+        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, true));
     }
     case T_dbleq:
     { // natural equality, they are the same object

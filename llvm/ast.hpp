@@ -314,7 +314,8 @@ public:
     // - Generates the function prototype
     // - creates a scope, inserts the paramete names and values
     // - calls expr->codegen()
-    void generateLLVMPrototype();
+    llvm::Function *generateLLVMPrototype();
+    std::string getId();
     void generateBody();
     virtual llvm::Value *compile() override;
     virtual void printOn(std::ostream &out) const override;
