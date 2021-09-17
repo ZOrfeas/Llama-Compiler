@@ -394,7 +394,7 @@ pattern_list
 
 %%
 void yyerror(const char *msg) {
-    printf("Error at line %d: %s\n", yylineno, msg);
+    fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
     exit(1);
 }
 
