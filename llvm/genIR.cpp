@@ -329,7 +329,8 @@ void Function::generateBody()
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
-std::string Function::getId() { return id; }
+std::string DefStmt::getId() 
+{ return id; }
 llvm::Value *Function::compile()
 {
     llvm::Function *newFunction = generateLLVMPrototype();

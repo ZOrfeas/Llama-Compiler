@@ -232,8 +232,9 @@ void Tdef::insertToTable()
 }
 void Constant::insertToTable()
 {
-    insertBasicToSymbolTable(id, T->get_TypeGraph());
-
+    TG = T->get_TypeGraph();
+    
+    insertBasicToSymbolTable(id, TG);
     addToIdList(id);
 }
 void Function::insertToTable()
@@ -246,8 +247,9 @@ void Function::insertToTable()
     {
         F->addParam(p->get_TypeGraph());
     }
-    TG = F->getTypeGraph();
     addToIdList(id);
+
+    TG = F->getTypeGraph();
 }
 void Par::insertToTable()
 {
@@ -275,8 +277,9 @@ void Array::insertToTable()
         insertArrayToSymbolTable(id, unknown_contained_type, d);
         inf.addConstraint(unknown_contained_type, contained_type, line_number);
     }
-
     addToIdList(id);
+    
+    TG = new ArrayTypeGraph(d, contained_type);
 }
 void Variable::insertToTable()
 {
@@ -295,6 +298,8 @@ void Variable::insertToTable()
     }
 
     addToIdList(id);
+    
+    TG = ref_type;
 }
 
 Type *Def::get_type()
