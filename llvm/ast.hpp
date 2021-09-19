@@ -66,6 +66,10 @@ extern std::vector<Identifier *> AST_identifier_list;
 
 /********************************************************************/
 
+class Function;
+class LivenessEntry;
+class LivenessFunctionEntry;
+
 class AST
 {
 protected:
@@ -102,7 +106,7 @@ public:
     virtual ~AST();
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
-    virtual void liveness(std::string prevFunc);
+    virtual void liveness(Function *prevFunc);
     virtual llvm::Value *compile();
     void start_compilation(const char *programName, bool optimize = false);
     void printLLVMIR();
@@ -305,7 +309,7 @@ public:
     // - if it is a true Constant definition stores the result of the expr->codegen()
     // - Danger if it's a copy of an already existing function or other edge cases
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class Function : public Constant
@@ -314,7 +318,8 @@ private:
     std::vector<Par *> par_list;
     //TypeGraph *TG;
 
-    std::vector<TypeGraph *> external;
+    std::map<std::string, LivenessEntry *> external = {};
+    std::map<std::string, Function *> dependent = {};
     llvm::Function *funcPrototype;
 
 public:
@@ -328,8 +333,10 @@ public:
     llvm::Function *generateLLVMPrototype();
     void generateBody();
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
-    void addExternal(TypeGraph *t);
+    virtual void liveness(Function *prevFunc) override;
+    void addExternal(LivenessEntry *l);
+    void addDependent(Function *f);
+    friend void mergeExternal(Function *fp, Function *fd);
     virtual void printOn(std::ostream &out) const override;
 };
 class Mutable : public Def
@@ -352,7 +359,7 @@ public:
     // these struct types contain a pointer to the contained type,
     // and the length of every dimension (could be done as independent fields, or in an array)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class Variable : public Mutable
@@ -382,7 +389,7 @@ public:
     // in order compile the definitions contained
     // (recursive or not is irrelevant for functions if prototypes are defined at the start)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class Typedef : public Definition
@@ -413,7 +420,7 @@ public:
     void append(Definition *d);
     // in order compile all the contained definitions
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 
@@ -430,7 +437,7 @@ public:
     virtual void sem() override;
     // open scope, do the definition, compile the expression, return its result Value*
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 
@@ -535,7 +542,7 @@ public:
                                 llvm::Value *rhsVal,
                                 bool structural);
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class UnOp : public Expr
@@ -549,7 +556,7 @@ public:
     virtual void sem() override;
     // switch-case for every possible operator
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class New : public Expr
@@ -576,7 +583,7 @@ public:
     // phi node may be necessary, avoidable if we can be sure
     // that the condition is "constant" (pointer dereference, or some shit)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class For : public Expr
@@ -591,7 +598,7 @@ public:
     virtual void sem() override;
     // could possibly alloc a variable to use for the loop
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class If : public Expr
@@ -605,7 +612,7 @@ public:
     // again think about phi nodes, otherwise its a simple if compilation,
     // noteworthy: no 'else' means else branch just jumps to end
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 
@@ -621,7 +628,7 @@ public:
     // llvm may have our backs, may store some runtime (or at least the expression)
     // info about the length of an array (through its type system)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 
@@ -635,7 +642,7 @@ public:
     virtual void sem() override;
     // lookup and return the Value* stored, special case if it's a function
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class FunctionCall : public ConstantCall
@@ -643,12 +650,15 @@ class FunctionCall : public ConstantCall
 private:
     std::vector<Expr *> expr_list;
 
+    // Will be filled during liveness
+    Function *f;
+
 public:
     FunctionCall(std::string *id, std::vector<Expr *> *expr_list);
     virtual void sem() override;
     // get the function prototype and call it, return the Value* of the call
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class ConstructorCall : public Expr
@@ -663,7 +673,7 @@ public:
     virtual void sem() override;
     // creates a struct (emplaces it in the big struct sets the enum?)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class ArrayAccess : public Expr
@@ -679,7 +689,7 @@ public:
     // perform the calculation of the actual address before dereferencing
     // (We could if we wanted to, check bounds at runtime and exit with error code)
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 
@@ -714,11 +724,14 @@ class PatternId : public Pattern
 protected:
     std::string id;
 
+    // Will be filled by checkPatternTypeGraph
+    TypeGraph *TG;
+
 public:
     PatternId(std::string *id);
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class PatternConstr : public Pattern
@@ -757,7 +770,7 @@ public:
     // For custom types check the enum to match the constructor call each time,
     // if it matches dereference once and check the inner values recursively
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };
 class Match : public Expr
@@ -771,6 +784,6 @@ public:
     virtual void sem() override;
     // generate code for each clause, return the value of its result
     virtual llvm::Value *compile() override;
-    virtual void liveness(std::string prevFunc) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
 };

@@ -22,12 +22,13 @@ sem.o: sem.cpp ast.hpp parser.hpp
 symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp
 infer.o: infer.cpp infer.hpp types.hpp
+liveness.o: liveness.cpp ast.hpp
 genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp 
 libIR.o: libIR.cpp ast.hpp
 options.o: options.cpp ast.hpp infer.hpp symbol.hpp
 
 # compiler: lexer.o parser.o symbol.o
-compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o genIR.o options.o
+compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o liveness.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
 
 clean:

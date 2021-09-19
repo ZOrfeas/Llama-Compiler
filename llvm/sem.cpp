@@ -934,8 +934,10 @@ void PatternId::checkPatternTypeGraph(TypeGraph *t)
 {
     // Insert a new symbol with name id and type the same as that of e
     insertBasicToSymbolTable(id, t);
-
+    
     addToIdList(id);
+
+    TG = t;
 }
 void PatternConstr::checkPatternTypeGraph(TypeGraph *t)
 {
