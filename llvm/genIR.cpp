@@ -71,12 +71,30 @@ public:
             delete poppedScope;
         }
     }
+    int getCurrScope()
+    {
+        return (table->size() - 1);
+    }
+    int getScopeOf(std::string name)
+    {
+        int scope = getCurrScope();
+        for (auto it = table->rbegin(); it != table->rend(); it++)
+        {
+            scope--;
+            if (nameInScope(name, *it))
+                break;
+        }
+        return scope;
+    }
     ~LLTable() {}
 };
 LLTable<llvm::Value *> LLValues;
 // this can help with the function pointer stuff (member function getType())
 // LLTable<llvm::Function*> LLFunctions;
 // LLTable<llvm::AllocaInst> LLAllocas;
+
+// Keeps track of the scope of the function inside which we are writing
+std::vector<int> functionScopeStack = { 0 };
 
 void openScopeOfAll()
 {
@@ -89,6 +107,29 @@ void closeScopeOfAll()
     LLValues.closeScope();
     // LLFunctions.closeScope();
     // LLAllocas.closeScope();
+}
+llvm::Value *accessSymbolOrMakeGlobal(std::string name)
+{
+    int currFuncScope = functionScopeStack.back();
+    int symbolScope = LLValues.getScopeOf(name);
+
+    // If the symbol was defined inside the function body all good
+    if(currFuncScope <= symbolScope)
+    {
+        return LLValues[name];
+    }
+
+    // Otherwise make symbol global so that it can be accessed
+    else
+    {
+        /*GlobalVariable* gvar =
+            new GlobalVariable(M, 
+                     data->getType(), 
+                     true,  
+                     GlobalValue::ExternalLinkage, 
+                     data, 
+                     "fname_" + F.getName().str());*/
+    }
 }
 
 /*********************************/
@@ -1023,6 +1064,17 @@ llvm::Value *ConstantCall::compile()
 }
 llvm::Value *FunctionCall::compile()
 {
+    /*
+    std::cout << "About to dereference " << id << std::endl;
+    auto externalStuff = f->getExternal();
+    std::cout << "External symbols needed for function call " << id << ": ";
+    for(auto const x: externalStuff)
+    {
+        std::cout << x.first << ":" << x.second->getTypeGraph()->stringifyTypeClean() << " ";
+    }
+    std::cout << std::endl;
+    */
+
     llvm::Value *tempFunc = LLValues[id]; // this'll be a Function, due to sem (hopefully)
     std::vector<llvm::Value *> argsGiven;
     for (auto &arg : expr_list)

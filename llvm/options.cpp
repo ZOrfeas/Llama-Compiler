@@ -217,6 +217,8 @@ void OptionList::executeOptions(Program *p)
     }
     if (compile)
     {
+        p->liveness(nullptr);
+        
         bool opt = optimise.isActivated();
         p->start_compilation("a.ll", opt);
         
