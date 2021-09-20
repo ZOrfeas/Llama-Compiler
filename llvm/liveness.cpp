@@ -10,31 +10,31 @@
  */
 
 LivenessEntry::LivenessEntry(int scope, std::string id, TypeGraph *typegraph, Function *f)
-        : scope(scope), id(id), typegraph(typegraph), f(f) {}
+    : scope(scope), id(id), typegraph(typegraph), f(f) {}
 TypeGraph *LivenessEntry::getTypeGraph() 
-    {
-        return typegraph;
-    }
+{
+    return typegraph;
+}
 std::string LivenessEntry::getId()
-    {
-        return id;
-    }
+{
+    return id;
+}
 int LivenessEntry::getScope()
-    {
-        return scope;
-    }
+{
+    return scope;
+}
 Function *LivenessEntry::getFunction()
-    {
-        return f;
-    }
+{
+    return f;
+}
 void LivenessEntry::visit()
-    {
-        visited = true;
-    }
+{
+    visited = true;
+}
 bool LivenessEntry::isVisited()
-    {
-        return visited;
-    }
+{
+    return visited;
+}
 
 
 /*
@@ -182,15 +182,8 @@ void Letdef::liveness(Function *prevFunc)
         // Insert functions to table
         for(auto *d: def_list)
         {
-            if(d->isFunctionDefinition())
-            {
-                Function *f = dynamic_cast<Function *>(d);
-                insertSymbolToLTable(d->getId(), d->getTypeGraph(), f); 
-            }
-            else 
-            {
-                insertSymbolToLTable(d->getId(), d->getTypeGraph());        
-            }
+            Function *f = dynamic_cast<Function *>(d);
+            insertSymbolToLTable(d->getId(), d->getTypeGraph(), f); 
         }
 
         // Call liveness on each def and make them visited
@@ -199,6 +192,23 @@ void Letdef::liveness(Function *prevFunc)
             d->liveness(prevFunc);
             makeVisitedOnLTable(d->getId());
         }
+
+        //! Inefficient but works
+        // Move all external to the first function
+        Function *firstFunc = dynamic_cast<Function *>(def_list[0]);
+        for (auto *d: def_list)
+        {
+            Function *f = dynamic_cast<Function *>(d);
+            insertExternalToFrom(firstFunc, f);
+        }
+        
+        // From the first function give them everywhere
+        for (auto *d: def_list)
+        {
+            Function *f = dynamic_cast<Function *>(d);
+            insertExternalToFrom(f, firstFunc);
+        }
+
     }
     else
     {
@@ -269,7 +279,21 @@ void Function::addDependent(Function *f)
 }
 void insertExternalToFrom(Function *funcDependent, Function *func)
 {
-    funcDependent->external.insert(func->external.begin(), func->external.end());
+    int funcDependentScope = funcDependent->getScope();
+    for(auto const it: func->external)
+    {
+        // If symbol has been defined inside dependent func skip it
+        int extSymbolScope = it.second->getScope();
+        if(funcDependentScope < extSymbolScope)
+        {
+            continue;
+        }
+        
+        // Otherwise add it to dependent func too
+        funcDependent->external[it.first] = it.second;
+    }
+    
+    //funcDependent->external.insert(func->external.begin(), func->external.end());
 }
 std::map<std::string, LivenessEntry *> Function::getExternal()
 {
@@ -289,10 +313,12 @@ void Function::liveness(Function *prevFunc)
     scope = getCurrScope();
 
     // Add prevFunc as dependent on this function
+    /*
     if(prevFunc)
     {
         addDependent(prevFunc);
     }
+    */
 
     // Create new scope
     openScopeOnLTable();
@@ -307,10 +333,17 @@ void Function::liveness(Function *prevFunc)
     expr->liveness(this);
 
     // Add this function's external symbol dependencies to all
-    // functions dependent on it (and prevFunc)
+    // functions dependent on it
+    /*
     for(auto it = dependent.begin(); it != dependent.end(); it++)
     {
         insertExternalToFrom(it->second, this);
+    }
+    */
+    
+    if(prevFunc)
+    {
+        insertExternalToFrom(prevFunc, this);
     }
 
     // Close scope
@@ -340,8 +373,10 @@ void While::liveness(Function *prevFunc)
 void For::liveness(Function *prevFunc)
 {
     // Open scope
+    openScopeOnLTable();
 
     // Insert id to table
+    insertSymbolToLTable(id, type_int);
 
     // Recursive calls
     start->liveness(prevFunc);
@@ -349,6 +384,7 @@ void For::liveness(Function *prevFunc)
     body->liveness(prevFunc);
 
     // Close scope
+    closeScopeOnLTable();
 }
 void If::liveness(Function *prevFunc)
 {
@@ -437,10 +473,12 @@ void FunctionCall::liveness(Function *prevFunc)
     }
 
     // If not then prevFunc is dependent on called function
+    /*
     else
     {
         currFunc->addDependent(prevFunc);
     }
+    */
 }
 
 void Match::liveness(Function *prevFunc)

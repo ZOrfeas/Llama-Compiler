@@ -1064,7 +1064,7 @@ llvm::Value *ConstantCall::compile()
 }
 llvm::Value *FunctionCall::compile()
 {
-    /*
+
     std::cout << "About to dereference " << id << std::endl;
     auto externalStuff = f->getExternal();
     std::cout << "External symbols needed for function call " << id << ": ";
@@ -1073,7 +1073,6 @@ llvm::Value *FunctionCall::compile()
         std::cout << x.first << ":" << x.second->getTypeGraph()->stringifyTypeClean() << " ";
     }
     std::cout << std::endl;
-    */
 
     llvm::Value *tempFunc = LLValues[id]; // this'll be a Function, due to sem (hopefully)
     std::vector<llvm::Value *> argsGiven;
