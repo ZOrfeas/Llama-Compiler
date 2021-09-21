@@ -601,63 +601,6 @@ llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
 }
 
 // Operators
-
-llvm::Value *BinOp::allStructFieldsEqual(llvm::Value *lhsVal, llvm::Value *rhsVal)
-{
-    llvm::StructType *strType;
-    llvm::Value *lhsFieldPtr, *rhsFieldPtr;
-    llvm::Value *accumulator = c1(true), *current;
-
-    if ((strType = llvm::dyn_cast<llvm::StructType>(lhsVal->getType()->getPointerElementType()))) {
-        int i = 0;
-        for (auto &element: strType->elements()) {
-            lhsFieldPtr = Builder.CreateGEP(lhsVal, {c32(0), c32(i)}, "strct.lhsfieldtmp");
-            rhsFieldPtr = Builder.CreateGEP(rhsVal, {c32(0), c32(i)}, "strct.rhsfieldtmp");
-            if (!rhsFieldPtr->getType()->getPointerElementType()->isStructTy())
-                current = equalityHelper(Builder.CreateLoad(lhsFieldPtr),
-                                         Builder.CreateLoad(rhsFieldPtr), true);
-            else {
-                current = equalityHelper(lhsFieldPtr, rhsFieldPtr, true);
-            }
-            accumulator = Builder.CreateAnd({accumulator, current});
-            i++;
-        }
-        return accumulator;
-    } else {
-        std::cout << "Internal error, allStructFieldsEqual called for something other than a structpointer\n";
-        exit(1);
-    }
-}
-llvm::Value *BinOp::equalityHelper(llvm::Value *lhsVal,
-                                   llvm::Value *rhsVal,
-                                   bool structural)
-{
-    llvm::Type *cmpType = lhsVal->getType();
-    if (cmpType == unitType) {
-        return c1(true);
-    }
-    if (cmpType->isPointerTy() && 
-        cmpType->getPointerElementType()->isStructTy() && 
-        cmpType->getPointerElementType() != unitType &&
-        structural)
-    {   
-        return allStructFieldsEqual(lhsVal, rhsVal);
-    }
-    if (cmpType->isPointerTy() && !structural) {
-        llvm::Value 
-            *lhsPointerInt = Builder.CreatePtrToInt(lhsVal, machinePtrType, "ptr.cmplhstmp"),
-            *rhsPointerInt = Builder.CreatePtrToInt(rhsVal, machinePtrType, "ptr.cmprhstmp");
-        return Builder.CreateICmpEQ(lhsPointerInt, rhsPointerInt, "ptr.cmpnateqtmp");         
-    }
-    if (cmpType->isIntegerTy()) {
-        return Builder.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
-    }
-    if (cmpType == flt) {
-        return Builder.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
-    }
-    std::cout << "Internal error equalityHelper unreachable spot reached\n";
-    exit(1);
-}
 llvm::Value *BinOp::compile()
 {
     auto lhsVal = lhs->compile(),
@@ -698,31 +641,19 @@ llvm::Value *BinOp::compile()
 
     case '=':
     { // structural equality, they contain the same values
-        if (tempTypeGraph->isCustom()) {
-            Builder.CreateCall(TheModule->getFunction("writeString"),
-                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-equality !@$#$!@#$\n")});
-            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
-            return c1(false);
-        }
-        return equalityHelper(lhsVal, rhsVal, true);
+        return equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder);
     }
     case T_lessgreater:
     { // structural inequality, they do not contain the same values
-        if (tempTypeGraph->isCustom()) {
-            Builder.CreateCall(TheModule->getFunction("writeString"),
-                {Builder.CreateGlobalStringPtr("!@$#$!@#$ structural-inequality !@$#$!@#$\n")});
-            // Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
-            return c1(false);
-        }
-        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, true));
+        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder));
     }
     case T_dbleq:
     { // natural equality, they are the same object
-        return equalityHelper(lhsVal, rhsVal, false);
+        return equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder);
     }
     case T_exclameq:
     { // natural equality, they are not the same object
-        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, false));
+        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder));
     }
     case '<':
     {

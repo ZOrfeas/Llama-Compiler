@@ -213,6 +213,7 @@ public:
 class CustomTypeGraph : public TypeGraph {
     std::string name;
     std::vector<ConstructorTypeGraph *> *constructors;
+    llvm::Function *structEqFunc;
 public:
     CustomTypeGraph(std::string name, 
                     std::vector<ConstructorTypeGraph *> *constructors = new std::vector<ConstructorTypeGraph *>());
@@ -225,6 +226,7 @@ public:
     int getConstructorIndex(ConstructorTypeGraph *c);
     int getConstructorIndex(std::string Id);
     virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
+    llvm::Function* getStructEqFunc(llvm::Module *TheModule);
     ~CustomTypeGraph();
 };
 

@@ -20,7 +20,7 @@ ast.o: ast.cpp lexer.hpp ast.hpp
 printOn.o: printOn.cpp ast.hpp parser.hpp
 sem.o: sem.cpp ast.hpp parser.hpp  
 symbol.o: symbol.cpp symbol.hpp
-types.o: types.cpp types.hpp
+types.o: types.cpp types.hpp ast.hpp
 infer.o: infer.cpp infer.hpp types.hpp
 liveness.o: liveness.cpp ast.hpp
 genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp 

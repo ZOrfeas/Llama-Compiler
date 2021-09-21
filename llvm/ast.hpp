@@ -95,7 +95,6 @@ protected:
     static llvm::ConstantInt *c64(long int n);
     static llvm::Constant *f80(long double d);
     static llvm::Constant *unitVal();
-    std::vector<std::pair<std::string, llvm::Function *>> *genLibGlueLogic();
     static llvm::Function *createFuncAdapterFromUnitToVoid(llvm::Function *unitFunc);
     static llvm::Function *createFuncAdapterFromCharArrToString(llvm::Function *charArrFunc);
     static llvm::Function *createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc);
@@ -107,8 +106,11 @@ public:
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
     virtual void liveness(Function *prevFunc);
+    static llvm::Value *equalityHelper(llvm::Value *lhsVal, llvm::Value *rhsVal,
+                                TypeGraph *type, bool structural, llvm::IRBuilder<> TmpB);
     virtual llvm::Value *compile();
     void start_compilation(const char *programName, bool optimize = false);
+    std::vector<std::pair<std::string, llvm::Function *>> *genLibGlueLogic();
     void printLLVMIR();
     void emitObjectCode(const char *filename);
     void emitAssemblyCode();
@@ -538,9 +540,6 @@ public:
     // switch-case for every possible operator
     llvm::Value *allStructFieldsEqual(llvm::Value *lhsVal,
                                       llvm::Value *rhsVal);
-    llvm::Value *equalityHelper(llvm::Value *lhsVal,
-                                llvm::Value *rhsVal,
-                                bool structural);
     virtual llvm::Value *compile() override;
     virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
