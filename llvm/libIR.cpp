@@ -136,7 +136,7 @@ llvm::Function* adaptReadString(llvm::Function *ReadString, llvm::Module *TheMod
     return readStringAdapted;
 }
 
-llvm::Function *createIncrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal) {
+llvm::Function *createIncrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal, llvm::legacy::FunctionPassManager *TheFPM) {
     llvm::FunctionType *intptr_to_unit =
         llvm::FunctionType::get(unitType, {llvm::Type::getInt32PtrTy(TheModule->getContext())}, false);
     llvm::Function *incrFunc = 
@@ -146,11 +146,11 @@ llvm::Function *createIncrLibFunc(llvm::Module *TheModule, llvm::Type *unitType,
     llvm::Value *prevVal = TmpB.CreateLoad(incrFunc->getArg(0), "prevval");
     TmpB.CreateStore(TmpB.CreateAdd(prevVal, c32_1, "newval"), incrFunc->getArg(0));
     TmpB.CreateRet(unitVal);
-    // incrFunc->print(llvm::outs());
+    TheFPM->run(*incrFunc);
     return incrFunc;
 }
 
-llvm::Function *createDecrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal) {
+llvm::Function *createDecrLibFunc(llvm::Module *TheModule, llvm::Type *unitType, llvm::Value *c32_1, llvm::Value *unitVal, llvm::legacy::FunctionPassManager *TheFPM) {
     llvm::FunctionType *intptr_to_unit =
         llvm::FunctionType::get(unitType, {llvm::Type::getInt32PtrTy(TheModule->getContext())}, false);
     llvm::Function *decrFunc = 
@@ -160,11 +160,11 @@ llvm::Function *createDecrLibFunc(llvm::Module *TheModule, llvm::Type *unitType,
     llvm::Value *prevVal = TmpB.CreateLoad(decrFunc->getArg(0), "prevval");
     TmpB.CreateStore(TmpB.CreateSub(prevVal, c32_1, "newval"), decrFunc->getArg(0));
     TmpB.CreateRet(unitVal);
-    // decrFunc->print(llvm::outs());
+    TheFPM->run(*decrFunc);
     return decrFunc;
 }
 
-llvm::Function *createFloatOfIntLibFunc(llvm::Module *TheModule, llvm::Type *flt) {
+llvm::Function *createFloatOfIntLibFunc(llvm::Module *TheModule, llvm::Type *flt, llvm::legacy::FunctionPassManager *TheFPM) {
     llvm::FunctionType *int_to_float =
         llvm::FunctionType::get(flt, {llvm::Type::getInt32Ty(TheModule->getContext())}, false);
     llvm::Function *floatOfIntFunc =
@@ -173,7 +173,7 @@ llvm::Function *createFloatOfIntLibFunc(llvm::Module *TheModule, llvm::Type *flt
     llvm::IRBuilder<> TmpB(TheModule->getContext()); TmpB.SetInsertPoint(floatOfIntBB);
     llvm::Value *newFloat = TmpB.CreateCast(llvm::Instruction::SIToFP, floatOfIntFunc->getArg(0), flt, "newfloat");
     TmpB.CreateRet(newFloat);
-    // floatOfIntFunc->print(llvm::outs());
+    TheFPM->run(*floatOfIntFunc);
     return floatOfIntFunc;
 }
 
@@ -284,9 +284,9 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     pairs->push_back({"int_of_char", Ord});
     pairs->push_back({"char_of_int", Chr});
 
-    pairs->push_back({"incr", createIncrLibFunc(TheModule, unitType, c32(1), unitVal())});
-    pairs->push_back({"decr", createDecrLibFunc(TheModule, unitType, c32(1), unitVal())});
-    pairs->push_back({"float_of_int", createFloatOfIntLibFunc(TheModule, flt)});
+    pairs->push_back({"incr", createIncrLibFunc(TheModule, unitType, c32(1), unitVal(), TheFPM)});
+    pairs->push_back({"decr", createDecrLibFunc(TheModule, unitType, c32(1), unitVal(), TheFPM)});
+    pairs->push_back({"float_of_int", createFloatOfIntLibFunc(TheModule, flt, TheFPM)});
 
     llvm::FunctionType *powType = 
         llvm::FunctionType::get(flt, {flt, flt}, false);
@@ -314,6 +314,7 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
     fullRes->addIncoming(negRes, signApplierBB);
     TmpB.CreateRet(fullRes);
     
+    TheFPM->run(*pow);
     // for (auto &pair: *pairs) {
     //     std::cout << pair.first << ' ' << pair.second->getName().str() << '\n';
     // }

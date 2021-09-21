@@ -3,6 +3,9 @@
 #include <string>
 #include "types.hpp"
 #include "infer.hpp"
+#include "ast.hpp"
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LegacyPassManager.h>
 
 /*************************************************************/
 /**                    Base TypeGraph                        */
@@ -417,7 +420,7 @@ ConstructorTypeGraph::~ConstructorTypeGraph() {
 /*************************************************************/
 
 CustomTypeGraph::CustomTypeGraph(std::string name, std::vector<ConstructorTypeGraph *> *constructors)
-: TypeGraph(graphType::TYPE_custom), name(name), constructors(constructors) {}
+: TypeGraph(graphType::TYPE_custom), name(name), constructors(constructors), structEqFunc(nullptr) {}
 std::string CustomTypeGraph::stringifyType() {
     return "\033[4m" +
            stringifyTypeClean() +
@@ -622,4 +625,191 @@ llvm::PointerType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
     LLVMCustomType->setBody(LLVMStructTypes);
     
     return LLVMCustomType->getPointerTo();
+}
+
+// defined here instead of genIR.cpp for linking order reasons
+llvm::Value *AST::equalityHelper(llvm::Value *lhsVal,
+                                 llvm::Value *rhsVal,
+                                 TypeGraph *type,
+                                 bool structural,
+                                 llvm::IRBuilder<> TmpB)
+{
+    if (type->isUnit()) {
+        return c1(true);
+    }
+    if (type->isCustom() && structural)
+    {   
+        if (CustomTypeGraph *tmpCstType = dynamic_cast<CustomTypeGraph*>(type)) {
+            llvm::Function *cstTypeEqFunc = tmpCstType->getStructEqFunc(TheModule, TheFPM);
+            return TmpB.CreateCall(cstTypeEqFunc, {lhsVal, rhsVal}, "strcteq.equals");
+        }
+        else { // internal error
+            std::cerr << "Internal error: equalityHelper impossible else entered\n";
+            exit(1);
+        }
+    }
+    if ((type->isCustom() && !structural) || type->isRef()) {
+        llvm::Value 
+            *lhsPointerInt = TmpB.CreatePtrToInt(lhsVal, machinePtrType, "ptr.cmplhstmp"),
+            *rhsPointerInt = TmpB.CreatePtrToInt(rhsVal, machinePtrType, "ptr.cmprhstmp");
+        return TmpB.CreateICmpEQ(lhsPointerInt, rhsPointerInt, "ptr.cmpnateqtmp");         
+    }
+    if (type->isInt() || type->isBool() || type->isChar()) {
+        return TmpB.CreateICmpEQ(lhsVal, rhsVal, "int.cmpeqtmp");
+    }
+    if (type->isFloat()) {
+        return TmpB.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
+    }
+    std::cerr << "Structural equality attempted of custom types containing array or function field\n";
+    exit(1);
+}
+
+
+llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule, 
+                                                 llvm::legacy::FunctionPassManager *TheFPM) {
+
+    // if it has been already declared and saved, then just return it
+    if (structEqFunc)
+        return structEqFunc;
+
+    // else declare and define it
+    auto &TheContext = TheModule->getContext();
+    auto c32 = [&](int n) { 
+        return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, false));
+    };
+    auto c1 = [&](bool b) {
+        return llvm::ConstantInt::get(TheContext, llvm::APInt(1, b, false));
+    };
+    auto *structLLVMType = getLLVMType(TheModule);
+    auto *eqFuncType = llvm::FunctionType::get(
+        llvm::Type::getInt1Ty(TheContext),
+        {structLLVMType, structLLVMType},
+        false
+    );
+    structEqFunc = llvm::Function::Create(
+        eqFuncType,
+        llvm::Function::InternalLinkage,
+        name + ".strcteq",
+        TheModule
+    );
+    llvm::Value *lhsVal = structEqFunc->getArg(0),
+                *rhsVal = structEqFunc->getArg(1);
+
+    auto *entryBB = llvm::BasicBlock::Create(TheContext, "entry", structEqFunc),
+         *exitBB = llvm::BasicBlock::Create(TheContext, "exit", structEqFunc),
+         *switchBB = llvm::BasicBlock::Create(TheContext, "switch.init", structEqFunc),
+         *errorBB = llvm::BasicBlock::Create(TheContext, "error", structEqFunc);
+    llvm::IRBuilder<> TmpB(TheContext);
+    TmpB.SetInsertPoint(exitBB);
+    std::size_t incomingCount = 0;
+    for (auto &constr: *constructors) {
+        std::size_t fieldCount = constr->getFieldCount();
+        // if it has no fields, still add one incoming
+        incomingCount += fieldCount ? fieldCount : 1;
+    }
+    auto *resPhi = TmpB.CreatePHI(
+        llvm::Type::getInt1Ty(TheContext),
+        1 + incomingCount, //TODO(ORF): Make sure this is correct
+        name + ".strcteq.res"
+    );
+
+    // Holders for fields being compared every moment
+    llvm::Value *lhsFieldLoc, *lhsField, *rhsFieldLoc, *rhsField, *compRes;
+    TmpB.SetInsertPoint(entryBB);
+    lhsFieldLoc = TmpB.CreateGEP(lhsVal, {c32(0), c32(0)}, "strcteq.lhstypeloc");
+    lhsField = TmpB.CreateLoad(lhsFieldLoc);
+    rhsFieldLoc = TmpB.CreateGEP(rhsVal, {c32(0), c32(0)}, "strcteq.rhstypeloc");
+    rhsField = TmpB.CreateLoad(rhsFieldLoc);
+    compRes = TmpB.CreateICmpEQ(
+        lhsField,
+        rhsField,
+        "strcteq.sametypetmp"
+    );
+    // comparison fails if not of the same constructor type
+    TmpB.CreateCondBr(compRes, switchBB, exitBB);
+    resPhi->addIncoming(compRes, entryBB);
+
+    // switch logic init
+    TmpB.SetInsertPoint(switchBB);
+    llvm::Value *lhsInnerStructLoc = TmpB.CreateGEP(
+                    lhsVal, {c32(0), c32(1)}, "strcteq.lhsconstrloc"),
+                *rhsInnerStructLoc = TmpB.CreateGEP(
+                    rhsVal, {c32(0), c32(1)}, "strcteq.rhsconstrloc");
+    llvm::Value *constrType = lhsField; // save the type of constr it is
+    std::vector<llvm::BasicBlock *> switchTypeBBs;
+    auto *typeSwitch = 
+        TmpB.CreateSwitch(constrType, errorBB, constructors->size());
+    llvm::BasicBlock *currentBB;
+    for (std::size_t i = 0; i < constructors->size(); i++) {
+        // one switch case for each constructor type
+        currentBB = 
+            llvm::BasicBlock::Create(
+                TheContext,
+                std::string("case.") + (*constructors)[i]->getName(),
+                structEqFunc
+            );
+        switchTypeBBs.push_back(currentBB);
+        typeSwitch->addCase(c32(i), currentBB);
+    }
+    
+    // default/error BB code
+    TmpB.SetInsertPoint(errorBB);
+    TmpB.CreateCall(TheModule->getFunction("writeString"),
+        {TmpB.CreateGlobalStringPtr("Internal error: Invalid constructor enum\n")});
+    TmpB.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    TmpB.CreateBr(errorBB); // necessary to avoid llvm error
+
+    // logic inside each switch case
+    // for every constructor type
+    for (std::size_t i = 0; i < constructors->size(); i++) {
+        llvm::Value *lhsCastedVal, *rhsCastedVal;
+        ConstructorTypeGraph *currConstrGraph = (*constructors)[i];
+        llvm::StructType *currConstrType = currConstrGraph->getLLVMType(TheModule);
+        currentBB = switchTypeBBs[i];
+        TmpB.SetInsertPoint(currentBB);
+        
+        // if it has no fields
+        if (currConstrGraph->getFieldCount() == 0) {
+            TmpB.CreateBr(exitBB);
+            resPhi->addIncoming(c1(true), currentBB);
+            continue;
+        }
+
+        lhsCastedVal = TmpB.CreatePointerCast(
+            lhsInnerStructLoc, currConstrType->getPointerTo(), "strcteq.lhscast");
+        rhsCastedVal = TmpB.CreatePointerCast(
+            rhsInnerStructLoc, currConstrType->getPointerTo(), "strcteq.rhscast");
+        // for every field of constructor
+        for (int j = 0; j < currConstrGraph->getFieldCount(); j++) {
+            lhsFieldLoc = TmpB.CreateGEP(
+                lhsCastedVal, {c32(0), c32(j)}, "strcteq.lhsfieldloc");
+            lhsField = TmpB.CreateLoad(lhsFieldLoc);
+            rhsFieldLoc = TmpB.CreateGEP(
+                rhsCastedVal, {c32(0), c32(j)}, "strcteq.rhsfieldloc");
+            rhsField = TmpB.CreateLoad(rhsFieldLoc);
+            compRes = AST::equalityHelper(
+                lhsField, rhsField, currConstrGraph->getFieldType(j), true, TmpB);
+
+            // if it's not the last field            
+            if (j != currConstrGraph->getFieldCount() - 1) {
+                llvm::BasicBlock *nextFieldBB = 
+                    llvm::BasicBlock::Create(
+                        TheContext, 
+                        std::string("case.") + currConstrGraph->getName() + ".nextfield", 
+                        structEqFunc);
+                TmpB.CreateCondBr(compRes, nextFieldBB, exitBB);
+                resPhi->addIncoming(compRes, TmpB.GetInsertBlock());
+                TmpB.SetInsertPoint(nextFieldBB);
+            } else { // if it's the final field
+                TmpB.CreateBr(exitBB);
+                resPhi->addIncoming(compRes, TmpB.GetInsertBlock());
+            }
+        }
+    }
+    TmpB.SetInsertPoint(exitBB);
+    TmpB.CreateRet(resPhi);
+
+    TheFPM->run(*structEqFunc);
+
+    return structEqFunc;
 }
