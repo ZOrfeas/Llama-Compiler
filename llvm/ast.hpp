@@ -65,10 +65,35 @@ public:
 extern std::vector<Identifier *> AST_identifier_list;
 
 /********************************************************************/
-
 class Function;
-class LivenessEntry;
-class LivenessFunctionEntry;
+
+class LivenessEntry
+{
+protected:
+    int scope;
+    std::string id;
+    TypeGraph *typegraph;
+
+    // If it is a function then it has a pointer to it
+    Function *f;
+    
+    // A symbol is visited after its definition is over and it
+    // has been added to the table
+    bool visited = false;
+
+public:
+    LivenessEntry(int scope, std::string id, TypeGraph *typegraph, Function *f = nullptr);
+    TypeGraph *getTypeGraph();
+    std::string getId();
+    int getScope();
+    Function *getFunction();
+    void visit();
+    bool isVisited();
+};
+
+/********************************************************************/
+
+//class LivenessFunctionEntry;
 
 class AST
 {
@@ -222,6 +247,10 @@ protected:
     Type *T;
     TypeGraph *TG;
 
+    // Expressions that call symbols must know the scope of prev function
+    bool hasExternal = false;
+    int prevFuncScope = 0;
+
 public:
     TypeGraph *get_TypeGraph();
     void type_check(TypeGraph *t, std::string msg = "Type mismatch");
@@ -320,8 +349,13 @@ private:
     std::vector<Par *> par_list;
     //TypeGraph *TG;
 
+    // Filled in liveness useful for genIR
+    int scope = 0;
     std::map<std::string, LivenessEntry *> external = {};
     std::map<std::string, Function *> dependent = {};
+    
+
+    // Filled in genIR
     llvm::Function *funcPrototype;
 
 public:
@@ -338,7 +372,10 @@ public:
     virtual void liveness(Function *prevFunc) override;
     void addExternal(LivenessEntry *l);
     void addDependent(Function *f);
-    friend void mergeExternal(Function *fp, Function *fd);
+    friend void insertExternalToFrom(Function *funcDependent, Function *func);
+    std::map<std::string, LivenessEntry *> getExternal();
+    void setScope(int s);
+    int getScope();
     virtual void printOn(std::ostream &out) const override;
 };
 class Mutable : public Def
