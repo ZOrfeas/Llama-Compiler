@@ -453,7 +453,7 @@ class String_literal : public Literal
 {
 private:
     std::string s, originalStr;
-
+    static std::map<std::string, llvm::Value*> declaredGlobals;
 public:
     String_literal(std::string *s);
     virtual void sem() override;

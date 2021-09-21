@@ -53,7 +53,7 @@ void Inferer::addConstraint(TypeGraph *lhs, TypeGraph *rhs, int lineno,
 std::function<void(void)> *errCallback) {
     if (debug)
         log("Adding constraint, " + lhs->stringifyType()
-            + " == " + rhs->stringifyType());
+            + " == " + rhs->stringifyType() + " (line " + to_string(lineno) + ")");
     lhs = tryApplySubstitutions(lhs);
     rhs = tryApplySubstitutions(rhs);
     auto newConstraint = new Constraint(lhs, rhs, lineno);
