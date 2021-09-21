@@ -659,7 +659,7 @@ llvm::Value *AST::equalityHelper(llvm::Value *lhsVal,
     if (type->isFloat()) {
         return TmpB.CreateFCmpOEQ(lhsVal, rhsVal, "float.cmpeqtmp");
     }
-    std::cerr << "Structural equality attempted of structs containing array or function field\n";
+    std::cerr << "Structural equality attempted of custom types containing array or function field\n";
     exit(1);
 }
 
