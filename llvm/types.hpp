@@ -6,6 +6,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/LegacyPassManager.h>
 
 enum class graphType { TYPE_unknown, TYPE_unit, TYPE_int, TYPE_float, TYPE_bool,
             TYPE_char, TYPE_ref, TYPE_array, TYPE_function, TYPE_custom, TYPE_record };
@@ -226,7 +227,8 @@ public:
     int getConstructorIndex(ConstructorTypeGraph *c);
     int getConstructorIndex(std::string Id);
     virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
-    llvm::Function* getStructEqFunc(llvm::Module *TheModule);
+    llvm::Function* getStructEqFunc(llvm::Module *TheModule,
+                                    llvm::legacy::FunctionPassManager *TheFPM);
     ~CustomTypeGraph();
 };
 

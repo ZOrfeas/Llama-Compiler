@@ -5,6 +5,7 @@
 #include "infer.hpp"
 #include "ast.hpp"
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LegacyPassManager.h>
 
 /*************************************************************/
 /**                    Base TypeGraph                        */
@@ -639,7 +640,7 @@ llvm::Value *AST::equalityHelper(llvm::Value *lhsVal,
     if (type->isCustom() && structural)
     {   
         if (CustomTypeGraph *tmpCstType = dynamic_cast<CustomTypeGraph*>(type)) {
-            llvm::Function *cstTypeEqFunc = tmpCstType->getStructEqFunc(TheModule);
+            llvm::Function *cstTypeEqFunc = tmpCstType->getStructEqFunc(TheModule, TheFPM);
             return TmpB.CreateCall(cstTypeEqFunc, {lhsVal, rhsVal}, "strcteq.equals");
         }
         else { // internal error
@@ -664,7 +665,8 @@ llvm::Value *AST::equalityHelper(llvm::Value *lhsVal,
 }
 
 
-llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule) {
+llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule, 
+                                                 llvm::legacy::FunctionPassManager *TheFPM) {
 
     // if it has been already declared and saved, then just return it
     if (structEqFunc)
@@ -695,7 +697,7 @@ llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule) {
 
     auto *entryBB = llvm::BasicBlock::Create(TheContext, "entry", structEqFunc),
          *exitBB = llvm::BasicBlock::Create(TheContext, "exit", structEqFunc),
-         *switchBB = llvm::BasicBlock::Create(TheContext, "switch", structEqFunc),
+         *switchBB = llvm::BasicBlock::Create(TheContext, "switch.init", structEqFunc),
          *errorBB = llvm::BasicBlock::Create(TheContext, "error", structEqFunc);
     llvm::IRBuilder<> TmpB(TheContext);
     TmpB.SetInsertPoint(exitBB);
@@ -806,6 +808,8 @@ llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule) {
     }
     TmpB.SetInsertPoint(exitBB);
     TmpB.CreateRet(resPhi);
+
+    TheFPM->run(*structEqFunc);
 
     return structEqFunc;
 }
