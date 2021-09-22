@@ -1,6 +1,7 @@
 %{
 #include <ctype.h>
 #include <cstdio>
+#include <iostream>
 #include <cstdlib>
 #include <vector>
 
@@ -391,7 +392,8 @@ pattern_list
 
 %%
 void yyerror(const char *msg) {
-    fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
+    std::cerr <<  "Error at line " << yylineno << ": "
+              <<  msg << '\n';
     exit(1);
 }
 

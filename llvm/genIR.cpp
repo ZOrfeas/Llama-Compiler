@@ -543,13 +543,21 @@ llvm::Value *Program::compile()
 /*********************************/
 
 // literals
-
+std::map<std::string, llvm::Value *> String_literal::declaredGlobals;
 llvm::Value *String_literal::compile()
 {
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
     // Get TheFunction insert block
     //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
-    llvm::Value *strVal = Builder.CreateGlobalStringPtr(s);
+
+    llvm::Value *strVal;
+    if (declaredGlobals.find(s) != std::end(declaredGlobals))
+        strVal = declaredGlobals[s];
+    else{
+        strVal = Builder.CreateGlobalStringPtr(s);
+        declaredGlobals[s] = strVal;
+    }
+
     int size = s.size() + 1;
 
     llvm::Value *LLVMArraySize = c32(size);
