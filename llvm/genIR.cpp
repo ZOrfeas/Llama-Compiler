@@ -89,24 +89,16 @@ public:
     ~LLTable() {}
 };
 LLTable<llvm::Value *> LLValues;
-// this can help with the function pointer stuff (member function getType())
-// LLTable<llvm::Function*> LLFunctions;
-// LLTable<llvm::AllocaInst> LLAllocas;
-
 // Keeps track of the scope of the function inside which we are writing
 std::vector<int> functionScopeStack = { 0 };
 
 void openScopeOfAll()
 {
     LLValues.openScope();
-    // LLFunctions.openScope();
-    // LLAllocas.openScope();
 }
 void closeScopeOfAll()
 {
     LLValues.closeScope();
-    // LLFunctions.closeScope();
-    // LLAllocas.closeScope();
 }
 llvm::Value *accessSymbolOrMakeGlobal(std::string name)
 {
