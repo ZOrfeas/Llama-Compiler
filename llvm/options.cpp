@@ -96,6 +96,17 @@ struct option *OptionList::getLongOptionArray()
 }
 void OptionList::parseOptions(int argc, char **argv)
 {
+    // If no arguments given then exit
+    if (argc == 1) 
+    {
+        std::cerr << "Can't run llamac without arguments" << std::endl;
+        exit(1);
+    }
+
+    // Take the input file (might be -help but will exit before freopen)
+    std::string filename = std::string(argv[1]);
+
+    // Parse given options
     int index = 0, c;
     struct option *long_options = getLongOptionArray();
     std::string short_options = "";
@@ -121,7 +132,7 @@ void OptionList::parseOptions(int argc, char **argv)
     // Print help message and exit immediately
     if (help.isActivated())
     {
-        std::cout << "Usage ./llamac [options] < file" << std::endl;
+        std::cout << "Usage ./llamac file [options]" << std::endl;
         std::cout << std::endl;
         std::cout << "Options:\n";
 
@@ -133,9 +144,16 @@ void OptionList::parseOptions(int argc, char **argv)
         }
 
         std::cout << std::endl;
-        std::cout << "Compiler might use files a.ll, a.o in which case they will be truncated" << std::endl;
+        std::cout << "Compiler might use files a.{ll, o, out} in which case they will be truncated" << std::endl;
         std::cout << std::endl;
         exit(0);
+    }
+    
+    // Redirect stdin
+    if(std::freopen(filename.c_str(), "r", stdin) == nullptr) 
+    {
+        std::cerr << "Couldn't open file " << filename << std::endl;
+        exit(1);
     }
 }
 void OptionList::executeOptions(Program *p)
