@@ -59,13 +59,17 @@ class OptionList
 protected:
     std::vector<ShortOption *> shortOptions;
     std::vector<LongOption *> longOptions;
+
+    // Will be filled by setProgram called by yyparse
+    Program *p;
 public:
     OptionList();
     void addShortOption(ShortOption *s);
     void addLongOption(LongOption *l);
     struct option* getLongOptionArray();
     void parseOptions(int argc, char **argv);
-    void executeOptions(Program *p);
+    void setProgram(Program *p);
+    void executeOptions();
 };
 
 extern OptionList optionList;

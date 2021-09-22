@@ -587,13 +587,6 @@ llvm::Value *String_literal::compile()
 
     Builder.CreateCall(TheModule->getFunction("strcpy"), {LLVMAllocatedMemory, strVal});
 
-    // // Copy the string
-    // for(unsigned int i = 0; i < s.size(); i++)
-    // {
-    //     llvm::Value *stringElemLoc = Builder.CreateGEP(LLVMAllocatedMemory, {c32(i)}, "stringelemloc");
-    //     Builder.CreateStore(c8(s[i]), stringElemLoc);
-    // }
-
     return LLVMMallocStruct;
 }
 llvm::Value *Char_literal::compile()
@@ -644,119 +637,154 @@ llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
 // Operators
 llvm::Value *BinOp::compile()
 {
-    auto lhsVal = lhs->compile(),
-         rhsVal = rhs->compile();
-    auto tempTypeGraph = inf.deepSubstitute(lhs->get_TypeGraph());
+    if (op == T_dblampersand || op == T_dblbar) {
+        auto *lhsLogicVal = lhs->compile();
+        auto *shortCircuitExitBB = llvm::BasicBlock::Create(
+            TheContext, "shortcircuit.exit", Builder.GetInsertBlock()->getParent()),
+                *shortCircuitImpossibleBB = llvm::BasicBlock::Create(
+            TheContext, "shortcircuit.impossible", Builder.GetInsertBlock()->getParent());
+        llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(shortCircuitExitBB);
+        auto *phiCollector = TmpB.CreatePHI(i1, 2, "shortcircuit.restmp");
 
-    switch (op)
-    {
-    case '+':
-        return Builder.CreateAdd(lhsVal, rhsVal, "int.addtmp");
-    case '-':
-        return Builder.CreateSub(lhsVal, rhsVal, "int.subtmp");
-    case '*':
-        return Builder.CreateMul(lhsVal, rhsVal, "int.multmp");
-    case '/':
-        return Builder.CreateSDiv(lhsVal, rhsVal, "int.divtmp");
-    case T_mod:
-        return Builder.CreateSRem(lhsVal, rhsVal, "int.modtmp");
+        if (op == T_dblampersand){
+            auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(false), "shortcircuit.andtmp");
+            Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
+            phiCollector->addIncoming(c1(false), Builder.GetInsertBlock());
+            Builder.SetInsertPoint(shortCircuitImpossibleBB);
+            auto *rhsLogicVal = rhs->compile();
+            auto *operationRes = Builder.CreateAnd(lhsLogicVal, rhsLogicVal, "and.restmp");
+            Builder.CreateBr(shortCircuitExitBB);
+            phiCollector->addIncoming(operationRes, shortCircuitImpossibleBB);
+            Builder.SetInsertPoint(shortCircuitExitBB);
+            return phiCollector;
+        }
+        else if (op == T_dblbar) {
+            auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(true), "shortcircuit.ortmp");
+            Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
+            phiCollector->addIncoming(c1(true), Builder.GetInsertBlock());
+            Builder.SetInsertPoint(shortCircuitImpossibleBB);
+            auto *rhsLogicVal = rhs->compile();
+            auto *operationRes = Builder.CreateOr(lhsLogicVal, rhsLogicVal, "or.restmp");
+            Builder.CreateBr(shortCircuitExitBB);
+            phiCollector->addIncoming(operationRes, shortCircuitImpossibleBB);
+            Builder.SetInsertPoint(shortCircuitExitBB);
+            return phiCollector;
+        }
+    } else {
+        auto lhsVal = lhs->compile(),
+            rhsVal = rhs->compile();
+        auto tempTypeGraph = inf.deepSubstitute(lhs->get_TypeGraph());
 
-    case T_plusdot:
-        return Builder.CreateFAdd(lhsVal, rhsVal, "float.addtmp");
-    case T_minusdot:
-        return Builder.CreateFSub(lhsVal, rhsVal, "float.subtmp");
-    case T_stardot:
-        return Builder.CreateFMul(lhsVal, rhsVal, "float.multmp");
-    case T_slashdot:
-        return Builder.CreateFDiv(lhsVal, rhsVal, "float.divtmp");
-    // for below to work, link against lib.so with -lm flag.
-    case T_dblstar:
-    {
-        // return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
-        return Builder.CreateCall(TheModule->getFunction("pow.custom"), {lhsVal, rhsVal}, "float.powtmp");
-    }
-    case T_dblbar:
-        return Builder.CreateOr({lhsVal, rhsVal});
-    case T_dblampersand:
-        return Builder.CreateAnd({lhsVal, rhsVal});
+        switch (op)
+        {
+        case '+':
+            return Builder.CreateAdd(lhsVal, rhsVal, "int.addtmp");
+        case '-':
+            return Builder.CreateSub(lhsVal, rhsVal, "int.subtmp");
+        case '*':
+            return Builder.CreateMul(lhsVal, rhsVal, "int.multmp");
+        case '/':
+            return Builder.CreateSDiv(lhsVal, rhsVal, "int.divtmp");
+        case T_mod:
+            return Builder.CreateSRem(lhsVal, rhsVal, "int.modtmp");
 
-    case '=':
-    { // structural equality, they contain the same values
-        return equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder);
-    }
-    case T_lessgreater:
-    { // structural inequality, they do not contain the same values
-        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder));
-    }
-    case T_dbleq:
-    { // natural equality, they are the same object
-        return equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder);
-    }
-    case T_exclameq:
-    { // natural equality, they are not the same object
-        return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder));
-    }
-    case '<':
-    {
-        if (tempTypeGraph->isFloat())
+        case T_plusdot:
+            return Builder.CreateFAdd(lhsVal, rhsVal, "float.addtmp");
+        case T_minusdot:
+            return Builder.CreateFSub(lhsVal, rhsVal, "float.subtmp");
+        case T_stardot:
+            return Builder.CreateFMul(lhsVal, rhsVal, "float.multmp");
+        case T_slashdot:
+            return Builder.CreateFDiv(lhsVal, rhsVal, "float.divtmp");
+        // for below to work, link against lib.so with -lm flag.
+        case T_dblstar:
         {
-            // QNAN in docs is a 'quiet NaN'
-            //! might need to check for QNAN btw
-            return Builder.CreateFCmpOLT(lhsVal, rhsVal, "float.cmplttmp");
+            // return Builder.CreateBinaryIntrinsic(llvm::Intrinsic::pow, lhsVal, rhsVal, nullptr, "float.powtmp");
+            return Builder.CreateCall(TheModule->getFunction("pow.custom"), {lhsVal, rhsVal}, "float.powtmp");
         }
-        else
-        { // int or char (which is an int too)
-            return Builder.CreateICmpSLT(lhsVal, rhsVal, "int.cmplttmp");
+        case T_dblbar:
+            return Builder.CreateOr({lhsVal, rhsVal});
+        case T_dblampersand:
+            return Builder.CreateAnd({lhsVal, rhsVal});
+
+        case '=':
+        { // structural equality, they contain the same values
+            return equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder);
         }
-    }
-    case '>':
-    {
-        if (tempTypeGraph->isFloat())
+        case T_lessgreater:
+        { // structural inequality, they do not contain the same values
+            return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, true, Builder));
+        }
+        case T_dbleq:
+        { // natural equality, they are the same object
+            return equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder);
+        }
+        case T_exclameq:
+        { // natural equality, they are not the same object
+            return Builder.CreateNot(equalityHelper(lhsVal, rhsVal, tempTypeGraph, false, Builder));
+        }
+        case '<':
         {
-            // QNAN in docs is a 'quiet NaN'
-            //! might need to check for QNAN btw
-            return Builder.CreateFCmpOGT(lhsVal, rhsVal, "float.cmpgttmp");
+            if (tempTypeGraph->isFloat())
+            {
+                // QNAN in docs is a 'quiet NaN'
+                //! might need to check for QNAN btw
+                return Builder.CreateFCmpOLT(lhsVal, rhsVal, "float.cmplttmp");
+            }
+            else
+            { // int or char (which is an int too)
+                return Builder.CreateICmpSLT(lhsVal, rhsVal, "int.cmplttmp");
+            }
         }
-        else
-        { // int or char (which is an int too)
-            return Builder.CreateICmpSGT(lhsVal, rhsVal, "int.cmpgttmp");
-        }
-    }
-    case T_leq:
-    {
-        if (tempTypeGraph->isFloat())
+        case '>':
         {
-            // QNAN in docs is a 'quiet NaN'
-            //! might need to check for QNAN btw
-            return Builder.CreateFCmpOLE(lhsVal, rhsVal, "float.cmpletmp");
+            if (tempTypeGraph->isFloat())
+            {
+                // QNAN in docs is a 'quiet NaN'
+                //! might need to check for QNAN btw
+                return Builder.CreateFCmpOGT(lhsVal, rhsVal, "float.cmpgttmp");
+            }
+            else
+            { // int or char (which is an int too)
+                return Builder.CreateICmpSGT(lhsVal, rhsVal, "int.cmpgttmp");
+            }
         }
-        else
-        { // int or char (which is an int too)
-            return Builder.CreateICmpSLE(lhsVal, rhsVal, "int.cmpletmp");
-        }
-    }
-    case T_geq:
-    {
-        if (tempTypeGraph->isFloat())
+        case T_leq:
         {
-            // QNAN in docs is a 'quiet NaN'
-            //! might need to check for QNAN btw
-            return Builder.CreateFCmpOGE(lhsVal, rhsVal, "float.cmpgetmp");
+            if (tempTypeGraph->isFloat())
+            {
+                // QNAN in docs is a 'quiet NaN'
+                //! might need to check for QNAN btw
+                return Builder.CreateFCmpOLE(lhsVal, rhsVal, "float.cmpletmp");
+            }
+            else
+            { // int or char (which is an int too)
+                return Builder.CreateICmpSLE(lhsVal, rhsVal, "int.cmpletmp");
+            }
         }
-        else
-        { // int or char (which is an int too)
-            return Builder.CreateICmpSGE(lhsVal, rhsVal, "int.cmpgetmp");
+        case T_geq:
+        {
+            if (tempTypeGraph->isFloat())
+            {
+                // QNAN in docs is a 'quiet NaN'
+                //! might need to check for QNAN btw
+                return Builder.CreateFCmpOGE(lhsVal, rhsVal, "float.cmpgetmp");
+            }
+            else
+            { // int or char (which is an int too)
+                return Builder.CreateICmpSGE(lhsVal, rhsVal, "int.cmpgetmp");
+            }
         }
-    }
-    case T_coloneq:
-    {
-        Builder.CreateStore(rhsVal, lhsVal);
-        return unitVal();
-    }
-    case ';':
-        return rhsVal;
-    default:
-        return nullptr;
+        case T_coloneq:
+        {
+            Builder.CreateStore(rhsVal, lhsVal);
+            return unitVal();
+        }
+        case ';':
+            return rhsVal;
+        default:
+            return nullptr;
+        }
     }
 }
 llvm::Value *UnOp::compile()

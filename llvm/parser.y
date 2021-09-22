@@ -3,9 +3,6 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
-#include <unistd.h>
-#include <getopt.h>
-#include <iomanip>
 #include <vector>
 
 #include "lexer.hpp"
@@ -150,7 +147,7 @@
 
 %%
 program 
-: program_list                      { $$ = $1; optionList.executeOptions($$); } 
+: program_list                      { $$ = $1; optionList.setProgram($$); } 
 ;
 
 program_list
@@ -407,6 +404,11 @@ int main(int argc, char **argv) {
     // yydebug = 1; // default val is zero so just comment this to disable
     int result = yyparse();
     
+    // Run options
+    optionList.executeOptions();
+
+    // Finish
     if (result == 0 && printSuccess.isActivated()) std::cout << "Success\n";
+    
     return result;
 }
