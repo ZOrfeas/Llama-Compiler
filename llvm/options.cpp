@@ -156,7 +156,11 @@ void OptionList::parseOptions(int argc, char **argv)
         exit(1);
     }
 }
-void OptionList::executeOptions(Program *p)
+void OptionList::setProgram(Program *p)
+{
+    this->p = p;
+}
+void OptionList::executeOptions()
 {
     // If output file is provided freopen stdout to it
     std::string filename = "";
