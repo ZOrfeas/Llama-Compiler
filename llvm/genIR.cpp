@@ -595,13 +595,6 @@ llvm::Value *String_literal::compile()
 
     Builder.CreateCall(TheModule->getFunction("strcpy"), {LLVMAllocatedMemory, strVal});
 
-    // // Copy the string
-    // for(unsigned int i = 0; i < s.size(); i++)
-    // {
-    //     llvm::Value *stringElemLoc = Builder.CreateGEP(LLVMAllocatedMemory, {c32(i)}, "stringelemloc");
-    //     Builder.CreateStore(c8(s[i]), stringElemLoc);
-    // }
-
     return LLVMMallocStruct;
 }
 llvm::Value *Char_literal::compile()
