@@ -65,31 +65,9 @@ public:
 extern std::vector<Identifier *> AST_identifier_list;
 
 /********************************************************************/
+
 class Function;
-
-class LivenessEntry
-{
-protected:
-    int scope;
-    std::string id;
-    TypeGraph *typegraph;
-
-    // If it is a function then it has a pointer to it
-    Function *f;
-    
-    // A symbol is visited after its definition is over and it
-    // has been added to the table
-    bool visited = false;
-
-public:
-    LivenessEntry(int scope, std::string id, TypeGraph *typegraph, Function *f = nullptr);
-    TypeGraph *getTypeGraph();
-    std::string getId();
-    int getScope();
-    Function *getFunction();
-    void visit();
-    bool isVisited();
-};
+class LivenessEntry;
 
 /********************************************************************/
 
@@ -132,7 +110,7 @@ public:
     virtual void sem();
     virtual void liveness(Function *prevFunc);
     static llvm::Value *equalityHelper(llvm::Value *lhsVal, llvm::Value *rhsVal,
-                                TypeGraph *type, bool structural, llvm::IRBuilder<> TmpB);
+                                       TypeGraph *type, bool structural, llvm::IRBuilder<> TmpB);
     virtual llvm::Value *compile();
     void start_compilation(const char *programName, bool optimize = false);
     std::vector<std::pair<std::string, llvm::Function *>> *genLibGlueLogic();
@@ -247,10 +225,6 @@ protected:
     Type *T;
     TypeGraph *TG;
 
-    // Expressions that call symbols must know the scope of prev function
-    bool hasExternal = false;
-    int prevFuncScope = 0;
-
 public:
     TypeGraph *get_TypeGraph();
     void type_check(TypeGraph *t, std::string msg = "Type mismatch");
@@ -296,6 +270,7 @@ protected:
 
 public:
     DefStmt(std::string id);
+    virtual bool isDef() const;
     virtual bool isFunctionDefinition() const;
     virtual void insertToTable();
     std::string getId();
@@ -325,6 +300,7 @@ protected:
 
 public:
     Def(std::string id, Type *t);
+    virtual bool isDef() const override;
     Type *get_type();
     virtual TypeGraph *getTypeGraph() override;
 };
@@ -352,8 +328,6 @@ private:
     // Filled in liveness useful for genIR
     int scope = 0;
     std::map<std::string, LivenessEntry *> external = {};
-    std::map<std::string, Function *> dependent = {};
-    
 
     // Filled in genIR
     llvm::Function *funcPrototype;
@@ -371,7 +345,6 @@ public:
     virtual llvm::Value *compile() override;
     virtual void liveness(Function *prevFunc) override;
     void addExternal(LivenessEntry *l);
-    void addDependent(Function *f);
     friend void insertExternalToFrom(Function *funcDependent, Function *func);
     std::map<std::string, LivenessEntry *> getExternal();
     void setScope(int s);
@@ -490,7 +463,8 @@ class String_literal : public Literal
 {
 private:
     std::string s, originalStr;
-    static std::map<std::string, llvm::Value*> declaredGlobals;
+    static std::map<std::string, llvm::Value *> declaredGlobals;
+
 public:
     String_literal(std::string *s);
     virtual void sem() override;
@@ -631,6 +605,7 @@ private:
 
 public:
     For(std::string *id, Expr *e1, std::string s, Expr *e2, Expr *e3);
+    std::string getId();
     virtual void sem() override;
     // could possibly alloc a variable to use for the loop
     virtual llvm::Value *compile() override;
@@ -765,6 +740,8 @@ protected:
 
 public:
     PatternId(std::string *id);
+    std::string getId();
+    TypeGraph *getTypeGraph();
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
     virtual llvm::Value *compile() override;
     virtual void liveness(Function *prevFunc) override;
@@ -822,4 +799,73 @@ public:
     virtual llvm::Value *compile() override;
     virtual void liveness(Function *prevFunc) override;
     virtual void printOn(std::ostream &out) const override;
+};
+
+/********************************************************************/
+
+class LivenessEntry
+{
+protected:
+    int scope;
+
+    // A symbol is visited after its definition is over and it
+    // has been added to the table
+    bool visited = false;
+
+public:
+    LivenessEntry(int scope);
+    int getScope();
+    void visit();
+    bool isVisited();
+    virtual std::string getId() = 0;
+    virtual TypeGraph *getTypeGraph() = 0;
+    virtual AST *getNode() = 0;
+};
+class LivenessEntryDef
+    : public LivenessEntry
+{
+protected:
+    Def *symbolDef;
+
+public:
+    LivenessEntryDef(int scope, Def *symbolDef);
+    virtual Def *getNode() override;
+    virtual std::string getId() override;
+    virtual TypeGraph *getTypeGraph() override;
+};
+class LivenessEntryPar
+    : public LivenessEntry
+{
+protected:
+    Par *symbolPar;
+
+public:
+    LivenessEntryPar(int scope, Par *symbolPar);
+    virtual Par *getNode() override;
+    virtual std::string getId() override;
+    virtual TypeGraph *getTypeGraph() override;
+};
+class LivenessEntryFor
+    : public LivenessEntry
+{
+protected:
+    For *symbolFor;
+
+public: 
+    LivenessEntryFor(int scope, For *symbolFor);
+    virtual For *getNode() override;
+    virtual std::string getId() override;
+    virtual TypeGraph *getTypeGraph() override;
+};
+class LivenessEntryPatternId
+    : public LivenessEntry
+{
+protected:
+    PatternId *symbolPatternId;
+
+public:
+    LivenessEntryPatternId(int scope, PatternId *symbolPatternId);
+    virtual PatternId *getNode() override;
+    virtual std::string getId() override;
+    virtual TypeGraph *getTypeGraph() override;
 };

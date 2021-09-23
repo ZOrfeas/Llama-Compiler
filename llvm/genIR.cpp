@@ -89,8 +89,22 @@ public:
     ~LLTable() {}
 };
 LLTable<llvm::Value *> LLValues;
+
+/*
 // Keeps track of the scope of the function inside which we are writing
-std::vector<int> functionScopeStack = { 0 };
+std::vector<int> functionScopeStack = {0};
+llvm::Value *accessSymbolOrMakeGlobal(std::string name)
+{
+    int currFuncScope = functionScopeStack.back();
+    int symbolScope = LLValues.getScopeOf(name);
+
+    // If the symbol was defined inside the function body all good
+    if (currFuncScope <= symbolScope)
+    {
+        return LLValues[name];
+    }
+}
+*/
 
 void openScopeOfAll()
 {
@@ -100,29 +114,7 @@ void closeScopeOfAll()
 {
     LLValues.closeScope();
 }
-llvm::Value *accessSymbolOrMakeGlobal(std::string name)
-{
-    int currFuncScope = functionScopeStack.back();
-    int symbolScope = LLValues.getScopeOf(name);
 
-    // If the symbol was defined inside the function body all good
-    if(currFuncScope <= symbolScope)
-    {
-        return LLValues[name];
-    }
-
-    // Otherwise make symbol global so that it can be accessed
-    else
-    {
-        /*GlobalVariable* gvar =
-            new GlobalVariable(M, 
-                     data->getType(), 
-                     true,  
-                     GlobalValue::ExternalLinkage, 
-                     data, 
-                     "fname_" + F.getName().str());*/
-    }
-}
 
 /*********************************/
 /**          Utilities           */
@@ -203,7 +195,8 @@ void AST::start_compilation(const char *programName, bool optimize)
     llvm::InitializeAllAsmPrinters();
     std::string Error;
     auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
-    if (!Target) {
+    if (!Target)
+    {
         llvm::errs() << Error;
         exit(1);
     }
@@ -236,7 +229,7 @@ void AST::start_compilation(const char *programName, bool optimize)
                            "GC_malloc_atomic_uncollectable", TheModule);
     llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
-                            "GC_free", TheModule);
+                           "GC_free", TheModule);
     // Initialize main function (entry point)
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
@@ -266,7 +259,8 @@ void AST::emitObjectCode(const char *filename)
     std::error_code EC;
     llvm::raw_fd_ostream dst(filename, EC, llvm::sys::fs::OF_None);
 
-    if (EC) {
+    if (EC)
+    {
         llvm::errs() << "Could not open file: " << EC.message();
         exit(1);
     }
@@ -274,7 +268,8 @@ void AST::emitObjectCode(const char *filename)
     llvm::legacy::PassManager pass;
     auto FileType = llvm::CGFT_ObjectFile;
 
-    if (TargetMachine->addPassesToEmitFile(pass, dst, nullptr, FileType)) {
+    if (TargetMachine->addPassesToEmitFile(pass, dst, nullptr, FileType))
+    {
         llvm::errs() << "TargetMachine can't emit a file of this type";
         exit(1);
     }
@@ -287,8 +282,9 @@ void AST::emitAssemblyCode()
     llvm::legacy::PassManager pass;
     auto FileType = llvm::CGFT_AssemblyFile;
 
-    if (TargetMachine->addPassesToEmitFile(pass, (llvm::raw_pwrite_stream &) llvm::outs(), 
-                                           nullptr, FileType)) {
+    if (TargetMachine->addPassesToEmitFile(pass, (llvm::raw_pwrite_stream &)llvm::outs(),
+                                           nullptr, FileType))
+    {
         llvm::errs() << "TargetMachine can't emit a file of this type";
     }
     pass.run(*TheModule);
@@ -362,13 +358,12 @@ void Function::generateBody()
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
-std::string DefStmt::getId() 
-{ return id; }
 llvm::Value *Function::compile()
 {
     llvm::Function *newFunction = generateLLVMPrototype();
     generateBody();
     LLValues.insert({id, newFunction});
+
     return nullptr;
 }
 llvm::Value *Array::compile()
@@ -389,7 +384,7 @@ llvm::Value *Array::compile()
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
                                                         nullptr,
                                                         // nullptr,
-                                                        TheModule->getFunction("GC_malloc_atomic"), 
+                                                        TheModule->getFunction("GC_malloc_atomic"),
                                                         "arr.def.malloc");
     llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
 
@@ -422,7 +417,7 @@ llvm::Value *Array::compile()
                                      LLVMContainedType,
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
-                                    //  nullptr,
+                                     //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic"),
                                      "arr.def.malloc");
 
@@ -462,9 +457,9 @@ llvm::Value *Variable::compile()
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr, 
+                                                        nullptr,
                                                         // nullptr,
-                                                        TheModule->getFunction("GC_malloc_atomic"), 
+                                                        TheModule->getFunction("GC_malloc_atomic"),
                                                         "var.def.malloc");
     llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
@@ -513,7 +508,7 @@ llvm::Value *Letdef::compile()
             func->generateBody();
         }
     }
-
+    
     return nullptr;
 }
 llvm::Value *Typedef::compile()
@@ -545,7 +540,8 @@ llvm::Value *String_literal::compile()
     llvm::Value *strVal;
     if (declaredGlobals.find(s) != std::end(declaredGlobals))
         strVal = declaredGlobals[s];
-    else{
+    else
+    {
         strVal = Builder.CreateGlobalStringPtr(s);
         declaredGlobals[s] = strVal;
     }
@@ -557,7 +553,7 @@ llvm::Value *String_literal::compile()
     auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
                                                         arrCharType->getPointerElementType(),
                                                         llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                        nullptr, 
+                                                        nullptr,
                                                         // nullptr,
                                                         TheModule->getFunction("GC_malloc_atomic"),
                                                         "str.literal.malloc");
@@ -570,7 +566,7 @@ llvm::Value *String_literal::compile()
                                      i8,
                                      llvm::ConstantExpr::getSizeOf(i8),
                                      LLVMArraySize,
-                                    //  nullptr,
+                                     //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic"),
                                      "stringalloc");
 
@@ -637,16 +633,19 @@ llvm::Value *Float_literal::LLVMCompare(llvm::Value *V)
 // Operators
 llvm::Value *BinOp::compile()
 {
-    if (op == T_dblampersand || op == T_dblbar) {
+    if (op == T_dblampersand || op == T_dblbar)
+    {
         auto *lhsLogicVal = lhs->compile();
         auto *shortCircuitExitBB = llvm::BasicBlock::Create(
-            TheContext, "shortcircuit.exit", Builder.GetInsertBlock()->getParent()),
-                *shortCircuitImpossibleBB = llvm::BasicBlock::Create(
-            TheContext, "shortcircuit.impossible", Builder.GetInsertBlock()->getParent());
-        llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(shortCircuitExitBB);
+                 TheContext, "shortcircuit.exit", Builder.GetInsertBlock()->getParent()),
+             *shortCircuitImpossibleBB = llvm::BasicBlock::Create(
+                 TheContext, "shortcircuit.impossible", Builder.GetInsertBlock()->getParent());
+        llvm::IRBuilder<> TmpB(TheContext);
+        TmpB.SetInsertPoint(shortCircuitExitBB);
         auto *phiCollector = TmpB.CreatePHI(i1, 2, "shortcircuit.restmp");
 
-        if (op == T_dblampersand){
+        if (op == T_dblampersand)
+        {
             auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(false), "shortcircuit.andtmp");
             Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
             phiCollector->addIncoming(c1(false), Builder.GetInsertBlock());
@@ -658,7 +657,8 @@ llvm::Value *BinOp::compile()
             Builder.SetInsertPoint(shortCircuitExitBB);
             return phiCollector;
         }
-        else if (op == T_dblbar) {
+        else if (op == T_dblbar)
+        {
             auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(true), "shortcircuit.ortmp");
             Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
             phiCollector->addIncoming(c1(true), Builder.GetInsertBlock());
@@ -670,9 +670,11 @@ llvm::Value *BinOp::compile()
             Builder.SetInsertPoint(shortCircuitExitBB);
             return phiCollector;
         }
-    } else {
+    }
+    else
+    {
         auto lhsVal = lhs->compile(),
-            rhsVal = rhs->compile();
+             rhsVal = rhs->compile();
         auto tempTypeGraph = inf.deepSubstitute(lhs->get_TypeGraph());
 
         switch (op)
@@ -786,6 +788,8 @@ llvm::Value *BinOp::compile()
             return nullptr;
         }
     }
+
+    return nullptr;
 }
 llvm::Value *UnOp::compile()
 {
@@ -840,7 +844,7 @@ llvm::Value *New::compile()
                                      newType,
                                      llvm::ConstantExpr::getSizeOf(newType),
                                      nullptr,
-                                    //  nullptr,
+                                     //  nullptr,
                                      TheModule->getFunction("GC_malloc_atomic_uncollectable"),
                                      instrName);
 
@@ -1051,7 +1055,7 @@ llvm::Value *ConstructorCall::compile()
         machinePtrType,
         customType,
         llvm::ConstantExpr::getSizeOf(customType),
-        nullptr, 
+        nullptr,
         // nullptr,
         TheModule->getFunction("GC_malloc_atomic"),
         "customstruct.malloc");
@@ -1202,7 +1206,7 @@ llvm::Value *Match::compile()
     TheFunction->getBasicBlockList().push_back(NextClauseBB);
     Builder.SetInsertPoint(NextClauseBB);
     Builder.CreateCall(TheModule->getFunction("writeString"),
-        {Builder.CreateGlobalStringPtr("Runtime Error: No clause matches given expression\n")});
+                       {Builder.CreateGlobalStringPtr("Runtime Error: No clause matches given expression\n")});
     Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
 
     // Never going to get here but llvm complains anyway

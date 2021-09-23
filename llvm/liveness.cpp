@@ -9,23 +9,9 @@
  * to the function.
  */
 
-LivenessEntry::LivenessEntry(int scope, std::string id, TypeGraph *typegraph, Function *f)
-    : scope(scope), id(id), typegraph(typegraph), f(f) {}
-TypeGraph *LivenessEntry::getTypeGraph() 
-{
-    return typegraph;
-}
-std::string LivenessEntry::getId()
-{
-    return id;
-}
 int LivenessEntry::getScope()
 {
     return scope;
-}
-Function *LivenessEntry::getFunction()
-{
-    return f;
 }
 void LivenessEntry::visit()
 {
@@ -35,7 +21,67 @@ bool LivenessEntry::isVisited()
 {
     return visited;
 }
+LivenessEntry::LivenessEntry(int scope)
+    : scope(scope) {}
+LivenessEntryDef::LivenessEntryDef(int scope, Def *symbolDef)
+    : LivenessEntry(scope), symbolDef(symbolDef) {}
+LivenessEntryPar::LivenessEntryPar(int scope, Par *symbolPar)
+    : LivenessEntry(scope), symbolPar(symbolPar) {}
+LivenessEntryFor::LivenessEntryFor(int scope, For *symbolFor)
+    : LivenessEntry(scope), symbolFor(symbolFor) {}
+LivenessEntryPatternId::LivenessEntryPatternId(int scope, PatternId *symbolPatternId)
+    : LivenessEntry(scope), symbolPatternId(symbolPatternId) {}
 
+Def* LivenessEntryDef::getNode()
+{
+    return symbolDef;
+}
+Par* LivenessEntryPar::getNode()
+{
+    return symbolPar;
+}
+For* LivenessEntryFor::getNode()
+{
+    return symbolFor;
+}
+PatternId* LivenessEntryPatternId::getNode()
+{
+    return symbolPatternId;
+}
+
+std::string LivenessEntryDef::getId()
+{
+    return symbolDef->getId();
+}
+std::string LivenessEntryPar::getId()
+{
+    return symbolPar->getId();
+}
+std::string LivenessEntryFor::getId()
+{
+    return symbolFor->getId();
+}
+std::string LivenessEntryPatternId::getId()
+{
+    return symbolPatternId->getId();
+}
+
+TypeGraph* LivenessEntryDef::getTypeGraph()
+{
+    return symbolDef->getTypeGraph();
+}
+TypeGraph* LivenessEntryPar::getTypeGraph()
+{
+    return symbolPar->get_TypeGraph();
+}
+TypeGraph* LivenessEntryFor::getTypeGraph() 
+{
+    return type_int;
+}
+TypeGraph* LivenessEntryPatternId::getTypeGraph()
+{
+    return symbolPatternId->getTypeGraph();
+}
 
 /*
 class LivenessFunctionEntry
@@ -144,11 +190,28 @@ void closeScopeOnLTable()
 {
     LTable.closeScope();
 }
-void insertSymbolToLTable(std::string name, TypeGraph *t, Function *f = nullptr)
+
+void insertDefToLTable(Def *d)
 {
     int scope = LTable.getCurrScope();
-    LTable.insert({name, new LivenessEntry(scope, name, t, f)});
+    LTable.insert({d->getId(), new LivenessEntryDef(scope, d)});
 }
+void insertParToLTable(Par *p)
+{
+    int scope = LTable.getCurrScope();
+    LTable.insert({p->getId(), new LivenessEntryPar(scope, p)});
+}
+void insertForToLTable(For *f)
+{
+    int scope = LTable.getCurrScope();
+    LTable.insert({f->getId(), new LivenessEntryFor(scope, f)});
+}
+void insertPatternIdToLTable(PatternId *p)
+{
+    int scope = LTable.getCurrScope();
+    LTable.insert({p->getId(), new LivenessEntryPatternId(scope, p)});
+}
+
 LivenessEntry *lookupSymbolOnLTable(std::string name)
 {
     return LTable[name];
@@ -156,6 +219,15 @@ LivenessEntry *lookupSymbolOnLTable(std::string name)
 void makeVisitedOnLTable(std::string func)
 {
     LTable[func]->visit();
+}
+
+// Check whether this name belongs to prevFunc's scope
+void checkScopeAndAddExternal(std::string name, Function *f)
+{
+    if(!isInScopeOf(name, f))
+    {
+        f->addExternal(lookupSymbolOnLTable(name));        
+    }
 }
 
 /*******************************************************/
@@ -182,8 +254,10 @@ void Letdef::liveness(Function *prevFunc)
         // Insert functions to table
         for(auto *d: def_list)
         {
-            Function *f = dynamic_cast<Function *>(d);
-            insertSymbolToLTable(d->getId(), d->getTypeGraph(), f); 
+            if(d->isDef())
+            {
+                insertDefToLTable(dynamic_cast<Def *>(d));
+            } 
         }
 
         // Call liveness on each def and make them visited
@@ -193,6 +267,7 @@ void Letdef::liveness(Function *prevFunc)
             makeVisitedOnLTable(d->getId());
         }
 
+        /*
         //! Inefficient but works
         // Move all external to the first function
         Function *firstFunc = dynamic_cast<Function *>(def_list[0]);
@@ -208,7 +283,7 @@ void Letdef::liveness(Function *prevFunc)
             Function *f = dynamic_cast<Function *>(d);
             insertExternalToFrom(f, firstFunc);
         }
-
+        */
     }
     else
     {
@@ -221,15 +296,10 @@ void Letdef::liveness(Function *prevFunc)
         // Insert symbols to table and make them visited
         for(auto *d: def_list)
         {
-            if(d->isFunctionDefinition())
+            if(d->isDef())
             {
-                Function *f = dynamic_cast<Function *>(d);
-                insertSymbolToLTable(d->getId(), d->getTypeGraph(), f); 
-            }
-            else 
-            {
-                insertSymbolToLTable(d->getId(), d->getTypeGraph());        
-            }
+                insertDefToLTable(dynamic_cast<Def *>(d));
+            } 
 
             makeVisitedOnLTable(d->getId());        
         }
@@ -251,30 +321,25 @@ void Constant::liveness(Function *prevFunc)
 void Array::liveness(Function *prevFunc)
 {
     for (auto *e : expr_list)
+    {
         e->liveness(prevFunc);
+    }
 }
 
 void Function::addExternal(LivenessEntry *l)
 {
+    // Don't add a function to its own external
+    if(this == l->getNode()) 
+    {
+        return;
+    }
+
     std::string id = l->getId();
 
     // Only add it if it hasn't already been added
     if(external.find(id) == external.end()) 
     {
         external[id] = l;
-    }
-}
-void Function::addDependent(Function *f)
-{
-    if(f == nullptr) return;
-
-    std::string dependentId = f->getId();
-    //std::cout << dependentId << " is dependent on " << id << std::endl;
-
-    // Only add it if it hasn't already been added
-    if(dependent.find(dependentId) == dependent.end()) 
-    {
-        dependent[dependentId] = f;
     }
 }
 void insertExternalToFrom(Function *funcDependent, Function *func)
@@ -312,34 +377,17 @@ void Function::liveness(Function *prevFunc)
     // Save scope of function
     scope = getCurrScope();
 
-    // Add prevFunc as dependent on this function
-    /*
-    if(prevFunc)
-    {
-        addDependent(prevFunc);
-    }
-    */
-
     // Create new scope
     openScopeOnLTable();
 
     // Insert parameters to table
     for(auto p: par_list)
     {
-        insertSymbolToLTable(p->getId(), p->get_TypeGraph());
+        insertParToLTable(p);
     }
     
     // Recursive call to the body passing this function
     expr->liveness(this);
-
-    // Add this function's external symbol dependencies to all
-    // functions dependent on it
-    /*
-    for(auto it = dependent.begin(); it != dependent.end(); it++)
-    {
-        insertExternalToFrom(it->second, this);
-    }
-    */
     
     if(prevFunc)
     {
@@ -375,8 +423,8 @@ void For::liveness(Function *prevFunc)
     // Open scope
     openScopeOnLTable();
 
-    // Insert id to table
-    insertSymbolToLTable(id, type_int);
+    // Insert node to table
+    insertForToLTable(this);
 
     // Recursive calls
     start->liveness(prevFunc);
@@ -400,41 +448,27 @@ void Dim::liveness(Function *prevFunc)
     if(!prevFunc) return;
 
     // Check whether this array belongs to prevFunc's scope
-    if(!isInScopeOf(id, prevFunc))
-    {
-        prevFunc->addExternal(lookupSymbolOnLTable(id));
-        hasExternal = true;
-        prevFuncScope = prevFunc->getScope();
-    }
+    checkScopeAndAddExternal(id, prevFunc);
 }
 void ArrayAccess::liveness(Function *prevFunc)
 {
-    if(!prevFunc) return;
-
-    // Check whether this array belongs to prevFunc's scope
-    if(!isInScopeOf(id, prevFunc))
-    {
-        prevFunc->addExternal(lookupSymbolOnLTable(id));
-        hasExternal = true;
-        prevFuncScope = prevFunc->getScope();
-    }
-
+    // Recursive call on indices
     for(auto *e: expr_list)
     {
         e->liveness(prevFunc);
     }
+
+    if(!prevFunc) return;
+
+    // Check whether this array belongs to prevFunc's scope
+    checkScopeAndAddExternal(id, prevFunc);
 }
 void ConstantCall::liveness(Function *prevFunc)
 {
     if(!prevFunc) return;
 
     // Check whether this constant belongs to prevFunc's scope
-    if(!isInScopeOf(id, prevFunc))
-    {
-        prevFunc->addExternal(lookupSymbolOnLTable(id));        
-        hasExternal = true;
-        prevFuncScope = prevFunc->getScope();
-    }
+    checkScopeAndAddExternal(id, prevFunc);
 }
 void ConstructorCall::liveness(Function *prevFunc)
 {
@@ -445,40 +479,19 @@ void ConstructorCall::liveness(Function *prevFunc)
 }
 void FunctionCall::liveness(Function *prevFunc)
 {
-    // Recursive call on parameters
+    // Recursive call on arguments
     for(auto *e: expr_list)
     {
         e->liveness(prevFunc);
     }
 
-    // Lookup function
-    LivenessEntry *currFuncEntry = lookupSymbolOnLTable(id);
-    Function *currFunc = currFuncEntry->getFunction();
-    
-    // Save Function definition 
-    f = currFunc;
-    
-    // If this call is not inside a function then it will have to take
-    // any extra arguments directly
-    if(prevFunc == nullptr) 
+    if(!prevFunc) 
     {
         return;
     }
     
-    // If called function's definition has been analysed then
-    // add its dependencies to prevFunc
-    if(currFuncEntry->isVisited()) 
-    {
-        insertExternalToFrom(prevFunc, currFunc);
-    }
-
-    // If not then prevFunc is dependent on called function
-    /*
-    else
-    {
-        currFunc->addDependent(prevFunc);
-    }
-    */
+    // Check whether this function belongs to prevFunc's scope
+    checkScopeAndAddExternal(id, prevFunc);
 }
 
 void Match::liveness(Function *prevFunc)
@@ -502,5 +515,5 @@ void Clause::liveness(Function *prevFunc)
 void PatternId::liveness(Function *prevFunc)
 {
     // Insert to table
-    insertSymbolToLTable(id, TG);
+    insertPatternIdToLTable(this);
 }

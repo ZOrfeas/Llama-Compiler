@@ -213,11 +213,23 @@ std::string Par::getId()
     return id;
 }
 
+std::string DefStmt::getId()
+{
+    return id;
+}
+bool DefStmt::isDef() const 
+{
+    return false;
+}
 bool DefStmt::isFunctionDefinition() const
 {
     return false;
 }
 bool Function::isFunctionDefinition() const
+{
+    return true;
+}
+bool Def::isDef() const
 {
     return true;
 }
@@ -718,6 +730,10 @@ void While::sem()
 
     TG = type_unit;
 }
+std::string For::getId()
+{
+    return id;
+}
 void For::sem()
 {
     // Create new scope for counter and add it
@@ -929,6 +945,14 @@ void PatternLiteral::checkPatternTypeGraph(TypeGraph *t)
             printError("Literal is not a valid pattern for given type", false);
         }
     ));
+}
+std::string PatternId::getId()
+{
+    return id;
+}
+TypeGraph *PatternId::getTypeGraph()
+{
+    return TG;
 }
 void PatternId::checkPatternTypeGraph(TypeGraph *t)
 {
