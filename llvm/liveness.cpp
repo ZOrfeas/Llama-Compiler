@@ -231,12 +231,15 @@ void checkScopeAndAddExternal(std::string name, Function *f)
 }
 
 /*******************************************************/
-const std::string progFunc = "PROGRAM";
 
 // By default do nothing
 void AST::liveness(Function *prevFunc)
 {
     return;
+}
+void AST::addFunctionThatNeedsSymbol(Function *f)
+{
+    listOfFunctionsThatNeedSymbol.push_back(f);
 }
 
 void Program::liveness(Function *prevFunc)
@@ -339,7 +342,11 @@ void Function::addExternal(LivenessEntry *l)
     // Only add it if it hasn't already been added
     if(external.find(id) == external.end()) 
     {
+        // Add entry as external to function
         external[id] = l;
+
+        // Add function as one that needs this node
+        l->getNode()->addFunctionThatNeedsSymbol(this);
     }
 }
 void insertExternalToFrom(Function *funcDependent, Function *func)
@@ -355,7 +362,7 @@ void insertExternalToFrom(Function *funcDependent, Function *func)
         }
         
         // Otherwise add it to dependent func too
-        funcDependent->external[it.first] = it.second;
+        funcDependent->addExternal(it.second);
     }
     
     //funcDependent->external.insert(func->external.begin(), func->external.end());

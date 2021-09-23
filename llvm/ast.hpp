@@ -77,6 +77,10 @@ class AST
 {
 protected:
     int line_number;
+
+    // Will be filled by liveness only for the nodes that define symbols
+    std::vector<Function *> listOfFunctionsThatNeedSymbol = {};
+
     static llvm::LLVMContext TheContext;
     static llvm::IRBuilder<> Builder;
     static llvm::Module *TheModule;
@@ -109,6 +113,7 @@ public:
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
     virtual void liveness(Function *prevFunc);
+    void addFunctionThatNeedsSymbol(Function *f);
     static llvm::Value *equalityHelper(llvm::Value *lhsVal, llvm::Value *rhsVal,
                                        TypeGraph *type, bool structural, llvm::IRBuilder<> TmpB);
     virtual llvm::Value *compile();

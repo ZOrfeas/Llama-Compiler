@@ -309,6 +309,18 @@ llvm::Value *Tdef::compile()
 }
 llvm::Value *Constant::compile()
 {
+    /*
+    std::cout << "Constant " << id << " is needed by functions: ";
+    for(auto f: listOfFunctionsThatNeedSymbol)
+    {
+        std::cout   << f->getId() 
+                    << "("
+                    << f->getTypeGraph()->stringifyTypeClean() 
+                    << ") ";
+    }
+    std::cout << std::endl;
+    */
+
     llvm::Value *exprVal = expr->compile();
     exprVal->setName(id);
     LLValues.insert({id, exprVal});
@@ -334,6 +346,18 @@ llvm::Function *Function::generateLLVMPrototype()
 }
 void Function::generateBody()
 {
+    /*
+    std::cout << "Function " << id << " needs symbols: ";
+    for(auto e: external)
+    {
+        std::cout   << e.first 
+                    << "("
+                    << e.second->getTypeGraph()->stringifyTypeClean() 
+                    << ") ";
+    }
+    std::cout << std::endl;
+    */
+
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     openScopeOfAll();
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", funcPrototype);
