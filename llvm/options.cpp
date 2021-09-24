@@ -270,13 +270,13 @@ void OptionList::executeOptions()
 #ifdef LIBLLAMA
                 std::string(XSTR(LIBLLAMA)) +
 #else
-                std::string("../../edsger_lib/lib.a") + 
+#error Location of llama runtime library must be specified
 #endif // LIBLLAMA
                 " " +
 #ifdef LIBGC
                 std::string(XSTR(LIBGC));
 #else
-                std::string("/usr/local/lib/libgc.so");
+#error Location of libgc.so must be specified
 #endif // LIBGC
         if(!std::system(linkCommand.c_str()))
             exit(1);
