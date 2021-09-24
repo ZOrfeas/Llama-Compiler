@@ -4,6 +4,9 @@ CXX=c++
 CXXFLAGS=-Wall -std=c++11 `llvm-config --cxxflags`
 LDFLAGS=`llvm-config --ldflags --system-libs --libs all`
 
+OPTIONCPPFLAGS=$(CXXFLAGS) -DLIBLLAMA="../../edsger_lib/lib.a"
+OPTIONCPPFLAGS+=-DLIBGC="/usr/local/lib/libgc.so"
+
 default: compiler
 
 lexer.cpp: lexer.l
@@ -26,7 +29,7 @@ liveness.o: liveness.cpp ast.hpp
 genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp 
 libIR.o: libIR.cpp ast.hpp
 options.o: options.cpp ast.hpp infer.hpp symbol.hpp
-
+	$(CXX) $(OPTIONCPPFLAGS) -c -o options.o options.cpp $(LDFLAGS)
 # compiler: lexer.o parser.o symbol.o
 compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o liveness.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)

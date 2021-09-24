@@ -176,7 +176,8 @@ void OptionList::executeOptions()
         std::freopen(filename.c_str(), "w", stdout);
     }
 
-    bool syntax = false, sem = false, inference = false, compile = false;
+    bool syntax = false, sem = false, inference = false, compile = false,
+         link = false;
     if(frontend.isActivated()) 
     {
         std::string stage = frontend.getOptarg();
@@ -197,7 +198,7 @@ void OptionList::executeOptions()
     }
     else 
     {
-        syntax = sem = inference = compile = true;
+        syntax = sem = inference = compile = link = true;
     }
 
     if (inferenceLogs.isActivated())
@@ -256,6 +257,38 @@ void OptionList::executeOptions()
                 p->emitObjectCode("a.o");
             else
                 p->emitObjectCode(filename.c_str());
+        }
+    }
+    if (link)
+    {
+        if(! printObjectCode.isActivated()) 
+        {
+            p->emitObjectCode("a.o");
+        }
+
+#define XSTR(s) STR(s)
+#define STR(s) #s
+        std::string linkCommand = 
+                std::string("clang -o ") + 
+                (filename == "" ? "a.out" : filename.c_str()) + std::string(" ") +
+                "a.o " + 
+#ifdef LIBLLAMA
+                std::string(XSTR(LIBLLAMA)) +
+#else
+#error Location of llama runtime library must be specified
+#endif // LIBLLAMA
+                " " +
+#ifdef LIBGC
+                std::string(XSTR(LIBGC));
+#else
+#error Location of libgc.so must be specified
+#endif // LIBGC
+        if(std::system(linkCommand.c_str()))
+            exit(1);
+
+        if(!printObjectCode.isActivated()) 
+        {
+            std::system("rm a.o");
         }
     }
 }
