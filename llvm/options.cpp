@@ -251,9 +251,9 @@ void OptionList::executeOptions()
         {
             p->emitAssemblyCode();
         }
-        if (printObjectCode.isActivated() || link)
+        if (printObjectCode.isActivated())
         {
-            if(filename == "" || link)
+            if(filename == "")
                 p->emitObjectCode("a.o");
             else
                 p->emitObjectCode(filename.c_str());
@@ -261,6 +261,11 @@ void OptionList::executeOptions()
     }
     if (link)
     {
+        if(! printObjectCode.isActivated()) 
+        {
+            p->emitObjectCode("a.o");
+        }
+
 #define XSTR(s) STR(s)
 #define STR(s) #s
         std::string linkCommand = 
@@ -280,5 +285,10 @@ void OptionList::executeOptions()
 #endif // LIBGC
         if(std::system(linkCommand.c_str()))
             exit(1);
+
+        if(!printObjectCode.isActivated()) 
+        {
+            std::system("rm a.o");
+        }
     }
 }
