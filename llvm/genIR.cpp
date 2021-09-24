@@ -309,15 +309,15 @@ llvm::Value *Tdef::compile()
 }
 llvm::Value *Constant::compile()
 {
-    std::cerr << "Constant " << id << " is needed by functions: ";
-    for(auto f: listOfFunctionsThatNeedSymbol)
-    {
-        std::cerr   << f->getId() 
-                    << "("
-                    << f->getTypeGraph()->stringifyTypeClean() 
-                    << ") ";
-    }
-    std::cerr << std::endl;
+    // std::cerr << "Constant " << id << " is needed by functions: ";
+    // for(auto f: listOfFunctionsThatNeedSymbol)
+    // {
+    //     std::cerr   << f->getId() 
+    //                 << "("
+    //                 << f->getTypeGraph()->stringifyTypeClean() 
+    //                 << ") ";
+    // }
+    // std::cerr << std::endl;
 
     llvm::Value *exprVal = expr->compile();
     exprVal->setName(id);
@@ -344,15 +344,15 @@ llvm::Function *Function::generateLLVMPrototype()
 }
 void Function::generateBody()
 {
-    std::cerr << "Function " << id << " needs symbols: ";
-    for(auto e: external)
-    {
-        std::cerr   << e.first 
-                    << "("
-                    << e.second->getTypeGraph()->stringifyTypeClean() 
-                    << ") ";
-    }
-    std::cerr << std::endl;
+    // std::cerr << "Function " << id << " needs symbols: ";
+    // for(auto e: external)
+    // {
+    //     std::cerr   << e.first 
+    //                 << "("
+    //                 << e.second->getTypeGraph()->stringifyTypeClean() 
+    //                 << ") ";
+    // }
+    // std::cerr << std::endl;
 
     llvm::BasicBlock *prevBB = Builder.GetInsertBlock();
     openScopeOfAll();
