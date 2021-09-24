@@ -278,7 +278,7 @@ void OptionList::executeOptions()
 #else
 #error Location of libgc.so must be specified
 #endif // LIBGC
-        if(!std::system(linkCommand.c_str()))
+        if(std::system(linkCommand.c_str()))
             exit(1);
     }
 }
