@@ -6,11 +6,11 @@ LDFLAGS=`llvm-config --ldflags --system-libs --libs all`
 
 LIBGCFLAG=-DLIBGC="/usr/local/lib/libgc.so"
 # LIBGCFLAG=
-LIBLLAMAFLAG=-DLIBLLAMA="../../edsger_lib/lib.a"
+LIBLLAMAFLAG=-DLIBLLAMA="./libllama/lib.a"
 GENIRCPPFLAGS=$(CXXFLAGS) $(LIBGCFLAG)
 OPTIONCPPFLAGS=$(CXXFLAGS) $(LIBLLAMAFLAG) $(LIBGCFLAG)
 
-default: compiler
+default: all
 
 lexer.cpp: lexer.l
 	flex -s -o lexer.cpp lexer.l
@@ -36,11 +36,33 @@ options.o: options.cpp ast.hpp infer.hpp symbol.hpp
 	$(CXX) $(OPTIONCPPFLAGS) -c -o options.o options.cpp $(LDFLAGS)
 
 # compiler: lexer.o parser.o symbol.o
+all: lib compiler
 compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o liveness.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
+
+lib:
+	cd libllama && ./libs.sh &&	cd ..
 
 clean:
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o
 
-distclean: clean
-	$(RM) llamac llamac_d
+distcleanlib:
+	cd libllama && \
+	make -s clean -C auxil  && \
+	rm auxil/auxil.a && \
+	make -s clean -C math && \
+	rm math/math.a && \
+	make -s clean -C stdio && \
+	rm stdio/stdio.a && \
+	make -s clean -C stdlib && \
+	rm stdlib/stdlib.a && \
+	make -s clean -C string && \
+	rm string/string.a && \
+	make -s clean -C _replacements && \
+	rm _replacements/reps.a && \
+	rm lib.a && \
+	cd ..
+
+
+distclean: clean distcleanlib
+	$(RM) llamac
