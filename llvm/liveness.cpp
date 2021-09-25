@@ -83,36 +83,6 @@ TypeGraph* LivenessEntryPatternId::getTypeGraph()
     return symbolPatternId->getTypeGraph();
 }
 
-/*
-class LivenessFunctionEntry
-    : public LivenessEntry
-{
-protected:
-    std::vector<LivenessFunctionEntry *> dependent = {};
-    std::vector <LivenessEntry *> external = {};
-
-public:
-    LivenessFunctionEntry(int scope, std::string id, TypeGraph *typegraph)
-        : LivenessEntry(scope, id, typegraph) {}
-    virtual void addDependent(LivenessFunctionEntry *f) override 
-    {
-        dependent.push_back(f);
-    }
-    virtual void addExternal(LivenessEntry *l) override 
-    {
-        external.push_back(l);
-    }
-    virtual std::vector<LivenessFunctionEntry *> getDependent() override
-    {
-        return dependent;
-    }
-    virtual std::vector<LivenessEntry *> getExternal() override 
-    {
-        return external;
-    }
-};
-*/
-
 /** @param T is the Type the table will will hold pointers of */
 template <class T>
 class LivenessTable
@@ -166,6 +136,25 @@ public:
 
 LivenessTable<LivenessEntry *> LTable;
 
+void insertLibraryToLTable()
+{
+    // Library function names
+    std::vector<std::string> libraryFunc = 
+    {
+        "print_int", "print_bool", "print_char", "print_float", "print_string",
+        "read_int", "read_bool", "read_char", "read_float", "read_string",  
+        "abs", "fabs", "sqrt", "sin", "cos", "tan", "atan", "exp", "ln", "pi",
+        "incr", "decr",
+        "float_of_int", "int_of_float", "round", "int_of_char", "char_of_int",
+        "strlen", "strcmp", "strcpy", "strcat"
+    };
+
+    // Insert library functions
+    for(auto name: libraryFunc)
+    {
+        LTable.insert({name, new LivenessEntryDef(0, nullptr)});
+    }
+}
 int getCurrScope()
 {
     return LTable.getCurrScope();
@@ -244,6 +233,9 @@ void AST::addFunctionThatNeedsSymbol(Function *f)
 
 void Program::liveness(Function *prevFunc)
 {
+    // Add library functions once
+    insertLibraryToLTable();
+
     // Recursive call using nullptr as function
     for (auto *d : definition_list)
     {
@@ -331,8 +323,8 @@ void Array::liveness(Function *prevFunc)
 
 void Function::addExternal(LivenessEntry *l)
 {
-    // Don't add a function to its own external
-    if(this == l->getNode()) 
+    // If the node of the entry is nullptr then it is a library function
+    if(!l->getNode()) 
     {
         return;
     }
