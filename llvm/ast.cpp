@@ -7,13 +7,14 @@
 
 std::vector<Identifier *> AST_identifier_list = {};
 
-void printColorString(std::string s, int width, int format = 0, int color = 37)
+void printColorString(std::string s, int width, int format = 0, int color = 37, bool pErr = false)
 {
     std::string intro = (format == 0) ? "\033[0m"
                                       : "\033[" + std::to_string(format) + ";" + std::to_string(color) + "m";
     std::string outro = "\033[0m";
 
-    std::cout << intro
+    std::ostream &outStream = pErr ? std::cerr : std::cout;
+    outStream << intro
               << std::left << std::setfill(' ') << std::setw(width)
               << s
               << outro;
@@ -41,14 +42,14 @@ void Identifier::printIdLine(int lineWidth, int idWidth, int typeWidth)
     printColorString(getName(), idWidth, 1, 35);
     printColorString(getTypeString(), typeWidth);
     printColorString(getLine(), lineWidth);
-    std::cout << std::endl;
+    std::cerr << std::endl;
 }
 
 void AST::printError(std::string msg, bool crash)
 {
     std::string intro = "Error at line " + std::to_string(line_number) + ": ";
-    printColorString(intro, intro.size(), 1, 31);
-    std::cout << msg << std::endl;
+    printColorString(intro, intro.size(), 1, 31, true);
+    std::cerr << msg << std::endl;
     if (crash) exit(1);
 }
 void AST::printIdTypeGraphs()
@@ -143,7 +144,8 @@ Def::Def(std::string id, Type *t)
 Constant::Constant(std::string *id, Expr *e, Type *t)
     : Def(*id, t), expr(e) {}
 Function::Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t)
-    : Constant(id, e, t), par_list(*p) {}
+    : Constant(id, e, t), par_list(*p), 
+    funcPrototype(nullptr), envStructType(nullptr) {}
 Mutable::Mutable(std::string id, Type *T)
     : Def(id, T) {}
 Array::Array(std::string *id, std::vector<Expr *> *e, Type *T)
