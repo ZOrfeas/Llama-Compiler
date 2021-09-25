@@ -243,7 +243,7 @@ void OptionList::executeOptions()
         p->liveness(nullptr); 
         
         bool opt = optimise.isActivated();
-        p->start_compilation("a.ll", opt);
+        p->start_compilation("module.ll", opt);
         
         if (llvmIR.isActivated())
         {
@@ -283,7 +283,7 @@ void OptionList::executeOptions()
 #ifdef LIBGC
                 std::string(XSTR(LIBGC));
 #else
-#error Location of libgc.so must be specified
+                std::string("");
 #endif // LIBGC
         if(std::system(linkCommand.c_str()))
             exit(1);

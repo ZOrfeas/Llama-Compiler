@@ -1,11 +1,14 @@
-.PHONY: default clean distclean
+.PHONY: default clean distclean 
 
 CXX=c++
 CXXFLAGS=-Wall -std=c++11 `llvm-config --cxxflags`
 LDFLAGS=`llvm-config --ldflags --system-libs --libs all`
 
-OPTIONCPPFLAGS=$(CXXFLAGS) -DLIBLLAMA="../../edsger_lib/lib.a"
-OPTIONCPPFLAGS+=-DLIBGC="/usr/local/lib/libgc.so"
+LIBGCFLAG=-DLIBGC="/usr/local/lib/libgc.so"
+# LIBGCFLAG=
+LIBLLAMAFLAG=-DLIBLLAMA="../../edsger_lib/lib.a"
+GENIRCPPFLAGS=$(CXXFLAGS) $(LIBGCFLAG)
+OPTIONCPPFLAGS=$(CXXFLAGS) $(LIBLLAMAFLAG) $(LIBGCFLAG)
 
 default: compiler
 
@@ -26,10 +29,12 @@ symbol.o: symbol.cpp symbol.hpp
 types.o: types.cpp types.hpp ast.hpp
 infer.o: infer.cpp infer.hpp types.hpp
 liveness.o: liveness.cpp ast.hpp
-genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp 
+genIR.o: genIR.cpp ast.hpp infer.hpp parser.hpp
+	$(CXX) $(GENIRCPPFLAGS) -c -o genIR.o genIR.cpp $(LDFLAGS)
 libIR.o: libIR.cpp ast.hpp
 options.o: options.cpp ast.hpp infer.hpp symbol.hpp
 	$(CXX) $(OPTIONCPPFLAGS) -c -o options.o options.cpp $(LDFLAGS)
+
 # compiler: lexer.o parser.o symbol.o
 compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.o liveness.o genIR.o options.o
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
@@ -39,26 +44,3 @@ clean:
 
 distclean: clean
 	$(RM) llamac llamac_d
-
-#### Build for debugging 
-debug: CXXFLAGS+=-g
-
-lexer_d.o: lexer.cpp lexer.hpp parser.hpp ast.hpp
-	$(CXX) $(CXXFLAGS) -c -o lexer_d.o lexer.cpp
-parser_d.o: parser.cpp lexer.hpp symbol.hpp ast.hpp infer.hpp
-	$(CXX) $(CXXFLAGS) -c -o parser_d.o parser.cpp
-ast_d.o: ast.cpp lexer.hpp ast.hpp parser.hpp types.hpp infer.hpp
-	$(CXX) $(CXXFLAGS) -c -o ast_d.o ast.cpp
-symbol_d.o: symbol.cpp symbol.hpp types.hpp
-	$(CXX) $(CXXFLAGS) -c -o symbol_d.o symbol.cpp
-types_d.o: types.cpp types.hpp infer.hpp
-	$(CXX) $(CXXFLAGS) -c -o types_d.o types.cpp
-infer_d.o: infer.cpp infer.hpp types.hpp
-	$(CXX) $(CXXFLAGS) -c -o infer_d.o infer.cpp
-genIR_d.o: genIR.cpp ast.hpp infer.hpp
-	$(CXX) $(CXXFLAGS) -c -o genIR_d.o genIR.cpp
-libIR_d.o: libIR.cpp ast.hpp lexer.hpp
-	$(CXX) $(CXXFLAGS) -c -o libIR_d.o libIR.cpp
-debug: lexer_d.o parser_d.o ast_d.o symbol_d.o types_d.o infer_d.o libIR_d.o genIR_d.o
-	$(CXX) $(CXXFLAGS) -o llamac_d $^ $(LDFLAGS)
-

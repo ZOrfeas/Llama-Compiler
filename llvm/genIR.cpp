@@ -238,6 +238,7 @@ void AST::start_compilation(const char *programName, bool optimize)
         LLValues.insert(libFunc);
     }
     // Initialize garbage collection functions
+#ifdef LIBGC
     llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
     TheMalloc = llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic", TheModule);
@@ -247,6 +248,9 @@ void AST::start_compilation(const char *programName, bool optimize)
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
                            "GC_free", TheModule);
     // Initialize main function (entry point)
+#else
+    TheMalloc = TheUncollectableMalloc = nullptr;
+#endif // LIBGC
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
         llvm::Function::Create(main_type, llvm::Function::ExternalLinkage,
@@ -982,9 +986,12 @@ llvm::Value *UnOp::compile()
         return Builder.CreateLoad(exprVal, "ptr.dereftmp");
     case T_delete:
     {
-        // Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+#ifdef LIBGC
         llvm::Instruction *i8PtrCast = llvm::CastInst::CreatePointerCast(exprVal, i8->getPointerTo(), "delete.cast", Builder.GetInsertBlock());
         Builder.CreateCall(TheModule->getFunction("GC_free"), {i8PtrCast});
+#else
+        Builder.Insert(llvm::CallInst::CreateFree(exprVal, Builder.GetInsertBlock()));
+#endif // LIBGC
         return unitVal();
     }
     default:
