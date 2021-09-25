@@ -3,7 +3,20 @@
 Implementation of a compiler for the functional programming language Llama
 
 ## Compile
-- `make` to create a production version
+`make` to create a production version
+- `sudo apt install nasm` necessary for library compilation
+- [libgc build from source](https://github.com/ivmai/bdwgc#installation-and-portability) or install for garbage collection (can be disabled in makefile)
+- Bison build from source:
+  ```wget http://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.gz
+     tar -zxvf bison-3.7.6.tar.gz
+     cd bison-3.7.6/
+     sudo ./configure
+     sudo make
+     sudo make install
+  ```
+  (possibly necessary) `sudo ln -s /usr/local/bin/bison /usr/bin/bison`
+- `sudo apt install flex` should be enough
+- LLVM installation is harder :)
 
 ## Built with
 | Component           | Tools |
