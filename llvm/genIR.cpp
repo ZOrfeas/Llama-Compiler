@@ -173,6 +173,9 @@ llvm::Type *AST::unitType;
 llvm::Type *AST::machinePtrType;
 llvm::Type *AST::arrCharType;
 
+llvm::Function *AST::TheMalloc;
+llvm::Function *AST::TheUncollectableMalloc;
+
 void AST::start_compilation(const char *programName, bool optimize)
 {
     TheModule = new llvm::Module(programName, TheContext);
@@ -223,9 +226,9 @@ void AST::start_compilation(const char *programName, bool optimize)
     }
     // Initialize garbage collection functions
     llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
-    llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+    TheMalloc = llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic", TheModule);
-    llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+    TheUncollectableMalloc = llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic_uncollectable", TheModule);
     llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
@@ -291,6 +294,26 @@ void AST::emitAssemblyCode()
     llvm::outs().flush();
 }
 
+llvm::Value *AST::getGlobalLiveValue() {
+    return globalLiveValue;
+}
+
+void AST::updateGlobalValue(llvm::Value *newVal) {
+    if (listOfFunctionsThatNeedSymbol.empty())
+        return;
+    if (!globalLiveValue) {
+        auto initializer = llvm::ConstantAggregateZero::get(newVal->getType());
+        globalLiveValue = new llvm::GlobalVariable(
+            *TheModule,
+            newVal->getType(),
+            false,
+            llvm::GlobalValue::InternalLinkage,
+            initializer
+        );
+    }
+    Builder.CreateStore(newVal, globalLiveValue);
+}
+
 /*********************************/
 /**        Definitions           */
 /*********************************/
@@ -322,27 +345,29 @@ llvm::Value *Constant::compile()
     llvm::Value *exprVal = expr->compile();
     exprVal->setName(id);
     LLValues.insert({id, exprVal});
+    updateGlobalValue(exprVal);
     return nullptr;
 }
 
-llvm::Function *Function::generateLLVMPrototype()
+llvm::StructType *Function::getEnvStructType()
 {
-    llvm::Function *newFunction;
-    if (llvm::FunctionType *newFuncType =
-            llvm::dyn_cast<llvm::FunctionType>(TG->getLLVMType(TheModule)->getPointerElementType()))
-    {
-        newFunction = llvm::Function::Create(newFuncType, llvm::Function::ExternalLinkage,
-                                             id, TheModule);
+    if (envStructType)
+        return envStructType;
+    std::string envTypeName = getId() + ".env";
+    ConstructorTypeGraph *utilGraph = new ConstructorTypeGraph(envTypeName);
+    for (const auto &ext: external) {
+        utilGraph->addField(ext.second->getTypeGraph());
     }
-    else
-    {
-        std::cout << "Internal error, FunctionType dyn_cast failed\n";
-        exit(1);
-    }
-    funcPrototype = newFunction;
-    return newFunction;
+    envStructType = utilGraph->getLLVMType(TheModule);
+    envStructType->setName(envTypeName);
+    return envStructType;
 }
-void Function::generateBody()
+
+void DefStmt::generateLLVMPrototype() {
+    std::cerr << "generateLLVMPrototype called for DefStmt\n";
+    exit(1);
+}
+void Function::generateLLVMPrototype()
 {
     // std::cerr << "Function " << id << " needs symbols: ";
     // for(auto e: external)
@@ -350,6 +375,110 @@ void Function::generateBody()
     //     std::cerr   << e.first 
     //                 << "("
     //                 << e.second->getTypeGraph()->stringifyTypeClean() 
+    //                 << ") ";
+    // }
+    // std::cerr << std::endl;
+    
+    auto paramTypes = getTypeGraph()->getLLVMParamTypes(TheModule);
+    auto resType = getTypeGraph()->getLLVMResultType(TheModule);
+    paramTypes.push_back(getEnvStructType()->getPointerTo());
+
+    auto newFuncType = llvm::FunctionType::get(resType, paramTypes, false);
+    funcPrototype = llvm::Function::Create(
+        newFuncType, llvm::Function::ExternalLinkage, id, TheModule
+    );
+}
+
+llvm::Value *DefStmt::generateTrampoline() {
+    std::cerr << "generateTrampoline() called for DefStmt\n";
+    exit(1);
+}
+llvm::Value *Function::generateTrampoline()
+{
+    auto trampolineEnvMallocInst =
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+            machinePtrType, getEnvStructType(),
+            llvm::ConstantExpr::getSizeOf(getEnvStructType()), nullptr,
+            TheMalloc);
+    auto trampolineEnvMalloc = 
+        Builder.Insert(trampolineEnvMallocInst, getId() + ".envmalloc");
+
+    //TODO(ORF): Find out how much to allocate for the trampoline
+    auto trampolineMallocSize = c32(16);
+    auto trampolineMallocInst = 
+        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+            machinePtrType, i8, 
+            llvm::ConstantExpr::getSizeOf(i8), trampolineMallocSize,
+            TheMalloc);
+    auto trampolineMalloc = 
+        Builder.Insert(trampolineMallocInst, getId() + ".trampmalloc");
+    
+    // fill the env struct
+    int i = 0;
+    llvm::Value *currEnvLoc;
+    AST *currDepNode;
+    for (const auto &ext: external) {
+        currEnvLoc = Builder.CreateGEP(
+            trampolineEnvMalloc, {c32(0), c32(i)}, "tramp.currenvloc");
+        currDepNode = ext.second->getNode();
+        if (inf.deepSubstitute(ext.second->getTypeGraph())->isFunction()) {
+            // save a backlog of global-structloc pairs to be
+            // processed after trampoline creations for mutually recursive functions
+            envBacklog.push_back({currDepNode, currEnvLoc});
+        } else {
+            auto currDepVal = Builder.CreateLoad(
+                currDepNode->getGlobalLiveValue(), "loadedglobaltmp");
+            Builder.CreateStore(currDepVal, currEnvLoc, false);
+        }
+        i++;
+    }
+    llvm::Function *initTrampoline = llvm::Intrinsic::getDeclaration(
+        TheModule, llvm::Intrinsic::init_trampoline);
+    llvm::Function *adjustTrampoline = llvm::Intrinsic::getDeclaration(
+        TheModule, llvm::Intrinsic::adjust_trampoline);
+    auto *bitcastedFuncProto = Builder.CreatePointerCast(
+                funcPrototype, i8->getPointerTo(), "castedfuncptrtmp"),
+         *bitcastedEnvStruct = Builder.CreatePointerCast(
+                trampolineEnvMalloc, i8->getPointerTo(), "castedfuncenvtmp");
+        Builder.CreateCall(
+            initTrampoline, 
+            {trampolineMalloc, bitcastedFuncProto, bitcastedEnvStruct}
+        );
+    auto *adjustedTrampoline =
+        Builder.CreateCall(adjustTrampoline, {trampolineMalloc}, "adjustedtrampoline");
+    return Builder.CreatePointerCast(
+        adjustedTrampoline, TG->getLLVMType(TheModule), "castedtrampoline"
+    );
+
+}
+
+void DefStmt::processEnvBacklog() {
+    std::cerr << "processEnvBacklog() called for DefStmt \n";
+    exit(1);
+}
+void Function::processEnvBacklog()
+{
+    for (const auto &pair: envBacklog) {
+        Builder.CreateStore(
+            Builder.CreateLoad(pair.first->getGlobalLiveValue()),
+            pair.second,
+            false
+        );
+    }
+}
+
+void DefStmt::generateBody() {
+    std::cerr << "generateBody called for DefStmt\n";
+    exit(1);
+}
+void Function::generateBody()
+{    
+    // std::cerr << "Symbol " << id << " is needed by functions: ";
+    // for(auto f: listOfFunctionsThatNeedSymbol)
+    // {
+    //     std::cerr   << f->getId() 
+    //                 << "("
+    //                 << f->getTypeGraph()->stringifyTypeClean() 
     //                 << ") ";
     // }
     // std::cerr << std::endl;
@@ -361,16 +490,31 @@ void Function::generateBody()
     int i = 0;
     for (auto &arg : funcPrototype->args())
     {
+        if ((long unsigned) i == par_list.size()) {
+            arg.addAttr(llvm::Attribute::Nest);
+            break; // this exits the loop after handling the 'real' args
+        }
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
+        par_list[i]->updateGlobalValue(&arg);
+        i++;
+    }
+    i = 0;
+    auto envStruct = funcPrototype->getArg(par_list.size());
+    for (auto const &ext: external) {
+        // insert env loaded values in LLValues table
+        auto envField = Builder.CreateLoad(
+            Builder.CreateGEP(envStruct, {c32(0), c32(i)}, "envfield")
+        );
+        LLValues.insert({ext.first, envField});
         i++;
     }
     Builder.CreateRet(expr->compile());
     closeScopeOfAll();
-    bool bad = llvm::verifyFunction(*funcPrototype);
-    // again, this is an internal error most likely
+    bool bad = llvm::verifyFunction(*funcPrototype, &llvm::errs());
     if (bad)
     {
+        // again, this is an internal error most likely
         std::cerr << "Func verification failed for " << id << '\n';
         funcPrototype->print(llvm::errs(), nullptr);
         exit(1);
@@ -378,19 +522,20 @@ void Function::generateBody()
     Builder.SetInsertPoint(prevBB);
     TheFPM->run(*funcPrototype);
 }
+
 llvm::Value *Function::compile()
 {
-    llvm::Function *newFunction = generateLLVMPrototype();
+    generateLLVMPrototype();
     generateBody();
-    LLValues.insert({id, newFunction});
-
+    llvm::Value *newFunctionTrampoline = generateTrampoline();    
+    processEnvBacklog();
+    newFunctionTrampoline->setName(id);
+    LLValues.insert({id, newFunctionTrampoline});
+    updateGlobalValue(newFunctionTrampoline);
     return nullptr;
 }
 llvm::Value *Array::compile()
 {
-    // Get TheFunction insert block
-    //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
-
     // Get dimensions
     int dimensions = this->get_dimensions();
 
@@ -404,7 +549,7 @@ llvm::Value *Array::compile()
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
                                                         nullptr,
                                                         // nullptr,
-                                                        TheModule->getFunction("GC_malloc_atomic"),
+                                                        TheMalloc,
                                                         "arr.def.malloc");
     llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
 
@@ -438,7 +583,7 @@ llvm::Value *Array::compile()
                                      llvm::ConstantExpr::getSizeOf(LLVMContainedType),
                                      LLVMArraySize,
                                      //  nullptr,
-                                     TheModule->getFunction("GC_malloc_atomic"),
+                                     TheMalloc,
                                      "arr.def.malloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
@@ -463,7 +608,9 @@ llvm::Value *Array::compile()
     }
 
     // Add the array to the map
+    LLVMMAllocStruct->setName(id);
     LLValues.insert({id, LLVMMAllocStruct});
+    updateGlobalValue(LLVMMAllocStruct);
 
     return nullptr;
 }
@@ -479,12 +626,14 @@ llvm::Value *Variable::compile()
                                                         LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
                                                         nullptr,
                                                         // nullptr,
-                                                        TheModule->getFunction("GC_malloc_atomic"),
+                                                        TheMalloc,
                                                         "var.def.malloc");
     llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
     // Add the variable to the map
+    LLVMMAlloc->setName(id);
     LLValues.insert({id, LLVMMAlloc});
+    updateGlobalValue(LLVMMAlloc);
 
     return nullptr;
 }
@@ -502,33 +651,32 @@ llvm::Value *Letdef::compile()
     // (mutually) Recursive functions
     else
     {
-        std::vector<Function *> functions;
-        Function *currFunc;
-        for (auto def : def_list)
-        {
-            if ((currFunc = dynamic_cast<Function *>(def)))
-            {
-                functions.push_back(currFunc);
-            }
-            else
-            { // internal/sem error
-                std::cerr << "Recursive defs were not all functions";
-                std::exit(1);
-            }
-        }
         // Get all function signatures
-        for (auto func : functions)
-        {
-            llvm::Function *newFunction = func->generateLLVMPrototype();
-            LLValues.insert({func->getId(), newFunction});
+        for (auto &func : def_list)
+        {   
+            if (!func->isFunctionDefinition()) {
+                std::cerr << "Recursive definition is NOT a function\n";
+                exit(1);
+            }
+            func->generateLLVMPrototype();
         }
-        // Compile bodies
-        for (auto func : functions)
+        // Create and store all function trampolines
+        for (auto &func : def_list) 
         {
+            auto newFuncTrampoline = func->generateTrampoline();
+            newFuncTrampoline->setName(func->getId());
+            LLValues.insert({func->getId(), newFuncTrampoline});
+            func->updateGlobalValue(newFuncTrampoline);
+        }
+        // fill functions of all trampolines
+        // (necessary to support mutually recursive funcs)
+        // and then compile their bodies
+        for (auto &func : def_list)
+        {
+            func->processEnvBacklog();
             func->generateBody();
         }
     }
-    
     return nullptr;
 }
 llvm::Value *Typedef::compile()
@@ -575,7 +723,7 @@ llvm::Value *String_literal::compile()
                                                         llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
                                                         nullptr,
                                                         // nullptr,
-                                                        TheModule->getFunction("GC_malloc_atomic"),
+                                                        TheMalloc,
                                                         "str.literal.malloc");
     llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
 
@@ -587,7 +735,7 @@ llvm::Value *String_literal::compile()
                                      llvm::ConstantExpr::getSizeOf(i8),
                                      LLVMArraySize,
                                      //  nullptr,
-                                     TheModule->getFunction("GC_malloc_atomic"),
+                                     TheMalloc,
                                      "stringalloc");
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
@@ -620,8 +768,6 @@ llvm::Value *Float_literal::compile()
 }
 llvm::Value *Int_literal::compile()
 {
-    // std::cout << n << '\n';
-    // Builder.CreateCall(TheModule->getFunction("writeInteger"), {c32(n)});
     return c32(n);
 }
 llvm::Value *Unit_literal::compile()
@@ -865,7 +1011,7 @@ llvm::Value *New::compile()
                                      llvm::ConstantExpr::getSizeOf(newType),
                                      nullptr,
                                      //  nullptr,
-                                     TheModule->getFunction("GC_malloc_atomic_uncollectable"),
+                                     TheUncollectableMalloc,
                                      instrName);
 
     llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
@@ -947,7 +1093,9 @@ llvm::Value *For::compile()
     // Create phi node, add an entry for start and insert to the table
     llvm::PHINode *LoopVariable = Builder.CreatePHI(i32, 2, id);
     LoopVariable->addIncoming(StartV, PreheaderBB);
+    LoopVariable->setName(id);
     LLValues.insert({id, LoopVariable});
+    updateGlobalValue(LoopVariable);
 
     // Check whether the condition is satisfied
     llvm::Value *LLVMCond =
@@ -1077,7 +1225,7 @@ llvm::Value *ConstructorCall::compile()
         llvm::ConstantExpr::getSizeOf(customType),
         nullptr,
         // nullptr,
-        TheModule->getFunction("GC_malloc_atomic"),
+        TheMalloc,
         "customstruct.malloc");
     llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
 
@@ -1279,7 +1427,9 @@ llvm::Value *PatternLiteral::compile()
 llvm::Value *PatternId::compile()
 {
     // Add a variable with this value to the table
+    toMatchV->setName(id);
     LLValues.insert({id, toMatchV});
+    updateGlobalValue(toMatchV);
 
     // Match was successful
     return c1(true);

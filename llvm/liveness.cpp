@@ -332,10 +332,10 @@ void Array::liveness(Function *prevFunc)
 void Function::addExternal(LivenessEntry *l)
 {
     // Don't add a function to its own external
-    if(this == l->getNode()) 
-    {
-        return;
-    }
+    // if(this == l->getNode()) 
+    // {
+    //     return;
+    // }
 
     std::string id = l->getId();
 

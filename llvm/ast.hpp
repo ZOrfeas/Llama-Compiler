@@ -96,6 +96,9 @@ protected:
     static llvm::Type *machinePtrType;
     static llvm::Type *arrCharType;
 
+    static llvm::Function *TheMalloc;
+    static llvm::Function *TheUncollectableMalloc;
+
     static llvm::ConstantInt *c1(bool b);
     static llvm::ConstantInt *c8(char c);
     static llvm::ConstantInt *c32(int n);
@@ -107,11 +110,14 @@ protected:
     static llvm::Function *createFuncAdapterFromVoidToUnit(llvm::Function *voidFunc);
     static llvm::Function *createFuncAdapterFromStringToCharArr(llvm::Function *stringFunc);
 
+    llvm::Value *globalLiveValue = nullptr;
 public:
     AST();
     virtual ~AST();
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
+    llvm::Value *getGlobalLiveValue();
+    void updateGlobalValue(llvm::Value *newVal);
     virtual void liveness(Function *prevFunc);
     void addFunctionThatNeedsSymbol(Function *f);
     static llvm::Value *equalityHelper(llvm::Value *lhsVal, llvm::Value *rhsVal,
@@ -278,6 +284,10 @@ public:
     virtual bool isDef() const;
     virtual bool isFunctionDefinition() const;
     virtual void insertToTable();
+    virtual llvm::Value *generateTrampoline();
+    virtual void generateLLVMPrototype();
+    virtual void processEnvBacklog();
+    virtual void generateBody();
     std::string getId();
     virtual TypeGraph *getTypeGraph();
 };
@@ -336,22 +346,26 @@ private:
 
     // Filled in genIR
     llvm::Function *funcPrototype;
-
+    llvm::StructType *envStructType;
+    std::vector<std::pair<AST *, llvm::Value *>> envBacklog = {};
 public:
     Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t = new UnknownType);
     virtual void sem() override;
     virtual bool isFunctionDefinition() const override;
     virtual void insertToTable() override;
     // - Generates the function prototype
-    // - creates a scope, inserts the paramete names and values
+    // - creates a scope, inserts the parameter names and values
     // - calls expr->codegen()
-    llvm::Function *generateLLVMPrototype();
-    void generateBody();
+    llvm::Value *generateTrampoline() override;
+    void processEnvBacklog() override;
+    void generateLLVMPrototype() override;
+    void generateBody() override;
     virtual llvm::Value *compile() override;
     virtual void liveness(Function *prevFunc) override;
     void addExternal(LivenessEntry *l);
     friend void insertExternalToFrom(Function *funcDependent, Function *func);
     std::map<std::string, LivenessEntry *> getExternal();
+    llvm::StructType* getEnvStructType();
     void setScope(int s);
     int getScope();
     virtual void printOn(std::ostream &out) const override;

@@ -133,6 +133,12 @@ void TypeGraph::changeBoundPtr(int *newBoundPtr) {
 void TypeGraph::setDimensions(int fixedDimensions) {
     wrongCall("setDimensions()"); exit(1);
 }
+std::vector<llvm::Type *> TypeGraph::getLLVMParamTypes(llvm::Module *TheModule) {
+    wrongCall("getLLVMParamTypes()"); exit(1);
+}
+llvm::Type *TypeGraph::getLLVMResultType(llvm::Module *TheModule) {
+    wrongCall("getLLVMResultType()"); exit(1);
+}
 
 /*************************************************************/
 /**                    Unknown TypeGraph                     */
@@ -556,15 +562,24 @@ llvm::PointerType* RefTypeGraph::getLLVMType(llvm::Module *TheModule)
     llvm::Type *containedLLVMType = this->Type->getLLVMType(TheModule);
     return containedLLVMType->getPointerTo();
 }
-llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
+std::vector<llvm::Type *> FunctionTypeGraph::getLLVMParamTypes(llvm::Module *TheModule)
 {
-    llvm::Type *LLVMResultType = resultType->getLLVMType(TheModule);
-
     std::vector<llvm::Type *> LLVMParamTypes = {};
     for(auto p: *paramTypes)
     {
         LLVMParamTypes.push_back(p->getLLVMType(TheModule));
     }
+    return LLVMParamTypes;
+}
+llvm::Type *FunctionTypeGraph::getLLVMResultType(llvm::Module *TheModule)
+{
+    return resultType->getLLVMType(TheModule);
+}
+llvm::PointerType* FunctionTypeGraph::getLLVMType(llvm::Module *TheModule)
+{
+    llvm::Type *LLVMResultType = getLLVMResultType(TheModule);
+
+    auto LLVMParamTypes = getLLVMParamTypes(TheModule);
     llvm::FunctionType *tempType = llvm::FunctionType::get(LLVMResultType, LLVMParamTypes, false);
     // This returns a pointer of the function type
     return tempType->getPointerTo();

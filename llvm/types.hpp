@@ -70,6 +70,8 @@ public:
     virtual void changeBoundVal(int newBound);
     virtual void changeBoundPtr(int *newBoundptr);
     virtual void setDimensions(int fixedDimensions);
+    virtual std::vector<llvm::Type *> getLLVMParamTypes(llvm::Module *TheModule);
+    virtual llvm::Type *getLLVMResultType(llvm::Module *TheModule);
     virtual ~TypeGraph() {}
 };
 /************************************************************/
@@ -185,6 +187,8 @@ public:
     TypeGraph* getParamType(unsigned int index) override;
     bool equals(TypeGraph *o) override;
     void changeInner(TypeGraph *replacement, unsigned int index = 0) override;
+    std::vector<llvm::Type *> getLLVMParamTypes(llvm::Module *TheModule) override;
+    llvm::Type *getLLVMResultType(llvm::Module *TheModule) override;
     virtual llvm::PointerType* getLLVMType(llvm::Module *TheModule) override;
     ~FunctionTypeGraph();
 };

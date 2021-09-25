@@ -143,7 +143,8 @@ Def::Def(std::string id, Type *t)
 Constant::Constant(std::string *id, Expr *e, Type *t)
     : Def(*id, t), expr(e) {}
 Function::Function(std::string *id, std::vector<Par *> *p, Expr *e, Type *t)
-    : Constant(id, e, t), par_list(*p) {}
+    : Constant(id, e, t), par_list(*p), 
+    funcPrototype(nullptr), envStructType(nullptr) {}
 Mutable::Mutable(std::string id, Type *T)
     : Def(id, T) {}
 Array::Array(std::string *id, std::vector<Expr *> *e, Type *T)
