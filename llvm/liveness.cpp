@@ -323,11 +323,11 @@ void Array::liveness(Function *prevFunc)
 
 void Function::addExternal(LivenessEntry *l)
 {
-    // Don't add a function to its own external
-    // if(this == l->getNode()) 
-    // {
-    //     return;
-    // }
+    // If it is nullptr then it is library function
+    if(!l->getNode()) 
+    {
+        return;
+    }
 
     std::string id = l->getId();
 
