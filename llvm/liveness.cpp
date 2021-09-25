@@ -495,6 +495,8 @@ void FunctionCall::liveness(Function *prevFunc)
 
 void Match::liveness(Function *prevFunc)
 {
+    toMatch->liveness(prevFunc);
+    
     for (auto *c : clause_list)
     {
         c->liveness(prevFunc);
@@ -510,6 +512,13 @@ void Clause::liveness(Function *prevFunc)
 
     // Close scope
     closeScopeOnLTable();
+}
+void PatternConstr::liveness(Function *prevFunc)
+{
+    for (const auto &pattern: pattern_list)
+    {
+        pattern->liveness(prevFunc);
+    }
 }
 void PatternId::liveness(Function *prevFunc)
 {

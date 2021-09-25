@@ -154,6 +154,19 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
     return TmpB.CreateAlloca(LLVMType, nullptr, VarName.c_str());
 }
 
+std::map<std::string, llvm::Value *> declaredGlobalStrings;
+bool stringDeclared(std::string s)
+{
+    return declaredGlobalStrings.find(s) != declaredGlobalStrings.end();
+}
+llvm::Value *getGlobalString(std::string s, llvm::IRBuilder<> Builder)
+{
+    if (!stringDeclared(s))
+        declaredGlobalStrings[s] = Builder.CreateGlobalStringPtr(s);
+    return declaredGlobalStrings[s];
+
+}
+
 /*********************************/
 /**       Initializations        */
 /*********************************/
@@ -473,13 +486,13 @@ void DefStmt::generateBody() {
 }
 void Function::generateBody()
 {    
-    // std::cerr << "Symbol " << id << " is needed by functions: ";
-    // for(auto f: listOfFunctionsThatNeedSymbol)
+    // std::cerr << "Symbol " << id << " needs: ";
+    // for(auto pair: external)
     // {
-    //     std::cerr   << f->getId() 
+    //     std::cerr   << pair.first 
     //                 << "("
-    //                 << f->getTypeGraph()->stringifyTypeClean() 
-    //                 << ") ";
+    //                 << inf.deepSubstitute(pair.second->getTypeGraph())->stringifyTypeClean() 
+    //                 << ")- ";
     // }
     // std::cerr << std::endl;
 
@@ -698,21 +711,13 @@ llvm::Value *Program::compile()
 /*********************************/
 
 // literals
-std::map<std::string, llvm::Value *> String_literal::declaredGlobals;
 llvm::Value *String_literal::compile()
 {
     // llvm::Type* str_type = llvm::ArrayType::get(i8, s.length() + 1);
     // Get TheFunction insert block
     //llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
-    llvm::Value *strVal;
-    if (declaredGlobals.find(s) != std::end(declaredGlobals))
-        strVal = declaredGlobals[s];
-    else
-    {
-        strVal = Builder.CreateGlobalStringPtr(s);
-        declaredGlobals[s] = strVal;
-    }
+    llvm::Value *strVal = getGlobalString(s, Builder);
 
     int size = s.size() + 1;
 
@@ -1374,7 +1379,7 @@ llvm::Value *Match::compile()
     TheFunction->getBasicBlockList().push_back(NextClauseBB);
     Builder.SetInsertPoint(NextClauseBB);
     Builder.CreateCall(TheModule->getFunction("writeString"),
-                       {Builder.CreateGlobalStringPtr("Runtime Error: No clause matches given expression\n")});
+                       {getGlobalString("Runtime Error: No clause matches given expression\n", Builder)});
     Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
 
     // Never going to get here but llvm complains anyway
@@ -1460,12 +1465,12 @@ llvm::Value *PatternConstr::compile()
 
     // Create alloca with the struct of the constructor
     llvm::Value *toMatchConstrStructLoc = Builder.CreateGEP(toMatchV, {c32(0), c32(1)});
-    llvm::Value *toMatchConstrStruct = Builder.CreateLoad(toMatchConstrStructLoc, "pattern.constr.loadconstrstruct");
-    llvm::AllocaInst *toMatchConstrStructAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.constrstructalloca", toMatchConstrStruct->getType());
-    Builder.CreateStore(toMatchConstrStruct, toMatchConstrStructAlloca);
+    // llvm::Value *toMatchConstrStruct = Builder.CreateLoad(toMatchConstrStructLoc, "pattern.constr.loadconstrstruct");
+    // llvm::AllocaInst *toMatchConstrStructAlloca = CreateEntryBlockAlloca(TheFunction, "pattern.constr.constrstructalloca", toMatchConstrStruct->getType());
+    // Builder.CreateStore(toMatchConstrStruct, toMatchConstrStructAlloca);
 
     // Bitcast the second field of the toMatchV struct to constrTypePtr
-    llvm::Value *LLVMCastStructPtr = llvm::CastInst::CreatePointerCast(toMatchConstrStructAlloca, constrTypePtr, "pattern.constr.bitcast", Builder.GetInsertBlock());
+    llvm::Value *LLVMCastStructPtr = llvm::CastInst::CreatePointerCast(toMatchConstrStructLoc, constrTypePtr, "pattern.constr.bitcast", Builder.GetInsertBlock());
     //llvm::Value *LLVMCastStructPtr = LLVMBitCast->getOperand(0);
 
     // This value will be used to check that all fields can be matched

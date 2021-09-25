@@ -482,7 +482,6 @@ class String_literal : public Literal
 {
 private:
     std::string s, originalStr;
-    static std::map<std::string, llvm::Value *> declaredGlobals;
 
 public:
     String_literal(std::string *s);
@@ -778,6 +777,7 @@ protected:
 public:
     PatternConstr(std::string *Id, std::vector<Pattern *> *p_list = new std::vector<Pattern *>());
     virtual void checkPatternTypeGraph(TypeGraph *t) override;
+    virtual void liveness(Function *prevFunc) override;
     virtual llvm::Value *compile() override;
     virtual void printOn(std::ostream &out) const override;
 };
