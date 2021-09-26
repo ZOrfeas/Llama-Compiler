@@ -99,6 +99,11 @@ protected:
     static llvm::Function *TheMalloc;
     static llvm::Function *TheUncollectableMalloc;
 
+    static llvm::Value *insertMallocCall(llvm::IRBuilder<> &Builder,
+                                         llvm::Function *mallocFunc,
+                                         llvm::Type *mallocType,
+                                         llvm::Value *mallocMultiplicity);
+
     static llvm::ConstantInt *c1(bool b);
     static llvm::ConstantInt *c8(char c);
     static llvm::ConstantInt *c32(int n);

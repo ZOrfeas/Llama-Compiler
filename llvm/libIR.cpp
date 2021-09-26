@@ -95,14 +95,15 @@ llvm::Function* AST::createFuncAdapterFromStringToCharArr(llvm::Function *string
     llvm::Value *retValCandidate = TmpB.CreateCall(stringFunc, params, "to.arrchar.wrapper");
     // std::cout << "Test ORF?\n";
     if (retType == arrCharType) {
-        auto *arrayOfCharMalloc =  llvm::CallInst::CreateMalloc(TmpB.GetInsertBlock(), machinePtrType, 
-                                                             arrCharType->getPointerElementType(),
-                                                             llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                             nullptr, 
-                                                            //  nullptr,
-                                                             TheMalloc,
-                                                             "to.arrchar.retval");
-        llvm::Value *arrayOfCharVal = TmpB.Insert(arrayOfCharMalloc);
+        auto arrayOfCharVal = insertMallocCall(TmpB, TheMalloc, arrCharType->getPointerElementType(), nullptr);
+        // auto *arrayOfCharMalloc =  llvm::CallInst::CreateMalloc(TmpB.GetInsertBlock(), machinePtrType, 
+        //                                                      arrCharType->getPointerElementType(),
+        //                                                      llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
+        //                                                      nullptr, 
+        //                                                     //  nullptr,
+        //                                                      TheMalloc,
+        //                                                      "to.arrchar.retval");
+        // llvm::Value *arrayOfCharVal = TmpB.Insert(arrayOfCharMalloc);
         llvm::Value *arrayPtrLoc = TmpB.CreateGEP(arrayOfCharVal, {c32(0), c32(0)}, "to.arrchar.arrayptrloc");
         TmpB.CreateStore(retValCandidate, arrayPtrLoc);
         llvm::Value *dimLoc = TmpB.CreateGEP(arrayOfCharVal, {c32(0), c32(1)}, "to.arrchar.dimloc");
@@ -175,6 +176,27 @@ llvm::Function *createFloatOfIntLibFunc(llvm::Module *TheModule, llvm::Type *flt
     TmpB.CreateRet(newFloat);
     TheFPM->run(*floatOfIntFunc);
     return floatOfIntFunc;
+}
+
+llvm::Value *AST::insertMallocCall(llvm::IRBuilder<> &Builder,
+                                   llvm::Function *mallocFunc,
+                                   llvm::Type *mallocType,
+                                   llvm::Value *mallocMultiplicity)
+{
+    // std::cerr << "Enter\n";
+    llvm::Value *sizeofOne = llvm::ConstantExpr::getSizeOf(mallocType);
+    sizeofOne = Builder.CreateIntCast(sizeofOne, machinePtrType, true);
+    llvm::Value *totalBytes; 
+    if (mallocMultiplicity) {
+        mallocMultiplicity = Builder.CreateIntCast(mallocMultiplicity,
+            machinePtrType, true);
+        totalBytes = Builder.CreateMul(sizeofOne, mallocMultiplicity, "mallocsize");
+    } else {
+        totalBytes = sizeofOne;
+    }
+    auto mallocedMemory = Builder.CreateCall(mallocFunc, {totalBytes}, "newmem");
+    return Builder.CreatePointerCast(mallocedMemory,
+        mallocType->getPointerTo(), "castednewmem");
 }
 
 std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {

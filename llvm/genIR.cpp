@@ -238,18 +238,20 @@ void AST::start_compilation(const char *programName, bool optimize)
         LLValues.insert(libFunc);
     }
     // Initialize garbage collection functions
+    llvm::FunctionType *mallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
 #ifdef LIBGC
-    llvm::FunctionType *gcMallocType = llvm::FunctionType::get(i8->getPointerTo(), {machinePtrType}, false);
-    TheMalloc = llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+    TheMalloc = llvm::Function::Create(mallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic", TheModule);
-    TheUncollectableMalloc = llvm::Function::Create(gcMallocType, llvm::Function::ExternalLinkage,
+    TheUncollectableMalloc = llvm::Function::Create(mallocType, llvm::Function::ExternalLinkage,
                            "GC_malloc_atomic_uncollectable", TheModule);
     llvm::FunctionType *gcFreeType = llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext), {i8->getPointerTo()}, false);
     llvm::Function::Create(gcFreeType, llvm::Function::ExternalLinkage,
                            "GC_free", TheModule);
     // Initialize main function (entry point)
 #else
-    TheMalloc = TheUncollectableMalloc = nullptr;
+    TheMalloc = TheUncollectableMalloc = 
+        llvm::Function::Create(mallocType, llvm::Function::ExternalLinkage,
+                               "malloc", TheModule);
 #endif // LIBGC
     llvm::FunctionType *main_type = llvm::FunctionType::get(i32, {}, false);
     llvm::Function *main =
@@ -412,23 +414,27 @@ llvm::Value *DefStmt::generateTrampoline() {
 }
 llvm::Value *Function::generateTrampoline()
 {
-    auto trampolineEnvMallocInst =
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
-            machinePtrType, getEnvStructType(),
-            llvm::ConstantExpr::getSizeOf(getEnvStructType()), nullptr,
-            TheMalloc);
-    auto trampolineEnvMalloc = 
-        Builder.Insert(trampolineEnvMallocInst, getId() + ".envmalloc");
+    auto trampolineEnvMalloc =
+        insertMallocCall(Builder, TheMalloc, getEnvStructType(), nullptr);
+    // auto trampolineEnvMallocInst =
+        // llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+        //     machinePtrType, getEnvStructType(),
+        //     llvm::ConstantExpr::getSizeOf(getEnvStructType()), nullptr,
+        //     TheMalloc);
+    // auto trampolineEnvMalloc = 
+    //     Builder.Insert(trampolineEnvMallocInst, getId() + ".envmalloc");
 
     //TODO(ORF): Find out how much to allocate for the trampoline
     auto trampolineMallocSize = c32(16);
-    auto trampolineMallocInst = 
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
-            machinePtrType, i8, 
-            llvm::ConstantExpr::getSizeOf(i8), trampolineMallocSize,
-            TheMalloc);
-    auto trampolineMalloc = 
-        Builder.Insert(trampolineMallocInst, getId() + ".trampmalloc");
+    auto trampolineMalloc =
+        insertMallocCall(Builder, TheMalloc, i8, trampolineMallocSize);
+    // auto trampolineMallocInst = 
+    //     llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+    //         machinePtrType, i8, 
+    //         llvm::ConstantExpr::getSizeOf(i8), trampolineMallocSize,
+    //         TheMalloc);
+    // auto trampolineMalloc = 
+    //     Builder.Insert(trampolineMallocInst, getId() + ".trampmalloc");
     
     // fill the env struct
     int i = 0;
@@ -562,13 +568,15 @@ llvm::Value *Array::compile()
     llvm::Type *LLVMContainedType = containedTypeGraph->getLLVMType(TheModule);
     llvm::Type *LLVMType = arrayTypeGraph->getLLVMType(TheModule)->getPointerElementType();
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
-    auto *LLVMMAllocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
-                                                        LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr,
-                                                        // nullptr,
-                                                        TheMalloc,
-                                                        "arr.def.malloc");
-    llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
+    auto LLVMMAllocStruct = 
+        insertMallocCall(Builder, TheMalloc, LLVMType, nullptr);
+    // auto *LLVMMAllocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+    //                                                     LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
+    //                                                     nullptr,
+    //                                                     // nullptr,
+    //                                                     TheMalloc,
+    //                                                     "arr.def.malloc");
+    // llvm::Value *LLVMMAllocStruct = Builder.Insert(LLVMMAllocInst, "arr.def.mutable");
 
     // Turn dimensions into a value
     llvm::ConstantInt *LLVMDimensions = c32(dimensions);
@@ -593,17 +601,19 @@ llvm::Value *Array::compile()
         LLVMArraySize = Builder.CreateMul(LLVMArraySize, size, "arr.def.multmp");
     }
 
-    llvm::Instruction *LLVMMalloc =
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
-                                     machinePtrType,
-                                     LLVMContainedType,
-                                     llvm::ConstantExpr::getSizeOf(LLVMContainedType),
-                                     LLVMArraySize,
-                                     //  nullptr,
-                                     TheMalloc,
-                                     "arr.def.malloc");
+    auto LLVMAllocatedMemory =
+        insertMallocCall(Builder, TheMalloc, LLVMContainedType, LLVMArraySize);
+    // llvm::Instruction *LLVMMalloc =
+    //     llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+    //                                  machinePtrType,
+    //                                  LLVMContainedType,
+    //                                  llvm::ConstantExpr::getSizeOf(LLVMContainedType),
+    //                                  LLVMArraySize,
+    //                                  //  nullptr,
+    //                                  TheMalloc,
+    //                                  "arr.def.malloc");
 
-    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+    // llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     // Assign the values to the members
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMAllocStruct, {c32(0), c32(0)}, "arr.def.arrayptrloc");
@@ -639,13 +649,15 @@ llvm::Value *Variable::compile()
     // Create the Alloca with the correct type
     llvm::Type *LLVMType = T->get_TypeGraph()->getLLVMType(TheModule);
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, id, LLVMType);
-    auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
-                                                        LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
-                                                        nullptr,
-                                                        // nullptr,
-                                                        TheMalloc,
-                                                        "var.def.malloc");
-    llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
+    auto LLVMMAlloc = 
+        insertMallocCall(Builder, TheMalloc, LLVMType, nullptr);
+    // auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+    //                                                     LLVMType, llvm::ConstantExpr::getSizeOf(LLVMType),
+    //                                                     nullptr,
+    //                                                     // nullptr,
+    //                                                     TheMalloc,
+    //                                                     "var.def.malloc");
+    // llvm::Value *LLVMMAlloc = Builder.Insert(LLVMMallocInst, "var.def.mutable");
 
     // Add the variable to the map
     LLVMMAlloc->setName(id);
@@ -727,27 +739,34 @@ llvm::Value *String_literal::compile()
 
     llvm::Value *LLVMArraySize = c32(size);
     // llvm::AllocaInst *LLVMAlloca = CreateEntryBlockAlloca(TheFunction, "", arrCharType->getPointerElementType());
-    auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
-                                                        arrCharType->getPointerElementType(),
-                                                        llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
-                                                        nullptr,
-                                                        // nullptr,
-                                                        TheMalloc,
-                                                        "str.literal.malloc");
-    llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
+    auto LLVMMallocStruct =
+        insertMallocCall(Builder, 
+                        TheMalloc, 
+                        arrCharType->getPointerElementType(), 
+                        nullptr);
+    // auto *LLVMMallocInst = llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(), machinePtrType,
+    //                                                     arrCharType->getPointerElementType(),
+    //                                                     llvm::ConstantExpr::getSizeOf(arrCharType->getPointerElementType()),
+    //                                                     nullptr,
+    //                                                     // nullptr,
+    //                                                     TheMalloc,
+    //                                                     "str.literal.malloc");
+    // llvm::Value *LLVMMallocStruct = Builder.Insert(LLVMMallocInst, "str.literal.mutable");
 
     // Allocate memory for string
-    llvm::Instruction *LLVMMalloc =
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
-                                     machinePtrType,
-                                     i8,
-                                     llvm::ConstantExpr::getSizeOf(i8),
-                                     LLVMArraySize,
-                                     //  nullptr,
-                                     TheMalloc,
-                                     "stringalloc");
+    auto LLVMAllocatedMemory = 
+        insertMallocCall(Builder, TheMalloc, i8, LLVMArraySize);
+    // llvm::Instruction *LLVMMalloc =
+    //     llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+    //                                  machinePtrType,
+    //                                  i8,
+    //                                  llvm::ConstantExpr::getSizeOf(i8),
+    //                                  LLVMArraySize,
+    //                                  //  nullptr,
+    //                                  TheMalloc,
+    //                                  "stringalloc");
 
-    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+    // llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
     // Assign the values to the members
     llvm::Value *arrayPtrLoc = Builder.CreateGEP(LLVMMallocStruct, {c32(0), c32(0)}, "stringptrloc");
     Builder.CreateStore(LLVMAllocatedMemory, arrayPtrLoc);
@@ -1016,17 +1035,19 @@ llvm::Value *New::compile()
     const std::string instrName = "new_" + newTypeGraph->stringifyTypeClean() + "_alloc";
     llvm::Type *newType = newTypeGraph->getContainedType()->getLLVMType(TheModule);
 
-    llvm::Instruction *LLVMMalloc =
-        llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
-                                     machinePtrType,
-                                     newType,
-                                     llvm::ConstantExpr::getSizeOf(newType),
-                                     nullptr,
-                                     //  nullptr,
-                                     TheUncollectableMalloc,
-                                     instrName);
+    auto LLVMAllocatedMemory =
+        insertMallocCall(Builder, TheUncollectableMalloc, newType, nullptr);
+    // llvm::Instruction *LLVMMalloc =
+    //     llvm::CallInst::CreateMalloc(Builder.GetInsertBlock(),
+    //                                  machinePtrType,
+    //                                  newType,
+    //                                  llvm::ConstantExpr::getSizeOf(newType),
+    //                                  nullptr,
+    //                                  //  nullptr,
+    //                                  TheUncollectableMalloc,
+    //                                  instrName);
 
-    llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
+    // llvm::Value *LLVMAllocatedMemory = Builder.Insert(LLVMMalloc);
 
     return LLVMAllocatedMemory;
 }
@@ -1230,16 +1251,18 @@ llvm::Value *ConstructorCall::compile()
     llvm::StructType *customType = llvm::dyn_cast<llvm::StructType>(constructorTypeGraph->getCustomType()->getLLVMType(TheModule)->getPointerElementType());
     //llvm::AllocaInst *LLVMCustomStructAlloca = CreateEntryBlockAlloca(TheFunction, "customstruct", customType);
 
-    auto LLVMCustomStructMallocInst = llvm::CallInst::CreateMalloc(
-        Builder.GetInsertBlock(),
-        machinePtrType,
-        customType,
-        llvm::ConstantExpr::getSizeOf(customType),
-        nullptr,
-        // nullptr,
-        TheMalloc,
-        "customstruct.malloc");
-    llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
+    auto LLVMCustomStructPtr =
+        insertMallocCall(Builder, TheMalloc, customType, nullptr);
+    // auto LLVMCustomStructMallocInst = llvm::CallInst::CreateMalloc(
+    //     Builder.GetInsertBlock(),
+    //     machinePtrType,
+    //     customType,
+    //     llvm::ConstantExpr::getSizeOf(customType),
+    //     nullptr,
+    //     // nullptr,
+    //     TheMalloc,
+    //     "customstruct.malloc");
+    // llvm::Value *LLVMCustomStructPtr = Builder.Insert(LLVMCustomStructMallocInst);
 
     // Codegen and store the parameters to its fields
     llvm::Value *constrFieldLoc, *LLVMParam;
@@ -1387,7 +1410,7 @@ llvm::Value *Match::compile()
     Builder.SetInsertPoint(NextClauseBB);
     Builder.CreateCall(TheModule->getFunction("writeString"),
                        {getGlobalString("Runtime Error: No clause matches given expression\n", Builder)});
-    Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    Builder.CreateCall(TheModule->getFunction("_exit"), {c32(1)});
 
     // Never going to get here but llvm complains anyway
     Builder.CreateBr(NextClauseBB);

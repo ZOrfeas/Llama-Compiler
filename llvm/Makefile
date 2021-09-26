@@ -41,13 +41,13 @@ compiler: lexer.o parser.o symbol.o types.o ast.o printOn.o sem.o infer.o libIR.
 	$(CXX) $(CXXFLAGS) -o llamac $^ $(LDFLAGS)
 
 lib:
-	cd libllama && ./libs.sh &&	cd ..
+	cd libllamaC && make &&	cd ..
 
 clean:
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o
 
 distcleanlib:
-	cd libllama && \
+	cd libllamaC && \
 	make -s clean -C auxil  && \
 	rm auxil/auxil.a && \
 	make -s clean -C math && \
