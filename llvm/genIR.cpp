@@ -229,7 +229,7 @@ void AST::start_compilation(const char *programName, bool optimize)
     i32 = type_int->getLLVMType(TheModule);
     flt = type_float->getLLVMType(TheModule);
     unitType = type_unit->getLLVMType(TheModule);
-    machinePtrType = llvm::Type::getIntNTy(TheContext, TheModule->getDataLayout().getMaxPointerSizeInBits());
+    machinePtrType = TheModule->getDataLayout().getIntPtrType(TheContext);
     arrCharType = (new ArrayTypeGraph(1, new RefTypeGraph(type_char)))->getLLVMType(TheModule);
     // Initialize runtime lib functions
     std::vector<std::pair<std::string, llvm::Function *>> *libFunctions = genLibGlueLogic();
