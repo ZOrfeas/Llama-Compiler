@@ -7,7 +7,8 @@ Implementation of a compiler for the functional programming language Llama
 - `sudo apt install nasm` necessary for library compilation
 - [libgc build from source](https://github.com/ivmai/bdwgc#installation-and-portability) or install for garbage collection (can be disabled in makefile)
 - Bison build from source:
-  ```wget http://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.gz
+  ```
+     wget http://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.gz
      tar -zxvf bison-3.7.6.tar.gz
      cd bison-3.7.6/
      sudo ./configure
