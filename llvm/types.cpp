@@ -520,7 +520,7 @@ llvm::IntegerType* BoolTypeGraph::getLLVMType(llvm::Module *TheModule)
 }
 llvm::Type* FloatTypeGraph::getLLVMType(llvm::Module *TheModule)
 {
-    return llvm::Type::getX86_FP80Ty(TheModule->getContext());
+    return llvm::Type::getDoubleTy(TheModule->getContext());
 }
 llvm::PointerType* ArrayTypeGraph::getLLVMType(llvm::Module *TheModule)
 {

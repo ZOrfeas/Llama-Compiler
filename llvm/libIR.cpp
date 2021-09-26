@@ -271,7 +271,7 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
         *Pi = llvm::Function::Create(void_to_float, llvm::Function::ExternalLinkage, "pi", TheModule),
         *Chr = llvm::Function::Create(int_to_char, llvm::Function::ExternalLinkage, "chr", TheModule),
         *Ord = llvm::Function::Create(char_to_int, llvm::Function::ExternalLinkage, "ord", TheModule),
-        *Exit = llvm::Function::Create(int_to_void, llvm::Function::ExternalLinkage, "exit", TheModule),
+        *Exit = llvm::Function::Create(int_to_void, llvm::Function::ExternalLinkage, "_exit", TheModule),
         *Round = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "round", TheModule),
         *Trunc = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "trunc", TheModule);
     std::vector<llvm::Function *> UtilLib = {Abs, FAbs, Sqrt, Sin, Cos, Tan, Atan, Exp, Ln, 
@@ -290,31 +290,31 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
 
     llvm::FunctionType *powType = 
         llvm::FunctionType::get(flt, {flt, flt}, false);
-    llvm::Function *pow =
-        llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow.custom", TheModule);
-    llvm::BasicBlock *powBB = llvm::BasicBlock::Create(TheContext, "entry", pow);
-    llvm::BasicBlock *signApplierBB = llvm::BasicBlock::Create(TheContext, "signapply", pow);
-    llvm::BasicBlock *collectorBB = llvm::BasicBlock::Create(TheContext, "collector", pow);
-    llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(powBB);
+    // llvm::Function *pow =
+        llvm::Function::Create(powType, llvm::Function::ExternalLinkage, "pow", TheModule);
+    // llvm::BasicBlock *powBB = llvm::BasicBlock::Create(TheContext, "entry", pow);
+    // llvm::BasicBlock *signApplierBB = llvm::BasicBlock::Create(TheContext, "signapply", pow);
+    // llvm::BasicBlock *collectorBB = llvm::BasicBlock::Create(TheContext, "collector", pow);
+    // llvm::IRBuilder<> TmpB(TheContext); TmpB.SetInsertPoint(powBB);
 
-    llvm::Value *isNegative = TmpB.CreateFCmpOLT(pow->getArg(0), f80(0.0), "pow.xisnegative");
-    llvm::Value *absX = TmpB.CreateCall(FAbs, {pow->getArg(0)}, "pow.absx");
-    llvm::Value *logarithm = TmpB.CreateCall(Ln, {absX}, "pow.lnabsx");
-    llvm::Value *mult = TmpB.CreateFMul(pow->getArg(1), logarithm, "pow.ylnx");
-    llvm::Value *powRes = TmpB.CreateCall(Exp, {mult}, "pow.res");
-    TmpB.CreateCondBr(isNegative, signApplierBB, collectorBB);
+    // llvm::Value *isNegative = TmpB.CreateFCmpOLT(pow->getArg(0), f80(0.0), "pow.xisnegative");
+    // llvm::Value *absX = TmpB.CreateCall(FAbs, {pow->getArg(0)}, "pow.absx");
+    // llvm::Value *logarithm = TmpB.CreateCall(Ln, {absX}, "pow.lnabsx");
+    // llvm::Value *mult = TmpB.CreateFMul(pow->getArg(1), logarithm, "pow.ylnx");
+    // llvm::Value *powRes = TmpB.CreateCall(Exp, {mult}, "pow.res");
+    // TmpB.CreateCondBr(isNegative, signApplierBB, collectorBB);
 
-    TmpB.SetInsertPoint(signApplierBB);
-    llvm::Value *negRes = TmpB.CreateFNeg(powRes);
-    TmpB.CreateBr(collectorBB);
+    // TmpB.SetInsertPoint(signApplierBB);
+    // llvm::Value *negRes = TmpB.CreateFNeg(powRes);
+    // TmpB.CreateBr(collectorBB);
 
-    TmpB.SetInsertPoint(collectorBB);
-    llvm::PHINode *fullRes = TmpB.CreatePHI(flt, 2, "pow.signrestore");
-    fullRes->addIncoming(powRes, powBB);
-    fullRes->addIncoming(negRes, signApplierBB);
-    TmpB.CreateRet(fullRes);
+    // TmpB.SetInsertPoint(collectorBB);
+    // llvm::PHINode *fullRes = TmpB.CreatePHI(flt, 2, "pow.signrestore");
+    // fullRes->addIncoming(powRes, powBB);
+    // fullRes->addIncoming(negRes, signApplierBB);
+    // TmpB.CreateRet(fullRes);
     
-    TheFPM->run(*pow);
+    // TheFPM->run(*pow);
     // for (auto &pair: *pairs) {
     //     std::cout << pair.first << ' ' << pair.second->getName().str() << '\n';
     // }

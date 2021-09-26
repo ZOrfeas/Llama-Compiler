@@ -6,7 +6,7 @@ LDFLAGS=`llvm-config --ldflags --system-libs --libs all`
 
 LIBGCFLAG=-DLIBGC="/usr/local/lib/libgc.so"
 # LIBGCFLAG=
-LIBLLAMAFLAG=-DLIBLLAMA="./libllama/lib.a"
+LIBLLAMAFLAG=-DLIBLLAMA="./libllamaC/lib.a -lm"
 GENIRCPPFLAGS=$(CXXFLAGS) $(LIBGCFLAG)
 OPTIONCPPFLAGS=$(CXXFLAGS) $(LIBLLAMAFLAG) $(LIBGCFLAG)
 

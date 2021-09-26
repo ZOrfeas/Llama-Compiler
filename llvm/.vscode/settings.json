@@ -61,6 +61,9 @@
         "thread": "cpp",
         "*.def": "cpp",
         "stdbool.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "unistd.h": "c",
+        "syscall.h": "c",
+        "unistd_64.h": "c"
     }
 }
