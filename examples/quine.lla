@@ -1,0 +1,9 @@
+let mutable i let init = i := 0 let q = char_of_int 34 and b = char_of_int 92
+let s = "let main = print_string \"let mutable i let init = i := 0 let q = char_of_int 34 and b = char_of_int 92 let s = \"; print_char q; while(!s[!i] != q) do print_char !s[!i]; incr i done; print_char b; print_char q; incr i; while(!s[!i] != q) do print_char !s[!i]; incr i done; print_char b; print_char q; incr i; while(!i != dim 1 s) do print_char !s[!i]; incr i done; print_char q; print_string s"
+let main =  print_string "let mutable i let init = i := 0 let q = char_of_int 34 and b = char_of_int 92 let s = "; 
+            print_char q; 
+            while(!s[!i] != q) do print_char !s[!i]; incr i done; print_char b; print_char q; incr i; 
+            while(!s[!i] != q) do print_char !s[!i]; incr i done; print_char b; print_char q; incr i;
+            while(!i != dim 1 s) do print_char !s[!i]; incr i done; 
+            print_char q;
+            print_string s
