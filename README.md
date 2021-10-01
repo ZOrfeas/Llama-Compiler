@@ -23,9 +23,12 @@ some worth mentioning are:
 
 ### Example commands
 ```bash
+./llamac -help # produces a help message
 ./llamac [llama-source-file] # optionally can add -o [executable-file-name] 
 ./llamac [llama-source-file] -i -o [llvm-IR-file-name] -frontend compile # produces IR source file
 ./llamac [llama-source-file] -S -o [assembly-file-name] -frontend compile # produces assembly source file
+./llamac [llama-source-file] -ast -frontend syntax -o [ast-output-file-name]
+./llamac [llama-source-file] -idtypes -frontend inf # prints inferred type information
 ```
 
 ## Build
