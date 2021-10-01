@@ -383,7 +383,7 @@ void Dim::printOn(std::ostream &out) const
 
 void ConstantCall::printOn(std::ostream &out) const
 {
-    printHeader(out, "ConstantCal " + id);
+    printHeader(out, "ConstantCall " + id);
 
     createBlock(out);
     closeBlock(out);
