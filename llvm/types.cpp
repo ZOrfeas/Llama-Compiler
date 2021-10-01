@@ -614,7 +614,7 @@ llvm::PointerType* CustomTypeGraph::getLLVMType(llvm::Module *TheModule)
     LLVMCustomType = llvm::StructType::create(TheModule->getContext(), name);
     
     const llvm::DataLayout &TheDataLayout = TheModule->getDataLayout();
-    llvm::StructType *LLVMLargestStructType, *LLVMTempType;
+    llvm::StructType *LLVMLargestStructType = nullptr, *LLVMTempType;
     bool first = true;
     int prevSize, currSize;
     for(auto c: *constructors)

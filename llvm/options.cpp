@@ -173,7 +173,8 @@ void OptionList::executeOptions()
             exit(1);
         }
         
-        std::freopen(filename.c_str(), "w", stdout);
+        if(!std::freopen(filename.c_str(), "w", stdout))
+            exit(1);
     }
 
     bool syntax = false, sem = false, inference = false, compile = false,
@@ -290,7 +291,8 @@ void OptionList::executeOptions()
 
         if(!printObjectCode.isActivated()) 
         {
-            std::system("rm a.o");
+            if(std::system("rm a.o"))
+                exit(1);
         }
     }
 }

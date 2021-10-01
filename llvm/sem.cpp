@@ -999,7 +999,7 @@ void Match::sem()
     TypeGraph *t = toMatch->get_TypeGraph();
 
     // Will be used during the loop to check all possible results
-    TypeGraph *prev, *curr;
+    TypeGraph *prev = nullptr, *curr;
 
     // On the first loop temp will be assigned a value
     bool first = true;

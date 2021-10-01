@@ -1,7 +1,7 @@
 .PHONY: default clean distclean 
 
 CXX=c++
-CXXFLAGS=-Wall -std=c++11 `llvm-config --cxxflags` -frtti
+CXXFLAGS=-Wall -std=c++11 `llvm-config --cxxflags` -frtti -O3
 LDFLAGS=`llvm-config --ldflags --system-libs --libs all`
 
 LIBGCFLAG=-DLIBGC="/usr/local/lib/libgc.so"
