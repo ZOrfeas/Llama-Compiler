@@ -815,25 +815,19 @@ llvm::Value *BinOp::compile()
                  TheContext, "shortcircuit.exit", Builder.GetInsertBlock()->getParent()),
              *shortCircuitImpossibleBB = llvm::BasicBlock::Create(
                  TheContext, "shortcircuit.impossible", Builder.GetInsertBlock()->getParent());
+        llvm::IRBuilder<> TmpB(TheContext);
+        TmpB.SetInsertPoint(shortCircuitExitBB);
+        auto *phiCollector = TmpB.CreatePHI(i1, 2, "shortcircuit.restmp");
 
         if (op == T_dblampersand)
         {
             auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(false), "shortcircuit.andtmp");
             Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
-            auto incomingTrue = Builder.GetInsertBlock();
-            // phiCollector->addIncoming(c1(false), Builder.GetInsertBlock());
-            
+            phiCollector->addIncoming(c1(false), Builder.GetInsertBlock());
             Builder.SetInsertPoint(shortCircuitImpossibleBB);
             auto *rhsLogicVal = rhs->compile();
             auto *operationRes = Builder.CreateAnd(lhsLogicVal, rhsLogicVal, "and.restmp");
             Builder.CreateBr(shortCircuitExitBB);
-            // phiCollector->addIncoming(operationRes, shortCircuitImpossibleBB);
-            // Builder.SetInsertPoint(shortCircuitExitBB);
-
-            llvm::IRBuilder<> TmpB(TheContext);
-            TmpB.SetInsertPoint(shortCircuitExitBB);
-            auto *phiCollector = TmpB.CreatePHI(i1, 2, "shortcircuit.restmp");
-            phiCollector->addIncoming(c1(false), incomingTrue);
             phiCollector->addIncoming(operationRes, Builder.GetInsertBlock());
             Builder.SetInsertPoint(shortCircuitExitBB);
             return phiCollector;
@@ -842,20 +836,11 @@ llvm::Value *BinOp::compile()
         {
             auto *decider = Builder.CreateICmpEQ(lhsLogicVal, c1(true), "shortcircuit.ortmp");
             Builder.CreateCondBr(decider, shortCircuitExitBB, shortCircuitImpossibleBB);
-            auto incomingTrue = Builder.GetInsertBlock();
-            // phiCollector->addIncoming(c1(true), Builder.GetInsertBlock());
-            
+            phiCollector->addIncoming(c1(true), Builder.GetInsertBlock());
             Builder.SetInsertPoint(shortCircuitImpossibleBB);
             auto *rhsLogicVal = rhs->compile();
             auto *operationRes = Builder.CreateOr(lhsLogicVal, rhsLogicVal, "or.restmp");
             Builder.CreateBr(shortCircuitExitBB);
-            // phiCollector->addIncoming(operationRes, shortCircuitImpossibleBB);
-            // Builder.SetInsertPoint(shortCircuitExitBB);
-
-            llvm::IRBuilder<> TmpB(TheContext);
-            TmpB.SetInsertPoint(shortCircuitExitBB);
-            auto *phiCollector = TmpB.CreatePHI(i1, 2, "shortcircuit.restmp");
-            phiCollector->addIncoming(c1(true), incomingTrue);
             phiCollector->addIncoming(operationRes, Builder.GetInsertBlock());
             Builder.SetInsertPoint(shortCircuitExitBB);
             return phiCollector;
