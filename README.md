@@ -14,6 +14,7 @@ Implementation of a compiler for the functional programming language Llama
 most if not all of what is specified [here](https://courses.softlab.ntua.gr/compilers/2021a/llama2021.pdf)  
 some worth mentioning are:
 - User defined types
+- Structural equality
 - Type inference
 - Function closures
 - Garbage collection
