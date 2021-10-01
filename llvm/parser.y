@@ -14,6 +14,7 @@
 %}
 /* %define parse.trace */
 %define parse.error verbose
+%expect 24
 
 %union {
     Par *par;

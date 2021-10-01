@@ -771,7 +771,7 @@ llvm::Function *CustomTypeGraph::getStructEqFunc(llvm::Module *TheModule,
     TmpB.SetInsertPoint(errorBB);
     TmpB.CreateCall(TheModule->getFunction("writeString"),
         {TmpB.CreateGlobalStringPtr("Internal error: Invalid constructor enum\n")});
-    TmpB.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    TmpB.CreateCall(TheModule->getFunction("_exit"), {c32(1)});
     TmpB.CreateBr(errorBB); // necessary to avoid llvm error
 
     // logic inside each switch case

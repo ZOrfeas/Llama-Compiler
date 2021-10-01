@@ -271,7 +271,7 @@ std::vector<std::pair<std::string, llvm::Function*>>* AST::genLibGlueLogic() {
         *Pi = llvm::Function::Create(void_to_float, llvm::Function::ExternalLinkage, "pi", TheModule),
         *Chr = llvm::Function::Create(int_to_char, llvm::Function::ExternalLinkage, "chr", TheModule),
         *Ord = llvm::Function::Create(char_to_int, llvm::Function::ExternalLinkage, "ord", TheModule),
-        *Exit = llvm::Function::Create(int_to_void, llvm::Function::ExternalLinkage, "exit", TheModule),
+        *Exit = llvm::Function::Create(int_to_void, llvm::Function::ExternalLinkage, "_exit", TheModule),
         *Round = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "round", TheModule),
         *Trunc = llvm::Function::Create(float_to_int, llvm::Function::ExternalLinkage, "trunc", TheModule);
     std::vector<llvm::Function *> UtilLib = {Abs, FAbs, Sqrt, Sin, Cos, Tan, Atan, Exp, Ln, 

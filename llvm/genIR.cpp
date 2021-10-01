@@ -1299,6 +1299,27 @@ llvm::Value *ArrayAccess::compile()
         LLVMSize.push_back(Builder.CreateLoad(sizeLoc));
     }
 
+    //Bounds check
+    llvm::BasicBlock *currentBB = llvm::BasicBlock::Create(TheContext, "boundcheck.init", Builder.GetInsertBlock()->getParent()),
+                     *outOfBoundsBB = llvm::BasicBlock::Create(TheContext, "boundcheck.outofbounds", Builder.GetInsertBlock()->getParent());
+    Builder.CreateBr(currentBB);
+    for (int i = 0; i < dimensions; i++)
+    {
+        Builder.SetInsertPoint(currentBB);
+        auto checkDimVal = 
+            Builder.CreateICmpSLT(LLVMArrayIndices[i], LLVMSize[i], std::string("checkdim.") + std::to_string(i));
+        auto nextBB = llvm::BasicBlock::Create(TheContext, "boundcheck.nextdim", Builder.GetInsertBlock()->getParent());
+        Builder.CreateCondBr(checkDimVal, nextBB, outOfBoundsBB);
+        currentBB = nextBB;
+    }
+    Builder.SetInsertPoint(outOfBoundsBB);
+    Builder.CreateCall(TheModule->getFunction("writeString"),
+                    {getGlobalString("Runtime error: array index out of bounds", Builder)});
+    Builder.CreateCall(TheModule->getFunction("_exit"), {c32(1)});
+    Builder.CreateBr(outOfBoundsBB);
+
+    Builder.SetInsertPoint(currentBB);
+
     // Calculate the position of the requested element
     // in the one dimensional representation of the array.
     llvm::Value *LLVMTemp = LLVMArrayIndices[dimensions - 1],
@@ -1387,7 +1408,7 @@ llvm::Value *Match::compile()
     Builder.SetInsertPoint(NextClauseBB);
     Builder.CreateCall(TheModule->getFunction("writeString"),
                        {getGlobalString("Runtime Error: No clause matches given expression\n", Builder)});
-    Builder.CreateCall(TheModule->getFunction("exit"), {c32(1)});
+    Builder.CreateCall(TheModule->getFunction("_exit"), {c32(1)});
 
     // Never going to get here but llvm complains anyway
     Builder.CreateBr(NextClauseBB);
