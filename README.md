@@ -29,7 +29,8 @@ some worth mentioning are:
 ```
 
 ## Build
-`make` to create a production version
+`make` to create a production version  
+(clang required to fully produce executable, else stops at object file)
 <details>
   <summary>Dependency installation tips</summary>
 
