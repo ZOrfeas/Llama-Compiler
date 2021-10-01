@@ -1,8 +1,34 @@
-# **Llama language compiler**
-## E.C.E. - N.T.U.A. Compilers class semester project
+# **Llama language compiler** <!-- omit in toc -->
+## E.C.E. - N.T.U.A. Compilers class semester project <!-- omit in toc -->
 Implementation of a compiler for the functional programming language Llama
 
-## Compile
+- [Supported features](#supported-features)
+  - [Example commands](#example-commands)
+- [Build](#build)
+- [Built with](#built-with)
+- [Authors](#authors)
+- [Other Dependencies](#other-dependencies)
+- [Sources](#sources)
+
+## Supported features
+most if not all of what is specified [here](https://courses.softlab.ntua.gr/compilers/2021a/llama2021.pdf)  
+some worth mentioning are:
+- User defined types
+- Type inference
+- Function closures
+- Garbage collection
+- Floating point arithmetic
+- Optimizations
+- Modular execution
+
+### Example commands
+```bash
+./llamac [llama-source-file] # optionally can add -o [executable-file-name] 
+./llamac [llama-source-file] -i -o [llvm-IR-file-name] -frontend compile # produces IR source file
+./llamac [llama-source-file] -S -o [assembly-file-name] -frontend compile # produces assembly source file
+```
+
+## Build
 `make` to create a production version
 <details>
   <summary>Dependency installation tips</summary>
