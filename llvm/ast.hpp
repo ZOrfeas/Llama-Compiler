@@ -112,13 +112,12 @@ protected:
 
     llvm::Value *globalLiveValue = nullptr;
 public:
-    llvm::Value *prevGlobal = nullptr;
     AST();
     virtual ~AST();
     virtual void printOn(std::ostream &out) const = 0;
     virtual void sem();
     llvm::Value *getGlobalLiveValue();
-    void updateGlobalValue(llvm::Value *newVal);
+    llvm::Value *updateGlobalValue(llvm::Value *newVal);
     virtual void liveness(Function *prevFunc);
     void addFunctionThatNeedsSymbol(Function *f);
     static llvm::Value *equalityHelper(llvm::Value *lhsVal, llvm::Value *rhsVal,

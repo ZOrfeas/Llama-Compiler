@@ -315,9 +315,9 @@ llvm::Value *AST::getGlobalLiveValue() {
     return globalLiveValue;
 }
 
-void AST::updateGlobalValue(llvm::Value *newVal) {
+llvm::Value* AST::updateGlobalValue(llvm::Value *newVal) {
     if (listOfFunctionsThatNeedSymbol.empty())
-        return;
+        return nullptr;
     if (!globalLiveValue) {
         auto initializer = llvm::ConstantAggregateZero::get(newVal->getType());
         globalLiveValue = new llvm::GlobalVariable(
@@ -328,8 +328,9 @@ void AST::updateGlobalValue(llvm::Value *newVal) {
             initializer
         );
     }
-    prevGlobal = Builder.CreateLoad(globalLiveValue, "reminder");
+    auto prevGlobal = Builder.CreateLoad(globalLiveValue, "reminder");
     Builder.CreateStore(newVal, globalLiveValue);
+    return prevGlobal;
 }
 
 /*********************************/
@@ -506,7 +507,7 @@ void Function::generateBody()
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", funcPrototype);
     Builder.SetInsertPoint(newBB);
     int i = 0;
-    // std::vector<std::pair<int,llvm::Value *>> previousGlobals;
+    std::vector<std::pair<int,llvm::Value *>> previousGlobals;
     for (auto &arg : funcPrototype->args())
     {
         if ((long unsigned) i == par_list.size()) {
@@ -515,10 +516,7 @@ void Function::generateBody()
         }
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
-        // if (par_list[i]->getGlobalLiveValue() != nullptr) {
-        //     previousGlobals.push_back({i, Builder.CreateLoad(par_list[i]->getGlobalLiveValue(), "reminder")});
-        // }
-        par_list[i]->updateGlobalValue(&arg);
+        previousGlobals.push_back({i, par_list[i]->updateGlobalValue(&arg)});
         i++;
     }
     i = 0;
@@ -536,9 +534,10 @@ void Function::generateBody()
     //     Builder.CreateStore(pair.second, par_list[pair.first]->getGlobalLiveValue(), false);
     // }
     auto retVal = expr->compile();
-    for (auto const &par: par_list) {
-        if (par->getGlobalLiveValue() == nullptr) continue;
-        Builder.CreateStore(par->prevGlobal, par->getGlobalLiveValue());
+    for (auto const &pair: previousGlobals) {
+        if (par_list[pair.first]->getGlobalLiveValue() == nullptr) continue;
+        if (pair.second == nullptr) continue;
+        Builder.CreateStore(pair.second, par_list[pair.first]->getGlobalLiveValue());
     }
     Builder.CreateRet(retVal);
     closeScopeOfAll();
