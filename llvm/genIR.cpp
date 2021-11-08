@@ -328,6 +328,7 @@ void AST::updateGlobalValue(llvm::Value *newVal) {
             initializer
         );
     }
+    prevGlobal = Builder.CreateLoad(globalLiveValue, "reminder");
     Builder.CreateStore(newVal, globalLiveValue);
 }
 
@@ -505,6 +506,7 @@ void Function::generateBody()
     llvm::BasicBlock *newBB = llvm::BasicBlock::Create(TheContext, "entry", funcPrototype);
     Builder.SetInsertPoint(newBB);
     int i = 0;
+    // std::vector<std::pair<int,llvm::Value *>> previousGlobals;
     for (auto &arg : funcPrototype->args())
     {
         if ((long unsigned) i == par_list.size()) {
@@ -513,6 +515,9 @@ void Function::generateBody()
         }
         arg.setName(par_list[i]->getId());
         LLValues.insert({par_list[i]->getId(), &arg});
+        // if (par_list[i]->getGlobalLiveValue() != nullptr) {
+        //     previousGlobals.push_back({i, Builder.CreateLoad(par_list[i]->getGlobalLiveValue(), "reminder")});
+        // }
         par_list[i]->updateGlobalValue(&arg);
         i++;
     }
@@ -526,7 +531,16 @@ void Function::generateBody()
         LLValues.insert({ext.first, envField});
         i++;
     }
-    Builder.CreateRet(expr->compile());
+    // for (auto const &pair: previousGlobals) {
+    //     if (par_list[pair.first]->getGlobalLiveValue() == nullptr) continue;
+    //     Builder.CreateStore(pair.second, par_list[pair.first]->getGlobalLiveValue(), false);
+    // }
+    auto retVal = expr->compile();
+    for (auto const &par: par_list) {
+        if (par->getGlobalLiveValue() == nullptr) continue;
+        Builder.CreateStore(par->prevGlobal, par->getGlobalLiveValue());
+    }
+    Builder.CreateRet(retVal);
     closeScopeOfAll();
     bool bad = llvm::verifyFunction(*funcPrototype, &llvm::errs());
     if (bad)

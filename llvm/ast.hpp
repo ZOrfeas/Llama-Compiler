@@ -112,6 +112,7 @@ protected:
 
     llvm::Value *globalLiveValue = nullptr;
 public:
+    llvm::Value *prevGlobal = nullptr;
     AST();
     virtual ~AST();
     virtual void printOn(std::ostream &out) const = 0;
